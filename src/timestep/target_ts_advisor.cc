@@ -1,0 +1,75 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file    target_ts_advisor.cc
+ * \author  John McGhee
+ * \date    Thu Apr  2 14:06:18 1998
+ * \brief   Defines the target time-step advisor.
+ * \note    Copyright (C) 1998-2010 Los Alamos National Security, LLC.
+ *          All rights reserved.
+ * \version $Id$
+ */
+//---------------------------------------------------------------------------//
+
+#include "target_ts_advisor.hh"
+#include "ts_manager.hh"
+#include "ds++/Assert.hh"
+#include "c4/global.hh"
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+namespace rtt_timestep
+{
+
+target_ts_advisor::target_ts_advisor(
+    const std::string   &name_,
+    const usage_flag usage_,
+    const double target_value_,
+    const bool active_)
+
+    : ts_advisor(name_, usage_, active_),
+      target_value(target_value_)
+
+{
+    Ensure(invariant_satisfied());
+}
+
+double target_ts_advisor::get_dt_rec(const ts_manager &tsm) const
+{
+    Require(invariant_satisfied());
+
+    double dt_rec = target_value - tsm.get_time();
+    if (dt_rec <= ts_small())
+    {
+	dt_rec = large();
+    }
+    return dt_rec;
+}
+
+void target_ts_advisor::print_state() const
+{
+    if (C4::node() != 0)
+	return;
+    
+    std::string status = is_active() ? "true " : "false";
+    cout << endl;
+    cout << "  ** Time-Step Advisor State Listing **" << endl;
+    cout << "  Name - " << get_name() << endl;
+    cout << "  Type           : " << "Target Advisor" << endl;
+    cout << "  Active         : " << status << endl;
+    cout << "  Usage          : " << usage_flag_name(get_usage()) << endl;
+    cout << "  Target Value   : " << target_value << endl;
+    cout << endl;
+}
+
+bool target_ts_advisor::invariant_satisfied() const
+{
+    return ts_advisor::invariant_satisfied();
+}
+
+} // end of rtt_timestep namespace
+
+//---------------------------------------------------------------------------//
+//                              end of target_ts_advisor.cc
+//---------------------------------------------------------------------------//

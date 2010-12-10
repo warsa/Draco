@@ -1,0 +1,50 @@
+%%---------------------------------------------------------------------------%%
+%% draco_bs.sty
+%% Time-stamp: <03/05/09 15:27:22 tme>
+%% style file for the draco build system report.
+%%---------------------------------------------------------------------------%%
+
+%%---------------------------------------------------------------------------%%
+%% font environments
+%%---------------------------------------------------------------------------%%
+
+%% draco (and other code systems) package font [small-caps] 
+\newcommand{\pkg}[1]{{\normalfont\scshape#1}}
+
+%% code system font [sans-serif]
+\newcommand{\sys}[1]{{\normalfont\sffamily#1}}
+
+%% computer files and directories (add / after directory) [typewriter]
+\newcommand{\cmp}[1]{{\normalfont\ttfamily#1}}
+
+%% variable name for a computer file, etc. [slanted]
+\newcommand{\vble}[1]{{\normalfont\slshape#1}}
+
+%% emphasis (term definitions, latin expressions, etc) [italic]
+\renewcommand{\latin}[1]{{\normalfont\itshape#1}}
+
+%% commercial software products [bold]
+\newcommand{\soft}[1]{{\normalfont\bfseries#1}}
+
+%% languages [normalfont]
+\newcommand{\lang}[1]{{\normalfont#1}}
+
+%%---------------------------------------------------------------------------%%
+%% new table environments
+%%---------------------------------------------------------------------------%%
+
+%%---------------------------------------------------------------------------%%
+%% Environments that use the TABULARX package
+
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{L}{>{\ttfamily}X}
+
+\newcolumntype{a}{>{\ttfamily}l}
+\newcolumntype{b}{>{\sffamily\slshape}l}
+\newcolumntype{d}{>{\ttfamily}c}
+
+%%---------------------------------------------------------------------------%%
+%% list environments
+%%---------------------------------------------------------------------------%%
+
+\newcommand{\mitem}[2]{\item[\cmp{#1}] #2}

@@ -1,0 +1,124 @@
+%%---------------------------------------------------------------------------%%
+%% intro.tex
+%% Time-stamp: <03/05/12 09:23:35 tme>
+%% introduction of Draco build system manual
+%%---------------------------------------------------------------------------%%
+
+\section{Introduction}
+\label{sec:intro}
+
+The purpose of this document is to give a high-level introduction to
+the \draco\ build system (DBS).  A detailed user/developer manual is
+processed with \soft{Doxygen}~\cite{doxygen} and is maintained with
+the \draco\ source code.  
+
+As a review, we restate the \draco\ mission statement~\cite{rn98046}:
+\begin{quote}
+  \slshape \draco\ \index{Draco} is a comprehensive, radiation
+  transport library that provides highly tested, verified, reusable
+  components for serial and parallel, computational physics codes.
+\end{quote}
+To meet these requirements \draco\ uses rigorous software engineering
+concepts including object-oriented/\-generic design, unit testing, and
+acyclic (levelized) design principles. The DBS allows \draco\ to
+satisfy its mission statement and enforces the concept of acyclic
+component design.
+
+The DBS has been in use within CCS--4 (and its predecessor groups)
+since January, 1999.  An informal manual, \textit{The Draco Build
+  System}, has been used by developers to learn the build system. This
+manual rapidly became out-of-date as the DBS was changed and updated.
+However, we have now integrated DBS documentation under
+\soft{Doxygen}; thus, the in-code \soft{Doxygen} documentation, which
+is updated as changes to the DBS are made, has become the official
+source of information about the DBS.  HTML versions of the \draco\ 
+developer manual, along with PDF versions of the build system manual,
+are available on \soft{SourceForge} \index{SourceForge} at
+\cmp{http://sf-web.lanl.gov/draco}.
+
+The DBS has been carefully designed.  In particular, we had several
+requirements that the build system should satisfy.  These requirements
+are:
+\begin{itemize}
+\item support for simultaneous, multiple configurations;
+\item support for \C++ on all ASCI platforms;
+\item automated unit and regression testing;
+\item the ability to support multiple code projects;
+\item support for external vendors;
+\item support for multiple languages;
+\item extensibility;
+\item low-cost on developers to add new packages, code, and tests; 
+\item compliance with the GNU coding standard \cite{gnu} \index{GNU
+    Coding Standard}.
+\end{itemize}
+The last requirement, compliance with the GNU Coding Standard, is
+important because the \make\ targets within \draco\ conform to a
+referenced standard.
+
+Compliance with the GNU Coding Standard implies the use of GNU
+autotools \index{GNU autotools}, \autoconf\ and
+\automake~\cite{autoconf}, and \make~\cite{gmake}.  We have recently
+upgraded the DBS to conform to the latest versions of these tools
+(\autoconf\ 2.57).
+
+%%---------------------------------------------------------------------------%%
+
+\subsection{Definitions and Conventions}
+
+Before continuing we shall clarify the terminology and typeface
+conventions that will be employed throughout the remainder of this
+manual.  The definitions that we use here are for convenience.  They
+are not to be interpreted as an ``universal standard.''  They are
+simply used to make sure that the concepts illucidated within this
+manual have a common point of reference.
+
+A \latin{product} is anything that is produced from a source code
+tree~\cite{ja94}.  A \latin{system} is a code, or a group of codes,
+that persist over time~\cite{tn98}.  A \latin{project} is an
+undertaking that has a definite beginning and ending date, and it
+produces a product.  A \latin{package} is one component of a system
+(package and components are used interchangeably).  Packages normally
+reside in a single directory in the source code tree; although, that
+directory may have subdirectories.  However, packages are sometimes
+used to refer to larger units.  For example, a code package may be a
+system that contains many components.  In this case, package has macro
+(system level) and micro (system-component level) connotations.
+
+Table ~\ref{tab:tfaces} show the typefaces that we will employ
+\begin{table}
+  \begin{center}
+    \caption{Typefaces used throughout the text.}
+    \label{tab:tfaces}
+    \begin{tabular}{c}\hline\hline
+      \sys{code systems} (\draco) \\
+      \pkg{packages} (\dsxx) \\
+      \cmp{files} (\comp{Makefile}) \\
+      \vble{variables} (\comp{draco/src/\vble{pkg}/}) \\
+      \soft{software programs} (\autoconf) \\ \hline\hline
+    \end{tabular}
+  \end{center}
+\end{table}
+throughout the text to better distinguish certain elements.  In
+general, anything that exists on a computer screen (directory trees,
+files, etc) is typefaced using \cmp{typewriter} font.  Files are
+distinguished in the standard UNIX way by appending the following
+symbols after the name, \cmp{*} for executables, \cmp{/} for
+directories, and @ for links.  Computer screen prompts are represented
+by the \cmp{\$} symbol.
+
+%%---------------------------------------------------------------------------%%
+
+\subsection{DBS Support and Procurement}
+
+Questions about procuring a copy of the DBS or its use can be
+directed to:
+\begin{center}
+  \begin{tabular}{llc}\hline\hline
+    \multicolumn{1}{c}{Name} & \multicolumn{1}{c}{Email} &
+    Group \\ \hline
+    Tom Evans & tme@lanl.gov & CCS--4 \\
+    Kelly Thompson& kellyt@lanl.gov & CCS--4 \\ \hline\hline
+  \end{tabular}
+\end{center}
+Additional information is available on the \draco\ \soft{SourceForge}
+site, \cmp{http://sf-web.lanl.gov/draco}.

@@ -1,0 +1,52 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_ccs4_linux - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_rr_dev"
+fi
+
+##---------------------------------------------------------------------------##
+## ALIASES
+##---------------------------------------------------------------------------##
+
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is draco
+_BINDIR=`dirname "$BASH_ARGV"`
+export DRACO_MODULE_DIR=`(cd $_BINDIR/../Modules;pwd)`
+
+# modules
+export MODULEPATH=$DRACO_MODULE_DIR/rr-dev-fe:$MODULEPATH
+export IGNOREMODULECONFLICTS=1
+function module() { eval `/usr/bin/modulecmd bash $*`; }
+module load modules hpc-tools friendly-testing pgi lapack python openmpi gandolf gsl
+
+if test "${PBS_O_LOGNAME:-notset}" = "notset" ; then
+  function llogin()
+  {
+     ##local myshell="/usr/bin/ssh-agent /bin/bash"
+     local myshell="/bin/bash"
+     qsub $* -IS ${myshell}
+   }
+else
+  function llogin()
+  {
+    echo "Already on worker node." 
+  }
+fi
+
+# CVS
+export CVS_RSH=ssh
+export CVSROOT=ccscs9:/ccs/codes/radtran/cvsroot
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_rr_dev
+##---------------------------------------------------------------------------##

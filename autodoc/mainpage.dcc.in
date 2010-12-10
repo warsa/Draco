@@ -1,0 +1,59 @@
+//---------------------------------------------------------------------------//
+// mainpage.dcc
+// Front page to the draco build system.
+//---------------------------------------------------------------------------//
+
+/*!
+
+\mainpage The Draco Documentation System
+
+\par Authors
+<a href="mailto:tme@lanl.gov">Tom Evans</a>,
+<a href="mailto:tmonster@lanl.gov">Todd Urbatsch</a>,
+<a href="mailto:mwbuksas@lanl.gov">Mike Buksas</a>,
+<a href="mailto:jhchang@lanl.gov">Jae Chang</a>,
+<a href="mailto:kgt@lanl.gov">Kelly (KT) Thompson</a>,
+<a href="mailto:kgb@lanl.gov">Kent Budge</a>,
+<a href="mailto:lowrie@lanl.gov">Robert Lowrie</a>
+
+\par Executive Summary
+Draco is a C++ radiation transport component library developed by CCS-2, Los
+Alamos National Laboratory. In addition to providing infrastructure for
+radiation transport code development, Draco serves as a "model Development
+Environment (DE)" for code development activities within CCS-2.  Most CCS-2
+code projects are based on the coding standards, idioms, style, organization,
+and architecture of Draco. 
+
+\par Getting Started
+To get started building Draco see \ref build_system.  Package
+overviews can be found in the <a href="pages.html">Related Pages</a>
+section of the documentation.
+
+\par Code Access
+To gain access to Draco source contact 
+<a href="mailto:draco@lanl.gov">CCS-2</a> or see the Draco LANL SourceForge
+<a href=http://sf.lanl.gov/projects/draco>page</a>.
+
+\par Components
+@COMP_LINKS@
+
+<!--
+\par Packages
+@PACKAGE_LINKS@
+-->
+
+<!-- Architecture or High Level bugs -->
+
+\bug [05/03/10 KT]: Move \c startup_scripts (and possibly
+\c capsaicin_scripts/changevendors.sh) to \c draco/environment so that a draco
+checkout provides a complete build environment for supported platforms.
+
+\bug [05/03/10 KT]: Consider putting all vendors under a version control
+system. 
+
+*/
+
+//---------------------------------------------------------------------------//
+// end of mainpage.dcc
+//---------------------------------------------------------------------------//
+

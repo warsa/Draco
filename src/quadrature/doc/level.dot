@@ -1,0 +1,98 @@
+digraph bubba_package_level {
+
+    /* graph attributes */
+    center=1;
+    size="8,14";
+    ranksep=1;
+
+   /* levels */
+   level0 [shape=plaintext, label="Level 0:", fontsize=14];
+   level1 [shape=plaintext, label="Level 1:", fontsize=14];
+   level2 [shape=plaintext, label="Level 2:", fontsize=14];
+   level3 [shape=plaintext, label="Level 3:", fontsize=14];
+   level4 [shape=plaintext, label="Level 4:", fontsize=14];
+
+   level4 -> level3 -> level2 -> level1 -> level0;
+
+   /* level 0 */
+   QuadServicesihh [shape=box, label="QuadServices.i.hh"];
+   Releasehh [shape=box, label="Release.hh"];
+
+   /* level 1 */
+   Releasecc [shape=box, label="Release.cc"];
+   gaulaghh [shape=box, label="gaulag.hh"];
+   gauleghh [shape=box, label="gauleg.hh"];
+   Quadraturehh [shape=box, label="Quadrature.hh"];
+
+   /* level 2 */
+   QuadCreatorhh [shape=box, label="QuadCreator.hh"];
+   Q2DSquareChebyshevLegendrehh [shape=box, label="Q2DSquareChebyshevLegendre.hh"];
+   Q1DGaussLeghh [shape=box, label="Q1DGaussLeg.hh"];
+   Ordinatehh [shape=box, label="Ordinate.hh"];
+   Q1DDoubleGausshh [shape=box, label="Q1DDoubleGauss.hh"];
+   GeneralQuadraturehh [shape=box, label="GeneralQuadrature.hh"];
+   Q1Axialhh [shape=box, label="Q1Axial.hh"];
+   Q1DLobattohh [shape=box, label="Q1DLobatto.hh"];
+   Q2DLevelSymhh [shape=box, label="Q2DLevelSym.hh"];
+   Quadraturecc [shape=box, label="Quadrature.cc"];
+   Q3DLevelSymhh [shape=box, label="Q3DLevelSym.hh"];
+
+   /* level 3 */
+   QuadServiceshh [shape=box, label="QuadServices.hh"];
+   Q2DLevelSymcc [shape=box, label="Q2DLevelSym.cc"];
+   Q1Axialcc [shape=box, label="Q1Axial.cc"];
+   Ordinatecc [shape=box, label="Ordinate.cc"];
+   Q1DGaussLegcc [shape=box, label="Q1DGaussLeg.cc"];
+   Q2DSquareChebyshevLegendrecc [shape=box, label="Q2DSquareChebyshevLegendre.cc"];
+   GeneralQuadraturecc [shape=box, label="GeneralQuadrature.cc"];
+   QuadCreatorcc [shape=box, label="QuadCreator.cc"];
+   Q3DLevelSymcc [shape=box, label="Q3DLevelSym.cc"];
+   Q1DLobattocc [shape=box, label="Q1DLobatto.cc"];
+   Q1DDoubleGausscc [shape=box, label="Q1DDoubleGauss.cc"];
+
+   /* level 4 */
+   QuadServicescc [shape=box, label="QuadServices.cc"];
+
+   /* Dependencies */
+   {rank=same; level0 QuadServicesihh Releasehh};
+   {rank=same; level1 Releasecc gaulaghh gauleghh Quadraturehh};
+   {rank=same; level2 QuadCreatorhh Q2DSquareChebyshevLegendrehh Q1DGaussLeghh Ordinatehh Q1DDoubleGausshh GeneralQuadraturehh Q1Axialhh Q1DLobattohh Q2DLevelSymhh Quadraturecc Q3DLevelSymhh};
+   {rank=same; level3 QuadServiceshh Q2DLevelSymcc Q1Axialcc Ordinatecc Q1DGaussLegcc Q2DSquareChebyshevLegendrecc GeneralQuadraturecc QuadCreatorcc Q3DLevelSymcc Q1DLobattocc Q1DDoubleGausscc};
+   {rank=same; level4 QuadServicescc};
+
+   /* level 1 */
+   Releasecc -> { Releasehh};
+   gaulaghh -> {};
+   gauleghh -> {};
+   Quadraturehh -> {};
+
+   /* level 2 */
+   QuadCreatorhh -> { Quadraturehh};
+   Q2DSquareChebyshevLegendrehh -> { Quadraturehh};
+   Q1DGaussLeghh -> { Quadraturehh};
+   Ordinatehh -> { Quadraturehh};
+   Q1DDoubleGausshh -> { Quadraturehh};
+   GeneralQuadraturehh -> { Quadraturehh};
+   Q1Axialhh -> { Quadraturehh};
+   Q1DLobattohh -> { Quadraturehh};
+   Q2DLevelSymhh -> { Quadraturehh};
+   Quadraturecc -> { Quadraturehh};
+   Q3DLevelSymhh -> { Quadraturehh};
+
+   /* level 3 */
+   QuadServiceshh -> { Ordinatehh QuadServicesihh};
+   Q2DLevelSymcc -> { Q3DLevelSymhh Q2DLevelSymhh Ordinatehh};
+   Q1Axialcc -> { Q1Axialhh};
+   Ordinatecc -> { Ordinatehh GeneralQuadraturehh};
+   Q1DGaussLegcc -> { Q1DGaussLeghh gauleghh};
+   Q2DSquareChebyshevLegendrecc -> { Q1DGaussLeghh Q2DSquareChebyshevLegendrehh};
+   GeneralQuadraturecc -> { GeneralQuadraturehh};
+   QuadCreatorcc -> { Q1DGaussLeghh Q1DLobattohh Q1DDoubleGausshh Q1Axialhh Q2DLevelSymhh Q3DLevelSymhh Q2DSquareChebyshevLegendrehh QuadCreatorhh};
+   Q3DLevelSymcc -> { Q3DLevelSymhh Ordinatehh};
+   Q1DLobattocc -> { Q1DLobattohh};
+   Q1DDoubleGausscc -> { gauleghh Q1DDoubleGausshh};
+
+   /* level 4 */
+   QuadServicescc -> { QuadServiceshh};
+
+}
