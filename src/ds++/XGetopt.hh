@@ -125,7 +125,7 @@ DLL_PUBLIC_dsxx extern char *optarg;
 typedef std::map< std::string, char> longopt_map;
 
 DLL_PUBLIC_dsxx 
-int getopt( int argc, char **& argv, std::string const & shortopts,
+int getopt( int argc, char ** argv, std::string const & shortopts,
             longopt_map map = std::map<std::string, char>() );
 
 }

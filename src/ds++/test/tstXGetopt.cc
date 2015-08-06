@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
                 break;
 
             default:
-                return 0; // nothin to do.
+                break; // nothin to do.
         }
     }
 

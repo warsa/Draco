@@ -15,6 +15,7 @@
 #include "Assert.hh"
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "XGetopt.hh"
 
