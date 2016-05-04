@@ -92,9 +92,9 @@ run "module use --append /usr/projects/draco/vendors/Modules"
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 run "module load intel/15.0.4 impi/5.1.1.109"
-#run "module load lapack"
+run "module load lapack/3.5.0"
 run "module load cmake/3.5.2 numdiff/5.8.1 subversion random123 eospac/6.2.4"
-run "module load ndi metis parmetis superlu-dist trilinos"
+run "module load gsl/2.1 ndi metis parmetis superlu-dist trilinos"
 run "module list"
 
 # For Intel MPI, we must set these 4 variables:
