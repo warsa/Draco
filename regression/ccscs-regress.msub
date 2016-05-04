@@ -92,7 +92,7 @@ run "module load user_contrib"
 run "module load gcc openmpi cmake"
 run "module load dracoscripts subversion random123 valgrind"
 run "module load eospac lapack gsl" # grace
-run "module load SuperLU_DIST/4.3"
+run "module load superlu-dist/4.3"
 run "module load ndi metis parmetis trilinos"
 run "module load doxygen graphviz" # qt
 comp=gcc
@@ -120,7 +120,7 @@ bounds_checking)
     exit 1
   fi
   bounds_checking=on
-  run "module swap SuperLU_DIST SuperLU_DIST/4.3-bc"
+  run "module swap superlu-dist superlu-dist/4.3-bc"
   run "module swap trilinos trilinos/12.6.1-bc"
   run "module swap metis metis/5.1.0-bc"
   run "module swap parmetis parmetis/4.0.3-bc"
@@ -131,7 +131,7 @@ clang)
   run "module load llvm openmpi cmake"
   run "module load dracoscripts subversion random123"
   run "module load lapack gsl" # eospac
-  run "module load SuperLU_DIST"
+  run "module load superlu-dist/4.3"
   run "module load ndi metis parmetis trilinos"
   run "module load graphviz"
   comp=clang
@@ -145,7 +145,7 @@ gcc530)
   run "module load gcc/5.3.0 openmpi cmake"
   run "module load dracoscripts subversion random123"
   run "module load lapack gsl eospac"
-  run "module load SuperLU_DIST"
+  run "module load superlu-dist"
   run "module load ndi metis parmetis trilinos"
   comp=gcc-5.3.0
   ;;
@@ -161,7 +161,7 @@ gcc530bc)
   run "module load gcc/5.3.0 openmpi cmake"
   run "module load dracoscripts subversion random123"
   run "module load lapack gsl"
-  run "module load SuperLU_DIST/4.3-bc"
+  run "module load superlu-dist/4.3-bc"
   run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.1-bc"
   comp=gcc-5.3.0
   ;;
