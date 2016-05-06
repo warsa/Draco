@@ -17,6 +17,18 @@ if (APPLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;.dylib")
 endif()
 
+# If environment variables are not set (GRACE_INC_DIR), look for the binary and
+# try to guess appropriate location of library and headers.
+find_program( Exe_grace xmgrace )
+
+if( "${GRACE_INC_DIR}x" STREQUAL "x" AND
+    NOT ${Exe_grace} MATCHES "NOTFOUND")
+  get_filename_component( Grace_ROOT ${Exe_grace} PATH )
+  get_filename_component( Grace_ROOT ${Grace_ROOT} PATH )
+  set( GRACE_INC_DIR ${Grace_ROOT}/include )
+  set( GRACE_LIB_DIR ${Grace_ROOT}/lib )
+endif()
+
 find_path( Grace_INCLUDE_DIR
     NAMES
        grace_np.h
