@@ -29,7 +29,6 @@ umask 0002
 unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/scratch/vendors
-export AUTODOCDIR=/ccs/codes/radtran/autodoc
 
 run () {
     echo $1
@@ -165,6 +164,16 @@ gcc530bc)
   run "module load ndi metis/5.1.0-bc parmetis/4.0.3-bc trilinos/12.6.1-bc"
   comp=gcc-5.3.0
   ;;
+  gcc610)
+    run "module purge"
+    run "module load user_contrib"
+    run "module load gcc/6.1.0 openmpi cmake"
+    run "module load dracoscripts subversion random123"
+    run "module load lapack gsl eospac"
+    run "module load superlu-dist"
+    run "module load ndi metis parmetis trilinos"
+    comp=gcc-6.1.0
+  ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
@@ -192,9 +201,12 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   # moniker=`whoami`
-   # base_dir=/scratch/${moniker}
-   base_dir=/scratch/regress/cdash
+   if test "${regress_mode}" = "off"; then 
+      moniker=`whoami`
+      base_dir=/scratch/${moniker}
+   else 
+      base_dir=/scratch/regress/cdash
+   fi
    mkdir -p $base_dir
    if ! test -d ${base_dir}; then
       echo "Fatal Error, base_dir=${base_dir} not found in environment."
@@ -229,6 +241,7 @@ fi
 if test "${regress_mode}" = "off"; then
     export work_dir=${base_dir}/cdash/${subproj}/${dashboard_type}_${comp}/${build_type}
     export buildname_append="-${USER}"
+    export AUTODOCDIR=$work_dir/autodoc
 else
     export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 fi

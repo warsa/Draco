@@ -30,7 +30,7 @@ print_use()
     echo "   -p    project names  = { draco, jayenne, capsaicin, asterisk }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
-    echo "                            gcc530, nr, perfbench, pgi}"
+    echo "                            gcc530, gcc610, nr, perfbench, pgi}"
 #    echo " "
 #    echo "Extra parameters read from environment:"
 #    echo "   ENV{base_dir}       = {/var/tmp/$USER/cdash, /scratch/$USER/cdash}"
@@ -117,7 +117,7 @@ if ! test "${extra_params}x" = "x"; then
       extra_params=""; epdash="" ;;
    coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
       ;;
-   knightscorner | bounds_checking | gcc530 | clang)
+   knightscorner | bounds_checking | gcc530 | clang | gcc610)
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -204,7 +204,7 @@ ccscs[0-9])
         none)  extra_params=""; epdash="" ;;
         coverage | fulldiagnostics | nr | perfbench | bounds_checking ) # known, continue
         ;;
-        gcc530 | clang ) # known, continue
+        gcc530 | clang | gcc610 ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
