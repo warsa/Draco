@@ -163,7 +163,7 @@ echo "Code coverage"
 echo "-------------"
 echo " "
 export COVFILE=`pwd`/metrics_report.cov
-export COVDIRCFG=/home/regress/draco/regression/covdir.cfg
+export COVDIRCFG=/scratch/regress/draco/regression/covdir.cfg
 if test -f $COVFILE; then
    rm -f $COVFILE
 fi
