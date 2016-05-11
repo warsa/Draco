@@ -105,6 +105,22 @@ Ordinate_Set_Mapper::map_angle_into_ordinates(const Ordinate& ord_in,
         std::transform(ords.begin(), ords.end(), dps.begin(), dpf);
     }
     
+    // Remove the "starting directions" as valid ordinates in the quadrature,
+    // if they exist
+    if ( os_.has_starting_directions() )
+    {
+        size_t i=0;
+        for (auto ord=ords.begin(); ord!=ords.end(); ++ord, ++i)
+        {
+            // If the ordinate weight is zero, we found a "starting direction"
+            // We remove it by saying its dot product is completely opposed
+            // to the ordinate we passed in (set to -1).
+            if (ord->wt() <= 0.0)
+                dps[i] = -1.0;
+        }
+    }
+    
+    
     switch (interp_in)
     {
         case NEAREST_NEIGHBOR:

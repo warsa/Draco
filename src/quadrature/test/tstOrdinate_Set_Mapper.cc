@@ -99,7 +99,8 @@ double zeroth_moment(const vector<double> &weights,
 
 // -----------------------------------------------------------------------------
 // A quick way to test the validity of several ordinates using the nearest
-// neighbor interpolation scheme.
+// neighbor interpolation scheme. This test harness does not account
+// for the removal of "starting directions" in the Ordinate_Set.
 // -----------------------------------------------------------------------------
 void nearest_neighbor_test( rtt_dsxx::UnitTest &ut,
                             const Ordinate& ord,
@@ -152,7 +153,8 @@ void nearest_neighbor_test( rtt_dsxx::UnitTest &ut,
 
 // -----------------------------------------------------------------------------
 // A quick way to test the validity of several ordinates using the nearest
-// three ordinates interpolation scheme.
+// three ordinates interpolation scheme. This test harness does not account
+// for the removal of "starting directions" in the Ordinate_Set.
 // -----------------------------------------------------------------------------
 void nearest_three_test( rtt_dsxx::UnitTest &ut,
                          const Ordinate& ord,
@@ -538,6 +540,61 @@ void ordinate_set_3D_nn_mapper_test( rtt_dsxx::UnitTest &ut)
 }
 
 
+//---------------------------------------------------------------------------//
+// Test the mapper for Spherical problems using nearest neighbor interpolation
+//---------------------------------------------------------------------------//
+void ordinate_set_1D_sph_nn_mapper_test( rtt_dsxx::UnitTest &ut)
+{
+    int N(2); // quadrature order
+    rtt_mesh_element::Geometry geometry( rtt_mesh_element::SPHERICAL );
+    Gauss_Legendre quadrature(N);
+    
+    // Note that this test uses "starting directions" in the Ordinate_Set
+    // These are necessary for SN in curvilinear geometries, but these
+    // starting directions have zero weight and do not actually contribute
+    // to the quadrature integration -- they should not be incluced as
+    // valid ordinates during the remapping!
+    SP<Ordinate_Set> os_LS2 = quadrature.create_ordinate_set(1, //1-D
+                                                             geometry,
+                                                             1.0, // norm,
+                                                             true, //starting_directions?
+                                                             true, //extra directions?
+                                                             Ordinate_Set::LEVEL_ORDERED);
+    
+    Ordinate_Set_Mapper osm(*os_LS2);
+    vector<Ordinate> ordinates(os_LS2->ordinates());
+    
+    {
+        // Create an angle in octant one
+        double w(2.2);
+        Ordinate o1(0.99, w); // This should map to the 3rd ordinate
+        // The first and last ordinates are "extra"
+        vector<double> wts( ordinates.size(), 0.0);
+        
+        osm.map_angle_into_ordinates(o1, Ordinate_Set_Mapper::NEAREST_NEIGHBOR,
+                                     wts);
+        
+        
+        if (wts.size() != ordinates.size() ) ut.failure("Weight/size mismatch");
+        
+        // We should get exactly one nonzero entry in the weight vector
+        size_t numzeros = count_if(wts.begin(), wts.end(), is_zero);
+        if (numzeros != ordinates.size()-1) ut.failure("Found multiple matches");
+        
+        // The sum of the weights should be the original ordinate weight
+        double E = zeroth_moment(wts, *os_LS2);
+        if ( !soft_equiv(E, o1.wt())) ut.failure("Weight summation mismatch");
+        
+        // Does it correspond to the same location in the weight vector?
+        size_t nz_e  = std::max_element(wts.begin(), wts.end()) - wts.begin();
+        if ( nz_e != 2 ) ut.failure("Nearest ordinate mismatch");
+        
+        if (ut.numFails == 0)
+            ut.passes("Gauss_Legendre spherical nearest-neighbor passes");
+    }
+}
+
+
 
 //---------------------------------------------------------------------------//
 // Nearest-three ordinate set mapping tests; this one is 1-D
@@ -909,6 +966,7 @@ int main(int argc, char *argv[])
         ordinate_set_1D_nn_mapper_test(ut);
         ordinate_set_2D_nn_mapper_test(ut);
         ordinate_set_3D_nn_mapper_test(ut);
+        ordinate_set_1D_sph_nn_mapper_test(ut);
         
         // Perform the "nearest three" mapping tests
         ordinate_set_1D_nt_mapper_test(ut);
