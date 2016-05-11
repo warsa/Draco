@@ -27,7 +27,8 @@ if test ${found} == 0; then
   fi
 fi
 
-case $HOSTNAME in
+target=`uname -n`
+case $target in
 ccscs[456789]*)
     # Locate the vendor directory
     if test "${VENDOR_DIR}x" == "x"; then
@@ -36,7 +37,7 @@ ccscs[456789]*)
     module load user_contrib
     export dracomodules="gcc/4.8.5 openmpi cmake \
 lapack random123 eospac gsl dracoscripts subversion ndi python/2.7.11
-metis parmetis SuperLU_DIST trilinos git"
+metis parmetis superlu-dist trilinos git"
     ;;
 ccsnet3*)
     # Locate the vendor directory
@@ -57,7 +58,7 @@ ccsnet3*)
     module use /ccs/codes/radtran/vendors/Modules
   export dracomodules="gcc openmpi emacs/24.4 totalview cmake grace \
 lapack random123 eospac dracoscripts git svn dia graphviz doxygen \
-ParMetis SuperLU_DIST trilinos ndi"
+metis parmetis superlu-dist trilinos ndi"
     ;;
 esac
 

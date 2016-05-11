@@ -18,19 +18,20 @@ Compiling
 
 Prerequisites:
 
-* [cmake-3.5 or later](https://cmake.org/download/)
+* [cmake-3.5 or later](https://cmake.org/download/) 
+  * cmake must be in your PATH
 * A modern C++ compiler (g++, icpc, pgCC, clang++, cl)
-** `CXX`, `CC` and 'FC` must be set in your environment and point to the C++, C and Fortran compilers that you wish to use.
-* MPI (openMPI, mpich)
-** `mpiexec` must be found in your PATH
+* MPI (openMPI, mpich) 
+  * mpiexec must be in your PATH
 * [Random123](https://www.deshawresearch.com/downloads/download_random123.cgi)
-** The environment variable `RANDOM123_INC_DIR` must be set to the include directory for Random123.
+  * export RANDOM123_INC_DIR=/some/path/Random123-1.08/include
 * [Gnu Scientific Library](http://www.gnu.org/software/gsl/)
-** `gsl-config` must be found in your PATH
+  * gsl-config must be in your PATH
 * python 2X
 
 Only needed for testing:
 * [numdiff](https://www.nongnu.org/numdiff)
+  * numdiff must be in your PATH
 
 Configure:
 * Use a separate build directory
@@ -46,10 +47,10 @@ Configure:
 Optional components:
 
 * Additional libraries will be built if certain features are available in the build environment:
-** `lapack_wrap` will be built if [LAPACK](http://www.netlib.org/lapack) or equivalent is available.
-** `cdi_eospac` will be built if [LANL's libeospac](http://www.lanl.gov/org/padste/adtsc/theoretical/physics-chemistry-materials/sesame-database.php) is available.
-** `device` will be built if the CUDA toolkit is available and the build machine has a GPU.
-** `plot2D` will be built if the Grace headers and library are found.
+  * `lapack_wrap` will be built if [LAPACK](http://www.netlib.org/lapack) or equivalent is available.
+  * `cdi_eospac` will be built if [LANL's libeospac](http://www.lanl.gov/org/padste/adtsc/theoretical/physics-chemistry-materials/sesame-database.php) is available.
+  * `device` will be built if the CUDA toolkit is available and the build machine has a GPU.
+  * `plot2D` will be built if the Grace headers and library are found.
 
 Build:
 ```

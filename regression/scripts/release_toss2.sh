@@ -41,8 +41,10 @@ function intel15env()
   run "module purge"
   run "module load friendly-testing user_contrib"
   run "module load cmake/3.5.2 svn numdiff"
-  run "module load intel/15.0.5 openmpi/1.6.5"
-  run "module load random123 eospac/6.2.4"
+  run "module load intel/15.0.5 openmpi/1.6.5 mkl"
+  run "module load random123 eospac/6.2.4 ndi"
+  run "module load metis/5.1.0 parmetis/4.0.3 superlu-dist/4.3"
+  run "module load trilinos/12.6.1"
   run "module list"
 }
 
@@ -66,6 +68,7 @@ source $draco_script_dir/common.sh
 establish_permissions
 
 export source_prefix="/usr/projects/$package/$pdir"
+(cd /usr/projects/$package; rm latest; ln -s $pdir latest)
 scratchdir=`selectscratchdir`
 ppn=`showstats -n | grep 10 | head -n 1 | awk '{print $3}'`
 #build_pe=`npes_build`

@@ -54,7 +54,7 @@ The regression scripts are located in standardized directories
 relative to the regression directory ($regdir).
 
 |Machine    | Regression Directory |
-|ccscs[0-9] | /home/regress/ |
+|ccscs[0-9] | /scratch/regress/ |
 |HPC        | /usr/projects/jayenne/regress/ |
 
 |Directory         |Description |

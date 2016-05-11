@@ -57,7 +57,7 @@ run "module unload intel"
 run "module load gcc/4.8.2 intel/15.0.5.223"
 run "module load gsl/2.1"
 run "module load cmake/3.5.2 numdiff"
-#run "module load trilinos superlu-dist metis parmetis"
+run "module load trilinos/12.6.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
 run "module load ndi random123 eospac/6.2.4"
 run "module list"
 CC=`which cc`
