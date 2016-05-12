@@ -120,12 +120,15 @@ class DLL_PUBLIC_quadrature Ordinate_Set_Mapper
          */
         double operator()(const Ordinate& o2) const
         {
+            if (soft_equiv( o1.mu(), o2.mu() ) ) return 1.0;
+                
             const double& mu1(o1.mu());
             const double& mu2(o2.mu());
             const double eta1(sqrt(1.0-mu1*mu1));
             const double eta2(sqrt(1.0-mu2*mu2));
             double mu_btwn = mu1*mu2+eta1*eta2;
-            Ensure( -1.0 <= mu_btwn && mu_btwn <= 1.0);
+                     
+            Ensure( -1.0 <= mu_btwn && mu_btwn <= 1.0 );
             
             return mu_btwn;
         }

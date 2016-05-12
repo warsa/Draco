@@ -84,7 +84,7 @@ Ordinate_Set_Mapper::map_angle_into_ordinates(const Ordinate& ord_in,
     Require( os_.dimension() >= 2 ? // check norm == 1 in 2-D and 3-D
             soft_equiv(dot_product_functor_3D(ord_in)(ord_in), 1.0) : true );
     Require( os_.dimension() == 1 ? // check norm <= 1 in 1-D
-            dot_product_functor_3D(ord_in)(ord_in) <= 1.0 : true );
+            dot_product_functor_1D(ord_in)(ord_in) <= 1.0 : true );
 
     
     // Vector of all ordinates in the ordinate set
