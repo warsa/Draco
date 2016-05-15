@@ -17,6 +17,7 @@ ulimit -s unlimited
 
 if test "${VENDOR_DIR:-notset}" == "notset"; then
   export VENDOR_DIR=/usr/projects/draco/vendors
+  export PATH=$PATH:$VENDOR_DIR/bin
 fi
 
 # modules
@@ -50,7 +51,7 @@ if test -n "$MODULESHOME"; then
   else
     module use --append ${VENDOR_DIR}/Modules
     # setup for draco
-    module load emacs subversion
+    module load emacs subversion/1.9.3 git
     module load intel/15.0.4 impi/5.1.1.109 lapack/3.5.0 gsl/2.1
     module load random123 cmake/3.5.2 numdiff/5.8.1 eospac/6.2.4
     # additional setup for capsaicin
