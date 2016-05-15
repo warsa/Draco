@@ -36,11 +36,11 @@ enum Debug_Options
 
 //---------------------------------------------------------------------------------------//
 //! Parse debug options in uniform way
-unsigned parse_debug_options(rtt_parser::Token_Stream &);
+DLL_PUBLIC_parser unsigned parse_debug_options( rtt_parser::Token_Stream & );
 
 //---------------------------------------------------------------------------------------//
 //! Write debug options in a manner that can be parsed
-std::string debug_options_as_text(unsigned debug_options);
+DLL_PUBLIC_parser std::string debug_options_as_text( unsigned debug_options );
 
 } // namespace rtt_parser
 
