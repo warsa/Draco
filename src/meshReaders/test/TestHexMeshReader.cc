@@ -14,7 +14,7 @@
 #include <cmath>
 #include <sstream>
 #include "TestHexMeshReader.hh"
-#include "../Hex_Mesh_Reader.hh"
+#include "meshReaders/Hex_Mesh_Reader.hh"
 #include "mesh_element/Element_Definition.hh"
 #include "ds++/path.hh"
 #include "ds++/Release.hh"
@@ -40,16 +40,14 @@ void runTest(UnitTest &ut)
 
     // Read and test a 1D mesh.g
     string const inpPath = ut.getTestInputPath();
-    
+
     std::string filename = inpPath + "slab.mesh";
     std::cout << "Creating mesh from file: " << filename << std::endl;
     Hex_Mesh_Reader mesh_1D(filename);
     {
-        ostringstream message;
-        message 
-			<< "Read a 1D mesh without coreing in or firing an assertion." 
-            << std::endl;
-        PASSMSG( message.str() );
+        ostringstream msg;
+        msg << "Read a 1D mesh without coreing in or firing an assertion.\n";
+        PASSMSG( msg.str() );
     }
 
     rtt_meshReaders_test::check_mesh(ut, mesh_1D, "slab");
@@ -63,8 +61,8 @@ void runTest(UnitTest &ut)
     Hex_Mesh_Reader mesh_2D(filename);
     {
         ostringstream message;
-        message << 
-            "Read a 2D mesh without coreing in or firing an assertion." 
+        message <<
+            "Read a 2D mesh without coreing in or firing an assertion."
                 << std::endl;
         PASSMSG( message.str() );
     }
@@ -79,8 +77,8 @@ void runTest(UnitTest &ut)
     Hex_Mesh_Reader mesh_3D(filename);
     {
         ostringstream message;
-        message << 
-            "Read a 3D mesh without coreing in or firing an assertion." 
+        message <<
+            "Read a 3D mesh without coreing in or firing an assertion."
                 << std::endl;
         PASSMSG( message.str() );
     }
@@ -123,11 +121,11 @@ bool check_mesh(UnitTest &ut,
 
     bool all_passed(pass_nc && pass_cu && pass_ns && pass_ti && pass_gdn && pass_en
                     && pass_in && pass_es && pass_et && pass_ut);
-    
+
     if (!all_passed) FAILMSG("check_mesh failed");
-    
+
     return all_passed;
-    
+
 }
 
 bool check_nodes(UnitTest &ut,
@@ -136,29 +134,29 @@ bool check_nodes(UnitTest &ut,
     // Check node coords -- Need to do a "fuzzy" check here, these are doubles!
     bool pass_nc = true;
     std::vector<std::vector<double> > point_c = mesh.get_node_coords();
-    if (testid == "slab") 
-        pass_nc = 
-            compare_double(point_c[0][0]  , 0. ) && 
-            compare_double(point_c[10][0] , 2.5) && 
+    if (testid == "slab")
+        pass_nc =
+            compare_double(point_c[0][0]  , 0. ) &&
+            compare_double(point_c[10][0] , 2.5) &&
             compare_double(point_c[100][0], 25.);
     else if (testid == "quad")
-        pass_nc = 
-            compare_double(point_c[0][0]  , 0.)   && 
-            compare_double(point_c[10][0] , 12.5) && 
+        pass_nc =
+            compare_double(point_c[0][0]  , 0.)   &&
+            compare_double(point_c[10][0] , 12.5) &&
             compare_double(point_c[440][0], 25.)  &&
-            compare_double(point_c[0][1]  , 0.)   && 
-            compare_double(point_c[10][1] , 0.)   && 
+            compare_double(point_c[0][1]  , 0.)   &&
+            compare_double(point_c[10][1] , 0.)   &&
             compare_double(point_c[440][1], 25.);
-    else if (testid == "cube") 
+    else if (testid == "cube")
     {
         bool pass1 =
             compare_double(point_c[0][0]  , 0.)  &&
-            compare_double(point_c[0][1]  , 0.)  && 
+            compare_double(point_c[0][1]  , 0.)  &&
             compare_double(point_c[0][2]  , 0.)  ;
-        bool pass2=  
-            compare_double(point_c[10][0] , 0.8) && 
-            compare_double(point_c[10][1] , 0.2) && 
-            compare_double(point_c[10][2] , 0.)  ; 
+        bool pass2=
+            compare_double(point_c[10][0] , 0.8) &&
+            compare_double(point_c[10][1] , 0.2) &&
+            compare_double(point_c[10][2] , 0.)  ;
         bool pass3=
             compare_double(point_c[215][0], 1.) &&
             compare_double(point_c[215][1], 1.) &&
@@ -167,7 +165,7 @@ bool check_nodes(UnitTest &ut,
     }
     else
         Insist(false,"Unrecognized test id string!");
-    if (pass_nc) 
+    if (pass_nc)
     {
         ostringstream message;
         message << "Got node coordinates." << std::endl;
@@ -176,7 +174,7 @@ bool check_nodes(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in node coordinates." << std::endl;       
+        message << "Error in node coordinates." << std::endl;
         FAILMSG(message.str());
     }
     return pass_nc;
@@ -184,7 +182,7 @@ bool check_nodes(UnitTest &ut,
 
 bool check_node_units(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
-{     
+{
     // Check coordinate units.
     std::string punits = mesh.get_node_coord_units();
     bool pass_cu = punits == "unknown";
@@ -197,7 +195,7 @@ bool check_node_units(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in coordinate units." << std::endl;   
+        message << "Error in coordinate units." << std::endl;
         FAILMSG(message.str());
     }
     return pass_cu;
@@ -232,7 +230,7 @@ bool check_node_sets(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in node sets." << std::endl;   
+        message << "Error in node sets." << std::endl;
         FAILMSG(message.str());
     }
     return pass_ns;
@@ -253,7 +251,7 @@ bool check_title(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in title." << std::endl;   
+        message << "Error in title." << std::endl;
         FAILMSG(message.str());
     }
     return pass_ti;
@@ -296,13 +294,13 @@ bool check_element_nodes(UnitTest &ut,
     bool pass_en = true;
     std::vector<std::vector<int> > enodes = mesh.get_element_nodes();
     if (testid == "slab")
-        pass_en = 
+        pass_en =
             enodes[0][0]   == 0   && enodes[0][1]   == 1  &&
             enodes[10][0]  == 10  && enodes[10][1]  == 11 &&
             enodes[99][0]  == 99  && enodes[99][1]  == 100 &&
             enodes[100][0] == 0   && enodes[101][0] == 100 ;
     else if (testid == "quad")
-        pass_en = 
+        pass_en =
             enodes[0][0]   == 0   && enodes[0][1]   == 1   &&
             enodes[0][2]   == 22  && enodes[0][3]   == 21  &&
             enodes[10][0]  == 10  && enodes[10][1]  == 11  &&
@@ -311,13 +309,13 @@ bool check_element_nodes(UnitTest &ut,
             enodes[399][2] == 440 && enodes[399][3] == 439 &&
             enodes[400][0] == 421 && enodes[400][1] == 420 &&
             enodes[419][0] == 440 && enodes[419][1] == 439 &&
-            enodes[420][0] == 21  && enodes[420][1] == 0   && 
-            enodes[479][0] == 19  && enodes[479][1] == 20; 
-    else if (testid == "cube") 
+            enodes[420][0] == 21  && enodes[420][1] == 0   &&
+            enodes[479][0] == 19  && enodes[479][1] == 20;
+    else if (testid == "cube")
     {
         bool pass1 =
-            enodes[0][0]   == 0   && enodes[0][1]   == 1   && 
-            enodes[0][2]   == 7   && enodes[0][3]   == 6   && 
+            enodes[0][0]   == 0   && enodes[0][1]   == 1   &&
+            enodes[0][2]   == 7   && enodes[0][3]   == 6   &&
             enodes[0][4]   == 36  && enodes[0][5]   == 37  &&
             enodes[0][6]   == 43  && enodes[0][7]   == 42  ;
         bool pass2 =
@@ -342,12 +340,12 @@ bool check_element_nodes(UnitTest &ut,
         bool pass7 =
             enodes[274][0] == 168 && enodes[274][1] == 204 &&
             enodes[274][2] == 210 && enodes[274][3] == 174 ;
-        pass_en = pass1 && pass2 && pass3 && pass4 && pass5 && 
-                  pass6 && pass7; 
+        pass_en = pass1 && pass2 && pass3 && pass4 && pass5 &&
+                  pass6 && pass7;
     }
     else
         Insist(false,"Unrecognized test id string!");
-    if (pass_en) 
+    if (pass_en)
     {
         ostringstream message;
         message << "Got element nodes." << std::endl;
@@ -356,7 +354,7 @@ bool check_element_nodes(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in element nodes." << std::endl;   
+        message << "Error in element nodes." << std::endl;
         FAILMSG(message.str());
     }
     return pass_en;
@@ -364,7 +362,7 @@ bool check_element_nodes(UnitTest &ut,
 
 bool check_invariant(UnitTest &ut,
     const rtt_meshReaders::Hex_Mesh_Reader &mesh)
-{ 
+{
     // Check invariant.
     bool invr = mesh.invariant();
     if ( invr)
@@ -376,7 +374,7 @@ bool check_invariant(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Invariant not satisfied." << std::endl;   
+        message << "Invariant not satisfied." << std::endl;
         FAILMSG(message.str());
     }
     return invr;
@@ -388,7 +386,7 @@ bool check_element_sets(UnitTest &ut,
     typedef std::map<std::string, std::set<int> > mt;
     bool pass_es = true;
     const mt elmsets = mesh.get_element_sets();
-    if (testid == "slab") 
+    if (testid == "slab")
     {
         pass_es = pass_es && elmsets.size() == 4;
         pass_es = pass_es && check_map(elmsets,"Interior",0,100);
@@ -410,7 +408,7 @@ bool check_element_sets(UnitTest &ut,
                                        420,480);
 
     }
-    else if (testid == "cube") 
+    else if (testid == "cube")
     {
         bool pass0 = elmsets.size() == 10;
         bool pass1 = check_map(elmsets,"Interior",0,125);
@@ -437,7 +435,7 @@ bool check_element_sets(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in element sets." << std::endl;   
+        message << "Error in element sets." << std::endl;
         FAILMSG(message.str());
     }
 
@@ -453,7 +451,7 @@ bool check_element_types(UnitTest &ut,
     std::vector<rtt_mesh_element::Element_Definition::Element_Type>
         etypes = mesh.get_element_types();
     if (testid == "slab")
-    { 
+    {
         for (int i=0; i<100; ++i)
             pass_et = pass_et && ( etypes[i] == et::BAR_2 );
         for (int i=100; i<102; ++i)
@@ -466,7 +464,7 @@ bool check_element_types(UnitTest &ut,
         for (int i=400; i<480; ++i)
             etypes[i] = et::BAR_2;
     }
-    else if (testid == "cube") 
+    else if (testid == "cube")
     {
         for (int i=0; i<125; ++i)
             pass_et = pass_et && ( etypes[i] == et::HEXA_8 );
@@ -475,7 +473,7 @@ bool check_element_types(UnitTest &ut,
     }
     else
         Insist(false,"Unrecognized test id string!");
-    if (pass_et) 
+    if (pass_et)
     {
         ostringstream message;
         message << "Read Element Types." << std::endl;
@@ -484,7 +482,7 @@ bool check_element_types(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in Element Types." << std::endl;   
+        message << "Error in Element Types." << std::endl;
         FAILMSG(message.str());
     }
     return pass_et;
@@ -499,7 +497,7 @@ bool check_unique_element_types(UnitTest &ut,
     std::vector<rtt_mesh_element::Element_Definition::Element_Type>
         etypes = mesh.get_unique_element_types();
     if (testid == "slab")
-    { 
+    {
         pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2);
     }
     else if (testid == "quad")
@@ -507,15 +505,15 @@ bool check_unique_element_types(UnitTest &ut,
         pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
                               &&  etypes[2] == et::QUAD_4);
     }
-    else if (testid == "cube") 
+    else if (testid == "cube")
     {
         pass_et = pass_et && (etypes[0] == et::NODE && etypes[1] == et::BAR_2
-                              &&  etypes[2] == et::QUAD_4 
+                              &&  etypes[2] == et::QUAD_4
                               &&  etypes[3] == et::HEXA_8);
     }
     else
         Insist(false,"Unrecognized test id string!");
-    if (pass_et) 
+    if (pass_et)
     {
         ostringstream message;
         message << "Read Unique Element Types." << std::endl;
@@ -524,7 +522,7 @@ bool check_unique_element_types(UnitTest &ut,
     else
     {
         ostringstream message;
-        message << "Error in Unique Element Types." << std::endl;   
+        message << "Error in Unique Element Types." << std::endl;
         FAILMSG(message.str());
     }
     return pass_et;
@@ -537,8 +535,8 @@ bool compare_double(const double &lhs, const double &rhs)
 }
 
 bool check_map(const std::map<std::string, std::set<int> >
-               &elmsets, const std::string &name, 
-               const int &begin, const int &end) 
+               &elmsets, const std::string &name,
+               const int &begin, const int &end)
 {
     bool pass = true;
     typedef std::map<std::string, std::set<int> > mt;
@@ -546,7 +544,7 @@ bool check_map(const std::map<std::string, std::set<int> >
     if (iter != elmsets.end())
     {
         const std::set<int> &elem_subset = (*iter).second;
-        if (elem_subset.size() == static_cast<size_t>(end-begin)) 
+        if (elem_subset.size() == static_cast<size_t>(end-begin))
         {
             for (int i=begin; i<end; ++i)
             {
@@ -565,16 +563,12 @@ bool check_map(const std::map<std::string, std::set<int> >
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[])
 {
-    using  rtt_dsxx::release;
-
-    ScalarUnitTest ut( argc, argv, release );
+    ScalarUnitTest ut( argc, argv, rtt_dsxx::release );
     try { runTest(ut); }
     UT_EPILOG(ut);
-    
-}   
+}
 
 //---------------------------------------------------------------------------//
 // end of TestHexMeshReader.cc
