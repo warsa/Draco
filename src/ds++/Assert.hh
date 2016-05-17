@@ -371,6 +371,8 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 // notably instances of the stream classes, which provide an operator! but no direct
 // conversion to bool.
 
+// Also note that Bad_Case is always off in this selection.
+
 #if DBC & 1
 #define REQUIRE_ON
 #define Require(c) rtt_dsxx::check_cookies( !!(c), #c, __FILE__, __LINE__ )
@@ -382,7 +384,7 @@ DLL_PUBLIC_dsxx  std::string verbose_error( std::string const & message );
 #define CHECK_ON
 #define Check(c) rtt_dsxx::check_cookies( !!(c), #c, __FILE__, __LINE__ )
 #define Assert(c) rtt_dsxx::check_cookies( !!(c), #c, __FILE__, __LINE__ )
-#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__ )
+#define Bad_Case(m)
 #else
 #define Check(c)
 #define Assert(c)
