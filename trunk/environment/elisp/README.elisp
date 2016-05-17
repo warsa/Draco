@@ -1,0 +1,93 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> ELISP RELEASE elisp-3_0_0
+>>> Copyright (C) Los Alamos National Security, LLC.
+>>> All rights reserved.
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+The XEmacs elisp files associated with this package make up a
+development enviornment used by CCS-4. To use these files add the
+elisp directory to your XEmacs load path and then load the
+ccs4defaults library.
+
+In ~/.xemacs/init.el add the following elisp.  You should replace the
+path to the Draco environment (~/draco/environment) directory with the
+real path on your current machine.  The value shown below assumes that
+you have Draco checked out in your home space.  The directories should
+be listed in the order you want them searched for Draco elisp code.
+If you prefer to use the latest/greatest elisp code (instead of stable
+versions intalled at /codes/radtran) you should switch the order of
+the first two entries.
+
+;; Load Draco Elisp files
+
+(setq my-draco-env-dir "~/draco/environment/" )
+(load-library (concat my-draco-env-dir "/elisp/draco-setup"))
+
+It is recommended that you compile the .el files located at
+draco/environment/elisp for better XEmacs performance.  Simply run
+'make' from the draco/environment/elisp directory.  If you have a lot
+of elisp commands in your ~/.emacs.d directory, you may want to compile
+those files too.
+
+Useful Keybindings
+==============================
+
+* Get a list of current keybindings by issuing the command "C-h b".
+
+C-x C-f  Open new file or directory.  For example I type C-x C-f cap
+         [tab] [enter] to open a directory listing of my capsaicin
+         directory.
+
+C-x 5 f  Open new file in a new frame.
+C-x 2    Split the current frame into two buffers.
+C-x 1    Force the current buffer to occupy the entire frame
+         (unsplit).
+C-x 0    Remove the current buffer from being displayed in the current
+         frame.
+
+f1       Compile.  The compile command can be modified in the command
+         window before execution.  You can middle-click on compile
+         errors to visit the source.
+
+M-x shell Open a command window running $SHELL.
+C-h k <key sequence> Provides a description of the XEmacs command
+         bound to <key sequence>
+
+C-mouse1 Popup a buffer menu.
+C-mouse2 Popup a mode menu.
+
+M-g      goto line
+C-M-g    what line
+
+f7       save and kill buffer
+C-f7     kill buffer
+S-f7     delete this window
+
+C-S-f8   find companion file (.cc <-> .hh)
+f8       previous buffer
+
+f5       Insert function documentation block
+S-C-f5   Insert class documentation block
+C-Sh-f5  add-change-log-entry
+f6       Insert comment divider
+
+f9       SVN examine
+         ? - toggle hide unknown
+         a - add file
+         E - Ediff with revision
+         U - svn update
+         c - commit file
+         f - open file
+         g - refresh screen
+         C-u g - refresh & show potential updates.
+         C-h m - list of all key bindings.
+
+f11      grep find
+C-f11    speedbar
+
+See Config-key.el for more.
+
+Legend:
+
+"C-x h" should be typed as Control-x followed by h.
+"M-x C-h" should by typed Meta-x followed by Control-h.

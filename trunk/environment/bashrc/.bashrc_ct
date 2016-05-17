@@ -1,0 +1,85 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_ct - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In draco/environment/bashrc/.bashrc_ct"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is the vendor directory
+if test "${VENDOR_DIR}x" == "x"; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
+#
+# MODULES
+#
+
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
+
+# Use modules found in the draco directory
+# module use --append $VENDOR_DIR/Modules/hpc
+module load friendly-testing
+
+#export ucmf=$HOME/modulefiles
+#module use --append $ucmf/cielito
+module load user_contrib
+
+export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
+gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs svn gcc"
+
+# Cielo doesn't have module hsi yet (2015 Oct).
+case ${target} in
+  ci-fe* | ci-login* | ci-vizlogin*)
+    ;;
+  *)
+    export dracomodules="$dracomodules hsi"
+    ;;
+esac
+
+function dracoenv ()
+{
+  module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
+  module load PrgEnv-intel
+  module swap intel intel/15.0.5.223
+  for m in $dracomodules; do
+    module load $m
+  done
+  module unload xt-libsci
+}
+
+function rmdracoenv ()
+{
+  # unload in reverse order.
+  mods=( ${dracomodules} )
+  for ((i=${#mods[@]}-1; i>=0; i--)); do
+    loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+    if test $loaded = 1; then
+      module unload ${mods[$i]}
+    fi
+  done
+  module unload PrgEnv-intel
+  module load PrgEnv-pgi
+}
+
+export OMP_NUM_THREADS=8
+
+# Avoid run time messages of the form:
+# "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+# Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+export KMP_AFFINITY=none
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_ct
+##---------------------------------------------------------------------------##

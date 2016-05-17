@@ -1,0 +1,71 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_darwin_fe - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+#verbose=true
+if test -n "$verbose"; then
+  echo "In .bashrc_darwin_fe"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+if test "${VENDOR_DIR:-notset}" == "notset"; then
+  export VENDOR_DIR=/usr/projects/draco/vendors
+  export PATH=$PATH:$VENDOR_DIR/bin
+fi
+
+# modules
+if test -n "$MODULESHOME"; then
+
+  # Nodes that have MIC capability use different modules...
+  if test "$SLURM_JOB_PARTITION" = "knc-mic"; then
+    # mic_status=`/usr/sbin/micctrl -s | egrep mic[0-9]+ | wc -l`
+    case `uname -n` in
+      darwin-fe* ) mic_status=0 ;;
+      *)           mic_status=1 ;;
+    esac
+  else
+    mic_status=0
+  fi
+
+  if test ${mic_status} -gt 0; then
+    mic_status=1
+    # module unuse ${VENDOR_DIR}/Modules
+    # module use --append ${VENDOR_DIR}/Modules_knc
+
+    # # unload module that might conflict.
+    # module purge
+    # module load subversion
+    # # setup for draco
+    # module load intel/15.0.3 impi/5.1.1.109-mic
+    # module load random123 cmake/3.5.1 numdiff/5.8.1
+    # module load mkl/11.2 gsl/1.16
+    # # additional setup for capsaicin
+    # module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
+  else
+    module use --append ${VENDOR_DIR}/Modules
+    # setup for draco
+    module load emacs subversion/1.9.3 git
+    module load intel/15.0.4 impi/5.1.1.109 lapack/3.5.0 gsl/2.1
+    module load random123 cmake/3.5.2 numdiff/5.8.1 eospac/6.2.4
+    # additional setup for capsaicin
+    module load ndi metis parmetis superlu-dist trilinos
+  fi
+  export CXX=`which mpiicpc`
+  export CC=`which mpiicc`
+  export FC=`which mpiifort`
+  export MPIEXEC=`which mpirun`
+fi
+
+# Avoid printing trigraph chars to the screen (eg: ���)
+export LANG=en_US
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_darwin_fe
+##---------------------------------------------------------------------------##

@@ -1,0 +1,27 @@
+/*-----------------------------------*-C-*-----------------------------------*/
+/*!
+ * \file   device/config.h
+ * \author Gabriel M. Rockefeller 
+ * \date   Mon Jun 13 16:48:32 2011
+ * \brief  CPP defines necessary for the device package.
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC
+ */
+/*---------------------------------------------------------------------------*/
+/* $Id$ */
+/*---------------------------------------------------------------------------*/
+
+#ifndef device_config_h
+#define device_config_h
+
+#include <string>
+
+namespace rtt_device
+{
+    std::string const test_kernel_bindir("@TEST_KERNEL_BINDIR@");
+}
+
+#endif /* device_config_h */
+
+/*---------------------------------------------------------------------------*/
+/* end of device/config.h */
+/*---------------------------------------------------------------------------*/

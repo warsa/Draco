@@ -1,0 +1,33 @@
+# ----------------------------------------------------------------------
+# Cray systems (Cielo, Cielito, Trinitite, Trinity)
+#
+# - Copy this file as 'CMakeCache.txt' to your build directory before
+#   running cmake for the first time.
+# ----------------------------------------------------------------------
+
+# Don't assume Linux to avoid -rdynamic flag when linking...
+CMAKE_SYSTEM_NAME:STRING=Catamount
+
+# Keyword for creating new libraries (STATIC or SHARED).
+DRACO_LIBRARY_TYPE:STRING=STATIC
+
+# Use Cray provided compiler wrappers
+CMAKE_C_COMPILER:FILEPATH=cc
+CMAKE_CXX_COMPILER:FILEPATH=CC
+CMAKE_Fortran_COMPILER:FILEPATH=ftn
+
+# Help find vendor software
+MPIEXEC:FILEPATH=aprun
+MPIEXEC_NUMPROC_FLAG:STRING=-n
+
+MPI_C_LIBRARIES:FILEPATH=
+MPI_CXX_LIBRARIES:FILEPATH=
+MPI_Fortran_LIBRARIES:FILEPATH=
+
+MPI_C_INCLUDE_PATH:PATH=
+MPI_CXX_INCLUDE_PATH:PATH=
+MPI_Fortran_INCLUDE_PATH:PATH=
+
+MPI_CXX_COMPILER:PATH=
+MPI_C_COMPILER:PATH=
+MPI_Fortran_COMPILER:PATH=

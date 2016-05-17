@@ -1,0 +1,57 @@
+/*!
+
+\page vendors The Draco Vendors
+
+\par  Authors
+<a href="mailto:kgt@lanl.gov">Kelly Thompson</a>,
+<a href="mailto:jhchang@lanl.gov">Jae Chang</a>
+
+\par Executive Summary
+
+Some Draco packages use third party libraries.  This page provides some
+information about these third parties and how to obtian or build them.
+
+\par Introduction
+
+The vendors used by Draco and associated projects are maintained by the Draco
+core team.  Vendor software is typically built per platform (Roadrunner, CCS-2
+Linux64, etc.) and stored in either the \c /ccs/codes/radtran/vendors or \c
+/usr/projects/dracy/vendors directory.
+
+Draco uses the compilers and MPI files provided by the systems team for each
+platform.  Each MPI installation requires a custom installation to correctly
+use the high speed interconnect hardware.
+
+<hr><!-- ------------------------------------------------------------ -->
+
+<!-- See http://www.mcternan.me.uk/mscgen/ for command syntax -->
+
+\msc
+# Draco versions
+d521, d600, d610, d620;
+
+# Gap befor boxes
+|||;
+
+# Versions of draco on the same line
+d521 rbox d521 [label="Draco-5_21_0"],
+d600 rbox d600 [label="Draco-6_0_0"],
+d610 rbox d610 [label="Draco-6_1_0"],
+d620 rbox d620 [label="Draco-6_2_0"];
+
+# Vendor association with version
+
+# OpenMPI
+d521 abox d521 [label="OpenMPI-1.3.3", textbgcolour="#ff7f7f"],
+d600 abox d620 [label="OpenMPI-1.4.3", textbgcolour="#ff7f7f"];
+
+# GSL
+d521 abox d620 [label="GSL-1.14", textbgcolour="#7fff7f"];
+
+\endmsc
+
+*/
+//---------------------------------------------------------------------------//
+// end of vendors.dcc
+//---------------------------------------------------------------------------//
+

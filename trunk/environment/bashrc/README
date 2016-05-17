@@ -1,0 +1,15 @@
+README: Draco bash environment dotfiles
+================================================================================
+- Note: Most of the files in this directory are dotfiles.  You must 'ls -a' to
+  see them.
+
+--------------------------------------------------------------------------------
+Recommended use of these scripts:
+
+1. Create ~/.bash_profile based on the provided 'sample.bash_profile' template.
+   a. You MUST set the value of DRACO_ENV_DIR to point to your draco location.
+   b. You can add your own prompt, aliases, functions and modules to the
+      INTERACTIVE section.  Some of these are provided in the
+      sample.bash_profile, but are commented out.
+2. Create ~/.bashrc based on the provided 'sample.bashrc' template.
+   a. You can add your own customizations for non-login shells.

@@ -1,0 +1,81 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_tt - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_tt"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is the vendor directory
+if test "${VENDOR_DIR}x" == "x"; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+   fi
+fi
+
+# If LESS is set, is should include '-R' so that git diff's color
+# displays correctly.
+if test -n "${LESS}"; then
+  if test `echo $LESS | grep R | wc -l` = 0; then
+    export LESS="${LESS} -R"
+  fi
+fi
+
+#
+# MODULES
+#
+
+# Use modules found in the draco directory
+module use --append $VENDOR_DIR/Modules/hpc
+module load friendly-testing user_contrib
+
+export dracomodules="python/2.7-anaconda-2.1.0 totalview hsi emacs gsl \
+eospac/6.2.4 lapack trilinos SuperLU_DIST ParMetis random123 \
+cmake/3.4.0 numdiff ndi svn"
+
+function dracoenv ()
+{
+  module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
+  module load PrgEnv-intel
+  module unload intel
+  module load gcc/4.8.1
+  module load intel/15.0.5.223
+  for m in $dracomodules; do
+    module load $m
+  done
+  module unload xt-libsci
+}
+
+function rmdracoenv ()
+{
+  # unload in reverse order.
+  mods=( ${dracomodules} )
+  for ((i=${#mods[@]}-1; i>=0; i--)); do
+    loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+    if test $loaded = 1; then
+      module unload ${mods[$i]}
+    fi
+  done
+  module unload gcc
+  module unload PrgEnv-intel
+  module load PrgEnv-pgi
+}
+
+export OMP_NUM_THREADS=16
+
+# Avoid run time messages of the form:
+# "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
+# Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
+# export KMP_AFFINITY=none
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_tt
+##---------------------------------------------------------------------------##

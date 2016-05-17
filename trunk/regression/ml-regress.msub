@@ -1,0 +1,261 @@
+#!/bin/bash -l
+
+#MSUB -l walltime=08:00:00
+#MSUB -l nodes=1:ppn=16
+#MSUB -j oe
+
+#----------------------------------------------------------------------#
+# The script starts here
+#----------------------------------------------------------------------#
+
+# Sanity Check
+# ----------------------------------------
+if test "${subproj}x" == "x"; then
+   echo "Fatal Error, subproj not found in environment."
+   exit 1
+fi
+if test "${regdir}x" == "x"; then
+   echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${build_type}x" == "x"; then
+   echo "Fatal Error, build_type not found in environment."
+   exit 1
+fi
+if test "${logdir}x" == "x"; then
+   echo "Fatal Error, logdir not found in environment."
+   exit 1
+fi
+
+# Environment setup
+# ----------------------------------------
+umask 0002
+ulimit -a
+
+unset http_proxy
+unset HTTP_PROXY
+export VENDOR_DIR=/usr/projects/draco/vendors
+moniker=`whoami`
+
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+run () {
+    echo $1
+    if ! [ $dry_run ]; then eval $1; fi
+}
+
+machine=`uname -n`
+case $machine in
+ml[0-9][0-9][0-9].localdomain)
+    ctestparts=Configure,Build,Test
+    # Force new log file (vs appending)
+    echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
+    ;;
+ml-fey*)
+    ctestparts=Submit ;;
+esac
+
+echo "==========================================================================="
+echo "Moonlight regression: ${ctestparts} from ${machine}."
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+echo "==========================================================================="
+
+run "printenv"
+run "module list"
+
+# Modules
+# ----------------------------------------
+result=`fn_exists module`
+#echo "result = $result"
+if test $result -eq 0; then
+    echo 'module function is defined'
+else
+    echo 'module function does not exist. defining a local function ...'
+    run "source /usr/share/Modules/init/bash"
+fi
+
+# Clear any loaded modules as these are invalid when staring a new shell.
+#run "module purge &> /dev/null"
+run "module list"
+unset _LMFILES_
+run "module load user_contrib"
+run "module load friendly-testing"
+run "module load cmake/3.5.2"
+run "module load intel/15.0.5"
+run "module load openmpi/1.6.5"
+run "module load mkl"
+run "module load trilinos/12.6.1"
+run "module load superlu-dist"
+run "module load metis"
+run "module load parmetis"
+run "module load ndi"
+run "module load numdiff"
+run "module load svn"
+run "module load random123"
+run "module load eospac/6.2.4"
+run "module load grace"
+comp=`basename $CXX`
+export OMP_NUM_THREADS=7
+
+case $extra_params in
+"")
+    # no-op
+    ;;
+cuda)
+    run "module load cudatoolkit/5.0"
+    comp="intel-cuda"
+    ;;
+fulldiagnostics)
+    comp="intel-fulldiagnostics"
+    ;;
+nr)
+    comp="intel-nr"
+    ;;
+perfbench)
+    comp="intel-perfbench"
+    ;;
+pgi)
+    run "module list"
+    # echo "LOADEDMODULES = $LOADEDMODULES"
+    # echo "_LMFILES_ = ${_LMFILES_}"
+    run "module unload eospac ndi parmetis metis"
+    run "module unload superlu-dist trilinos"
+    run "module unload mkl openmpi intel"
+    run "module list"
+    run "module load pgi/15.10 openmpi"
+    export TMPDIR=/usr/projects/jayenne/regress/tmp
+    comp="pgCC"
+    CXX=`which pgCC`
+    CC=`which pgcc`
+    FC=`which pgf90`
+    ;;
+*)
+    echo "FATAL ERROR"
+    echo "Extra parameter = ${extra_param} requested but is unknown to"
+    echo "the regression system (edit ml-regress.msub)."
+    exit 1
+    ;;
+esac
+run "module list"
+
+# ----------------------------------------
+# Run the CTest script:
+# ----------------------------------------
+# This script will take the following build steps:
+# 1. cvs update
+# 2. run cmake to build Makefiles
+# 3. run make to build libraries and tests
+# 4. Run the unit tests
+# 5. Post the results to rtt.lanl.gov/cdash
+#
+# Options are:
+# Regression type: Experimental (default), Nightly, Continuous
+# Build type     : Release, Debug
+
+if test "${dashboard_type}x" = "x"; then
+   dashboard_type=Experimental
+fi
+if test "${base_dir}x" = "x"; then
+   # Keep build and target dirs out of /usr/projects locations to
+   # prevent the .snapshots directory from filling up.
+   # scratch_dir=/scratch/${moniker}/cdash/ml
+   scratch_dir=/lustre/scratch3/yellow/kellyt/cdash/ml
+   mkdir -p $scratch_dir
+   if ! test -d ${scratch_dir}; then
+      echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
+      exit 1
+   fi
+   if test "${regress_mode}" = "off"; then
+      base_dir=${scratch_dir}
+   else
+      base_dir=/usr/projects/jayenne/regress/cdash/ml
+   fi
+fi
+
+echo " "
+echo "ml-regress.msub: dashboard_type = $dashboard_type"
+echo "ml-regress.msub: base_dir       = $base_dir"
+echo "ml-regress.msub: build_type     = $build_type"
+echo "ml-regress.msub: comp           = $comp"
+echo "ml-regress.msub: machine        = $machine"
+echo "ml-regress.msub: subproj        = $subproj"
+echo "ml-regress.msub: regdir         = $regdir"
+
+#----------------------------------------------------------------------#
+# CTest
+#----------------------------------------------------------------------#
+
+if test "${subproj}" == draco; then
+    script_dir=${regdir}/draco/regression
+    script_name=Draco_Linux64.cmake
+elif test "${subproj}" == jayenne; then
+    script_dir=${regdir}/jayenne/regression
+    script_name=Jayenne_Linux64.cmake
+elif test "${subproj}" == capsaicin; then
+    script_dir=${regdir}/capsaicin/scripts
+    script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == asterisk; then
+    script_dir=${regdir}/asterisk/regression
+    script_name=Asterisk_Linux64.cmake
+fi
+
+if test "${regress_mode}" = "off"; then
+    export buildname_append="-${USER}"
+fi
+
+export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+export scratch_dir=${scratch_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
+
+echo "ml-regress.msub: work_dir       = ${work_dir}"
+echo "ml-regress.msub: scratch_dir    = ${scratch_dir}"
+echo " "
+setup_dirs=`echo $ctestparts | grep Configure`
+if ! test "${setup_dirs}x" = "x"; then
+   if ! test -d ${work_dir}/source; then
+      run "/usr/bin/install -d ${work_dir}/source"
+   fi
+   # See notes above where scratch_dir is set concerning why these
+   # are soft links.
+   if ! test -d ${scratch_dir}/build; then
+      run "/usr/bin/install -d ${scratch_dir}/build"
+   fi
+   if ! test -d ${work_dir}/build; then
+      run "ln -s ${scratch_dir}/build ${work_dir}/build"
+   fi
+   if ! test -d ${scratch_dir}/target; then
+      run "/usr/bin/install -d ${scratch_dir}/target"
+   fi
+   if ! test -d ${work_dir}/target; then
+      run "ln -s ${scratch_dir}/target ${work_dir}/target"
+   fi
+
+   # clean the installation directory to remove any files that might
+   # no longer be generated.
+   if test -d ${work_dir}/target/lib; then
+       run "rm -rf ${work_dir}/target/*"
+   fi
+   if test -f ${work_dir}/build/CMakeCache.txt; then
+       run "rm -rf ${work_dir}/build/*"
+   fi
+fi
+
+# Environment
+echo " "
+echo "--------------------(environment)------------------------------"
+set
+echo "--------------------(end environment)--------------------------"
+
+echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+echo "All done."
+
+##---------------------------------------------------------------------------##
+## End of script
+##---------------------------------------------------------------------------##

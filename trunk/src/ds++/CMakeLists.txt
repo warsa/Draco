@@ -1,0 +1,130 @@
+#-----------------------------*-cmake-*----------------------------------------#
+# file   ds++/CMakeLists.txt
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2010 Sep 24
+# brief  Generate build project files for ds++.
+# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+# $Id$
+#------------------------------------------------------------------------------#
+cmake_minimum_required(VERSION 3.0.0)
+project( dsxx CXX )
+
+# ---------------------------------------------------------------------------- #
+# Generate config.h (only occurs when cmake is run)
+# ---------------------------------------------------------------------------- #
+
+# Review config/platform_checks.cmake for many of these settings.
+
+# Choose platforms for fpe_trap
+if( ${CMAKE_SYSTEM} MATCHES "OSF" )
+   set( FPETRAP_OSF_ALPHA 1 )
+elseif( ${CMAKE_SYSTEM} MATCHES "Linux" OR ${CMAKE_SYSTEM} MATCHES "Catamount" )
+   # If the OS is Linux, fpe_trap should work as long as
+   # feenableexscept is available.  That is, it should work for both
+   # GNU and Intel compiler suites.
+   #if( CMAKE_COMPILER_IS_GNUCXX )
+      set( FPETRAP_LINUX_X86 1 )
+   #endif()
+   # Turn fpe_trap off for PGI compilers.
+   if( ${CMAKE_C_COMPILER} MATCHES pgcc )
+      set( FPETRAP_LINUX_X86 0 )
+   endif()
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+   if( ${_CMAKE_OSX_MACHINE} MATCHES "ppc" )
+      set( FPETRAP_DARWIN_PPC 1 )
+   else()
+      set( FPETRAP_DARWIN_INTEL 1 )
+   endif()
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+   set( FPETRAP_WINDOWS_X86 1 )
+endif()
+
+# Choose settings for DRACO_DIAGNOSTICS
+# Uses a bit mask
+# 001 - basic print messages (negligible performance hit)
+# 010 - detailed print messages (some performance hit or intrusive
+#       output)
+# 100 - additional computation required for diagnostic messages
+#       (including fpe_trap)
+set( DRACO_DIAGNOSTICS "0"
+   CACHE STRING "Diagnostics verbosity level (0-7). Default is 0." )
+# provide a constrained drop down menu for cmake-gui
+set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
+
+# Provide an enum from CMAKE_CXX_COMPILER_VERSION
+string( REPLACE "." "" CMAKE_CXX_COMPILER_VERSION_ENUM
+  ${CMAKE_CXX_COMPILER_VERSION} )
+
+# Create ds++/config.h
+configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
+
+# Generate the dll_declspec.h file that defines DLL_PUBLIC_<pkg> CPP macros.
+include(generate_dll_declspec)
+generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;meshReaders;mesh_element;min;norms;ode;parser;quadrature;quadrature_test;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
+
+# ---------------------------------------------------------------------------- #
+# Source files
+# ---------------------------------------------------------------------------- #
+
+file( GLOB template_implementations *.t.hh *.i.hh )
+file( GLOB sources *.cc )
+file( GLOB explicit_instantiations *_pt.cc )
+file( GLOB headers *.hh )
+list( APPEND headers
+   ${PROJECT_BINARY_DIR}/ds++/config.h
+   ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
+list( REMOVE_ITEM headers ${template_implementations} )
+
+# Make the header files available in the IDE.
+if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+   list( APPEND sources ${headers} ${template_implementations} )
+endif()
+
+# ---------------------------------------------------------------------------- #
+# Directories to search for include directives
+# ---------------------------------------------------------------------------- #
+
+include_directories(
+   ${PROJECT_SOURCE_DIR}   # sources
+   ${PROJECT_BINARY_DIR} ) # config.h
+
+# ---------------------------------------------------------------------------- #
+# Build package library
+# ---------------------------------------------------------------------------- #
+
+add_component_library(
+   TARGET       Lib_dsxx
+   LIBRARY_NAME ds++
+   SOURCES      "${sources}"
+   )
+target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
+
+# This should turn on C++11 options for Lib_dsxx, but CMake doesn't
+# know how to do this for Intel as of cmake/3.2.
+# target_compile_features( Lib_dsxx PUBLIC cxx_auto_type )
+
+# ---------------------------------------------------------------------------- #
+# Installation instructions
+# ---------------------------------------------------------------------------- #
+
+install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/ds++ )
+
+# ---------------------------------------------------------------------------- #
+# Unit tests
+# ---------------------------------------------------------------------------- #
+
+if( BUILD_TESTING )
+   add_subdirectory( test )
+endif()
+if( WIN32 )
+  add_subdirectory( bin )
+endif()
+
+# ---------------------------------------------------------------------------- #
+# Autodoc
+# ---------------------------------------------------------------------------- #
+
+process_autodoc_pages()
