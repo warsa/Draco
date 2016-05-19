@@ -95,6 +95,7 @@ auto-mode-alist."
 	(local-set-key [(f5)] 'draco-makefile-divider)
 	(local-set-key [(f6)] 'draco-makefile-comment-divider)
 	(turn-on-draco-mode)
+        (set-fill-column draco-code-comment-width)
 	(turn-on-auto-fill))
       (add-hook 'python-mode-hook 'draco-python-mode-hook)))
 
