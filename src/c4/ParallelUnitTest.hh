@@ -39,13 +39,13 @@ namespace rtt_c4
  * \code
  int main(int argc, char *argv[])
  {
- rtt_c4::ParallelUnitTest ut(argc, argv, release);
- try
- {
- tstOne(ut);
- tstTwo(ut);
- }
- UT_EPILOG(ut);
+   rtt_c4::ParallelUnitTest ut(argc, argv, release);
+   try
+   {
+     tstOne(ut);
+     tstTwo(ut);
+   }
+   UT_EPILOG(ut);
  }
  * \endcode
  *
