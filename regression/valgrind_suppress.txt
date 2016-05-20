@@ -348,6 +348,19 @@
    ...
 }
 
+{
+
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ompi_comm_set_nb
+   fun:ompi_comm_set
+   fun:ompi_comm_dup_with_info
+   fun:PMPI_Comm_dup
+   ...
+   fun:main
+}
+
 ## ---------------------------------------------------------------------- ##
 ## Added with upgrade to valgrind 3.6.1
 ## ---------------------------------------------------------------------- ##
