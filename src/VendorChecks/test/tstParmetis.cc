@@ -68,10 +68,6 @@ void test_parmetis( rtt_c4::ParallelUnitTest & ut )
     // partitioning is written to this parameter.
     idx_t edgecut(0);
 
-    // For AdaptiveRepart
-    // real_t itr(1000.0);
-    // idx_t *vsize=NULL;
-
     MPI_Comm_dup(MPI_COMM_WORLD, &rtt_c4::communicator);
 
     // This is an array of size equal to the number of locally-stored
@@ -112,7 +108,6 @@ void test_parmetis( rtt_c4::ParallelUnitTest & ut )
         adjncy[10] = 8;
         adjncy[11] = 3;
         adjncy[12] = 9;
-
     }
     else if ( MPI_PROC_ID == 1 )
     {
