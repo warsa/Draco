@@ -91,6 +91,8 @@ if not exist %work_dir%\build mkdir build
 if not exist %work_dir%\source mkdir source
 if not exist %work_dir%\target mkdir target
 
+rem goto :jayennerelease
+
 rem run the ctest script
 
 echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
@@ -137,6 +139,8 @@ rem if exist %work_dir%\build rmdir /s /q build
 if not exist %work_dir%\build mkdir build
 if not exist %work_dir%\source mkdir source
 if not exist %work_dir%\target mkdir target
+
+rem goto :jayennedebug
 
 rem run the ctest script
 
