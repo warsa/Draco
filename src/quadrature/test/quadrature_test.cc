@@ -921,6 +921,81 @@ void quadrature_test(UnitTest &ut,
 
 } // end namespace rtt_quadrature
 
+//----------------------------------------------------------------------------//
+// This test gets called FROM Fortran to ensure that we can successfully create
+// and assign data into a "quadrature_data" type. 
+// See ftest/tstquadrature_interfaces.f90
+//----------------------------------------------------------------------------//
+extern "C" DLL_PUBLIC_quadrature_test
+void rtt_test_quadrature_interfaces(const quadrature_data& quad,
+                                    int&  error_code)
+{
+    using std::cout;
+    using std::endl;
+    using rtt_dsxx::soft_equiv;
+
+    cout << "In C++, checking validity of quadrature_data..." << endl;
+    check_quadrature_validity(quad);
+    cout << "If we got here, it should be valid." << endl << endl;
+
+    cout << "The quadrature_data type has dimension " << quad.dimension << endl
+         << "The type is \t" << quad.type << endl
+         << "The order is \t" << quad.order << endl
+         << "The geometry is\t" << quad.geometry  << endl
+         << "The first ordinate is " 
+         << quad.mu[0] << "\t" 
+         << quad.eta[0] << "\t" 
+         << quad.xi[0] << "\t" 
+         << quad.weights[0] << endl << endl;
+     
+    // Error checking      
+    error_code = 0;
+
+    if (quad.dimension != 2) 
+    {
+       error_code = 1;
+       return;
+    }
+    else if( quad.type != 1 )
+    {
+        error_code = 2;
+        return;
+    }
+    else if( quad.order != 4 )
+    {
+        error_code = 3;
+        return;
+    }
+    else if( quad.geometry != 0 )
+    {
+        error_code = 4;
+        return;
+    }
+
+    double tcl_mu[12]={-0.3594747925, 0.3594747925, -0.8688461434, 
+                       -0.3598878562, 0.3598878562, 0.8688461434, 
+                       -0.8688461434, -0.3598878562, 0.3598878562, 
+                        0.8688461434, -0.3594747925, 0.3594747925};
+    double tcl_eta[12]={-0.8611363116, -0.8611363116, -0.3399810436,
+                        -0.3399810436, -0.3399810436, -0.3399810436, 
+                         0.3399810436, 0.3399810436, 0.3399810436, 
+                         0.3399810436, 0.8611363116, 0.8611363116};
+
+    double tcl_wt[12]={0.08696371128, 0.08696371128, 0.08151814436,  
+                       0.08151814436, 0.08151814436,  0.08151814436, 
+                       0.08151814436, 0.08151814436, 0.08151814436, 
+                       0.08151814436, 0.08696371128, 0.08696371128};
+
+    for (size_t i=0; i<12; ++i)
+    {
+       if (!soft_equiv(tcl_mu[i], quad.mu[i], 1e-8)) error_code = 5;
+       if (!soft_equiv(tcl_eta[i], quad.eta[i], 1e-8)) error_code = 6;
+       if (!soft_equiv(tcl_wt[i], quad.weights[i], 1e-8)) error_code = 7;
+    }
+
+    return;
+}
+
 //---------------------------------------------------------------------------//
 // end of quadrature/quadrature_test.cc
 //---------------------------------------------------------------------------//

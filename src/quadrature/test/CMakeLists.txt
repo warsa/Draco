@@ -46,10 +46,26 @@ add_component_library(
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
+#Remove the Fortran test
+list(REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc)
+
 add_scalar_tests( 
   SOURCES "${test_sources}" 
   DEPS    Lib_quadrature_test
   )
+
+# Add the Fortran test and link against the f90 library from ftest
+if( HAVE_Fortran )
+  set( ftest_sources
+    ${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc
+    )
+  add_scalar_tests(
+    SOURCES "${ftest_sources}"
+    DEPS    "Lib_quadrature_test;Lib_quadrature_ftest" )
+
+endif()
+
+
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)

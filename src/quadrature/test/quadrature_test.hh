@@ -15,6 +15,7 @@
 
 #include "ds++/UnitTest.hh"
 #include "quadrature/Quadrature.hh"
+#include "quadrature/Quadrature_Interface.hh"
 
 namespace rtt_quadrature
 {
@@ -30,6 +31,13 @@ void quadrature_integration_test(UnitTest &ut,
                                  Quadrature &quadrature);
 
 } // end namespace rtt_quadrature
+
+
+// extern "C"
+// DLL_PUBLIC_quadrature_test
+// void rtt_test_quadrature_interfaces(const quadrature_data& quad,
+//                                     int&  error_code);
+// 
 
 #endif // quadrature_quadrature_test_hh
 
