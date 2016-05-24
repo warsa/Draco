@@ -286,16 +286,6 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	 (
           ; Tab indent == 4 spaces
 	  (c-basic-offset . 4)
-          ; K&R? Blugh. Not usin' *that*.
-	  ;(c-recognize-knr-p . nil)
-          ; Do nil for lone comments
-	  ;(c-comment-only-line-offset . (0 . 0))
-          ; We don't use *-prefixed comments
-  	  ;(c-block-comment-prefix . "")
-          ; Even with no code before them
-	  ;(c-indent-comments-syntactically-p . t)
-          ; Make function calls look nice
-	  ;(c-cleanup-list . (space-before-funcall compact-empty-funcall))
           ; Snap #s to the first column
 	  (c-electric-pound-behavior . 'alignleft)
           ; Regexp to find the starting brace of a block
@@ -311,38 +301,20 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 			      (defun-open  . 0)
 			      (do-while-closure  . 0)
 			      (else-clause       . 0)
-			      ;;(extern-lang-close . +)
-			      ;;(extern-lang-open  . +)
-			      (extern-lang-close . 0)
-			      (extern-lang-open  . 0)
+			      ;(extern-lang-close . 0)
+			      ;(extern-lang-open  . 0)
+                              (inextern-lang     . 0)
 			      (inline-close      . 0)
 			      (inline-open       . 0)
 			      (innamespace       . 0)
 			      (statement-case-intro . +)
 			      (statement-cont    . c-lineup-math)
 			      (substatement-open . 0)
-			      )))))
-;      (defun draco-clean-up-common-hook ()
-;	"Clean up the common hook.
-
-;Removes the other style setup functions from the hook, so that they
-;only get run once, rather than repeatedly."
-;	(remove-hook 'c-mode-common-hook 'draco-setup-c-mode)
-;	(remove-hook 'c-mode-common-hook 'draco-clean-up-common-hook))
-
-;      (defun draco-setup-this-c-mode-buffer ()
-;	"Set up this buffer for C mode.
-;Things (like auto-hungry-state setting and style setting) that should not
-;be removed from the `c-mode-common-hook' after the first call by
-;`draco-clean-up-c-common-hook', but which should rather take effect
-;separately for each buffer."
-;	(if (gawd-personal-code-p)
-;	    (progn
-;	      (c-make-styles-buffer-local t) ; Don't let this interfere with user styles
-;	      (c-toggle-hungry-state 1)
-;	      (c-set-style "draco"))))
-
-
+			      )
+                           )
+          )
+         )
+        )
 
       (if draco-colorize-modeline
 	  (add-hook 'c++-mode-hook
@@ -498,7 +470,9 @@ auto-mode-alist."
       (local-set-key [(control f6)] 'draco-f90-insert-document)
       (local-set-key [(f6)]         'draco-f90-comment-divider)
       (draco-mode-update-menu (draco-menu-insert-comments-f90))
-      (set-fill-column draco-code-comment-width))
+      (set-fill-column draco-code-comment-width)
+      (require 'fill-column-indicator)
+      (fci-mode))
      ;; let .F denone Fortran and not freeze files
     (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'draco-f90-mode-hook)
