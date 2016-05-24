@@ -251,7 +251,90 @@
    ...
    fun:mpi_init
 }
+{
 
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:strdup
+   fun:hwloc__add_info
+   fun:hwloc__get_dmi_id_one_info.isra.8
+   fun:hwloc__get_dmi_id_info
+   fun:hwloc_look_linuxfs
+   fun:hwloc_discover
+   fun:hwloc_topology_load
+   fun:opal_hwloc_base_get_topology
+   fun:rte_init
+   fun:orte_init
+}
+{
+   <tstparmetis/compdup>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ompi_comm_set_nb
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:store
+   fun:opal_db_base_store
+   fun:ompi_modex_send
+   fun:mca_btl_tcp_component_init
+   fun:mca_btl_base_select
+   fun:mca_bml_r2_component_init
+   fun:mca_bml_base_init
+   fun:mca_pml_ob1_component_init
+   fun:mca_pml_base_select
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:store
+   fun:opal_db_base_store
+   fun:ompi_modex_send
+   fun:mca_btl_base_vader_modex_send
+   fun:mca_btl_vader_component_init
+   fun:mca_btl_base_select
+   fun:mca_bml_r2_component_init
+   fun:mca_bml_base_init
+   fun:mca_pml_ob1_component_init
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:fetch
+   fun:opal_db_base_fetch
+   fun:ompi_rte_db_fetch
+   ...
+   fun:mca_pml_ob1_add_procs
+   fun:ompi_mpi_init
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:opal_dss_unpack_value
+   fun:opal_dss_unpack_buffer
+   fun:opal_dss_unpack
+   fun:orte_grpcomm_base_store_modex
+   fun:app_recv
+   fun:orte_rml_base_process_msg
+   fun:event_process_active_single_queue
+   fun:event_process_active
+   fun:opal_libevent2021_event_base_loop
+   fun:orte_progress_thread_engine
+   fun:start_thread
+}
 #--------------------------------------------------------
 ## Python suppressions
 {
@@ -353,12 +436,9 @@
    Memcheck:Leak
    match-leak-kinds: definite
    fun:malloc
-   fun:ompi_comm_set_nb
-   fun:ompi_comm_set
-   fun:ompi_comm_dup_with_info
+   ...
    fun:PMPI_Comm_dup
    ...
-   fun:main
 }
 
 ## ---------------------------------------------------------------------- ##
