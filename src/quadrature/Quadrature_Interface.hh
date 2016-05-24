@@ -8,16 +8,22 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id: Arguments.hh 7090 2015-01-07 17:01:48Z kellyt $
-//---------------------------------------------------------------------------//
-
 #ifndef quadrature_Quadrature_Interface_hh
 #define quadrature_Quadrature_Interface_hh
 
+// indirectly defines the CPP macro DLL_PUBLIC_quadrature
 #include "ds++/Assert.hh"
 
 extern "C"
 {
+
+//===========================================================================//
+/*!
+ * \class quadrature_data
+ * \brief Flattened quadrature data used for communicating with Fortran
+ *        routines.
+ */
+//===========================================================================//
 
 struct quadrature_data
 {
@@ -31,14 +37,24 @@ struct quadrature_data
     double *xi;
     double *weights;
 
+    //! Default constructor for quadrature_data
     DLL_PUBLIC_quadrature
-    quadrature_data();
-
+    quadrature_data()
+        : dimension(0),
+          type(0),
+          order(0),
+          azimuthal_order(0),
+          geometry(0),
+          mu(NULL),
+          eta(NULL),
+          xi(NULL),
+          weights(NULL)
+    { /* empty */ }
 };
 
 //! An extern "C" interface to default constructor
 DLL_PUBLIC_quadrature
-void init_quadrature(quadrature_data&);
+void init_quadrature(quadrature_data& quad);
 
 //! Get quadrature data (eg. wts and cosines)
 DLL_PUBLIC_quadrature
@@ -47,11 +63,11 @@ void get_quadrature(quadrature_data&);
 //! Ensure quadrature data is meaningful
 DLL_PUBLIC_quadrature
 void check_quadrature_validity(const quadrature_data&);
-    
-}
+
+} // end extern "C" block
 
 #endif // quadrature_Quadrature_Interface_hh
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of quadrature/Quadrature_Interface.hh
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

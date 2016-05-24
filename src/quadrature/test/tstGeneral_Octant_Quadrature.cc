@@ -6,8 +6,6 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC
  */
 //---------------------------------------------------------------------------//
-// $Id: template_test.cc 5830 2011-05-05 19:43:43Z kellyt $
-//---------------------------------------------------------------------------//
 
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Release.hh"

@@ -6,18 +6,16 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 project( quadrature_test CXX )
 
 # ---------------------------------------------------------------------------- #
 # Source files
 # ---------------------------------------------------------------------------- #
 
-set( test_lib_sources 
-	${PROJECT_SOURCE_DIR}/quadrature_test.cc 
-	${PROJECT_SOURCE_DIR}/quadrature_test.hh
-)
+set( test_lib_sources
+  ${PROJECT_SOURCE_DIR}/quadrature_test.cc
+  ${PROJECT_SOURCE_DIR}/quadrature_test.hh
+  )
 file( GLOB test_sources *.cc )
 list( REMOVE_ITEM test_sources ${test_lib_sources} )
 file( GLOB input_files *.inp )
@@ -25,7 +23,7 @@ file( GLOB input_files *.inp )
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-include_directories( 
+include_directories(
    ${PROJECT_SOURCE_DIR}      # headers for tests
    ${PROJECT_SOURCE_DIR}/..   # headers for package
    ${PROJECT_BINARY_DIR}/..   # config.h
@@ -35,37 +33,33 @@ include_directories(
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
-add_component_library( 
+add_component_library(
    TARGET       Lib_quadrature_test
    TARGET_DEPS  Lib_quadrature
-   LIBRARY_NAME quadrature_test 
-   SOURCES      "${test_lib_sources}" 
+   LIBRARY_NAME quadrature_test
+   SOURCES      "${test_lib_sources}"
    PREFIX       Draco )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
-#Remove the Fortran test
-list(REMOVE_ITEM test_sources ${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc)
+# Remove the Fortran test from the globbed list. This test requires special
+# handling.
+list(REMOVE_ITEM test_sources
+  ${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc)
 
-add_scalar_tests( 
-  SOURCES "${test_sources}" 
+add_scalar_tests(
+  SOURCES "${test_sources}"
   DEPS    Lib_quadrature_test
   )
 
 # Add the Fortran test and link against the f90 library from ftest
 if( HAVE_Fortran )
-  set( ftest_sources
-    ${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc
-    )
   add_scalar_tests(
-    SOURCES "${ftest_sources}"
-    DEPS    "Lib_quadrature_test;Lib_quadrature_ftest" )
-
+    SOURCES "${PROJECT_SOURCE_DIR}/ftstquadrature_interfaces.cc"
+    DEPS    "Lib_quadrature_ftest;Lib_quadrature_test" )
 endif()
-
-
 
 # ---------------------------------------------------------------------------- #
 # Copy input files to test directory (binary_dir)
@@ -74,4 +68,3 @@ endif()
 if( WIN32 )
    provide_aux_files( FILES "${GSL_DLL_LIBRARIES}" )
 endif()
-

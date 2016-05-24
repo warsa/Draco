@@ -7,8 +7,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include <iostream>
 #include <iomanip>
@@ -24,7 +22,7 @@ namespace rtt_quadrature
 using namespace std;
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_either(UnitTest &ut,
                  SP<Ordinate_Space> const &ordinate_space,
                  Quadrature &quadrature,
@@ -155,8 +153,10 @@ void test_either(UnitTest &ut,
             }
         }
 
-        if ((dimension == 1 && number_of_levels == 2*ordinate_space->number_of_levels()) ||
-            (dimension>1 && number_of_levels == ordinate_space->number_of_levels()))
+        if ((dimension == 1 &&
+             number_of_levels == 2*ordinate_space->number_of_levels()) ||
+            (dimension>1 && number_of_levels
+             == ordinate_space->number_of_levels()))
         {
             ut.passes("number of levels is consistent");
         }
@@ -262,16 +262,14 @@ void test_either(UnitTest &ut,
             if (dimension==1)
             {
                 if (geometry==rtt_mesh_element::CARTESIAN && L != N)
-                {
-                    ut.failure("ordinate count is wrong for triangular quadrature");
-                }
+                    ut.failure(
+                        "ordinate count is wrong for triangular quadrature");
             }
             else if (dimension==3)
             {
                 if (L*(L+2)!= N)
-                {
-                    ut.failure("ordinate count is wrong for triangular quadrature");
-                }
+                    ut.failure(
+                        "ordinate count is wrong for triangular quadrature");
             }
             break;
 
@@ -308,13 +306,13 @@ void test_either(UnitTest &ut,
 
         for (unsigned i=0; i<N; ++i)
         {
-            J += MAGIC * ordinates[i].wt();
-            Fx += MAGIC * ordinates[i].mu()*ordinates[i].wt();
-            Fx2 += MAGIC * ordinates[i].mu()*ordinates[i].mu()*ordinates[i].wt();
-            Fy += MAGIC * ordinates[i].eta()*ordinates[i].wt();
-            Fy2 += MAGIC * ordinates[i].eta()*ordinates[i].eta()*ordinates[i].wt();
-            Fz += MAGIC * ordinates[i].xi()*ordinates[i].wt();
-            Fz2 += MAGIC * ordinates[i].xi()*ordinates[i].xi()*ordinates[i].wt();
+            J   += MAGIC*ordinates[i].wt();
+            Fx  += MAGIC*ordinates[i].mu()*ordinates[i].wt();
+            Fx2 += MAGIC*ordinates[i].mu()*ordinates[i].mu()*ordinates[i].wt();
+            Fy  += MAGIC*ordinates[i].eta()*ordinates[i].wt();
+            Fy2 += MAGIC*ordinates[i].eta()*ordinates[i].eta()*ordinates[i].wt();
+            Fz  += MAGIC*ordinates[i].xi()*ordinates[i].wt();
+            Fz2 += MAGIC*ordinates[i].xi()*ordinates[i].xi()*ordinates[i].wt();
         }
 
         if (soft_equiv(J, MAGIC))
@@ -418,7 +416,8 @@ void test_either(UnitTest &ut,
                     double sum = 0.0;
                     for (unsigned a=0; a<number_of_ordinates; ++a)
                     {
-                        sum +=  D[a + number_of_ordinates*m] * M[n + a*number_of_moments];
+                        sum += D[a + number_of_ordinates*m]
+                               * M[n + a*number_of_moments];
                     }
                     if (m==n)
                     {
@@ -465,7 +464,7 @@ void test_either(UnitTest &ut,
     }
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_no_axis(UnitTest &ut,
                   Quadrature &quadrature,
                   unsigned const dimension,
@@ -497,7 +496,7 @@ void test_no_axis(UnitTest &ut,
                 expansion_order);
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void test_axis(UnitTest &ut,
                Quadrature &quadrature,
                unsigned const dimension,
@@ -533,7 +532,7 @@ void test_axis(UnitTest &ut,
                 expansion_order);
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void quadrature_integration_test(UnitTest &/*ut*/,
                                  Quadrature &quadrature)
 {
@@ -557,14 +556,16 @@ void quadrature_integration_test(UnitTest &/*ut*/,
         double test_int4=0.0;
         double test_int2=0.0;
 
-        std::cout << "Testing S-" << quadrature.sn_order() << " quadrature integration" << std::endl;
+        std::cout << "Testing S-" << quadrature.sn_order()
+                  << " quadrature integration" << std::endl;
 
         for (unsigned i=0; i<N; ++i)
         {
             //cout << "  mu = " << setprecision(10) << ordinates[i].mu()
             //     << "  eta = " << setprecision(10) << ordinates[i].eta()
             //     << "  xi = " << setprecision(10) << ordinates[i].xi()
-            //     << " weight = " << setprecision(10) << ordinates[i].wt() << endl;
+            //     << " weight = " << setprecision(10) << ordinates[i].wt()
+            //     << endl;
 
             if (ordinates[i].xi() > 0)
             {
@@ -594,14 +595,18 @@ void quadrature_integration_test(UnitTest &/*ut*/,
                              *ordinates[i].wt();
             }
         }
-        std::cout << " test int (2) = " << test_int2 << "( " << test_int2*4*3.1415926535897932384 << " )" << std::endl;
-        std::cout << " test int (4) = " << test_int4 << "( " << test_int4*4*3.1415926535897932384 << " )" << std::endl;
-        std::cout << " test int (6) = " << test_int6 << "( " << test_int6*4*3.1415926535897932384 << " )" << std::endl;
-        std::cout << " test int (8) = " << test_int8 << "( " << test_int8*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (2) = " << test_int2 << "( "
+                  << test_int2*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (4) = " << test_int4 << "( "
+                  << test_int4*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (6) = " << test_int6 << "( "
+                  << test_int6*4*3.1415926535897932384 << " )" << std::endl;
+        std::cout << " test int (8) = " << test_int8 << "( "
+                  << test_int8*4*3.1415926535897932384 << " )" << std::endl;
     }
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void quadrature_test(UnitTest &ut,
                      Quadrature &quadrature)
 {
@@ -718,7 +723,8 @@ void quadrature_test(UnitTest &ut,
         ut.failure("Textification and parse did NOT give identical results");
     }
 
-    // ***** Test various geometry, dimensionaly, and interpolation model options.
+    // ***** Test various geometry, dimensionaly, and interpolation model
+    // ***** options.
 
     // Test 1-D options. These requre that the axes have not been reassigned.
 
@@ -774,9 +780,10 @@ void quadrature_test(UnitTest &ut,
                          Ordinate_Set::LEVEL_ORDERED);
 
         if (quadrature.is_open_interval())
-            // Our curvilinear angular operator algorithm doesn't work with closed
-            // interval quadratures (those for which mu=-1 is part of the set).
         {
+            // Our curvilinear angular operator algorithm doesn't work with
+            // closed interval quadratures (those for which mu=-1 is part of the
+            // set).
             test_no_axis(ut,
                          quadrature,
                          1U, // dimension,
@@ -854,7 +861,8 @@ void quadrature_test(UnitTest &ut,
                          quadrature,
                          2U, // dimension,
                          rtt_mesh_element::CARTESIAN,
-                         min(8U, quadrature.number_of_levels()), // expansion_order,
+                         // expansion_order
+                         min(8U, quadrature.number_of_levels()),
                          "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::OCTANT_ORDERED);
@@ -863,23 +871,25 @@ void quadrature_test(UnitTest &ut,
                          quadrature,
                          3U, // dimension,
                          rtt_mesh_element::CARTESIAN,
-                         quadrature.number_of_levels()-1, // expansion_order,
+                         // expansion_order
+                         quadrature.number_of_levels()-1,
                          "GQ1",
                          false, // add_extra_directions,
                          Ordinate_Set::LEVEL_ORDERED);
         }
 
         if (!quadrature.has_axis_assignments())
+        {
             // Axisymmetric is hosed if axes have been reassigned, since the
             // levels are only guaranteed on the xi axis.
-        {
             if (false && quadrature.quadrature_class() ==  TRIANGLE_QUADRATURE)
             {
                 test_no_axis(ut,
                              quadrature,
                              1U, // dimension,
                              rtt_mesh_element::AXISYMMETRIC,
-                             min(8U, quadrature.number_of_levels()), // expansion_order,
+                             // expansion_order
+                             min(8U, quadrature.number_of_levels()),
                              "GQ1",
                              false, // add_extra_directions,
                              Ordinate_Set::LEVEL_ORDERED);
@@ -923,12 +933,12 @@ void quadrature_test(UnitTest &ut,
 
 //----------------------------------------------------------------------------//
 // This test gets called FROM Fortran to ensure that we can successfully create
-// and assign data into a "quadrature_data" type. 
-// See ftest/tstquadrature_interfaces.f90
+// and assign data into a "quadrature_data" type.  See
+// ftest/tstquadrature_interfaces.f90
 //----------------------------------------------------------------------------//
 extern "C" DLL_PUBLIC_quadrature_test
-void rtt_test_quadrature_interfaces(const quadrature_data& quad,
-                                    int&  error_code)
+void rtt_test_quadrature_interfaces(const quadrature_data & quad,
+                                    int                   & error_code)
 {
     using std::cout;
     using std::endl;
@@ -942,16 +952,16 @@ void rtt_test_quadrature_interfaces(const quadrature_data& quad,
          << "The type is \t" << quad.type << endl
          << "The order is \t" << quad.order << endl
          << "The geometry is\t" << quad.geometry  << endl
-         << "The first ordinate is " 
-         << quad.mu[0] << "\t" 
-         << quad.eta[0] << "\t" 
-         << quad.xi[0] << "\t" 
+         << "The first ordinate is "
+         << quad.mu[0] << "\t"
+         << quad.eta[0] << "\t"
+         << quad.xi[0] << "\t"
          << quad.weights[0] << endl << endl;
-     
-    // Error checking      
+
+    // Error checking
     error_code = 0;
 
-    if (quad.dimension != 2) 
+    if (quad.dimension != 2)
     {
        error_code = 1;
        return;
@@ -972,18 +982,18 @@ void rtt_test_quadrature_interfaces(const quadrature_data& quad,
         return;
     }
 
-    double tcl_mu[12]={-0.3594747925, 0.3594747925, -0.8688461434, 
-                       -0.3598878562, 0.3598878562, 0.8688461434, 
-                       -0.8688461434, -0.3598878562, 0.3598878562, 
+    double tcl_mu[12]={-0.3594747925, 0.3594747925, -0.8688461434,
+                       -0.3598878562, 0.3598878562, 0.8688461434,
+                       -0.8688461434, -0.3598878562, 0.3598878562,
                         0.8688461434, -0.3594747925, 0.3594747925};
     double tcl_eta[12]={-0.8611363116, -0.8611363116, -0.3399810436,
-                        -0.3399810436, -0.3399810436, -0.3399810436, 
-                         0.3399810436, 0.3399810436, 0.3399810436, 
+                        -0.3399810436, -0.3399810436, -0.3399810436,
+                         0.3399810436, 0.3399810436, 0.3399810436,
                          0.3399810436, 0.8611363116, 0.8611363116};
 
-    double tcl_wt[12]={0.08696371128, 0.08696371128, 0.08151814436,  
-                       0.08151814436, 0.08151814436,  0.08151814436, 
-                       0.08151814436, 0.08151814436, 0.08151814436, 
+    double tcl_wt[12]={0.08696371128, 0.08696371128, 0.08151814436,
+                       0.08151814436, 0.08151814436,  0.08151814436,
+                       0.08151814436, 0.08151814436, 0.08151814436,
                        0.08151814436, 0.08696371128, 0.08696371128};
 
     for (size_t i=0; i<12; ++i)

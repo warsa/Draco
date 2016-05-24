@@ -7,16 +7,17 @@
 ! note   Copyright (c) 2016 Los Alamos National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
-! $Id$
-!---------------------------------------------------------------------------
 
 !---------------------------------------------------------------------------
-! 
+! This F90 function interface allows the Fortran function
+! test_quadrature_interfaces to directly call the extern "C" function
+! rtt_test_quadrature_interfaces (from the library rtt_quadrature_test).
 !---------------------------------------------------------------------------
 module rtt_test_quadrature_f
   implicit none
 
-  ! Now create an interface to the C routine that accepts that type
+  ! Now create an interface to the C routine that accepts that a user-defined
+  ! type
   interface
      subroutine rtt_test_quadrature_interfaces(quad, err_code) bind(C, &
           & name="rtt_test_quadrature_interfaces")
@@ -48,7 +49,6 @@ subroutine test_quadrature_interfaces() bind(c)
   real(c_double), allocatable, target, dimension(:) :: q_eta
   real(c_double), allocatable, target, dimension(:) :: q_xi
   real(c_double), allocatable, target, dimension(:) :: q_wt
-       
 
   !----------------------------------------------------------------------
   ! Initialization
@@ -57,7 +57,7 @@ subroutine test_quadrature_interfaces() bind(c)
 
   ! Test a Tri Chebyshev Legendre quadrature
   quad%dimension      = 2
-  quad%type           = 1 
+  quad%type           = 1
   quad%order          = 4
   quad%geometry       = 0
   ! Allocate space to fill in the data
@@ -67,7 +67,7 @@ subroutine test_quadrature_interfaces() bind(c)
   quad%eta = c_loc(q_eta)
   quad%xi  = c_loc(q_xi)
   quad%wt  = c_loc(q_wt)
- 
+
   ! Fill in the information
   call get_quadrature(quad)
 

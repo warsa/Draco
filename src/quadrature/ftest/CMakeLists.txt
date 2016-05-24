@@ -6,8 +6,7 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6705 2012-08-29 16:21:06Z kellyt $
-#------------------------------------------------------------------------------#
+
 cmake_minimum_required(VERSION 3.0.0)
 project( quadrature_ftest Fortran )
 
@@ -30,8 +29,8 @@ include( component_macros )
 # ---------------------------------------------------------------------------- #
 
 # If we are using cmake_add_fortran_subdirectory to include this package, the
-# library targets Lib_dsxx and Lib_quadrature will not be defined.
-# We must manually find these libraries.
+# library targets Lib_dsxx and Lib_quadrature will not be defined.  We must
+# manually find these libraries.
 #
 # Note: A more complex example of CMakeAddFortranSubdirectory can be
 # found in jayenne/src/wedgehog/ftest.
@@ -109,7 +108,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 set( f90sources
   ${PROJECT_SOURCE_DIR}/tstquadrature_interfaces.f90
-  ${PROJECT_SOURCE_DIR}/../quadrature_interfaces.f90 
+  ${quadrature_SOURCE_DIR}/quadrature_interfaces.f90
    )
 
 # ---------------------------------------------------------------------------- #
@@ -140,9 +139,6 @@ endif()
 # Xcode: Since cafs_create_imported_targets does not set all of the dependencies
 # between the imported libraries, we need to list them explicitly.
 set(target_deps "Lib_quadrature;Lib_dsxx;${MPI_Fortran_LIBRARIES}" )
-# if( HAVE_MIC )
-#   list( APPEND target_deps ${libifport_loc} ${libifcoremt_loc} )
-# endif()
 
 add_component_library(
   TARGET       Lib_quadrature_ftest
@@ -153,5 +149,8 @@ add_component_library(
   NOEXPORT )
 
 # Debug target properties:
+# include(print_target_properties)
 
-#include(print_target_properties)
+#------------------------------------------------------------------------------#
+# end quadrature/ftest/CMakeLists.txt
+#------------------------------------------------------------------------------#

@@ -4,8 +4,6 @@
 # note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( quadrature CXX )
 
@@ -48,8 +46,8 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} ${f90sources} DESTINATION 
-         ${DBSCFGDIR}include/quadrature )
+install( FILES ${headers} ${f90sources}
+  DESTINATION ${DBSCFGDIR}include/quadrature )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -112,3 +110,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+#------------------------------------------------------------------------------#
+# End quadrature/CMakeLists.txt
+#------------------------------------------------------------------------------#

@@ -7,8 +7,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef quadrature_quadrature_test_hh
 #define quadrature_quadrature_test_hh
@@ -32,12 +30,11 @@ void quadrature_integration_test(UnitTest &ut,
 
 } // end namespace rtt_quadrature
 
-
 // extern "C"
 // DLL_PUBLIC_quadrature_test
 // void rtt_test_quadrature_interfaces(const quadrature_data& quad,
 //                                     int&  error_code);
-// 
+//
 
 #endif // quadrature_quadrature_test_hh
 
