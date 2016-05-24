@@ -19,7 +19,8 @@ print_use()
     echo " "
     echo "Usage: `basename $0` -b [Release|Debug] -d [Experimental|Nightly]"
     echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
-    echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|nr|perfbench|pgi]"
+    echo "       -f <git branch name> -g"
+    echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
     echo " "
     echo "All arguments are optional,  The first value listed is the default value."
     echo "   -h    help           prints this message and exits."
@@ -27,6 +28,9 @@ print_use()
     echo " "
     echo "   -b    build-type     = { Debug, Release }"
     echo "   -d    dashboard type = { Experimental, Nightly }"
+    echo "   -f    git feature branch, default=develop (implies -g)"
+    echo "         common: 'pr42'"
+    echo "   -g    use github instead of svn"
     echo "   -p    project names  = { draco, jayenne, capsaicin, asterisk }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
@@ -62,6 +66,7 @@ extra_params=""
 regress_mode="off"
 epdash=""
 userlogdir=""
+featurebranch="develop"
 #rscriptdir=`dirname $0`
 #if test "${rscriptdir}" = "."; then rscriptdir=`pwd`; fi
 
@@ -69,12 +74,16 @@ userlogdir=""
 ## Command options
 ##---------------------------------------------------------------------------##
 
-while getopts ":b:d:e:hp:r" opt; do
+while getopts ":b:d:e:f:ghp:r" opt; do
 case $opt in
 b)  build_type=$OPTARG ;;
 d)  dashboard_type=$OPTARG ;;
 e)  extra_params=$OPTARG
     epdash="-";;
+f)  featurebranch=$OPTARG
+    USE_GITHUB=1
+    epdash="-";;
+g)  USE_GITHUB=1 ;; # defaults to 'develop'
 h)  print_use; exit 0 ;;
 p)  projects=$OPTARG ;;
 r)  regress_mode="on" ;;
@@ -117,7 +126,7 @@ if ! test "${extra_params}x" = "x"; then
       extra_params=""; epdash="" ;;
    coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
       ;;
-   knightscorner | bounds_checking | gcc530 | clang | gcc610)
+   knightscorner | bounds_checking | gcc530 | clang | gcc610 )
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -239,6 +248,7 @@ export logdir="${regdir}/logs${userlogdir}"
 mkdir -p $logdir
 
 export build_type dashboard_type extra_params regress_mode epdash
+export featurebranch USE_GITHUB
 
 ##---------------------------------------------------------------------------##
 # Banner
@@ -262,6 +272,7 @@ echo "   dashboard_type = ${dashboard_type}"
 echo "   logdir         = ${logdir}"
 echo "   projects       = \"${projects}\""
 echo "   regress_mode   = ${regress_mode}"
+echo "   featurebranch  = ${featurebranch}"
 echo " "
 echo "Descriptions:"
 #echo "   rscriptdir -  the location of the draco regression scripts."

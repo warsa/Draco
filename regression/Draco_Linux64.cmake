@@ -19,7 +19,12 @@ include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 set_defaults()
 parse_args()
 find_tools()
-set_svn_command("draco/trunk")
+
+if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
+  set_git_command("Draco.git")
+else()
+  set_svn_command("draco/trunk")
+endif()
 
 # Platform customization:
 # 1. Ceilito - set TOOCHAIN_SETUP
@@ -90,21 +95,6 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 endif()
 
-# Start
-# if this is the 2nd (or 3rd) call to this script (i.e.: test and submit
-# on different calls) then append the results.
-# if( (${CTEST_SUBMIT} AND NOT ${CTEST_TEST}) OR
-#     (${CTEST_TEST}   AND NOT ${CTEST_BUILD}) )
-# if( ${CTEST_CONFIGURE} )
-#   # Test and Submit on different calls -> The submit step should
-#   # append the previous run.
-#   message( "ctest_start( ${CTEST_MODEL} APPEND )")
-#   ctest_start( ${CTEST_MODEL} APPEND )
-# else()
-#   message( "ctest_start( ${CTEST_MODEL} )")
-#   ctest_start( ${CTEST_MODEL} )
-# endif()
-
 if( ${CTEST_CONFIGURE} )
   message( "ctest_start( ${CTEST_MODEL} )")
   ctest_start( ${CTEST_MODEL} )
@@ -112,14 +102,6 @@ else()
   message( "ctest_start( ${CTEST_MODEL} APPEND )")
   ctest_start( ${CTEST_MODEL} APPEND )
 endif()
-
-#if( NOT "${CTEST_MODEL}" MATCHES "Nightly" )
-#   file  ( READ "${CTEST_BINARY_DIRECTORY}/Testing/TAG" tag_file )
-#   string( REGEX MATCH "[^\n]*" BuildTag ${tag_file} )
-#   set   ( TEST_OUTPUT_DIR "${CTEST_BINARY_DIRECTORY}/Testing/${BuildTag}" )
-#   set   ( TEST_TEMP_DIR "${TEST_OUTPUT_DIR}/temp" )
-#   file  ( MAKE_DIRECTORY ${TEST_TEMP_DIR} )
-#endif()
 
 # Update and Configure
 if( "${CTEST_CONFIGURE}" STREQUAL "ON" )

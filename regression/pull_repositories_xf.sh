@@ -91,6 +91,27 @@ unpack_repo() {
    echo " "
 }
 
+unpack_repo_git() {
+  pkg=$1
+  echo "Remove old files..."
+  if test -f ${pkg}.tar; then
+    run "rm -f ${pkg}.tar"
+  fi
+  if test -d ${pkg}; then
+    if test -d ${pkg}.old; then
+      run "rm -rf ${pkg}.old"
+    fi
+  fi
+
+  echo "Unpacking GIT repository for $pkg ..."
+  run "xfpull ${pkg}.tar"
+  if test -d ${pkg}; then
+    run "mv ${pkg} ${pkg}.old"
+   fi
+  run "tar -xvf ${pkg}.tar"
+  echo " "
+}
+
 # working directory
 start_dir=`pwd`
 work_dir=/usr/projects/draco/svn
@@ -112,17 +133,21 @@ possible_items_to_pull=`ssh red@transfer.lanl.gov myfiles | awk '{print $2}'`
 draco_ready=0
 capsaicin_ready=0
 jayenne_ready=0
+draco_git_ready=0
 
 for item in $possible_items_to_pull; do
    if test ${item} = "draco.hotcopy.tar";     then draco_ready=1; fi
    if test ${item} = "jayenne.hotcopy.tar";   then jayenne_ready=1; fi
    if test ${item} = "capsaicin.hotcopy.tar"; then capsaicin_ready=1; fi
+   if test ${item} = "draco.git.tar";         then draco_git_ready=1; fi
 done
 
 # If found, pull the files
 if test ${draco_ready} = 1; then unpack_repo "draco"; fi
 if test ${jayenne_ready} = 1; then unpack_repo "jayenne"; fi
 if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
+run "cd ${work_dir}/../git"
+if test ${draco_git_ready} = 1; then unpack_repo_git "draco.git"; fi
 
 # Update permisssions as needed
 run "cd ${work_dir}/.."

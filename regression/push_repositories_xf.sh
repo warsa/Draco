@@ -2,8 +2,8 @@
 
 # Q: How do I create a keytab that works with transfer 2.0
 # A: See
-# https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
-# or see the comments at the end of this file.
+#    https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
+#    or see the comments at the end of this file.
 
 # When kellyt runs this as a crontab, a special kerberos key must be used.
 user=`whoami`
@@ -64,6 +64,34 @@ for repo in $repos; do
    run "chmod -R g+rwX,o=g-w ${repo}.hotcopy.tar ${repo}.hotcopy"
 
 done
+
+#------------------------------------------------------------------------------#
+# Also clone the github repository and push it along with the svn
+# repositories.
+
+# Remove the old tar file.
+if test -f draco.git.tar; then
+  rm -f draco.git.tar
+fi
+
+# Checkout or update the git repository
+if test -d draco.git; then
+  run "cd draco.git"
+  run "git pull"
+  run "cd .."
+else
+  run "git clone https://github.com/losalamos/Draco.git draco.git"
+fi
+
+# Tar it up
+run "tar -cvf draco.git.tar draco.git"
+
+# Transfer the file via transfer.lanl.gov
+run "scp draco.git.tar red@transfer.lanl.gov:"
+
+# Ensure the new files have group rwX permissions.
+run "chgrp -R draco draco.git.tar draco.git"
+run "chmod -R g+rwX,o=g-w  draco.git.tar draco.git"
 
 #------------------------------------------------------------------------------#
 # Notes on using Transfer 2.0 (copied from the Draco wiki):

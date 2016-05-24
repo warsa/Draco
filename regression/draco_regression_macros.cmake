@@ -4,12 +4,9 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # Ref: http://www.cmake.org/Wiki/CMake_Testing_With_CTest
 #      http://www.cmake.org/Wiki/CMake_Scripting_of_CTest
-
 
 # Echo settings if 'ON'
 set( drm_verbose ON )
@@ -42,16 +39,8 @@ macro( find_num_procs_avail_for_running_tests )
     ProcessorCount(num_test_procs)
   endif()
 
-  # CMake 3.4+ allows us to limit the number of concurrent tests running by
-  # looking at the system load:
+  # Limit the number of concurrent tests running by looking at the system load:
   math( EXPR max_system_load "${num_test_procs} + 1" )
-
-  # Machine/job specific override:
-  if( "$ENV{SLURM_JOB_NAME}" MATCHES "darwin-knc-regress" )
-    # The mic I/O processors get overloaded if use the default
-    # logic of 32 simultaneous tests.
-    set( num_test_procs 8 )
-  endif()
 
 endmacro()
 
@@ -100,10 +89,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
      set( sitename "Cielito" )
   elseif( ${sitename} MATCHES "tt" )
      set( sitename "Trinitite" )
+  elseif( ${sitename} MATCHES "tr" )
+     set( sitename "Trinity" )
   elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
      set( sitename "Moonlight" )
-  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES
-  "darwin-login" OR ${sitename} MATCHES "darwin-fe")
+  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-fe")
      set( sitename "Darwin" )
   endif()
   # message( "sitename = ${sitename}")
@@ -138,11 +128,10 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # This should be set in each projects CTestConfig.cmake file.
   #set( CTEST_NIGHTLY_START_TIME "00:00:01 MST")
 
-  if( "${CTEST_SITE}" MATCHES "Darwin" )
-    set( CTEST_DROP_METHOD "http")
-  else()
-    set( CTEST_DROP_METHOD "https")
-  endif()
+  set( CTEST_DROP_METHOD "https")
+  # if( "${CTEST_SITE}" MATCHES "Darwin" )
+  #   set( CTEST_DROP_METHOD "http")
+  # endif()
   set( CTEST_DROP_SITE "rtt.lanl.gov")
   set( CTEST_DROP_LOCATION
      "/cdash/submit.php?project=${CTEST_PROJECT_NAME}" )
@@ -155,10 +144,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
   find_path( VENDOR_DIR
     ChangeLog
     PATHS
-      /ccs/codes/radtran/vendors/Linux64
-      /usr/projects/draco/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
+      /scratch/vendors
       /usr/projects/draco/vendors
-      c:/vendors/${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}
       c:/vendors
       )
    set( AUTODOCDIR "${VENDOR_DIR}/../autodoc" )
@@ -297,8 +284,6 @@ macro( parse_args )
      elseif( ${work_dir} MATCHES ".*cuda.*" )
         set( compiler_version "cuda" )
         set(USE_CUDA ON)
-#     elseif( ${work_dir} MATCHES ".*-knc.*" )
-#        set( compiler_version "knc" )
      elseif( ${work_dir} MATCHES ".*fulldiagnostics.*" )
         set( compiler_version "fulldiagnostics" )
         set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
@@ -351,6 +336,12 @@ macro( parse_args )
     set( CTEST_BUILD_NAME "OSX_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   else() # Unix
     set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
+    if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
+      if( "$ENV{featurebranch}notset" STREQUAL "notset" )
+        message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
+      endif()
+      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-github-$ENV{featurebranch}" )
+    endif()
   endif()
 
   # Default is no Coverage Analysis
@@ -406,7 +397,7 @@ macro( find_tools )
     )
   if( NOT EXISTS ${CTEST_CMD} )
     message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
-  endif( NOT EXISTS ${CTEST_CMD} )
+  endif()
 
   find_program( CTEST_SVN_COMMAND
      NAMES svn
@@ -418,7 +409,17 @@ macro( find_tools )
   set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
   if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
     message( FATAL_ERROR "Cound not find cvs executable." )
-  endif( NOT EXISTS "${CTEST_CVS_COMMAND}" )
+  endif()
+
+  find_program( CTEST_GIT_COMMAND
+     NAMES git
+     HINTS
+        "C:/Program Files/Git/bin"
+        # NO_DEFAULT_PATH
+     )
+  if( NOT EXISTS "${CTEST_GIT_COMMAND}" )
+    message( FATAL_ERROR "Cound not find git executable." )
+  endif()
 
   find_program( CTEST_CMAKE_COMMAND
     NAMES cmake
@@ -428,13 +429,12 @@ macro( find_tools )
     )
   if( NOT EXISTS "${CTEST_CMAKE_COMMAND}" )
     message( FATAL_ERROR "Cound not find cmake executable." )
-  endif( NOT EXISTS "${CTEST_CMAKE_COMMAND}" )
+  endif()
 
   find_program( MAKECOMMAND
     NAMES nmake make
     HINTS
-      "C:/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin"
-      "c:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/bin"
+      "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin"
       # NO_DEFAULT_PATH
     )
   if( NOT EXISTS "${MAKECOMMAND}" )
@@ -478,6 +478,8 @@ macro( find_tools )
     message("
 CTEST_CMD           = ${CTEST_CMD}
 CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
+CTEST_SVN_COMMAND   = ${CTEST_SVN_COMMAND}
+CTEST_GIT_COMMAND   = ${CTEST_GIT_COMMAND}
 CTEST_CMAKE_COMMAND = ${CTEST_CMAKE_COMMAND}
 MAKECOMMAND         = ${MAKECOMMAND}
 CTEST_MEMORYCHECK_COMMAND         = ${CTEST_MEMORYCHECK_COMMAND}
@@ -503,19 +505,43 @@ endmacro( find_tools )
 macro( set_svn_command svnpath )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
     if( EXISTS /ccs/codes/radtran/svn )
-      set( CTEST_CVS_CHECKOUT
+      set( CTEST_CHECKOUT_COMMAND
         "${CTEST_CVS_COMMAND} checkout file:///ccs/codes/radtran/svn/${svnpath} source" )
-      message("CTEST_CVS_CHECKOUT = ${CTEST_CVS_CHECKOUT}")
+      message("CTEST_CHECKOUT_COMMAND = ${CTEST_CHECKOUT_COMMAND}")
     elseif( EXISTS /usr/projects/draco/regress/svn ) # CCS-7's Darwin
-      set( CTEST_CVS_CHECKOUT
+      set( CTEST_CHECKOUT_COMMAND
         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/draco/regress/svn/${svnpath} source" )
     elseif( EXISTS /usr/projects/jayenne/regress/svn ) # HPC machines (ML, CT)
-      set( CTEST_CVS_CHECKOUT
+      set( CTEST_CHECKOUT_COMMAND
         "${CTEST_CVS_COMMAND} checkout file:///usr/projects/jayenne/regress/svn/${svnpath} source" )
     else()
-      set( CTEST_CVS_CHECKOUT
+      set( CTEST_CHECKOUT_COMMAND
         "${CTEST_CVS_COMMAND} checkout svn+ssh://ccscs7/ccs/codes/radtran/svn/${svnpath} source" )
     endif()
+  endif()
+endmacro()
+macro( set_git_command gitpath )
+  if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
+    set( CTEST_UPDATE_TYPE "git" )
+    set( CTEST_CHECKOUT_COMMAND
+      "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+    # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
+    # be set to something like pr42.
+    if( "$ENV{featurebranch}notset" STREQUAL "notset" OR
+        "$ENV{featurebranch}" STREQUAL "develop" )
+      set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;develop")
+    elseif( "$ENV{featurebranch}" MATCHES "pr[0-9]+" )
+      string( REPLACE "pr" "" featurebranch "$ENV{featurebranch}" )
+      set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;pull/${featurebranch}/head:pr${featurebranch}")
+    else()
+      message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
+    endif()
+
+      message("
+CTEST_UPDATE_TYPE       = ${CTEST_UPDATE_TYPE}
+CTEST_CHECKOUT_COMMAND  = ${CTEST_CHECKOUT_COMMAND}
+CTEST_GIT_UPDATE_CUSTOM = ${CTEST_GIT_UPDATE_CUSTOM}
+")
   endif()
 endmacro()
 
@@ -674,10 +700,11 @@ endmacro(process_cc_or_da)
 #
 # ------------------------------------------------------------
 macro(platform_customization)
-   if( "${sitename}" MATCHES "Cielito" OR "${sitename}" MATCHES "Trinitite" )
-#      set( TOOLCHAIN_SETUP
-#         "CMAKE_TOOLCHAIN_FILE:FILEPATH=/usr/projects/jayenne/regress/draco/config/Toolchain-catamount.cmake"
-# )
+   if( "${sitename}" MATCHES "Cielito" OR
+       "${sitename}" MATCHES "Cielo" OR
+       "${sitename}" MATCHES "Trinitite" OR
+       "${sitename}" MATCHES "Trinity" )
+
 # These values are from draco/config/CrayConfig.cmake
       set(CT_CUSTOM_VARS
 "CMAKE_C_COMPILER:FILEPATH=cc
@@ -701,8 +728,6 @@ MPI_Fortran_INCLUDE_PATH:PATH=
 MPI_C_COMPILER:FILEPATH=
 MPI_CXX_COMPILER:FILEPATH=
 MPI_Fortran_COMPILER:FILEPATH=")
-# OLD settings
-# CMAKE_SYSTEM_NAME:STRING=Catamount
 
    endif()
 endmacro(platform_customization)

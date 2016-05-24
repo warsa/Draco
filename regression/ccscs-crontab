@@ -24,6 +24,14 @@
 00 05 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p "draco" -e gcc610 &> /scratch/regress/logs/ccscs-Debug-gcc610-master.log
 
 #------------------------------------------------------------------------------#
+# Github and PRs
+#------------------------------------------------------------------------------#
+
+# 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -g -b Release -d Nightly -p "draco" &> /scratch/regress/logs/ccscs-Release-master-github.log
+
+# 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -g -b Release -d Experimental -p "draco" -f pr1 &> /scratch/regress/logs/ccscs-Release-master-pr1.log
+
+#------------------------------------------------------------------------------#
 # No longer using these
 #------------------------------------------------------------------------------#
 

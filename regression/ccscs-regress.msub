@@ -59,7 +59,7 @@ ccscs[0-9])
     echo "     " > ${logdir}/ccscs-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
     echo "==========================================================================="
     echo "CCSC Regression: ${ctestparts} from ${machine}."
-    echo "                 ${subproj}-${build_type}${epdash}${extra_params}"
+    echo "                 ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
     echo "==========================================================================="
     ;;
 #ccscs-fey*)
@@ -88,7 +88,7 @@ fi
 source /usr/share/Modules/init/bash
 run "module purge"
 run "module load user_contrib"
-run "module load gcc openmpi cmake"
+run "module load gcc openmpi cmake git"
 run "module load dracoscripts subversion random123 valgrind"
 run "module load eospac lapack gsl" # grace
 run "module load superlu-dist/4.3"
@@ -183,6 +183,11 @@ gcc530bc)
 esac
 run "module list"
 
+# Use a unique regression folder for each github branch
+if test ${USE_GITHUB} == 1; then
+  comp=github-$featurebranch-$comp
+fi
+
 # ----------------------------------------
 # Run the CTest script:
 # ----------------------------------------
@@ -201,10 +206,10 @@ if test "${dashboard_type}x" = "x"; then
    dashboard_type=Nightly
 fi
 if test "${base_dir}x" = "x"; then
-   if test "${regress_mode}" = "off"; then 
+   if test "${regress_mode}" = "off"; then
       moniker=`whoami`
       base_dir=/scratch/${moniker}
-   else 
+   else
       base_dir=/scratch/regress/cdash
    fi
    mkdir -p $base_dir
