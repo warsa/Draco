@@ -42,15 +42,16 @@ if(NOT TARGET Lib_dsxx)
   string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
     "${Draco_TPL_INCLUDE_DIRS}" )
 
-  message("dtplid = ${cafs_Draco_TPL_INCLUDE_DIRS}")
+  # message("dtplid = ${cafs_Draco_TPL_INCLUDE_DIRS}")
 
   include(CMakeAddFortranSubdirectory)
-  get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../..
-    ABSOLUTE )
-  cafs_create_imported_targets( Lib_dsxx "rtt_ds++"
-    "${draco_BINARY_DIR}/src/ds++" CXX )
-  cafs_create_imported_targets( Lib_quadrature "rtt_quadrature"
-    "${draco_BINARY_DIR}/src/quadrature" CXX )
+  get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
+  cafs_create_imported_targets( Lib_dsxx       
+    "rtt_ds++"       "${draco_BINARY_DIR}/src/ds++"       CXX )
+  cafs_create_imported_targets( Lib_quadrature 
+    "rtt_quadrature" "${draco_BINARY_DIR}/src/quadrature" CXX )
+  cafs_create_imported_targets( Lib_quadrature_test 
+    "rtt_quadrature_test" "${draco_BINARY_DIR}/src/quadrature/test" CXX )
 
   # If we get here, we also need to use the Draco scripts to setup compiler
   # flags and MPI options
@@ -108,7 +109,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 set( f90sources
   ${PROJECT_SOURCE_DIR}/tstquadrature_interfaces.f90
-  ${quadrature_SOURCE_DIR}/quadrature_interfaces.f90
+  ${PROJECT_SOURCE_DIR}/../quadrature_interfaces.f90
    )
 
 # ---------------------------------------------------------------------------- #
@@ -138,7 +139,11 @@ endif()
 
 # Xcode: Since cafs_create_imported_targets does not set all of the dependencies
 # between the imported libraries, we need to list them explicitly.
-set(target_deps "Lib_quadrature;Lib_dsxx;${MPI_Fortran_LIBRARIES}" )
+set(target_deps 
+    Lib_quadrature_test
+    Lib_quadrature
+    Lib_dsxx
+    "${MPI_Fortran_LIBRARIES}" )
 
 add_component_library(
   TARGET       Lib_quadrature_ftest
@@ -149,7 +154,8 @@ add_component_library(
   NOEXPORT )
 
 # Debug target properties:
-# include(print_target_properties)
+#include(print_target_properties)
+#print_targets_properties( "Lib_dsxx;Lib_quadrature;Lib_quadrature_test" )
 
 #------------------------------------------------------------------------------#
 # end quadrature/ftest/CMakeLists.txt

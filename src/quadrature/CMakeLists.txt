@@ -101,6 +101,9 @@ if( BUILD_TESTING )
       CMAKE_COMMAND_LINE "${build_system_state}"
       # VERBOSE
       )
+
+    # This directory contains c++ main code that wraps the Fortran tests. 
+    add_subdirectory( fctest )
   endif()
 
 endif()
