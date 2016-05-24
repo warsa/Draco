@@ -18,6 +18,7 @@ ulimit -s unlimited
 if test "${VENDOR_DIR}x" == "x"; then
    if test -d /usr/projects/draco/vendors; then
       VENDOR_DIR=/usr/projects/draco/vendors
+      export PATH=$VENDOR_DIR/bin:$PATH
    fi
 fi
 

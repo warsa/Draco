@@ -2,3 +2,6 @@
 *.elc
 *~
 TAGS
+GPATH
+GTAGS
+GRTAGS
