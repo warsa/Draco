@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
 cmake_minimum_required(VERSION 3.0.0)
 project( quadrature_ftest Fortran )
 
@@ -66,9 +65,7 @@ if(NOT TARGET Lib_dsxx)
   #query_openmp_availability()
   include( compilerEnv )
   dbsSetupFortran()
-  # Vendors are not needed here, but I'm trying to follow the model found in
-  # wedgehog/ftest.  I've included these here to ensure that the slave build can
-  # parse the find vendor scripts.
+  # GSL is needed by quadrature.
   include( vendor_libraries )
   setupVendorLibraries()
 
@@ -81,6 +78,7 @@ if(NOT TARGET Lib_dsxx)
         "set this for you.")
     endif()
     string( TOUPPER ${CMAKE_BUILD_TYPE} ucbt )
+    # TODO: Can this be removed?
     if( "${CMAKE_Fortran_FLAGS_${ucbt}}" MATCHES "frange-check" )
       string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_FLAGS_DEBUG
         ${CMAKE_Fortran_FLAGS_DEBUG} )

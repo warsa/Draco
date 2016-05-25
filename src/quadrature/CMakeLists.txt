@@ -96,7 +96,7 @@ if( BUILD_TESTING )
       LIBRARIES    rtt_quadrature_ftest   # Sub project will create a library with this name.
       # --> librtt_FC_f90.dll.
       TARGET_NAMES Lib_quadrature_ftest
-      DEPENDS      "Lib_quadrature;Lib_dsxx"
+      DEPENDS      "Lib_quadrature_test;Lib_quadrature;Lib_dsxx"
       NO_EXTERNAL_INSTALL
       CMAKE_COMMAND_LINE "${build_system_state}"
       # VERBOSE
