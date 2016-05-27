@@ -36,6 +36,7 @@ unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
+machine=`uname -n`
 
 fn_exists()
 {
@@ -50,24 +51,28 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
-machine=`uname -n`
-case $machine in
-ml[0-9][0-9][0-9].localdomain)
-    ctestparts=Configure,Build,Test
-    # Force new log file (vs appending)
-    echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
-    ;;
-ml-fey*)
-    ctestparts=Submit ;;
+case $REGRESSION_PHASE in
+c) ctestparts=Configure;;
+bt) ctestparts=Build,Test;;
+s) ctestparts=Submit;;
 esac
+
+# case $machine in
+# ml[0-9][0-9][0-9].localdomain)
+#     ctestparts=Configure,Build,Test
+#     # Force new log file (vs appending)
+#     echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cb.log
+#     ;;
+# ml-fey*)
+#     ctestparts=Submit ;;
+# esac
 
 echo "==========================================================================="
 echo "Moonlight regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
 echo "==========================================================================="
 
 run "printenv"
-run "module list"
 
 # Modules
 # ----------------------------------------
@@ -81,9 +86,9 @@ else
 fi
 
 # Clear any loaded modules as these are invalid when staring a new shell.
-#run "module purge &> /dev/null"
-run "module list"
+run "module purge &> /dev/null"
 unset _LMFILES_
+run "module list"
 run "module load user_contrib"
 run "module load friendly-testing"
 run "module load cmake/3.5.2"
@@ -96,7 +101,7 @@ run "module load metis"
 run "module load parmetis"
 run "module load ndi"
 run "module load numdiff"
-run "module load svn"
+run "module load svn git"
 run "module load random123"
 run "module load eospac/6.2.4"
 run "module load grace"
@@ -143,6 +148,11 @@ pgi)
     ;;
 esac
 run "module list"
+
+# Use a unique regression folder for each github branch
+if test ${USE_GITHUB} == 1; then
+  comp=github-$featurebranch-$comp
+fi
 
 # ----------------------------------------
 # Run the CTest script:

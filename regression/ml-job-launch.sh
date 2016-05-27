@@ -93,11 +93,6 @@ module purge &> /dev/null
 echo "module list"
 module list
 
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
-
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
 
@@ -108,14 +103,21 @@ for jobid in ${dep_jobids}; do
     done
 done
 
-# Configure, Build, Test on back end
-cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${regdir}/draco/regression/ml-regress.msub"
+# Configure on the front end
+export REGRESSION_PHASE=c
+cmd="${regdir}/draco/regression/ml-regress.msub >& ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-c.log"
+echo "${cmd}"
+eval "${cmd}"
+
+# Build, Test on back end
+export REGRESSION_PHASE=bt
+cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${regdir}/draco/regression/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
 jobid=`echo ${jobid//[^0-9]/}`
 
-# Wait for CBT (Config, build, test) to finish
+# Wait for BT (build and test) to finish
 sleep 1m
 while test "`$SHOWQ | grep $jobid`" != ""; do
    $SHOWQ | grep $jobid
@@ -123,8 +125,9 @@ while test "`$SHOWQ | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from ${host}."
-cmd="${regdir}/draco/regression/ml-regress.msub >& ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-s.log"
+cmd="${regdir}/draco/regression/ml-regress.msub >& ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
 echo "${cmd}"
 eval "${cmd}"
 

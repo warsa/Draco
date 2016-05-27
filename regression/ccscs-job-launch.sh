@@ -56,11 +56,6 @@ echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
 
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
-
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
 
@@ -72,7 +67,8 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build, Test and Submit (no Torque batch system here).
-cmd="${regdir}/draco/regression/ccscs-regress.msub >& ${logdir}/ccscs-${build_type}-${extra_params}${epdash}${subproj}-cbts.log"
+machine=`uname -n | sed -e 's/[.].*//'`
+cmd="${regdir}/draco/regression/ccscs-regress.msub >& ${logdir}/$machine-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
 echo "${cmd}"
 eval "${cmd}"
 

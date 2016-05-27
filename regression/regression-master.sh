@@ -65,8 +65,9 @@ projects="draco"
 extra_params=""
 regress_mode="off"
 epdash=""
+prdash=""
 userlogdir=""
-featurebranch="develop"
+featurebranch=""
 #rscriptdir=`dirname $0`
 #if test "${rscriptdir}" = "."; then rscriptdir=`pwd`; fi
 
@@ -82,8 +83,10 @@ e)  extra_params=$OPTARG
     epdash="-";;
 f)  featurebranch=$OPTARG
     USE_GITHUB=1
-    epdash="-";;
-g)  USE_GITHUB=1 ;; # defaults to 'develop'
+    prdash="-";;
+g)  featurebranch=develop # use default branch
+    prdash="-"
+    USE_GITHUB=1 ;;
 h)  print_use; exit 0 ;;
 p)  projects=$OPTARG ;;
 r)  regress_mode="on" ;;
@@ -167,11 +170,11 @@ ml-*)
     machine_name_long=Moonlight
     machine_name_short=ml
     result=`fn_exists module`
-    if test $result -eq 0; then
-        echo 'module function is defined'
-    else
-        echo 'module function does not exist. defining a local function ...'
-        source /usr/share/Modules/init/bash
+    if ! test $result -eq 0; then
+      # echo 'module function is defined'
+    # else
+      # echo 'module function does not exist. defining a local function ...'
+      source /usr/share/Modules/init/bash
     fi
     module purge
     export regdir=/usr/projects/jayenne/regress
@@ -248,7 +251,7 @@ export logdir="${regdir}/logs${userlogdir}"
 mkdir -p $logdir
 
 export build_type dashboard_type extra_params regress_mode epdash
-export featurebranch USE_GITHUB
+export featurebranch USE_GITHUB prdash
 
 ##---------------------------------------------------------------------------##
 # Banner
@@ -341,7 +344,7 @@ fi
 export subproj=draco
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
-  cmd+=" &> ${logdir}/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -356,7 +359,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   # built and installed)
   cmd+=" ${draco_jobid}"
   # Log all output.
-  cmd+=" &> ${logdir}/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -375,7 +378,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   *)
      cmd+=" ${draco_jobid}" ;;
   esac
-  cmd+=" &> ${logdir}/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
@@ -387,7 +390,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
   # Wait for wedgehog and capsaicin regressions to finish
   cmd+=" ${jayenne_jobid} ${capsaicin_jobid}"
-  cmd+=" &> ${logdir}/${machine_name_short}-${build_type}-${extra_params}${epdash}${subproj}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1

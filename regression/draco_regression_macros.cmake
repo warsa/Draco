@@ -84,19 +84,21 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  # message( "sitename = ${sitename}")
+  message( "sitename = ${sitename}")
   if( ${sitename} MATCHES "ct" )
      set( sitename "Cielito" )
   elseif( ${sitename} MATCHES "tt" )
      set( sitename "Trinitite" )
   elseif( ${sitename} MATCHES "tr" )
      set( sitename "Trinity" )
-  elseif( ${sitename} MATCHES "ml[0-9]+" OR ${sitename} MATCHES "ml-fey")
-     set( sitename "Moonlight" )
+  elseif( ${sitename} MATCHES "ml[0-9]+" OR
+      ${sitename} MATCHES "ml-fey"       OR
+      ${sitename} STREQUAL "ml")
+  set( sitename "Moonlight" )
   elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-fe")
      set( sitename "Darwin" )
   endif()
-  # message( "sitename = ${sitename}")
+  message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
   set( CTEST_SOURCE_DIRECTORY "${work_dir}/source" )
   set( CTEST_BINARY_DIRECTORY "${work_dir}/build"  )
@@ -520,29 +522,31 @@ macro( set_svn_command svnpath )
     endif()
   endif()
 endmacro()
+
 macro( set_git_command gitpath )
+  set( CTEST_UPDATE_TYPE "git" )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
-    set( CTEST_UPDATE_TYPE "git" )
     set( CTEST_CHECKOUT_COMMAND
       "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
-    # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
-    # be set to something like pr42.
-    if( "$ENV{featurebranch}notset" STREQUAL "notset" OR
-        "$ENV{featurebranch}" STREQUAL "develop" )
-      set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;develop")
-    elseif( "$ENV{featurebranch}" MATCHES "pr[0-9]+" )
-      string( REPLACE "pr" "" featurebranch "$ENV{featurebranch}" )
-      set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;pull/${featurebranch}/head:pr${featurebranch}")
-    else()
-      message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
-    endif()
+  endif()
+  # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
+  # be set to something like pr42.
+  if( "$ENV{featurebranch}notset" STREQUAL "notset" OR
+      "$ENV{featurebranch}" STREQUAL "develop" )
+    set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;develop")
+  elseif( "$ENV{featurebranch}" MATCHES "pr[0-9]+" )
+    string( REPLACE "pr" "" featurebranch "$ENV{featurebranch}" )
+    set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;pull/${featurebranch}/head:pr${featurebranch}")
+  else()
+    message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
+  endif()
 
-      message("
+  message("
 CTEST_UPDATE_TYPE       = ${CTEST_UPDATE_TYPE}
 CTEST_CHECKOUT_COMMAND  = ${CTEST_CHECKOUT_COMMAND}
 CTEST_GIT_UPDATE_CUSTOM = ${CTEST_GIT_UPDATE_CUSTOM}
 ")
-  endif()
+
 endmacro()
 
 # ------------------------------------------------------------

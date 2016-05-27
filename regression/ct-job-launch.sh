@@ -50,7 +50,7 @@ fi
 
 # Banner
 echo "==========================================================================="
-echo "CT Regression job launcher for ${subproj} - ${build_type} flavor."
+echo "CT Regression job launcher"
 echo "==========================================================================="
 echo " "
 echo "Environment:"
@@ -69,11 +69,6 @@ echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
 
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
-
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
 
@@ -88,7 +83,7 @@ done
 export mode=cb
 echo " "
 echo "Configure and Build on the front end..."
-cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${mode}.log"
 echo "${cmd}"
 eval "${cmd}"
 
@@ -97,7 +92,7 @@ eval "${cmd}"
 
 echo " "
 echo "Test from the login node..."
-cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/ct-regress.msub"
+cmd="/opt/MOAB/default/bin/msub -j oe -V -o ${logdir}/ct-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log ${regdir}/draco/regression/ct-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 jobid=`echo $jobid | sed '/^$/d'`
@@ -113,7 +108,7 @@ done
 # Submit from the front end
 mode=s
 echo "Jobs done, now submitting ${build_type} results from ct-fe1."
-cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${regdir}/draco/regression/ct-regress.msub >& ${logdir}/ct-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${mode}.log"
 echo "${cmd}"
 eval "${cmd}"
 
@@ -123,4 +118,3 @@ echo "Jobs done."
 ##---------------------------------------------------------------------------##
 ## End of ct-job-launch.sh
 ##---------------------------------------------------------------------------##
-
