@@ -527,7 +527,7 @@ macro( set_git_command gitpath )
   set( CTEST_UPDATE_TYPE "git" )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
     set( CTEST_CHECKOUT_COMMAND
-      "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+      "${CTEST_GIT_COMMAND};clone;https://github.com/losalamos/${gitpath};source" )
   endif()
   # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
   # be set to something like pr42.

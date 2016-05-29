@@ -80,7 +80,6 @@ for jobid in ${dep_jobids}; do
     done
 done
 
-
 case "${extra_params}" in
 knightscorner)
    darwin_regress_script="${regdir}/draco/regression/darwin-knc-regress.msub"
@@ -91,7 +90,8 @@ knightscorner)
 esac
 
 # Configure, Build, Test on back end
-cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log -e ${regdir}/logs/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log ${darwin_regress_script}"
+export REGRESSION_PHASE=cbt
+cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -106,8 +106,9 @@ while test "`$SHOWQ | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from darwin."
-cmd="${darwin_regress_script} >& ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-s.log"
+cmd="${darwin_regress_script} >& ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
 echo "${cmd}"
 eval "${cmd}"
 

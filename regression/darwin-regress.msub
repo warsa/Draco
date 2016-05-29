@@ -39,6 +39,7 @@ unset https_proxy
 unset HTTPS_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
+machine=`uname -n`
 
 fn_exists()
 {
@@ -57,21 +58,24 @@ run () {
 #if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
 #    source $HOME/.keychain/$MYHOSTNAME-sh
 #fi
-
-machine=`uname -n`
-case $machine in
-cn*)
-    ctestparts=Configure,Build,Test
-    # Force new log file (vs appending)
-    echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
-    ;;
-darwin-*)
-    ctestparts=Submit ;;
+case $REGRESSION_PHASE in
+cbt) ctestparts=Configure,Build,Test;;
+s)   ctestparts=Submit;;
 esac
+
+# case $machine in
+# cn*)
+#     ctestparts=Configure,Build,Test
+#     # Force new log file (vs appending)
+#     echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
+#     ;;
+# darwin-*)
+#     ctestparts=Submit ;;
+# esac
 
 echo "==========================================================================="
 echo "Darwin regression: ${ctestparts} from ${machine}."
-echo "                   ${subproj}-${build_type}${epdash}${extra_params}"
+echo "                   ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 run "ulimit -a"
 
@@ -91,6 +95,7 @@ run "module use --append /usr/projects/draco/vendors/Modules"
 
 # Clear any tcsh loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
+run "module load git"
 run "module load intel/15.0.4 impi/5.1.1.109"
 run "module load lapack/3.5.0"
 run "module load cmake/3.5.2 numdiff/5.8.1 subversion random123 eospac/6.2.4"
@@ -127,6 +132,11 @@ cuda)
 esac
 run "module list"
 
+# Use a unique regression folder for each github branch
+if test ${USE_GITHUB} == 1; then
+  comp=github-$featurebranch-$comp
+fi
+
 # ----------------------------------------
 # Run the CTest script:
 # ----------------------------------------
@@ -142,11 +152,11 @@ run "module list"
 # Build type     : Release, Debug
 
 if test "${dashboard_type}x" = "x"; then
-   dashboard_type=Nightly
+   dashboard_type=Experimental
 fi
 if test "${base_dir}x" = "x"; then
   if test "${regress_mode}" = "off"; then
-    scratch_dir=/mnt/local/hdd1/${moniker}/cdash/darwin
+    scratch_dir=$HOME/cdash/darwin
     base_dir=${scratch_dir}
   else
     scratch_dir=/usr/projects/draco/regress/cdash/darwin
