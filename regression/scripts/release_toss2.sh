@@ -35,16 +35,27 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # environment (use draco modules)
 # release for each module set
-environments="intel15env"
+environments="intel15env gcc530env"
 function intel15env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
   run "module load cmake/3.5.2 svn numdiff"
-  run "module load intel/15.0.5 openmpi/1.6.5 mkl"
-  run "module load random123 eospac/6.2.4 ndi"
-  run "module load metis/5.1.0 parmetis/4.0.3 superlu-dist/4.3"
-  run "module load trilinos/12.6.1"
+  run "module load intel/15.0.5 openmpi/1.6.5"
+  run "module load random123 eospac/6.2.4 gsl/2.1"
+  run "module load mkl metis/5.1.0 ndi"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.6.1"
+  run "module list"
+}
+function gcc530env()
+{
+  run "module purge"
+  run "module load friendly-testing user_contrib"
+  run "module load cmake/3.5.2 svn numdiff"
+  run "module load gcc/5.3.0 openmpi/1.6.5"
+  run "module load random123 eospac/6.2.4 gsl/2.1"
+  run "module load lapack/3.5.0 metis/5.1.0 ndi"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.6.1"
   run "module list"
 }
 
@@ -70,7 +81,7 @@ establish_permissions
 export source_prefix="/usr/projects/$package/$pdir"
 (cd /usr/projects/$package; rm latest; ln -s $pdir latest)
 scratchdir=`selectscratchdir`
-ppn=`showstats -n | grep 10 | head -n 1 | awk '{print $3}'`
+ppn=`showstats -n | tail -n 1 | awk '{print $3}'`
 #build_pe=`npes_build`
 #test_pe=`npes_test`
 
@@ -162,6 +173,13 @@ for env in $environments; do
 
     # export dry_run=0
 
+    # The Pack_Build_gnu EAP target needs this symlink on moonlight
+    #if test `machineName` == moonlight; then
+    #  run "cd $source_prefix"
+    #  gccflavor=`echo $flavor | sed -e s%$LMPI-$LMPIVER%gcc-4.9.2%`
+    #  run "ln -s $flavor $gccflavor"
+    #fi
+
   done
 done
 
@@ -170,13 +188,6 @@ done
 ##---------------------------------------------------------------------------##
 
 publish_release
-
-# The Pack_Build_gnu EAP target needs this symlink on moonlight
-if test `machineName` == moonlight; then
-  run "cd $source_prefix"
-  gccflavor=`echo $flavor | sed -e s%$LMPI-$LMPIVER%gcc-4.9.2%`
-  run "ln -s $flavor $gccflavor"
-fi
 
 ##---------------------------------------------------------------------------##
 ## End

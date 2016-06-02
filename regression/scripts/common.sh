@@ -409,7 +409,7 @@ function publish_release()
     # Set access to top level install dir.
     if test -d $install_prefix; then
       run "chgrp -R ${install_group} $source_prefix"
-      run "chmod $install_permissions $source_prefix"
+      run "chmod -R $install_permissions $source_prefix"
     fi
 
     # dirs="$script_dir $source_prefix/source $source_prefix/logs"
