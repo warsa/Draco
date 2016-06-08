@@ -736,6 +736,7 @@ auto-mode-alist and set up some customizations for DRACO."
       (local-set-key [(f5)] 'draco-makefile-divider)
       (local-set-key [(f6)] 'draco-makefile-comment-divider)
       (draco-mode-update-menu (draco-menu-insert-comments-makefile))
+      (set-fill-column draco-code-comment-width)
       (setq sh-basic-offset 2 sh-indentation 2)
       )
     (add-hook 'sh-mode-hook 'draco-sh-mode-hook)
