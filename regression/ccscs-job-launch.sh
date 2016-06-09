@@ -1,15 +1,26 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/ccscs-job-launch.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # called from regression-master.sh
 # assumes the following variables are defined in regression-master.sh:
-#    $regdir     - /home/regress
-#    $subproj    - 'draco', 'clubimc', 'jaynne', etc.
+#    $regdir     - /scratch/regress
+#    $rscriptdir - /scratch/regress/draco/regression (actually, the location
+#                  where the active regression_master.sh is located)
+#    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
 #    $build_type - 'Debug', 'Release'
 #    $extra_params - '', 'intel13', 'pgi', 'coverage'
 
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
+scriptname=`basename $0`
+host=`uname -n`
 
  # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -19,19 +30,23 @@ done
 
 # sanity check
 if test "${regdir}x" = "x"; then
-    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'regdir' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    exit 1
+fi
+if test "${rscriptdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
 if test "${subproj}x" = "x"; then
-    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'subproj' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
 if test "${build_type}x" = "x"; then
-    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'build_type' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
 if test "${logdir}x" = "x"; then
-    echo "FATAL ERROR in ccscs-job-launch.sh: You did not set 'logdir' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
     exit 1
 fi
 
@@ -49,9 +64,9 @@ else
 echo "   extra_params   = ${extra_params}"
 fi
 echo "   regdir         = ${regdir}"
+echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
-#echo "   base_dir       = ${base_dir}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -67,8 +82,8 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build, Test and Submit (no Torque batch system here).
-machine=`uname -n | sed -e 's/[.].*//'`
-cmd="${regdir}/draco/regression/ccscs-regress.msub >& ${logdir}/$machine-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
+export REGRESSION_PHASE=cbts
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
 echo "${cmd}"
 eval "${cmd}"
 

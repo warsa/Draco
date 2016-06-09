@@ -1,4 +1,11 @@
 #!/bin/bash -l
+##---------------------------------------------------------------------------##
+## File  : regression/ccscs-regression.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 #----------------------------------------------------------------------#
 # The script starts here
@@ -12,6 +19,10 @@ if test "${subproj}x" == "x"; then
 fi
 if test "${regdir}x" == "x"; then
    echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${rscriptdir}x" == "x"; then
+   echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
 if test "${build_type}x" == "x"; then
@@ -56,10 +67,10 @@ case $machine in
 ccscs[0-9])
     ctestparts=Configure,Build,Test,Submit
     # Force new log file (vs appending)
-    echo "     " > ${logdir}/ccscs-${build_type}${epdash}${extra_params}-${subproj}-cbts.log
+    echo "     " > ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log
     echo "==========================================================================="
-    echo "CCSC Regression: ${ctestparts} from ${machine}."
-    echo "                 ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
+    echo "CCSCS Regression: ${ctestparts} from ${machine}."
+    echo "                  ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
     echo "==========================================================================="
     ;;
 #ccscs-fey*)
@@ -230,7 +241,7 @@ echo "ccscs-regress.msub: comp           = $comp"
 #----------------------------------------------------------------------#
 
 if test "${subproj}" == draco; then
-    script_dir=${regdir}/draco/regression
+    script_dir=${rscriptdir}
     script_name=Draco_Linux64.cmake
 elif test "${subproj}" == jayenne; then
     script_dir=${regdir}/jayenne/regression

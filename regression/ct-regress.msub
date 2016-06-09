@@ -60,16 +60,16 @@ case $machine in
 ct-login[0-9].localdomain)
     ctestparts=Test
     # Force create of a new log file (don't append)
-    echo "Purging ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log"
-    echo "    " > ${logdir}/ct-${build_type}-${extra_params}${epdash}${subproj}-t.log
+    echo "Purging ${logdir}/ct-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log"
+    echo "    " > ${logdir}/ct-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log
     ;;
 ct-fe1*)
-    if test "${mode}" = "cb"; then
+    if test "${REGRESSION_PHASE}" = "cb"; then
        ctestparts=Configure,Build
-    elif test "${mode}" = "s"; then
+    elif test "${REGRESSION_PHASE}" = "s"; then
        ctestparts=Submit
     else
-       echo "Fatal Error, mode = \"${mode}\" does not match \"cb\" or \"s\"."
+       echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
        exit 1
     fi
     ;;

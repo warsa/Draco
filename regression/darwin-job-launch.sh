@@ -1,10 +1,20 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/darwin-job-launch.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # called from regression-master.sh
 # assumes the following variables are defined in regression-master.sh:
-#    $regdir     - /home/regress
-#    $subproj    - 'draco', 'clubimc', etc.
-#    $build_type - 'Debug', 'Release', 'Coverage'
+#    $regdir     - /scratch/regress
+#    $rscriptdir - /scratch/regress/draco/regression (actually, the location
+#                  where the active regression_master.sh is located)
+#    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
+#    $build_type - 'Debug', 'Release'
+#    $extra_params - '', 'intel13', 'pgi', 'coverage'
 
 # command line arguments
 args=( "$@" )
@@ -12,18 +22,8 @@ nargs=${#args[@]}
 scriptname=`basename $0`
 host=`uname -n`
 
-# if test ${nargs} -lt 1; then
-#     echo "Fatal Error: launch job requires a subproject name"
-#     echo " "
-#     echo "Use:"
-#     echo "   launchjob projname [jobid] [jobid]"
-#     echo " "
-#     return 1
-#     # exit 1
-# fi
-
 #export MOABHOMEDIR=/opt/MOAB
-export SHOWQ=/usr/bin/squeue
+export SHOWQ=/bin/squeue
 
 # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -33,15 +33,19 @@ done
 
 # sanity check
 if test "${regdir}x" = "x"; then
-    echo "FATAL ERROR in darwin-job-launch.sh: You did not set 'regdir' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    exit 1
+fi
+if test "${rscriptdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
 if test "${subproj}x" = "x"; then
-    echo "FATAL ERROR in darwin-job-launch.sh: You did not set 'subproj' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
 if test "${build_type}x" = "x"; then
-    echo "FATAL ERROR in darwin-job-launch.sh: You did not set 'build_type' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
 if test "${logdir}x" = "x"; then
@@ -63,9 +67,9 @@ else
 echo "   extra_params   = ${extra_params}"
 fi
 echo "   regdir         = ${regdir}"
+echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
-#echo "   base_dir       = ${base_dir}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -80,14 +84,20 @@ for jobid in ${dep_jobids}; do
     done
 done
 
-case "${extra_params}" in
-knightscorner)
-   darwin_regress_script="${regdir}/draco/regression/darwin-knc-regress.msub"
-   ;;
-*)
-   darwin_regress_script="${regdir}/draco/regression/darwin-regress.msub"
-   ;;
-esac
+darwin_regress_script="${regdir}/draco/regression/darwin-regress.msub"
+
+##---------------------------------------------------------------------------------------##
+# Proposed: Init, Configure, Build, Test and Submit
+# (1) Init (clone) from the front end.
+# (2) Configure, build and test from the backend
+# (3) Submit results from the front end.
+# Submit from the front end
+
+# Init from the front end (git clone)
+#export REGRESSION_PHASE=i
+#cmd="${darwin_regress_script} >& ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-i.log"
+#echo "${cmd}"
+#eval "${cmd}"
 
 # Configure, Build, Test on back end
 export REGRESSION_PHASE=cbt

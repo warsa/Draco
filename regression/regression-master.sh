@@ -1,4 +1,11 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/regression-master.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # Use:
 # - Call from crontab using
@@ -35,10 +42,6 @@ print_use()
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
     echo "                            gcc530, gcc610, nr, perfbench, pgi}"
-#    echo " "
-#    echo "Extra parameters read from environment:"
-#    echo "   ENV{base_dir}       = {/var/tmp/$USER/cdash, /scratch/$USER/cdash}"
-#    echo "   ENV{regdir}         = {/home/regress, /home/$USER}"
     echo " "
     echo "Example:"
     echo "./regression-master.sh -b Release -d Nightly -p \"draco jayenne capsaicin\""
@@ -68,8 +71,7 @@ epdash=""
 prdash=""
 userlogdir=""
 featurebranch=""
-#rscriptdir=`dirname $0`
-#if test "${rscriptdir}" = "."; then rscriptdir=`pwd`; fi
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ##---------------------------------------------------------------------------##
 ## Command options
@@ -129,7 +131,7 @@ if ! test "${extra_params}x" = "x"; then
       extra_params=""; epdash="" ;;
    coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
       ;;
-   knightscorner | bounds_checking | gcc530 | clang | gcc610 )
+   bounds_checking | gcc530 | clang | gcc610 )
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -152,8 +154,8 @@ export host=`uname -n | sed -e 's/[.].*//g'`
 
 case ${host} in
 ct-*)
-    machine_name_long=Cielito
-    machine_name_short=ct
+    export machine_name_long=Cielito
+    export machine_name_short=ct
     export regdir=/usr/projects/jayenne/regress
     # Argument checks
     if ! test "${extra_params}x" = "x"; then
@@ -167,8 +169,8 @@ ct-*)
     fi
     ;;
 ml-*)
-    machine_name_long=Moonlight
-    machine_name_short=ml
+    export machine_name_long=Moonlight
+    export machine_name_short=ml
     result=`fn_exists module`
     if ! test $result -eq 0; then
       # echo 'module function is defined'
@@ -190,8 +192,8 @@ ml-*)
     fi
     ;;
 tt-*)
-    machine_name_long=Trinitite
-    machine_name_short=tt
+    export machine_name_long=Trinitite
+    export machine_name_short=tt
     export regdir=/usr/projects/jayenne/regress
     # Argument checks
     if ! test "${extra_params}x" = "x"; then
@@ -205,11 +207,11 @@ tt-*)
     fi
     ;;
 ccscs[0-9])
-    machine_name_long="Linux64 on CCS LAN"
-    machine_name_short=ccscs
-    if ! test -d "${regdir}/draco/regression"; then
+    export machine_name_long="Linux64 on CCS LAN"
+    export machine_name_short=ccscs
+    #if ! test -d "${regdir}/draco/regression"; then
        export regdir=/scratch/regress
-    fi
+    #fi
     # Argument checks
     if ! test "${extra_params}x" = "x"; then
         case $extra_params in
@@ -224,14 +226,14 @@ ccscs[0-9])
     fi
     ;;
 darwin*)
-    machine_name_long="Linux64 on CCS Darwin cluster"
-    machine_name_short=darwin
+    export machine_name_long="Linux64 on CCS Darwin cluster"
+    export machine_name_short=darwin
     export regdir=/usr/projects/draco/regress
     # Argument checks
     if ! test "${extra_params}x" = "x"; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        cuda | fulldiagnostics | nr | perfbench | knightscorner ) # known, continue
+        cuda | fulldiagnostics | nr | perfbench ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
@@ -246,7 +248,7 @@ esac
 ##---------------------------------------------------------------------------##
 ## Export environment
 ##---------------------------------------------------------------------------##
-# Logs go here (userlogdir is blank for 'option -r'
+# Logs go here (userlogdir is blank for 'option -r')
 export logdir="${regdir}/logs${userlogdir}"
 mkdir -p $logdir
 
@@ -270,80 +272,42 @@ echo "   build_type     = ${build_type}"
 echo "   extra_params   = ${extra_params}"
 echo "   regdir         = ${regdir}"
 echo "   dashboard_type = ${dashboard_type}"
-#echo "   base_dir       = ${base_dir}"
-#echo "   rscriptdir     = ${rscriptdir}"
+echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   projects       = \"${projects}\""
 echo "   regress_mode   = ${regress_mode}"
 echo "   featurebranch  = ${featurebranch}"
 echo " "
 echo "Descriptions:"
-#echo "   rscriptdir -  the location of the draco regression scripts."
+echo "   rscriptdir -  the location of the draco regression scripts."
 echo "   logdir     -  the location of the output logs."
-echo "   regdir     -  the location of the main regression scripts (regdir/draco/regression)."
+echo "   regdir     -  the location of the top level regression system."
 echo " "
 
-
-# use forking to reduce total wallclock runtime, but do not fork
-# when there is a dependency:
+# use forking to reduce total wallclock runtime, but do not fork when there is a
+# dependency:
 #
 # draco --> capsaicin  --\
 #       --> jayenne     --+--> asterisk
-
-# special cases
-# case $extra_params in
-# coverage)
-#     projects="draco capsaicin jayenne asterisk"
-#     ;;
-# cuda)
-#     # do not build capsaicin with CUDA
-#     projects="draco jayenne"
-#     ;;
-# fulldiagnostics)
-#     # do not build capsaicin or milagro with full diagnostics turned on.
-#     projects="draco jayenne"
-#     ;;
-# intel14)
-#     # also build capsaicin
-#     projects="draco"
-#     ;;
-# nr)
-#     projects="jayenne"
-#     ;;
-# perfbench)
-#     projects="capsaicin"
-#     ;;
-# pgi)
-#     # Capsaicin does not support building with PGI (lacking vendor installations!)
-#     projects="draco jayenne"
-#     ;;
-# *)
-#     # projects="draco capsaicin jayenne asterisk"
-#     # projects="jayenne"
-#     projects="draco jayenne capsaicin"
-#     epdash=""
-#     ;;
-# esac
 
 ##---------------------------------------------------------------------------##
 ## Launch the jobs...
 ##---------------------------------------------------------------------------##
 
-# The job launch logic spawns a job for each project immediately, but
-# the *-job-launch.sh script will spin until all dependencies (jobids)
-# are met.  Thus, the ml-job-launch.sh for milagro will start
-# immediately, but it will not do any real work until both draco and
-# clubimc have completed.
+# The job launch logic spawns a job for each project immediately, but the
+# *-job-launch.sh script will spin until all dependencies (jobids) are met.
+# Thus, the ml-job-launch.sh for milagro will start immediately, but it will not
+# do any real work until both draco and clubimc have completed.
 
 # More sanity checks
-if ! test -x ${regdir}/draco/regression/${machine_name_short}-job-launch.sh; then
+if ! test -x ${rscriptdir}/${machine_name_short}-job-launch.sh; then
    echo "FATAL ERROR: I cannot find ${rscriptdir}/draco/regression/${machine_name_short}-job-launch.sh."
    exit 1
 fi
 
 export subproj=draco
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
@@ -354,7 +318,7 @@ fi
 export subproj=jayenne
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   # Run the *-job-launch.sh script (special for each platform).
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Spin until $draco_jobid disappears (indicates that draco has been
   # built and installed)
   cmd+=" ${draco_jobid}"
@@ -368,7 +332,7 @@ fi
 
 export subproj=capsaicin
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
   case $extra_params in
   coverage)
@@ -387,7 +351,7 @@ fi
 
 export subproj=asterisk
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${regdir}/draco/regression/${machine_name_short}-job-launch.sh"
+  cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Wait for wedgehog and capsaicin regressions to finish
   cmd+=" ${jayenne_jobid} ${capsaicin_jobid}"
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"

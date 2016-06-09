@@ -32,6 +32,15 @@ run () {
    fi
 }
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
+
 function xfpull()
 {
     wantfile=$1
@@ -151,11 +160,20 @@ if test ${draco_git_ready} = 1; then unpack_repo_git "draco.git"; fi
 
 # Update permisssions as needed
 run "cd ${work_dir}/.."
-run "chgrp -R draco svn"
-run "chmod -R g+rwX,o-rwX svn"
+run "chgrp -R draco svn git"
+run "chmod -R g+rwX,o-rwX svn git"
+
+# Modules
+# ----------------------------------------
+result=`fn_exists module`
+if test $result -eq 0; then
+    echo 'module function is defined'
+else
+    echo 'module function does not exist. defining a local function ...'
+    run "source /usr/share/Modules/init/bash"
+fi
 
 # Update Module directories
 module load user_contrib svn
 cd /usr/projects/draco/vendors/environment
-# /usr/projects/draco/vendors/subversion-1.8.10/moonlight/bin/svn up
 svn up

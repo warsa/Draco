@@ -1,26 +1,26 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/tt-job-launch.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # called from regression-master.sh
-# assumes the following variables are defined in regression-master.sh
-#    $regdir     - /home/regress
-#    $subproj    - 'draco', 'jayenne', etc.
-#    $build_type - 'Debug', 'Release', 'Coverage'
+# assumes the following variables are defined in regression-master.sh:
+#    $regdir     - /scratch/regress
+#    $rscriptdir - /scratch/regress/draco/regression (actually, the location
+#                  where the active regression_master.sh is located)
+#    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
+#    $build_type - 'Debug', 'Release'
+#    $extra_params - '', 'intel13', 'pgi', 'coverage'
 
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
 scriptname=`basename $0`
 host=`uname -n`
-
-# if test ${nargs} -lt 1; then
-#     echo "Fatal Error: launch job requires a subproject name"
-#     echo " "
-#     echo "Use:"
-#     echo "   launchjob projname [jobid] [jobid]"
-#     echo " "
-#     return 1
-#     # exit 1
-# fi
 
 export SHOWQ=/opt/MOAB/bin/showq
 
@@ -32,15 +32,19 @@ done
 
 # sanity check
 if test "${regdir}x" = "x"; then
-    echo "FATAL ERROR in tt-job-launch.sh: You did not set 'regdir' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    exit 1
+fi
+if test "${rscriptdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
 if test "${subproj}x" = "x"; then
-    echo "FATAL ERROR in tt-job-launch.sh: You did not set 'subproj' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
 if test "${build_type}x" = "x"; then
-    echo "FATAL ERROR in tt-job-launch.sh: You did not set 'build_type' in the environment!"
+    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
 if test "${logdir}x" = "x"; then
@@ -62,42 +66,38 @@ else
 echo "   extra_params   = ${extra_params}"
 fi
 echo "   regdir         = ${regdir}"
+echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
-#echo "   base_dir       = ${base_dir}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
-
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
 
 for jobid in ${dep_jobids}; do
     while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
-       echo "   ${subproj}: waiting for jobid = $jobid to finish."
+       echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 min)."
        sleep 5m
     done
 done
 
 # Configure, Build on front end
-export mode=cb
+export REGRESSION_PHASE=cb
 echo " "
 echo "Configure and Build on the front end..."
-cmd="${regdir}/draco/regression/tt-regress.msub >& ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
 # Wait for CB (Configure and Build) before starting the testing and
 # reporting from the login node:
 
+export REGRESSION_PHASE=t
 echo " "
 echo "Test from the login node..."
-cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-t.log ${regdir}/draco/regression/tt-regress.msub"
+cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 jobid=`echo $jobid | sed '/^$/d'`
@@ -111,9 +111,9 @@ while test "`${SHOWQ} | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
-mode=s
+export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from tt-fey."
-cmd="${regdir}/draco/regression/tt-regress.msub >& ${logdir}/tt-${build_type}-${extra_params}${epdash}${subproj}-${mode}.log"
+cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 

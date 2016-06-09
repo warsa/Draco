@@ -1,9 +1,18 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/ml-job-launch.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
-# called from regression-master.cs
-# assumes the following variables are defined in regression-master.cs:
-#    $regdir     - /home/regress
-#    $subproj    - 'draco', 'clubimc', 'jaynne', etc.
+# called from regression-master.sh
+# assumes the following variables are defined in regression-master.sh:
+#    $regdir     - /scratch/regress
+#    $rscriptdir - /scratch/regress/draco/regression (actually, the location
+#                  where the active regression_master.sh is located)
+#    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
 #    $build_type - 'Debug', 'Release'
 #    $extra_params - '', 'intel13', 'pgi', 'coverage'
 
@@ -12,16 +21,6 @@ args=( "$@" )
 nargs=${#args[@]}
 scriptname=`basename $0`
 host=`uname -n`
-
-# if test ${nargs} -lt 1; then
-#     echo "Fatal Error: launch job requires a subproject name"
-#     echo " "
-#     echo "Use:"
-#     echo "   launchjob projname [jobid] [jobid]"
-#     echo " "
-#     return 1
-#     # exit 1
-# fi
 
 export MOABHOMEDIR=/opt/MOAB
 extradirs="/opt/MOAB/bin /opt/MOAB/default/bin"
@@ -41,6 +40,10 @@ done
 # sanity check
 if test "${regdir}x" = "x"; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    exit 1
+fi
+if test "${rscriptdir}x" = "x"; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
 if test "${subproj}x" = "x"; then
@@ -80,9 +83,9 @@ else
 echo "   extra_params   = ${extra_params}"
 fi
 echo "   regdir         = ${regdir}"
+echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
-#echo "   base_dir       = ${base_dir}"
 echo "   MOAB queue     = ${access_queue}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
@@ -105,13 +108,13 @@ done
 
 # Configure on the front end
 export REGRESSION_PHASE=c
-cmd="${regdir}/draco/regression/ml-regress.msub >& ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-c.log"
+cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-c.log"
 echo "${cmd}"
 eval "${cmd}"
 
 # Build, Test on back end
 export REGRESSION_PHASE=bt
-cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${regdir}/draco/regression/ml-regress.msub"
+cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${rscriptdir}/ml-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -127,7 +130,7 @@ done
 # Submit from the front end
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from ${host}."
-cmd="${regdir}/draco/regression/ml-regress.msub >& ${logdir}/ml-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
+cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
 echo "${cmd}"
 eval "${cmd}"
 
