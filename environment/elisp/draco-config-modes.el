@@ -56,6 +56,7 @@ and add turn-on-auto-fill to the mppl-mode-hook."
 ;; TCL
 ;; ========================================
 
+(defvar tcl-indent-level 2)
 (defun draco-setup-tcl-mode ()
   "Autoload tcl-mode and append the appropriate suffixes to
 auto-mode-alist."
@@ -72,7 +73,7 @@ auto-mode-alist."
       "draco-mode hooks added to TCL mode."
       (turn-on-draco-mode)
       (turn-on-auto-fill)
-      (defvar tcl-indent-level 2))
+      (setq tcl-indent-level 2))
     (add-hook 'tcl-mode-hook 'draco-tcl-mode-hook)))
 
 ;; ========================================

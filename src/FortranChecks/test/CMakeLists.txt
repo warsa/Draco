@@ -61,9 +61,10 @@ if( HAVE_MIC )
   list( APPEND test_deps ${libifport_loc} ${libifcoremt_loc} )
 endif()
 
-add_scalar_tests(
+add_parallel_tests(
   SOURCES "${test_sources}"
-  DEPS    "${test_deps}" )
+  DEPS    "${test_deps}"
+  PE_LIST "1" )
 
 add_parallel_tests(
   SOURCES "${ptest_sources}"

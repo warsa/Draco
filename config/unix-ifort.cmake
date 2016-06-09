@@ -32,7 +32,7 @@ if( NOT Fortran_FLAGS_INITIALIZED )
     set( CMAKE_Fortran_FLAGS "-dynamic ${CMAKE_Fortran_FLAGS}" )
   endif()
   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -traceback -ftrapuv -check -DDEBUG" )
-  set( CMAKE_Fortran_FLAGS_RELEASE        "-O2 -inline-level=2 -fp-speculation fast -fp-model fast -align array32byte -openmp-report0 -funroll-loops -DNDEBUG" )
+  set( CMAKE_Fortran_FLAGS_RELEASE        "-O2 -inline-level=2 -fp-speculation fast -fp-model fast -align array32byte -funroll-loops -DNDEBUG" )
   set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O2 -inline-level=2 -openmp-report0 -inline-level=2 -funroll-loops -DDEBUG" )
 

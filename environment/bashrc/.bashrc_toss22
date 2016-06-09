@@ -43,7 +43,6 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-
 #    export ucmf=$HOME/modulefiles
 #    module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`
     module load user_contrib
