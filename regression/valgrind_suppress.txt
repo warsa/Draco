@@ -47,7 +47,6 @@
    Memcheck:Leak
    match-leak-kinds: definite
    fun:malloc
-   fun:store
    ...
    fun:PMPI_Init_thread
    ...
@@ -99,6 +98,16 @@
    fun:malloc
    fun:opal_dss_copy_value
    ...
+   fun:start_thread
+   fun:clone
+}
+{
+   clone3
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:opal_class_initialize
+   fun:listen_thread
    fun:start_thread
    fun:clone
 }

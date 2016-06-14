@@ -97,6 +97,17 @@ if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
     )
 endif()
 
+# Exclude tstTime from valgrind checks.
+set( nomemcheck_tests ${PROJECT_SOURCE_DIR}/tstTime.cc )
+list( REMOVE_ITEM test_sources ${nomemcheck_tests} )
+add_parallel_tests(
+  SOURCES   "${nomemcheck_tests}"
+  DEPS      Lib_c4
+  PE_LIST   "1;2;4"
+  LABEL     "nomemcheck"
+  )
+
+
 # The rest of the tests
 
 add_parallel_tests(
