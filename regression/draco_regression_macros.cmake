@@ -698,44 +698,6 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
    endif()
 endmacro(process_cc_or_da)
 
-
-# ------------------------------------------------------------
-# Special default settings for a couple of platforms
-#
-# ------------------------------------------------------------
-macro(platform_customization)
-   if( "${sitename}" MATCHES "Cielito" OR
-       "${sitename}" MATCHES "Cielo" OR
-       "${sitename}" MATCHES "Trinitite" OR
-       "${sitename}" MATCHES "Trinity" )
-
-# These values are from draco/config/CrayConfig.cmake
-      set(CT_CUSTOM_VARS
-"CMAKE_C_COMPILER:FILEPATH=cc
-CMAKE_CXX_COMPILER:FILEPATH=CC
-CMAKE_Fortran_COMPILER:FILEPATH=ftn
-CMAKE_C_FLAGS:STRING=-dynamic
-CMAKE_CXX_FLAGS:STRING=-dynamic
-CMAKE_Fortran_FLAGS:STRING=-dynamic
-CMAKE_EXE_LINKER_FLAGS:STRING=-dynamic
-
-DRACO_LIBRARY_TYPE:STRING=STATIC
-MPIEXEC:FILEPATH=aprun
-MPIEXEC_NUMPROC_FLAG:STRING=-n
-
-MPI_C_LIBRARIES:FILEPATH=
-MPI_CXX_LIBRARIES:FILEPATH=
-MPI_Fortran_LIBRARIES:FILEPATH=
-MPI_C_INCLUDE_PATH:PATH=
-MPI_CXX_INCLUDE_PATH:PATH=
-MPI_Fortran_INCLUDE_PATH:PATH=
-MPI_C_COMPILER:FILEPATH=
-MPI_CXX_COMPILER:FILEPATH=
-MPI_Fortran_COMPILER:FILEPATH=")
-
-   endif()
-endmacro(platform_customization)
-
 # ------------------------------------------------------------
 # Special default settings for a couple of platforms
 #
@@ -783,3 +745,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
 
 endmacro(set_pkg_work_dir)
+
+#------------------------------------------------------------------------------#
+# End draco_regression_macros.cmake
+#------------------------------------------------------------------------------#

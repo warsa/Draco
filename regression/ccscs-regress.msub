@@ -244,13 +244,13 @@ if test "${subproj}" == draco; then
     script_dir=${rscriptdir}
     script_name=Draco_Linux64.cmake
 elif test "${subproj}" == jayenne; then
-    script_dir=${regdir}/jayenne/regression
+    script_dir=`echo ${rscriptdir} | sed -e 's/draco/jayenne/'`
     script_name=Jayenne_Linux64.cmake
 elif test "${subproj}" == capsaicin; then
-    script_dir=${regdir}/capsaicin/scripts
+    script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
 elif test "${subproj}" == asterisk; then
-    script_dir=${regdir}/asterisk/regression
+    script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
     script_name=Asterisk_Linux64.cmake
 fi
 

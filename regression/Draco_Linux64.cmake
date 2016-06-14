@@ -1,12 +1,17 @@
-#
-# Linux 64-bit
+#-----------------------------*-cmake-*----------------------------------------#
+# file   draco/regression/Draco_Win32.cmake
+# author Kelly Thompson <kgt@lanl.gov>
+# date   2016 June 14
+# brief  CTest regression script for Draco on Linux64
+# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
 # Ref: http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest
 
 cmake_minimum_required(VERSION 3.0.0)
 
 # Use:
-# - See jayenne/regression/nightly_cmake_script.sh or
-#   nightly_regression.csh
+# - See jayenne/regression/regression_master.sh
 # - Summary: The script must do something like this:
 #   [export work_dir=/full/path/to/working/dir]
 #   ctest [-V] [-VV] -S /path/to/this/script.cmake,\
@@ -25,10 +30,6 @@ if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
 else()
   set_svn_command("draco/trunk")
 endif()
-
-# Platform customization:
-# 1. Ceilito - set TOOCHAIN_SETUP
-platform_customization()
 
 ####################################################################
 # The values in this section are optional you can either
@@ -52,7 +53,6 @@ USE_CUDA:BOOL=${USE_CUDA}
 
 ${INIT_CACHE_PPE_PREFIX}
 ${TOOLCHAIN_SETUP}
-${CT_CUSTOM_VARS}
 # Set DRACO_DIAGNOSTICS and DRACO_TIMING:
 ${FULLDIAGNOSTICS}
 ${BOUNDS_CHECKING}
