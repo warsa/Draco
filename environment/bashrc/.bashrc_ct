@@ -37,7 +37,8 @@ module load friendly-testing
 module load user_contrib
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
-gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs svn gcc"
+gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs \
+subversion git gcc"
 
 # Cielo doesn't have module hsi yet (2015 Oct).
 case ${target} in
@@ -74,6 +75,12 @@ function rmdracoenv ()
 }
 
 export OMP_NUM_THREADS=8
+
+# For Cray environments, help CMake find the Cray compiler wrappers
+export CXX=CC
+export CC=cc
+export FC=ftn
+export CRAYPE_LINK_TYPE=dynamic
 
 # Avoid run time messages of the form:
 # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."

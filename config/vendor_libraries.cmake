@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 #
 # Look for any libraries which are required at the toplevel.
@@ -72,30 +70,59 @@ macro( setupLAPACKLibrariesUnix )
 
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
-      set( BLA_VENDOR Intel10_64lp )
-      find_package( LAPACK )
-      if( LAPACK_FOUND )
+      message( STATUS "Looking for lapack(MKL)...")
+      set( BLA_VENDOR "Intel10_64lp" )
+      find_package( BLAS QUIET )
+
+      # If we link statically, we notice that the mkl library dependencies are
+      # cyclic and FindBLAS and FindLAPACK will fail.  If this is the case, but
+      # we still found all the important libraries, set BLAS_FOUND=TRUE and
+      # finish setting up the MKL libraries as a valid TPL for blas/lapack.
+      if( NOT BLAS_FOUND AND
+          BLAS_iomp5_LIBRARY AND
+          BLAS_mkl_core_LIBRARY AND
+          BLAS_mkl_intel_thread_LIBRARY AND
+          BLAS_mkl_intel_lp64_LIBRARY )
+        set( BLAS_FOUND TRUE )
+      endif()
+
+      if( "${BLAS_mkl_core_LIBRARY}" MATCHES "libmkl_core.a" )
+        set( MKL_LIBRARY_TYPE "STATIC" )
+      else()
+        set( MKL_LIBRARY_TYPE "SHARED" )
+      endif()
+
+      if( BLAS_FOUND )
+        set( LAPACK_FOUND TRUE )
         set( lapack_FOUND ON )
-        add_library( lapack SHARED IMPORTED)
-        add_library( blas   SHARED IMPORTED)
-        add_library( blas::mkl_thread  SHARED IMPORTED)
-        add_library( blas::mkl_core    SHARED IMPORTED)
+        add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
+        add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)
+        add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
+        add_library( blas::mkl_core    ${MKL_LIBRARY_TYPE} IMPORTED)
         set_target_properties( blas::mkl_thread PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_thread_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
         set_target_properties( blas::mkl_core PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_core_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread )
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread
+          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
         set_target_properties( blas PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core )
+          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_mkl_intel_thread_LIBRARY};-Wl,--end-group"
+          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES blas )
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas
+          IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
+        message(STATUS "Looking for lapack(MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
+      else()
+        message(STATUS "Looking for lapack(MKL)...NOTFOUND")
       endif()
+
     endif()
   endif()
 

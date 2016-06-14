@@ -6,12 +6,10 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # Build notes: http://rtt/redmine/projects/draco/wiki/Configuration_and_Building
 
-cmake_minimum_required(VERSION 3.4.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
 project( Draco CXX C )
 
 # Do not look for Fortran for

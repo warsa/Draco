@@ -28,8 +28,6 @@
 # C4_MPI                     BOOL
 #
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 include( FeatureSummary )
 
@@ -319,6 +317,15 @@ macro( setupMPILibrariesUnix )
    if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
       message(STATUS "Looking for MPI...")
+
+      # If this is a Cray system and the Cray MPI compile wrappers are used,
+      # then do some special setup:
+      if( CRAY_PE )
+        set( MPIEXEC "aprun" CACHE STRING
+          "Program to execute MPI prallel programs." )
+        set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
+          "mpirun flag used to specify the number of processors to use")
+     endif()
 
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIRUN} )

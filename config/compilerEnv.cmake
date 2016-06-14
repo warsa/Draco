@@ -4,92 +4,8 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 include( FeatureSummary )
-
-# ----------------------------------------
-# PAPI
-# ----------------------------------------
-if( EXISTS $ENV{PAPI_HOME} )
-
-  set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
-  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
-endif()
-
-# PAPI 4.2 on CT uses a different setup.
-if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
-  set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-  string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE $ENV{PAPI_INCLUDE_OPTS} )
-  string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR $ENV{PAPI_POST_LINK_OPTS} )
-endif()
-
-if( HAVE_PAPI )
-  set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
-  set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
-  if( NOT EXISTS ${PAPI_LIBRARY} )
-    message( FATAL_ERROR "PAPI requested, but library not found.  Set PAPI_LIBDIR to correct path." )
-  endif()
-  mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
-  add_feature_info( HAVE_PAPI HAVE_PAPI "Provide PAPI hardware counters if available." )
-endif()
-
-# ----------------------------------------
-# MIC processors
-# ----------------------------------------
-if( "${HAVE_MIC}x" STREQUAL "x" )
-
-  # default to OFF
-  set( HAVE_MIC OFF)
-
-  # This was the old mechanism.  It fails to work because we might be
-  # targeting a haswell node that also has MIC processors. Still, we
-  # might want to use this in the future to determine if MICs are on
-  # the local node.
-  message( STATUS "Looking for availability of MIC hardware")
-  set( mic_found FALSE )
-  if( EXISTS /usr/sbin/micctrl )
-    exec_program(
-      /usr/sbin/micctrl
-      ARGS -s
-      OUTPUT_VARIABLE mic_status
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-      OUTPUT_QUIET
-      )
-    if( mic_status MATCHES online )
-      # set( HAVE_MIC ON CACHE BOOL "Does the local machine have MIC chips?" )
-      # If we areusing MIC, then disable CUDA.
-      # set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
-      set( mic_found TRUE )
-    endif()
-  endif()
-  if( mic_found )
-    message( STATUS "Looking for availability of MIC hardware - found")
-  else()
-    message( STATUS "Looking for availability of MIC hardware - not found")
-  endif()
-
-  if( ${mic_found} )
-    # Should we cross compile for the MIC?
-    # Look at the environment variable SLURM_JOB_PARTITION to determine
-    # if we should cross compile for the MIC processor.
-    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ...")
-    # See https://darwin.lanl.gov/darwin_hw/report.html for a list
-    # of string designators used as partition names:
-    if( NOT "$ENV{SLURM_JOB_PARTITION}x" STREQUAL "x" AND "$ENV{SLURM_JOB_PARTITION}" STREQUAL "knc-mic")
-      set( HAVE_MIC ON )
-      set( USE_CUDA OFF CACHE BOOL "Compile against Cuda libraries?")
-    endif()
-
-    # Store the result in the cache.
-    set( HAVE_MIC ${HAVE_MIC} CACHE BOOL "Should we cross compile for the MIC processor?" )
-    message(STATUS "Enable cross compiling for MIC (HAVE_MIC) ... ${HAVE_MIC}")
-    unset( mic_found)
-  endif()
-
-endif()
 
 # ------------------------------------------------------------------------------
 # Identify machine and save name in ds++/config.h
@@ -201,12 +117,22 @@ macro(dbsSetupCxx)
   elseif( ${my_cxx_compiler} STREQUAL "pgCC" )
     include( unix-pgi )
   elseif( ${my_cxx_compiler} MATCHES "CC" )
+    set( CRAY_PE ON CACHE BOOL
+      "Are we building in a Cray Programming Environment?")
+    # override default compiler wrapper flags for linking so that dynamic
+    # libraries are allowed.  This does not prevent us from generating static
+    # libraries if requested with DRACO_LIBRARY_TYPE=STATIC.
+    set( CMAKE_EXE_LINKER_FLAGS "-dynamic" CACHE STRING
+      "Extra flags for linking executables")
+    set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
+      "Keyword for creating new libraries (STATIC or SHARED)." FORCE )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
       include( unix-intel )
     elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
       include( unix-crayCC )
     else()
-      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper, but I don't know what compiler is wrapped." )
+      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler "
+        "wrapper, but I don't know what compiler is wrapped." )
     endif()
   elseif( ${my_cxx_compiler} MATCHES "cl" )
     include( windows-cl )

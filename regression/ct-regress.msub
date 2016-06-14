@@ -116,10 +116,12 @@ run "module load gcc/4.8.2 intel/15.0.5.223"
 run "module load cmake/3.5.2 numdiff svn"
 run "module load gsl/2.1  random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
+run "module load git"
 
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
+export CRAYPE_LINK_TYPE=dynamic
 comp=CC
 export OMP_NUM_THREADS=8
 

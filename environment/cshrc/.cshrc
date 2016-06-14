@@ -55,8 +55,6 @@ case ml*.localdomain:
 
 case lu*.lanl.gov:
 case lu*.localdomain:
-case ty*.lanl.gov:
-case ty*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     module use $VENDOR_DIR/Modules/hpc
     module use $VENDOR_DIR/Modules/tu-fe
@@ -72,6 +70,7 @@ case ty*.localdomain:
 
 case redfta[0-9]*:
 case rfta*:
+case redcap*:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     module use $VENDOR_DIR/Modules/hpc
     module use $VENDOR_DIR/Modules/tu-fe
@@ -102,6 +101,10 @@ case ci*:
     module load ParMetis ndi random123 eospac/6.2.4
 
     setenv OMP_NUM_THREADS 8
+    setenv CXX CC
+    setenv CC cc
+    setenv FC ftn
+    setenv CRAYPE_LINK_TYPE dynamic
 
     # Avoid run time messages of the form:
     # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
