@@ -19,7 +19,8 @@ endif()
 
 # If environment variables are not set (GRACE_INC_DIR), look for the binary and
 # try to guess appropriate location of library and headers.
-find_program( Exe_grace xmgrace )
+find_program( Exe_grace
+  NAMES xmgrace ggrace)
 
 if( "${GRACE_INC_DIR}x" STREQUAL "x" AND
     NOT ${Exe_grace} MATCHES "NOTFOUND")
