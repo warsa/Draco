@@ -1,4 +1,11 @@
 #!/bin/bash -l
+##---------------------------------------------------------------------------##
+## File  : regression/darwin-regression.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 #SBATCH -N 1
 #SBATCH --time=480
@@ -17,6 +24,10 @@ if test "${subproj}x" == "x"; then
 fi
 if test "${regdir}x" == "x"; then
    echo "Fatal Error, regdir not found in environment."
+   exit 1
+fi
+if test "${rscriptdir}x" == "x"; then
+   echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
 if test "${build_type}x" == "x"; then
@@ -54,24 +65,10 @@ run () {
     if ! [ $dry_run ]; then eval $1; fi
 }
 
-#/projects/opt/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-#if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-#    source $HOME/.keychain/$MYHOSTNAME-sh
-#fi
 case $REGRESSION_PHASE in
 cbt) ctestparts=Configure,Build,Test;;
 s)   ctestparts=Submit;;
 esac
-
-# case $machine in
-# cn*)
-#     ctestparts=Configure,Build,Test
-#     # Force new log file (vs appending)
-#     echo "     " > ${logdir}/darwin-${build_type}-${extra_params}${epdash}${subproj}-cbt.log
-#     ;;
-# darwin-*)
-#     ctestparts=Submit ;;
-# esac
 
 echo "==========================================================================="
 echo "Darwin regression: ${ctestparts} from ${machine}."
@@ -81,15 +78,6 @@ run "ulimit -a"
 
 # Modules
 # ----------------------------------------
-#result=`fn_exists module`
-#echo "result = $result"
-#if test $result -eq 0; then
-#    echo 'module function is defined'
-#else
-#    echo 'module function does not exist. defining a local function ...'
-#    run "source /usr/share/Modules/init/bash"
-#fi
-
 # Use modules found in the draco directory
 run "module use --append /usr/projects/draco/vendors/Modules"
 
@@ -161,8 +149,6 @@ if test "${base_dir}x" = "x"; then
   else
     scratch_dir=/usr/projects/draco/regress/cdash/darwin
     base_dir=/usr/projects/draco/regress/cdash/darwin
-    #scratch_dir=/mnt/local/hdd1/draco-regress/cdash/darwin
-    #base_dir=/projects/opt/draco/regress/cdash/darwin
   fi
   mkdir -p $scratch_dir
   mkdir -p $base_dir

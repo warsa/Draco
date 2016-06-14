@@ -37,6 +37,8 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
+ulimit -a
+
 unset http_proxy
 unset HTTP_PROXY
 export VENDOR_DIR=/scratch/vendors
@@ -58,10 +60,6 @@ fn_exists()
 
 # Header
 # ----------------------------------------
-# epdash="-"
-# if test "${extra_params}x" = "x"; then
-#    epdash=""
-# fi
 machine=`uname -n | sed -e 's/[.].*//g'`
 case $machine in
 ccscs[0-9])
@@ -82,12 +80,6 @@ esac
 
 # Modules
 # ----------------------------------------
-#if test -z "$MODULESHOME"; then
-# if test -f /ccs/codes/radtran/vendors/modules-3.2.9/init/bash; then
-#    source /ccs/codes/radtran/vendors/modules-3.2.9/init/bash
-# fi
-#fi
-
 result=`fn_exists module`
 if test $result -eq 0; then
   echo 'module function is defined'
@@ -255,6 +247,10 @@ elif test "${subproj}" == asterisk; then
 fi
 
 if test "${regress_mode}" = "off"; then
+    export buildname_append="-${USER}"
+fi
+
+if test "${regress_mode}" = "off"; then
     export work_dir=${base_dir}/cdash/${subproj}/${dashboard_type}_${comp}/${build_type}
     export buildname_append="-${USER}"
     export AUTODOCDIR=$work_dir/autodoc
@@ -308,3 +304,7 @@ run "chgrp -R draco ${work_dir}"
 run "chmod -R g+rwX ${work_dir}"
 
 echo "All done."
+
+##---------------------------------------------------------------------------##
+## End of script
+##---------------------------------------------------------------------------##

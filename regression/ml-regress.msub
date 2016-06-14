@@ -1,4 +1,11 @@
 #!/bin/bash -l
+##---------------------------------------------------------------------------##
+## File  : regression/ccscs-regression.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 #MSUB -l walltime=08:00:00
 #MSUB -l nodes=1:ppn=16
@@ -18,6 +25,10 @@ if test "${regdir}x" == "x"; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
+if test "${rscriptdir}x" == "x"; then
+   echo "Fatal Error, rscriptdir not found in environment."
+   exit 1
+fi
 if test "${build_type}x" == "x"; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
@@ -34,6 +45,8 @@ ulimit -a
 
 unset http_proxy
 unset HTTP_PROXY
+unset https_proxy
+unset HTTPS_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
 moniker=`whoami`
 machine=`uname -n`
@@ -57,27 +70,15 @@ bt) ctestparts=Build,Test;;
 s) ctestparts=Submit;;
 esac
 
-# case $machine in
-# ml[0-9][0-9][0-9].localdomain)
-#     ctestparts=Configure,Build,Test
-#     # Force new log file (vs appending)
-#     echo "     " > ${logdir}/ml-${build_type}-${extra_params}${epdash}${subproj}-cb.log
-#     ;;
-# ml-fey*)
-#     ctestparts=Submit ;;
-# esac
-
 echo "==========================================================================="
 echo "Moonlight regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
 echo "==========================================================================="
-
-run "printenv"
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
-#echo "result = $result"
 if test $result -eq 0; then
     echo 'module function is defined'
 else
@@ -182,7 +183,6 @@ if test "${base_dir}x" = "x"; then
       exit 1
    fi
    if test "${regress_mode}" = "off"; then
-      # base_dir=${scratch_dir}
       base_dir=/usr/projects/jayenne/devs/${USER}/cdash/ml
    else
       base_dir=/usr/projects/jayenne/regress/cdash/ml
