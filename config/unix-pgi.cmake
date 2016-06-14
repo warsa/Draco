@@ -4,8 +4,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 set( draco_isPGI 1 CACHE BOOL "Are we using PGI CXX? -> ds++/config.h" )
 

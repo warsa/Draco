@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # Let anyone who is interested in which FORTRAN compiler we're using
 # switch on this macro.

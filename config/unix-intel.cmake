@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # History
 # ----------------------------------------
@@ -42,9 +40,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
     # For floating point consistency with Xeon when using Intel 15.0.090 + Intel MPI 5.0.2
     set( CMAKE_C_FLAGS_DEBUG        "${CMAKE_C_FLAGS_DEBUG} -fp-model precise -fp-speculation safe" )
   endif()
-  set( CMAKE_C_FLAGS_RELEASE        "-O3 -ip -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
+  set( CMAKE_C_FLAGS_RELEASE        "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -ip -fp  -pthread -fp-model precise -fp-speculation safe" )
+  set( CMAKE_C_FLAGS_RELWITHDEBINFO "-g -debug inline-debug-info -O3 -pthread -fp-model precise -fp-speculation safe" )
 
   set( CMAKE_CXX_FLAGS                "${CMAKE_C_FLAGS} -std=c++11" )
   set( CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG} -early-template-check")

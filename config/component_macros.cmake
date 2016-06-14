@@ -153,6 +153,7 @@ or the target must be labeled NOEXPORT.")
   set_target_properties( ${ace_TARGET} PROPERTIES
     OUTPUT_NAME ${ace_EXE_NAME}
     FOLDER      ${ace_FOLDER}
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
 #    ENABLE_EXPORTS TRUE # See cmake policy cmp0065
     COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
     )
@@ -346,6 +347,7 @@ macro( add_component_library )
     # Use custom library naming
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
     )
 
   #
@@ -909,6 +911,7 @@ macro( add_scalar_tests test_sources )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
+      INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
     # Do we need to use the Fortran compiler as the linker?
@@ -1055,6 +1058,7 @@ macro( add_parallel_tests )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
+      INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
     if( addparalleltest_MPI_PLUS_OMP )
