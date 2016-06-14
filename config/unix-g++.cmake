@@ -4,9 +4,14 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
+# History
+# ----------------------------------------
+# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
+
+# Notes:
+# ----------------------------------------
 # Useful options that could be added to aid debugging
 # http://gcc.gnu.org/wiki/Atomic/GCCMM
 # http://gcc.gnu.org/wiki/TransactionalMemory

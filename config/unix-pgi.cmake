@@ -5,6 +5,11 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+# History
+# ----------------------------------------
+# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
+
 set( draco_isPGI 1 CACHE BOOL "Are we using PGI CXX? -> ds++/config.h" )
 
 # NOTE: You may need to set TMPDIR to a location that the compiler can

@@ -6,12 +6,12 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # History
 # ----------------------------------------
 # 2015/09/28 - First cut.
+# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
 
 #
 # Compiler flag checks

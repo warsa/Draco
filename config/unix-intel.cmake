@@ -14,6 +14,8 @@
 # 11/18/2013 - For RELEASE builds, begin using -fp-model precise
 #              -fp-speculation safe.  Jayenne sees about 10%
 #              performance bump.
+# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
 
 #
 # Compiler flag checks

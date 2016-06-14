@@ -5,6 +5,11 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+# History
+# ----------------------------------------
+# 6/13/2016  - IPO settings moved to compilerEnv.cmake
+#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON).
+
 #
 # Compiler flag checks
 #
