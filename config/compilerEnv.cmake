@@ -7,6 +7,34 @@
 
 include( FeatureSummary )
 
+# ----------------------------------------
+# PAPI
+# ----------------------------------------
+if( EXISTS $ENV{PAPI_HOME} )
+
+  set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
+  set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
+  set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
+endif()
+
+# PAPI 4.2 on CT uses a different setup.
+if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
+  set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
+  string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE $ENV{PAPI_INCLUDE_OPTS} )
+  string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR $ENV{PAPI_POST_LINK_OPTS} )
+endif()
+
+if( HAVE_PAPI )
+  set( PAPI_INCLUDE ${PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
+  set( PAPI_LIBRARY ${PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
+  if( NOT EXISTS ${PAPI_LIBRARY} )
+    message( FATAL_ERROR "PAPI requested, but library not found.  Set PAPI_LIBDIR to correct path." )
+  endif()
+  mark_as_advanced( PAPI_INCLUDE PAPI_LIBRARY )
+  add_feature_info( HAVE_PAPI HAVE_PAPI "Provide PAPI hardware counters if available." )
+endif()
+
+
 # ------------------------------------------------------------------------------
 # Identify machine and save name in ds++/config.h
 # ------------------------------------------------------------------------------
@@ -131,7 +159,7 @@ macro(dbsSetupCxx)
     elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
       include( unix-crayCC )
     else()
-      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler "
+      message( FATAL_ERROR "I think the C++ compiler is a Cray compiler "
         "wrapper, but I don't know what compiler is wrapped." )
     endif()
   elseif( ${my_cxx_compiler} MATCHES "cl" )
@@ -152,8 +180,8 @@ macro(dbsSetupCxx)
 
   # Control the use of interprocedural optimization. This used to be set by
   # editing compiler flags directly, but now that CMake has a universal toggle,
-  # we use it. This value is used in component macros when properties are
-  # assigned to individual targets. Current status:
+  # we use it. This value is used in component_macros.cmake when properties
+  # are assigned to individual targets. Current status:
   #
   # - Cielito/Cielo: Intel with IPO (-ipo flag and linking with xiar) causes
   #   parser/tstutilities to fail.

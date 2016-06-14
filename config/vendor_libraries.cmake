@@ -71,6 +71,8 @@ macro( setupLAPACKLibrariesUnix )
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
       message( STATUS "Looking for lapack(MKL)...")
+      # CMake uses the 'Intel10_64lp' enum to indicate MKL.  
+      # For details see the cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
       find_package( BLAS QUIET )
 
