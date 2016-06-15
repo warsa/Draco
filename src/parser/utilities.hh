@@ -10,8 +10,6 @@
  * uniform way.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef parser_utilities_hh
 #define parser_utilities_hh
@@ -52,8 +50,10 @@ DLL_PUBLIC_parser
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry);
 
-DLL_PUBLIC_parser void parse_unsigned_vector(Token_Stream &, unsigned[], unsigned);
-DLL_PUBLIC_parser void set_internal_unit_system(rtt_units::UnitSystem const &units);
+DLL_PUBLIC_parser void parse_unsigned_vector(
+    Token_Stream &, unsigned[], unsigned);
+DLL_PUBLIC_parser void set_internal_unit_system(
+    rtt_units::UnitSystem const &units);
 DLL_PUBLIC_parser void set_unit_expressions_are_required(bool);
 DLL_PUBLIC_parser rtt_units::UnitSystem const &get_internal_unit_system();
 DLL_PUBLIC_parser bool unit_expressions_are_required();
@@ -78,7 +78,7 @@ parse_temperature(Token_Stream &,
                   unsigned number_of_variables,
                   std::map<string, pair<unsigned, Unit> > const &);
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
  * The parse_class template function is intended for general use as a common
@@ -88,8 +88,8 @@ parse_temperature(Token_Stream &,
  *
  *   SP<MyClass> spMyClass = parse_class<MyClass>(tokens);
  *
- * Developers may specialize this function as needed. A particular implementation
- * is suggested in Class_Parse_Table.hh.
+ * Developers may specialize this function as needed. A particular
+ * implementation is suggested in Class_Parse_Table.hh.
  *
  * The template parameter names the type of the object for which a smart pointer
  * is returned.

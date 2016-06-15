@@ -98,7 +98,6 @@ macro(dbsSetupCompilers)
   #   parser/tstutilities to fail.
   # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
   #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
-
   # In component_macros.cmake, this target property will be set:
   # INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
 
@@ -109,6 +108,7 @@ macro(dbsSetupCompilers)
     set( USE_IPO OFF )
   endif()
   set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
+    
 endmacro()
 
 #------------------------------------------------------------------------------#

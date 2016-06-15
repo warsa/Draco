@@ -17,9 +17,6 @@
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
-rtt_c4::Global_Timer do_timer(    "do_global_timer");
-rtt_c4::Global_Timer do_not_timer("do_not_global_timer");
-
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
@@ -159,8 +156,8 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     {
         ostringstream msg;
         msg << "The sum of cpu and user time is less than or equal to the\n\t"
-            << "reported wall clock time (within error bars = " << time_resolution
-            << " secs.)." << endl;
+            << "reported wall clock time (within error bars = "
+            << time_resolution << " secs.)." << endl;
         PASSMSG(msg.str());
     }
     else
@@ -207,16 +204,16 @@ void wall_clock_test( rtt_dsxx::UnitTest &ut )
     {
         std::ostringstream timingsingleline;
         t.printline( timingsingleline, 4, 8 );
-        // std::cout << "\"" <<  timingsingleline.str() << ".\"" << std::endl;
-        // std::cout << "len = " << timingsingleline.str().length() << std::endl;
 #ifdef HAVE_PAPI
         if( timingsingleline.str().length() == 34 )
 #else
         if( timingsingleline.str().length() == 26 )
 #endif
-            PASSMSG( "printline() returned a single line of the expected length." );
+            PASSMSG( string("printline() returned a single line of the")
+                     + " expected length." );
         else
-            FAILMSG( "printline() did not return a line of the expected length." );
+            FAILMSG( string("printline() did not return a line of the ")
+                     + "expected length." );
     }
 
     //------------------------------------------------------//
