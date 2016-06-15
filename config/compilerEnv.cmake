@@ -42,8 +42,7 @@ site_name( SITENAME )
 string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
 if( ${SITENAME} MATCHES "c[it]" )
   set( SITENAME "Cielito" )
-elseif( ${SITENAME} MATCHES "ml[0-9]+" OR ${SITENAME} MATCHES "ml-fey" OR
-    ${SITENAME} MATCHES "lu[0-9]+" OR ${SITENAME} MATCHES "lu-fey" )
+elseif( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
   set( SITENAME "Moonlight" )
 elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
   set( SITENAME "Trinitite" )
@@ -100,6 +99,9 @@ macro(dbsSetupCompilers)
   # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
   #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
 
+  # In component_macros.cmake, this target property will be set:
+  # INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
+
   set(USE_IPO ON)
   if( CRAY_PE )
     set( USE_IPO OFF )
@@ -107,8 +109,6 @@ macro(dbsSetupCompilers)
     set( USE_IPO OFF )
   endif()
   set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
-# INTERPROCEDURAL_OPTIMIZATION_RELEASE;ON    
-    
 endmacro()
 
 #------------------------------------------------------------------------------#
