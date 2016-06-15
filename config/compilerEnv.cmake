@@ -86,6 +86,29 @@ macro(dbsSetupCompilers)
   set( DRACO_SHARED_LIBS ${DRACO_SHARED_LIBS} CACHE STRING
     "This CPP symbol is used by config.h to signal if we are need to add declspec(dllimport) or declspec(dllexport) for MSVC." )
 
+  #----------------------------------------------------------------------------#
+  # Setup common options for targets
+  #----------------------------------------------------------------------------#
+
+  # Control the use of interprocedural optimization. This used to be set by
+  # editing compiler flags directly, but now that CMake has a universal toggle,
+  # we use it. This value is used in component_macros.cmake when properties
+  # are assigned to individual targets. Current status:
+  #
+  # - Cielito/Cielo: Intel with IPO (-ipo flag and linking with xiar) causes
+  #   parser/tstutilities to fail.
+  # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
+  #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
+
+  set(USE_IPO ON)
+  if( CRAY_PE )
+    set( USE_IPO OFF )
+  elseif( "${SITENAME}" STREQUAL "Moonlight" )
+    set( USE_IPO OFF )
+  endif()
+  set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
+# INTERPROCEDURAL_OPTIMIZATION_RELEASE;ON    
+    
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -172,29 +195,6 @@ macro(dbsSetupCxx)
     include( unix-g++ )
   else()
     message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
-  endif()
-
-  #----------------------------------------------------------------------------#
-  # Setup common options for targets
-  #----------------------------------------------------------------------------#
-
-  # Control the use of interprocedural optimization. This used to be set by
-  # editing compiler flags directly, but now that CMake has a universal toggle,
-  # we use it. This value is used in component_macros.cmake when properties
-  # are assigned to individual targets. Current status:
-  #
-  # - Cielito/Cielo: Intel with IPO (-ipo flag and linking with xiar) causes
-  #   parser/tstutilities to fail.
-  # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
-  #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
-
-  if( CRAY_PE )
-    unset( USE_IPO CACHE )
-  elseif( "${SITENAME}" STREQUAL "Moonlight" )
-    unset( USE_IPO CACHE )
-  else()
-    set( USE_IPO INTERPROCEDURAL_OPTIMIZATION_RELEASE;ON
-      CACHE BOOL "Use IPO?" )
   endif()
 
   # To the greatest extent possible, installed versions of packages

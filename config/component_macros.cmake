@@ -151,7 +151,7 @@ or the target must be labeled NOEXPORT.")
   set_target_properties( ${ace_TARGET} PROPERTIES
     OUTPUT_NAME ${ace_EXE_NAME}
     FOLDER      ${ace_FOLDER}
-    ${USE_IPO}
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
 #    ENABLE_EXPORTS TRUE # See cmake policy cmp0065
     COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
     )
@@ -338,14 +338,14 @@ macro( add_component_library )
   string( REPLACE "_test" "" comp_target ${acl_TARGET} )
   # extract project name, minus leading "Lib_"
   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
-
+  
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
   set_target_properties( ${acl_TARGET} PROPERTIES
     # ${compdefs}
     # Use custom library naming
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
-    ${USE_IPO}
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
     )
 
   #
@@ -909,7 +909,7 @@ macro( add_scalar_tests test_sources )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      ${USE_IPO}
+      INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
     # Do we need to use the Fortran compiler as the linker?
@@ -1056,7 +1056,7 @@ macro( add_parallel_tests )
       OUTPUT_NAME ${testname}
       VS_KEYWORD  ${testname}
       FOLDER      ${compname}_test
-      ${USE_IPO}
+      INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
       COMPILE_DEFINITIONS "PROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\";PROJECT_BINARY_DIR=\"${PROJECT_BINARY_DIR}\""
       )
     if( addparalleltest_MPI_PLUS_OMP )
