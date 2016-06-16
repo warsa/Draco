@@ -41,6 +41,8 @@ ulimit -a
 
 unset http_proxy
 unset HTTP_PROXY
+unset https_proxy
+unset HTTPS_PROXY
 export VENDOR_DIR=/scratch/vendors
 
 run () {
