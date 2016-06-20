@@ -54,7 +54,7 @@ fi
 
 # Banner
 echo "==========================================================================="
-echo "CT Regression job launcher"
+echo "CT Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"

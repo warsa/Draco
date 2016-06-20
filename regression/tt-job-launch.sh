@@ -93,7 +93,6 @@ eval "${cmd}"
 
 # Wait for CB (Configure and Build) before starting the testing and
 # reporting from the login node:
-
 export REGRESSION_PHASE=t
 echo " "
 echo "Test from the login node..."

@@ -3,6 +3,14 @@
 #MSUB -l walltime=08:00:00
 #MSUB -l nodes=8:ppn=16
 
+##---------------------------------------------------------------------------##
+## File  : regression/ct-regress.msub
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -94,19 +102,19 @@ else
     }
 fi
 
-moddirs="Modules/hpc"
-for dir in $moddirs; do
-  if test -z `echo $MODULEPATH | grep $dir`; then
-    run "module use ${VENDOR_DIR}/$dir"
-  fi
-done
+# moddirs="Modules/hpc"
+# for dir in $moddirs; do
+#   if test -z `echo $MODULEPATH | grep $dir`; then
+#     run "module use ${VENDOR_DIR}/$dir"
+#   fi
+# done
 
 run "module load user_contrib friendly-testing"
 
 # Clean up old environment
 run "module unload cmake numdiff svn"
 run "module unload gsl random123 eospac"
-run "module unload trilinos SuperLU_DIST ParMetis ndi"
+run "module unload trilinos ndi"
 run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi"
 # Load new environment
