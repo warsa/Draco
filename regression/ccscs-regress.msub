@@ -66,6 +66,9 @@ machine=`uname -n | sed -e 's/[.].*//g'`
 case $machine in
 ccscs[0-9])
     ctestparts=Configure,Build,Test,Submit
+    if test "${build_autodoc:-off}" == "on"; then
+      ctestparts="${ctestparts},Autodoc"
+    fi
     # Force new log file (vs appending)
     echo "     " > ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log
     echo "==========================================================================="

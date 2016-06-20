@@ -26,13 +26,14 @@ print_use()
     echo " "
     echo "Usage: `basename $0` -b [Release|Debug] -d [Experimental|Nightly]"
     echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
-    echo "       -f <git branch name> -g"
+    echo "       -f <git branch name> -g -a"
     echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
     echo " "
     echo "All arguments are optional,  The first value listed is the default value."
     echo "   -h    help           prints this message and exits."
     echo "   -r    regress        nightly regression mode."
     echo " "
+    echo "   -a    build autodoc"
     echo "   -b    build-type     = { Debug, Release }"
     echo "   -d    dashboard type = { Experimental, Nightly }"
     echo "   -f    git feature branch, default=develop (implies -g)"
@@ -62,6 +63,7 @@ fn_exists()
 ##---------------------------------------------------------------------------##
 ## Default values
 ##---------------------------------------------------------------------------##
+build_autodoc="off"
 build_type=Debug
 dashboard_type=Nightly
 projects="draco"
@@ -77,8 +79,9 @@ export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ## Command options
 ##---------------------------------------------------------------------------##
 
-while getopts ":b:d:e:f:ghp:r" opt; do
+while getopts ":ab:d:e:f:ghp:r" opt; do
 case $opt in
+a)  build_autodoc="on";;
 b)  build_type=$OPTARG ;;
 d)  dashboard_type=$OPTARG ;;
 e)  extra_params=$OPTARG
@@ -253,7 +256,7 @@ export logdir="${regdir}/logs${userlogdir}"
 mkdir -p $logdir
 
 export build_type dashboard_type extra_params regress_mode epdash
-export featurebranch USE_GITHUB prdash
+export featurebranch USE_GITHUB prdash build_autodoc
 
 ##---------------------------------------------------------------------------##
 # Banner

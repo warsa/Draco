@@ -117,29 +117,27 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
       RETURN_VALUE res) # LABELS label1 [label2]
 endif()
 
-# Build
-if( "${CTEST_BUILD}" STREQUAL "ON" )
-   # Autodoc
-   if( "${CTEST_BUILD_CONFIGURATION}" STREQUAL "Release" AND
-       "${CTEST_SITE}" MATCHES "ccscs7" AND
-       "$ENV{CPATH}" MATCHES "gcc-4.8.5" )
-      message( "ctest_build(
+# Autodoc
+if( "${CTEST_AUTODOC}" STREQUAL "ON" )
+  message( "ctest_build(
    TARGET autodoc
    NUMBER_ERRORS num_errors
    NUMBER_WARNINGS num_warnings
    RETURN_VALUE res )" )
-      ctest_build(
-         TARGET autodoc
-         RETURN_VALUE res
-         NUMBER_ERRORS num_errors
-         NUMBER_WARNINGS num_warnings
-         )
-      message( "build result:
+  ctest_build(
+    TARGET autodoc
+    RETURN_VALUE res
+    NUMBER_ERRORS num_errors
+    NUMBER_WARNINGS num_warnings
+    )
+  message( "build result:
    ${res}
    Build errors  : ${num_errors}
    Build warnings: ${num_warnings}" )
-   endif()
-   # Main build
+endif()
+
+# Build
+if( "${CTEST_BUILD}" STREQUAL "ON" )
    message( "ctest_build(
    TARGET install
    NUMBER_ERRORS num_errors
