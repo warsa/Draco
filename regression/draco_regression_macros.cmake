@@ -253,6 +253,9 @@ macro( parse_args )
   if( ${CTEST_SCRIPT_ARG} MATCHES Submit )
      set( CTEST_SUBMIT "ON" )
   endif()
+  if( ${CTEST_SCRIPT_ARG} MATCHES Autodoc )
+     set( CTEST_AUTODOC "ON" )
+  endif()
 
   # default compiler name based on platform
   if( WIN32 )
@@ -536,12 +539,16 @@ macro( set_git_command gitpath )
     set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;develop")
   elseif( "$ENV{featurebranch}" MATCHES "pr[0-9]+" )
     string( REPLACE "pr" "" featurebranch "$ENV{featurebranch}" )
-    set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};pull;origin;pull/${featurebranch}/head:pr${featurebranch}")
+    # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND};fetch;origin;pull/${featurebranch}/head:pr${featurebranch};&&;${CTEST_GIT_COMMAND} checkout pr${featurebranch}")
+    # assumes that this is run when PWD = ${CTEST_SOURCE_DIRECTORY} and git
+    # clone was successful.
+    # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_SOURCE_DIRECTORY}/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
+    set( CTEST_GIT_UPDATE_CUSTOM "/home/kellyt/draco/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
   else()
     message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
   endif()
 
-  message("
+  message( "
 CTEST_UPDATE_TYPE       = ${CTEST_UPDATE_TYPE}
 CTEST_CHECKOUT_COMMAND  = ${CTEST_CHECKOUT_COMMAND}
 CTEST_GIT_UPDATE_CUSTOM = ${CTEST_GIT_UPDATE_CUSTOM}
