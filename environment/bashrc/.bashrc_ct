@@ -21,6 +21,14 @@ if test "${VENDOR_DIR}x" == "x"; then
    fi
 fi
 
+# If LESS is set, is should include '-R' so that git diff's color
+# displays correctly.
+if test -n "${LESS}"; then
+  if test `echo $LESS | grep R | wc -l` = 0; then
+    export LESS="${LESS} -R"
+  fi
+fi
+
 #
 # MODULES
 #
@@ -29,12 +37,10 @@ target="`uname -n | sed -e s/[.].*//`"
 arch=`uname -m`
 
 # Use modules found in the draco directory
-# module use --append $VENDOR_DIR/Modules/hpc
-module load friendly-testing
+module load user_contrib friendly-testing
 
 #export ucmf=$HOME/modulefiles
 #module use --append $ucmf/cielito
-module load user_contrib
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
 gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs \

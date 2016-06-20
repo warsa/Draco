@@ -4,7 +4,7 @@
 ##---------------------------------------------------------------------------##
 
 if test -n "$verbose"; then
-   echo "In .bashrc_tt"
+   echo "In draco/environment/bashrc/.bashrc_tt"
 fi
 
 ##---------------------------------------------------------------------------##
@@ -33,25 +33,31 @@ fi
 # MODULES
 #
 
-# Use modules found in the draco directory
-module use --append $VENDOR_DIR/Modules/hpc
-module load friendly-testing user_contrib
+target="`uname -n | sed -e s/[.].*//`"
+arch=`uname -m`
 
-export dracomodules="python/2.7-anaconda-2.1.0 totalview hsi emacs gsl \
-eospac/6.2.4 lapack trilinos SuperLU_DIST ParMetis random123 \
-cmake/3.4.0 numdiff ndi svn"
+# Use modules found in the draco directory
+module load user_contrib friendly-testing
+#export ucmf=$HOME/modulefiles
+#module use --append ~/modulefiles/trinitite
+
+export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
+gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 \
+subversion git"
 
 function dracoenv ()
 {
-  module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu
-  module load PrgEnv-intel
-  module unload intel
-  module load gcc/4.8.1
-  module load intel/15.0.5.223
+  #module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu
+  #module load PrgEnv-intel
+  module swap intel intel/15.0.5
   for m in $dracomodules; do
     module load $m
   done
   module unload xt-libsci
+  export CXX=CC
+  export CC=cc
+  export FC=ftn
+  export CRAYPE_LINK_TYPE=dynamic
 }
 
 function rmdracoenv ()
@@ -64,17 +70,16 @@ function rmdracoenv ()
       module unload ${mods[$i]}
     fi
   done
-  module unload gcc
-  module unload PrgEnv-intel
-  module load PrgEnv-pgi
+  module unload intel
+  # module unload gcc
+  # module unload PrgEnv-intel
+  # module load PrgEnv-pgi
 }
 
 export OMP_NUM_THREADS=16
 
-# Avoid run time messages of the form:
-# "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
-# Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
-# export KMP_AFFINITY=none
+# Do not escape $ for bash completion
+shopt -s direxpand
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_tt
