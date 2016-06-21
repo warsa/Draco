@@ -43,7 +43,7 @@ module load user_contrib friendly-testing
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
 gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 \
-subversion git"
+subversion"
 
 function dracoenv ()
 {

@@ -126,7 +126,7 @@ case tr*:
     # draco modules start here.
     module load metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3
     module load gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4
-    module load subversion git
+    module load subversion
 
     setenv OMP_NUM_THREADS 16
     setenv CXX CC
