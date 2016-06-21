@@ -7,8 +7,6 @@
 ! note   Copyright (c) 2016 Los Alamos National Security, LLC.
 !        All rights reserved.
 !---------------------------------------------------------------------------
-! $Id$
-!---------------------------------------------------------------------------
 
 !---------------------------------------------------------------------------
 ! Create a module that contains a derived type and an interface to a C
@@ -75,13 +73,14 @@ subroutine test_derived_types() bind(c)
   mit%some_pointer = c_loc(int_array)
 
   error_code = -1
-  print *, "On Fortran side, derived type contains double =", mit%some_double
-  print *, "integer = ", mit%some_int
-  print *, "large integer = ", mit%some_large_int
-  print *, "int_array(1) = ", int_array(1)
-  print *, "int_array(2) = ", int_array(2)
-  print *, "The enumerated type is MULTIGROUP=", MULTIGROUP
-  print *
+
+  print '(a,f7.5)', "On Fortran side, derived type contains double = ", mit%some_double
+  print '(a,i3)', "integer = ", mit%some_int
+  print '(a,i11)', "large integer = ", mit%some_large_int
+  print '(a,i4)', "int_array(1) = ", int_array(1)
+  print '(a,i4)', "int_array(2) = ", int_array(2)
+  print '(a,i1)', "The enumerated type is MULTIGROUP = ", MULTIGROUP
+  print '(a)', " "
 
   !----------------------------------------------------------------------
   ! Call the c-function with the derived type and check the error code
@@ -94,7 +93,7 @@ subroutine test_derived_types() bind(c)
      print '(a)', "     error code is equal to zero"
   else
      print '(a)', "Test: failed"
-     print *, "     error code not equal to zero; it's ", error_code
+     print '(a,i)', "     error code not equal to zero; it's ", error_code
   endif
 
   print '(a)', " "

@@ -72,14 +72,14 @@ subroutine test_quadrature_interfaces() bind(c)
   call get_quadrature(quad)
 
   error_code = -1
-  print *, "On the Fortran side, we have created a quadrature_data type"
-  print *, "The dimension is ", quad%dimension
-  print *, "The type is ", quad%type
-  print *, "The order is ", quad%order
-  print *, "The geometry is ", quad%geometry
-  print *, "The first ordinate is ", q_mu(1), q_eta(1), q_xi(1), q_wt(1)
-  print *, "Now calling C to ensure data is passed correctly"
-  print *
+  print '(a)', "On the Fortran side, we have created a quadrature_data type"
+  print '(a,i)', "The dimension is ", quad%dimension
+  print '(a,i)', "The type is ", quad%type
+  print '(a,i)', "The order is ", quad%order
+  print '(a,i)', "The geometry is ", quad%geometry
+  print '(a,4f)', "The first ordinate is ", q_mu(1), q_eta(1), q_xi(1), q_wt(1)
+  print '(a)', "Now calling C to ensure data is passed correctly"
+  print '(a)'
 
   !----------------------------------------------------------------------
   ! Call the c-function with the derived type and check the error code
@@ -92,7 +92,7 @@ subroutine test_quadrature_interfaces() bind(c)
      print '(a)', "     error code is equal to zero"
   else
      print '(a)', "Test: failed"
-     print *, "     error code not equal to zero; it's ", error_code
+     print '(a,i)', "     error code not equal to zero; it's ", error_code
   endif
 
   print '(a)', " "

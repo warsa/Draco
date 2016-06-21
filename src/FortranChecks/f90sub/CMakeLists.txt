@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6705 2012-08-29 16:21:06Z kellyt $
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( FortranChecks_f90sub Fortran )
 
@@ -137,9 +135,6 @@ endif()
 # Xcode: Since cafs_create_imported_targets does not set all of the dependencies
 # between the imported libraries, we need to list them explicitly.
 set(target_deps "Lib_FC_Derived_Type;Lib_dsxx;${MPI_Fortran_LIBRARIES}" )
-# if( HAVE_MIC )
-#   list( APPEND target_deps ${libifport_loc} ${libifcoremt_loc} )
-# endif()
 
 add_component_library(
   TARGET       Lib_FC_f90sub
@@ -149,7 +144,6 @@ add_component_library(
   TARGET_DEPS   "${target_deps}"
   NOEXPORT )
 
-# Debug target properties:
-
-#include(print_target_properties)
-#echo_targets("Lib_FC_f90sub;Lib_FC_Derived_Type")
+#------------------------------------------------------------------------------#
+# End f90sub/CMakeLists.txt
+#------------------------------------------------------------------------------#
