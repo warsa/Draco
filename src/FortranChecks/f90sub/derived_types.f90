@@ -93,7 +93,7 @@ subroutine test_derived_types() bind(c)
      print '(a)', "     error code is equal to zero"
   else
      print '(a)', "Test: failed"
-     print '(a,i)', "     error code not equal to zero; it's ", error_code
+     print '(a,i5)', "     error code not equal to zero; it's ", error_code
   endif
 
   print '(a)', " "

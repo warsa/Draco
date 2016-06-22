@@ -73,11 +73,11 @@ subroutine test_quadrature_interfaces() bind(c)
 
   error_code = -1
   print '(a)', "On the Fortran side, we have created a quadrature_data type"
-  print '(a,i)', "The dimension is ", quad%dimension
-  print '(a,i)', "The type is ", quad%type
-  print '(a,i)', "The order is ", quad%order
-  print '(a,i)', "The geometry is ", quad%geometry
-  print '(a,4f)', "The first ordinate is ", q_mu(1), q_eta(1), q_xi(1), q_wt(1)
+  print '(a,i1)', "The dimension is ", quad%dimension
+  print '(a,i1)', "The type is ", quad%type
+  print '(a,i2)', "The order is ", quad%order
+  print '(a,i1)', "The geometry is ", quad%geometry
+  print '(a,4f7.5)', "The first ordinate is ", q_mu(1), q_eta(1), q_xi(1), q_wt(1)
   print '(a)', "Now calling C to ensure data is passed correctly"
   print '(a)'
 
@@ -92,7 +92,7 @@ subroutine test_quadrature_interfaces() bind(c)
      print '(a)', "     error code is equal to zero"
   else
      print '(a)', "Test: failed"
-     print '(a,i)', "     error code not equal to zero; it's ", error_code
+     print '(a,i5)', "     error code not equal to zero; it's ", error_code
   endif
 
   print '(a)', " "
