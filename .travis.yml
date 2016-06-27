@@ -2,10 +2,15 @@ language: cpp
 
 sudo: false
 
+# might need to replace above with these commands to allow clang-3.8.
+# sudo: required
+# dist: precise
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
     packages:
       - ccache
       - libgsl0-dev
@@ -15,6 +20,7 @@ addons:
       - g++-5
       - gfortran-5
       - liblapack-dev
+      - clang-format-3.8
 
 before_install:
  - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
@@ -30,18 +36,21 @@ env:
     - CMAKE_VERSION=3.5.2-Linux-x86_64
     - RANDOM123_VER=1.09
     - J=2
+    - OMP_NUM_THREADS=4
+    - CLANG_FORMAT_VER=3.8
   matrix:
     -
+    - STYLE=ON
     - COVERAGE=ON
     - WERROR=ON
 
 script:
     # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284
-  - mkdir build && cd build &&
+  - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir build && cd build &&
     ${HOME}/cmake-${CMAKE_VERSION}/bin/cmake -DRANDOM123_INCLUDE_DIR=${HOME}/Random123-${RANDOM123_VER}/include -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
     make -j${J} VERBOSE=1 &&
-    make test ARGS="-E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\)" &&
-    make install DESTDIR="${HOME}" && cd -
+    ${HOME}/cmake-${CMAKE_VERSION}/bin/ctest -j ${J} -E \(c4_tstOMP_2\|viz_tstEnsight_Translator\|cdi_ipcress_tIpcress_Interpreter_Al_BeCu_ipcress\|diagnostics_tDracoInfo\|diagnostics_tDracoInfo_version\|diagnostics_tDracoInfo_brief\|parser_driver4tstConsole_Token_Stream\|c4_tstOMP_1\) &&
+    make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:
   - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
