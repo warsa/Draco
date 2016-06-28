@@ -70,10 +70,13 @@ projects="draco"
 extra_params=""
 regress_mode="off"
 epdash=""
-prdash=""
 userlogdir=""
-featurebranch=""
 export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Default to using GitHub for Draco
+featurebranch=develop # use default branch
+prdash="-"
+USE_GITHUB=1
 
 ##---------------------------------------------------------------------------##
 ## Command options
@@ -317,6 +320,11 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   sleep 1
   draco_jobid=`jobs -p | sort -gr | head -n 1`
 fi
+
+# Only Draco is on github, other projects still use svn.
+unset featurebranch
+unset prdash
+unset USE_GITHUB
 
 export subproj=jayenne
 if test `echo $projects | grep $subproj | wc -l` -gt 0; then
