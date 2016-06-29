@@ -45,7 +45,7 @@ cdi_analytic: {Analytic models for physical data}
 cdi_eospac: {Equation-of-State data}
 This class wraps the EOSPAC6 libraries (local copy at
 /ccs/codes/radtran/vendors/eospac).  The interface inherits from CDI/EOS.hh and
-can be used as a stand alone component or as a plun-in to CDI.  To make the
+can be used as a stand alone component or as a plug-in to CDI.  To make the
 component available you must set in your environment or in the CMakeCache.txt
 the variable EOSPAC_LIB_DIR to the path to libeospac.a
 
@@ -90,7 +90,7 @@ RTT_Format_Reader.
 
 min: Optimizaiton routines. Find the minimum of a function.
 
-norms: Calculat norms for data sets.
+norms: Calculate norms for data sets.
 
 ode: Ordinary differential equation solvers.
 
@@ -101,7 +101,7 @@ plot2d: Generate GNU plot 2-dimensional plots.
 quadrature: {Get access to quadrature data}
 Provides a creator class to generate quadrature objects.  Quadrature objects
 encapsulate discrete ordinates angular differencing methods and data. Also
-provide service functions that are commonly used with
+provide service functions that are commonly used.
 
 rng: {A random number generator component}
 The primary set of functions provided by this component were derived from
@@ -113,9 +113,9 @@ roots: Root solvers
 
 shared_lib: Dynamically load/unload shared object libraries via dl load
 
-special_functions: Specialized math functions like factorial and dirac delta.
+special_functions: Specialized math functions like factorial and Dirac delta.
 
-timestep: An object oriented class that encapsulates a time step controller.
+timestep: An object-oriented class that encapsulates a time step controller.
 
 traits: A traits class used by viz.
 
@@ -124,4 +124,4 @@ Provides units standardization for Draco. Contains Units class for representing
 arbitrary systems and converting quantities to SI units.
 
 viz:
-Generate Ensight files for data vizualization.
+Generates Ensight files for data vizualization.
