@@ -737,16 +737,30 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     HINTS
     # if DRACO_DIR is defined, use it.
     $ENV{DRACO_DIR}
-    # regress account on ccscs7
-    /home/regress/cmake_draco/${CTEST_MODEL}_${compiler_short_name}/${CTEST_BUILD_CONFIGURATION}/target
     # Try a path parallel to the work_dir
     ${${dep_pkg}_work_dir}/target
     )
 
+  # Second chance
+  if( NOT EXISTS ${${dep_pkg}_target_dir} )
+    # might have a git branch name
+    string( REGEX REPLACE "(Nightly|Experimental)_(.*)/" "\\1_\\2-develop/"
+      ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    find_file( ${dep_pkg}_target_dir
+      NAMES README.${dep_pkg}
+      HINTS
+      # if DRACO_DIR is defined, use it.
+      $ENV{DRACO_DIR}
+      # Try a path parallel to the work_dir
+      ${${dep_pkg}_work_dir}/target
+      )
+  endif()
+
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
     message( FATAL_ERROR
       "Could not locate the ${dep_pkg} installation directory. "
-      "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}" )
+      "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}"
+      "${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
   endif()
 
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
