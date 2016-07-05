@@ -338,7 +338,7 @@ macro( add_component_library )
   string( REPLACE "_test" "" comp_target ${acl_TARGET} )
   # extract project name, minus leading "Lib_"
   string( REPLACE "Lib_" "" folder_name ${acl_TARGET} )
-  
+
   add_library( ${acl_TARGET} ${DRACO_LIBRARY_TYPE} ${acl_SOURCES} )
   set_target_properties( ${acl_TARGET} PROPERTIES
     # ${compdefs}
@@ -469,9 +469,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   # On Cray machines, multiple independent processes cannot share cores on a
   # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
   # be exactly the number of cores per node.
-  if( "${SITENAME}" STREQUAL "Trinitite" OR
-      "${SITENAME}" STREQUAL "Cielito" OR
-      "${SITENAME}" STREQUAL "Cielo" )
+  if( CRAY_PE )
     set( num_procs ${MPI_CORES_PER_CPU} )
   else()
     # For application unit tests, a parallel job is forked that needs more
@@ -621,7 +619,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     unset( nnodes )
     unset( nnodes_remainder )
 
-  else(addparalleltest_MPI_PLUS_OMP)
+  else()
 
     if( DEFINED addparalleltest_LABEL )
       set_tests_properties( ${targetname}
@@ -639,7 +637,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
         PROPERTIES PROCESSORS "${numPE}" )
     endif()
 
-  endif(addparalleltest_MPI_PLUS_OMP)
+  endif()
 
   # cleanup
   unset( rpt_aprun_depth )

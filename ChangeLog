@@ -1,3 +1,27 @@
+2016-06-27  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_19_1. This is patch release.
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_11_1
+	  - Capsaicin-4_8_2
+
+	* Platforms:
+	  TT/TR     Intel 15.0.5    Cray-MPICH2-7.3.3
+
+	* Summary of changes:
+	- 102 files changed, added or removed in 67 commits.
+	- Draco source repository moved to github.com/losalamos/Draco
+	  Many changes to scripts, environments.
+	- Fixed static initialization order bug, #767.
+	- IPO settings consolidated into one place in the build system.
+	- Allow regression scripts to run from developer's checkout.
+	- Update build system to work on CrayPE w/o special config or
+	  cache files.
+	- New fortran interfaces and tests in quadrature.
+	- Begin supporting gcc-6.1.0 on Linux64.
+
 2016-04-28  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_19_0.  This is a minor Draco release.

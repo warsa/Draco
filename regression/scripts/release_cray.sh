@@ -27,11 +27,11 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_19_0
+ddir=draco-6_19_1
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=1"
 
 # environment (use draco modules)
 # release for each module set
@@ -39,22 +39,22 @@ target="`uname -n | sed -e s/[.].*//`"
 case $target in
   c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
     environments="intel15env" ;;
-  tt-fey* | tt-login* | tr-fey* | tr-login* )
+  t[rt]-fey* | t[rt]-login* )
     environments="intel15env" ;;
 esac
 function intel15env()
 {
-run "module load friendly-testing user_contrib"
-run "module unload ndi parmetis superlu-dist trilinos"
+run "module load user_contrib friendly-testing"
+run "module unload ndi metis parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
 run "module unload cmake numdiff"
 run "module unload intel gcc"
-run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray PrgEnv-gnu"
+run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
 run "module unload intel"
-run "module load gcc/4.8.2 intel/15.0.5.223"
+run "module load intel/15.0.5"
 run "module load gsl/2.1"
 run "module load cmake/3.5.2 numdiff"
 run "module load trilinos/12.6.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
@@ -63,7 +63,8 @@ run "module list"
 CC=`which cc`
 CXX=`which CC`
 FC=`which ftn`
-export OMP_NUM_THREADS=8
+export CRAYPE_LINK_TYPE=dynamic
+export OMP_NUM_THREADS=16
 }
 
 # function intel14env()
@@ -117,21 +118,22 @@ ppn=`lookupppn`
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
-OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=STATIC"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=STATIC"
-OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=SHARED"
+#OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DDRACO_LIBRARY_TYPE=SHARED"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-VERSIONS=( "debug" "opt" "rwdi" )
+# VERSIONS=( "debug" "opt" "rwdi" )
+VERSIONS=( "debug" "opt" )
 OPTIONS=(\
     "$OPTIMIZE_OFF  $LOGGING_OFF" \
     "$OPTIMIZE_ON   $LOGGING_OFF" \
-    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
+#     "$OPTIMIZE_RWDI $LOGGING_OFF" \
 
 ##---------------------------------------------------------------------------##
 ## Environment review
