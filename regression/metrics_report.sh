@@ -74,7 +74,6 @@ module load bullseyecoverage
 CLOC=/scratch/vendors/bin/cloc
 
 work_dir=/scratch/regress/cdash
-#work_dir=/scratch/kellyt
 
 ##---------------------------------------------------------------------------##
 # Process arguments
@@ -146,10 +145,14 @@ echo "Lines of code"
 echo "-------------"
 cmd="${CLOC} --sum-reports --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs"
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log "
+   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log; then
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log"
+   else
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/lines-of-code.log"
+   fi
 done
 # Use grep and head to clean up the output:
-cmd="$cmd | grep -v sourceforge | head -n 24"
+cmd="$cmd | grep -v sourceforge | head -n 28 | grep -v AlDanial"
 eval $cmd
 
 # ${CLOC} --sum-reports \
@@ -163,18 +166,29 @@ echo "Code coverage"
 echo "-------------"
 echo " "
 export COVFILE=`pwd`/metrics_report.cov
-export COVDIRCFG=/scratch/regress/draco/regression/covdir.cfg
 if test -f $COVFILE; then
    rm -f $COVFILE
 fi
 cmd="covmerge -q --mp --no-banner -c -f $COVFILE "
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
+   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov; then
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
+   else
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/CMake.cov "
+   fi
 done
 # create the new coverage file via covmerge
 eval $cmd
 # run covdir to generate a report (but omit entry for /source/src/)
-covdir | grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
+export COVDIRCFG=/scratch/regress/draco/regression/mcovdir.cfg
+covdir -w100 | sed -r \
+'s%../../draco/source/src/([A-Za-z0-9+_]+)/%\1/             %' \
+| sed -e 's/Directory          /Directory/' \
+| sed -e 's/-------------------------------------------/---------------------------------/' \
+| sed -e 's/Total          /Total/' \
+| grep -v "../source/src/"
+#| grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
+
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"
