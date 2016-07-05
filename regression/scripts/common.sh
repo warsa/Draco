@@ -38,8 +38,8 @@ function establish_permissions
 function machineName
 {
   sysName=${sysName="unknown"}
-  if test -f /usr/projects/hpcsoft/sys_name; then
-    sysName=`/usr/projects/hpcsoft/sys_name`
+  if test -f /usr/projects/hpcsoft/utilities/bin/sys_name; then
+    sysName=`/usr/projects/hpcsoft/utilities/bin/sys_name`
   elif test -d /projects/darwin; then
     sysName=darwin
   elif test -d /usr/gapps/jayenne; then
@@ -56,8 +56,8 @@ function machineName
 function osName
 {
   osName=${osName="unknown"}
-  if test -f /usr/projects/hpcsoft/sys_os; then
-    osName=`/usr/projects/hpcsoft/sys_os`
+  if test -f /usr/projects/hpcsoft/utilities/bin/sys_os; then
+    osName=`/usr/projects/hpcsoft/utilities/bin/sys_os`
   elif test -d /projects/darwin; then
     osName=darwin
   elif test -d /usr/gapps/jayenne; then
@@ -160,7 +160,7 @@ function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
   toss2_scratchdirs="net/scratch net/scratch1 net/scratch2 net/scratch3 net/scratch4 scratch6 scratch8 scratch9"
-  cray_scratchdirs="scratch1 lscratch1 lscratch2 lscratch3 lscratch4"
+  cray_scratchdirs="lustre/lscratch2 lustre/lscratch3 lustre/lscratch4 lustre/ttscratch1 lustre/scratch3 lustre/scratch4"
   bgq_scratchdirs="nfs/tmp2"
   scratchdirs="$toss2_scratchdirs $cray_scratchdirs $bgq_scratchdirs \
 usr/projects/draco/devs/releases"
@@ -180,11 +180,10 @@ function lookupppn()
   local ppn=1
   case ${target} in
     c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9]) ppn=16 ;;
-    ty* ) ppn=32 ;;
     mu* ) ppn=24 ;;
     ml* | pi* | wf* | lu* ) ppn=16 ;;
     mp* ) ppn=8 ;;
-    tt-fey* | tt-login*) ppn=32 ;;
+    t[rt]-fey* | t[rt]-login*) ppn=32 ;;
   esac
   echo $ppn
 }
@@ -224,10 +223,10 @@ function npes_test
     np=`cat /proc/cpuinfo | grep processor | wc -l`
   fi
   # For Cray systems limit the test count to 4.
-  local os=`osName`
-  case $os in
-    cle*) np=4 ;;
-  esac
+  # local os=`osName`
+  # case $os in
+  #   cle*) np=4 ;;
+  # esac
   echo $np
 }
 
@@ -326,21 +325,6 @@ function install_versions
   fi
   # source_dir="$source_prefix/source/$package"
   build_dir="$build_prefix/$version/${package:0:1}"
-
-  # Configure options for Cray
-  case `osName` in
-    cle*)
-      if test -f $source_dir/config/CrayConfig.cmake; then
-        CONFIG_EXTRA="-C $source_dir/config/CrayConfig.cmake $CONFIG_EXTRA"
-      elif test -f $draco_dir/cmake/draco/CrayConfig.cmake; then
-        CONFIG_EXTRA="-C $draco_dir/cmake/draco/CrayConfig.cmake $CONFIG_EXTRA"
-      else
-        echo "Could not find CrayConfig.cmake!"
-        exit 1
-      fi
-      # CONFIG_EXTRA="-DDRACO_LIBRARY_TYPE=STATIC $CONFIG_EXTRA"
-      ;;
-  esac
 
   # Purge any existing files before running cmake to configure the build directory.
   if test $config_step == 1; then

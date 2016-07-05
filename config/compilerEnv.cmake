@@ -108,7 +108,7 @@ macro(dbsSetupCompilers)
     set( USE_IPO OFF )
   endif()
   set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
-    
+
 endmacro()
 
 #------------------------------------------------------------------------------#
@@ -175,8 +175,6 @@ macro(dbsSetupCxx)
     # libraries if requested with DRACO_LIBRARY_TYPE=STATIC.
     set( CMAKE_EXE_LINKER_FLAGS "-dynamic" CACHE STRING
       "Extra flags for linking executables")
-    set( DRACO_LIBRARY_TYPE "STATIC" CACHE STRING
-      "Keyword for creating new libraries (STATIC or SHARED)." FORCE )
     if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
       include( unix-intel )
     elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
@@ -366,9 +364,7 @@ macro( dbsSetupProfilerTools )
 
   if( USE_ALLINEA_MAP )
     # Ref: www.nersc.gov/users/software/performance-and-debugging-tools/MAP
-    if( "${SITENAME}" STREQUAL "Trinitite" OR
-        "${SITENAME}" STREQUAL "Cielito"   OR
-        "${SITENAME}" STREQUAL "Cielo" )
+    if( CRAY_PE )
       set( platform_cray "--platform=cray")
     endif()
     if( NOT DEFINED ENV{ALLINEA_LICENSE_DIR} AND NOT DEFINED ENV{DDT_LICENSE_FILE} )
