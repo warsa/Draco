@@ -52,7 +52,7 @@ fi
 
 # Banner
 echo "==========================================================================="
-echo "CCSCS Regression job launcher"
+echo "CCSCS Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
@@ -83,8 +83,10 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build, Test and Submit (no Torque batch system here).
+# (c)onfigure, (b)uild, (t)est, (s)ubmit
+echo "Configure, Build, Test, Submit:"
 export REGRESSION_PHASE=cbts
-cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 

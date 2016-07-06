@@ -69,6 +69,7 @@ echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
+echo "   build_autodoc  = ${build_autodoc}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -84,6 +85,7 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build on front end
+echo "Configure, Build:"
 export REGRESSION_PHASE=cb
 echo " "
 echo "Configure and Build on the front end..."
@@ -93,6 +95,8 @@ eval "${cmd}"
 
 # Wait for CB (Configure and Build) before starting the testing and
 # reporting from the login node:
+echo " "
+echo "Test:"
 export REGRESSION_PHASE=t
 echo " "
 echo "Test from the login node..."
@@ -110,6 +114,8 @@ while test "`${SHOWQ} | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+echo " "
+echo "Submit:"
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from tt-fey."
 cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"

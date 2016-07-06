@@ -86,6 +86,7 @@ echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
+echo "   build_autodoc  = ${build_autodoc}"
 echo "   MOAB queue     = ${access_queue}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
@@ -93,8 +94,6 @@ echo " "
 
 echo "module purge &> /dev/null"
 module purge &> /dev/null
-echo "module list"
-module list
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
@@ -107,12 +106,15 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure on the front end
+echo "Configure:"
 export REGRESSION_PHASE=c
-cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-c.log"
+cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
 # Build, Test on back end
+echo " "
+echo "Build, Test:"
 export REGRESSION_PHASE=bt
 cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${rscriptdir}/ml-regress.msub"
 echo "${cmd}"
@@ -128,6 +130,8 @@ while test "`$SHOWQ | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+echo " "
+echo "Submit:"
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from ${host}."
 cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"

@@ -241,6 +241,11 @@ macro( parse_args )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
 
   # Post options: SubmitOnly or NoSubmit
+  set( CTEST_CONFIGURE OFF )
+  set( CTEST_BUILD     OFF )
+  set( CTEST_TEST      OFF )
+  set( CTEST_SUBMIT    OFF )
+  set( CTEST_AUTODOC   OFF )
   if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
      set( CTEST_CONFIGURE "ON" )
   endif()

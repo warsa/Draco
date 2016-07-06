@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   draco/regression/Draco_Win32.cmake
+# file   draco/regression/Draco_Linux64.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 June 14
 # brief  CTest regression script for Draco on Linux64
@@ -24,12 +24,7 @@ include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 set_defaults()
 parse_args()
 find_tools()
-
-if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
-  set_git_command("Draco.git")
-else()
-  set_svn_command("draco/trunk")
-endif()
+set_git_command("Draco.git")
 
 ####################################################################
 # The values in this section are optional you can either
@@ -63,18 +58,6 @@ message("CTEST_INITIAL_CACHE =
 ${CTEST_INITIAL_CACHE}
 ----------------------------------------------------------------------")
 
-if( "${CTEST_CONFIGURE}x" STREQUAL "x" )
-   set( CTEST_CONFIGURE OFF )
-endif()
-if( "${CTEST_BUILD}x" STREQUAL "x" )
-   set( CTEST_BUILD OFF )
-endif()
-if( "${CTEST_TEST}x" STREQUAL "x" )
-   set( CTEST_TEST OFF )
-endif()
-if( "${CTEST_SUBMIT}x" STREQUAL "x" )
-   set( CTEST_SUBMIT OFF )
-endif()
 message("
 --> Draco_Linux64.cmake modes:
     CTEST_CONFIGURE = ${CTEST_CONFIGURE}
@@ -86,7 +69,8 @@ message("
 message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
+# Init
+if( ${CTEST_CONFIGURE} )
   if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     # Empty the binary directory and recreate the CMakeCache.txt
     message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
@@ -104,7 +88,7 @@ else()
 endif()
 
 # Update and Configure
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
+if( ${CTEST_CONFIGURE} )
    message( "ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )"  )
    ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
    message( "Files updated: ${res}" )
@@ -118,7 +102,7 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
 endif()
 
 # Autodoc
-if( "${CTEST_AUTODOC}" STREQUAL "ON" )
+if( ${CTEST_BUILD} AND ${CTEST_AUTODOC} )
   message( "ctest_build(
    TARGET autodoc
    NUMBER_ERRORS num_errors
@@ -137,7 +121,8 @@ if( "${CTEST_AUTODOC}" STREQUAL "ON" )
 endif()
 
 # Build
-if( "${CTEST_BUILD}" STREQUAL "ON" )
+if( ${CTEST_BUILD} )
+
    message( "ctest_build(
    TARGET install
    NUMBER_ERRORS num_errors
@@ -156,7 +141,7 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
 endif()
 
 # Test
-if( "${CTEST_TEST}" STREQUAL "ON" )
+if( ${CTEST_TEST} )
 
   find_num_procs_avail_for_running_tests() # returns num_test_procs
   set( ctest_test_options "SCHEDULE_RANDOM ON" )
@@ -181,7 +166,7 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
 endif()
 
 # Submit results
-if( "${CTEST_SUBMIT}" STREQUAL "ON" )
+if( ${CTEST_SUBMIT} )
   message( "ctest_submit()")
   ctest_submit()
 endif()

@@ -25,6 +25,10 @@ if test "${regdir}x" == "x"; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
+if test "${rscriptdir}x" == "x"; then
+   echo "Fatal Error, rscriptdir not found in environment."
+   exit 1
+fi
 if test "${build_type}x" == "x"; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
@@ -41,21 +45,12 @@ ulimit -a
 
 unset http_proxy
 unset HTTP_PROXY
+unset https_proxy
+unset HTTPS_PROXY
 export VENDOR_DIR=/usr/projects/draco/vendors
-moniker=`whoami`
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
+# import some bash functions
+source $rscriptdir/scripts/common.sh
 
 machine=`uname -n`
 case $machine in
@@ -79,13 +74,12 @@ esac
 
 echo "==========================================================================="
 echo "Trinitite regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
 echo "==========================================================================="
 
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
-#echo "result = $result"
 if test $result -eq 0; then
     echo 'module function is defined'
 else
@@ -96,14 +90,9 @@ else
     }
 fi
 
-# moddirs="${VENDOR_DIR}/Modules/hpc"
-# for dir in $moddirs; do
-#   if test -z `echo $MODULEPATH | grep $dir`; then
-#     run "module use $dir"
-#   fi
-# done
+run "module load user_contrib friendly-testing"
 
-run "module load friendly-testing user_contrib"
+# Clean up old environment
 run "module unload cmake numdiff svn subversion"
 run "module unload gsl random123 eospac"
 run "module unload trilinos ndi"
@@ -118,6 +107,7 @@ run "module load cmake/3.5.2 numdiff subversion"
 run "module load gsl/2.1  random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 run "module load git"
+
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
@@ -139,6 +129,11 @@ case $extra_params in
 esac
 run "module unload xt-totalview xt-libsci "
 run "module list"
+
+# Use a unique regression folder for each github branch
+if test ${USE_GITHUB} == 1; then
+  comp=$comp-$featurebranch
+fi
 
 # ----------------------------------------
 # Run the CTest script:
@@ -165,7 +160,7 @@ if test "${base_dir}x" = "x"; then
     # deleting a directory with data and imediately recreating that
     # structure will not work correctly (meta data issue?)  Thus,
     # build and target directories will be in the scratch directory.
-    scratch_dir=/scratch1/${USER}/cdash/tt
+    scratch_dir=/lustre/ttscratch1/${USER}/cdash/tt
     mkdir -p $scratch_dir
     if ! test -d ${scratch_dir}; then
       echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
@@ -255,6 +250,9 @@ date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+run "chgrp -R draco ${work_dir}"
+run "chmod -R g+rwX,o-rwX ${work_dir}"
 
 echo "All done."
 
