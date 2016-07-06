@@ -43,10 +43,10 @@ fi
 umask 0002
 ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
-unset https_proxy
-unset HTTPS_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
 export VENDOR_DIR=/usr/projects/draco/vendors
 
 # import some bash functions
@@ -65,6 +65,11 @@ tt-fey*)
        ctestparts="Configure,Build"
     elif test "${REGRESSION_PHASE}" = "s"; then
        ctestparts="Submit"
+       # Submitting to CDash requires this
+       unset http_proxy
+       unset https_proxy
+       unset HTTP_PROXY
+       unset HTTPS_PROXY
     else
        echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
        exit 1

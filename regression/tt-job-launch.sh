@@ -85,10 +85,9 @@ for jobid in ${dep_jobids}; do
 done
 
 # Configure, Build on front end
-echo "Configure, Build:"
 export REGRESSION_PHASE=cb
-echo " "
 echo "Configure and Build on the front end..."
+echo " "
 cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
@@ -96,10 +95,9 @@ eval "${cmd}"
 # Wait for CB (Configure and Build) before starting the testing and
 # reporting from the login node:
 echo " "
-echo "Test:"
 export REGRESSION_PHASE=t
-echo " "
 echo "Test from the login node..."
+echo " "
 cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
@@ -117,7 +115,7 @@ done
 echo " "
 echo "Submit:"
 export REGRESSION_PHASE=s
-echo "Jobs done, now submitting ${build_type} results from tt-fey."
+echo "- jobs done, now submitting ${build_type} results from tt-fey."
 cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
