@@ -39,37 +39,39 @@ fi
 umask 0002
 ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
-unset https_proxy
-unset HTTPS_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
 export VENDOR_DIR=/scratch/vendors
 
 # import some bash functions
 source $rscriptdir/scripts/common.sh
 
-# Header
-# ----------------------------------------
-machine=`uname -n | sed -e 's/[.].*//g'`
-case $machine in
-ccscs[0-9])
-    ctestparts=Configure,Build,Test,Submit
+case $REGRESSION_PHASE in
+cbt)
+    ctestparts=Configure,Build,Test
     if test "${build_autodoc:-off}" == "on"; then
       ctestparts="${ctestparts},Autodoc"
     fi
-    # Force new log file (vs appending)
-    echo "     " > ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-icbts.log
-    echo "==========================================================================="
-    echo "CCSCS Regression: ${ctestparts} from ${machine}."
-    echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
-    echo "==========================================================================="
     ;;
-#ccscs-fey*)
-#    ctestparts=Submit ;;
-*)
-    echo "FATAL ERROR: Machine ( $machine ) unknown by regression system"
-    exit 1 ;;
+s)
+    ctestparts=Submit
+    # Submitting to CDash requires this
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    ;;
 esac
+
+# Header
+# ----------------------------------------
+machine=`uname -n | sed -e 's/[.].*//g'`
+echo "==========================================================================="
+echo "CCSCS Regression: ${ctestparts} from ${machine}."
+echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
+echo "==========================================================================="
 
 # Modules
 # ----------------------------------------
