@@ -4,7 +4,6 @@
   \author  Paul Henning
   \brief   Declaration of class ArrayWrap
   \note    Copyright 2016 Los Alamos National Security, LLC.
-  \version $Id$
 */
 //---------------------------------------------------------------------------//
 #ifndef ArrayWrap_hh
@@ -21,7 +20,7 @@
 
 // This class should not be removed unless
 // jayenne/clubimc/src/imc/*_Particle.* routines can be compiled with
-// std::array.  
+// std::array.
 
 #else
 
@@ -48,7 +47,7 @@ class ArrayWrap
     typedef T value_type;
 
   public:
-    
+
     bool empty() const { return false; }
 
     size_type size() const { return N; }
@@ -72,7 +71,7 @@ class ArrayWrap
 
     reference front() { return d_data[0]; }
     reference back() { return d_data[N-1]; }
-    
+
     T* c_array() { return d_data; }
     T const * c_array() const { return d_data; }
 
@@ -82,7 +81,7 @@ class ArrayWrap
         return d_data + n;
     }
 
-    T * operator+(const unsigned n) 
+    T * operator+(const unsigned n)
     {
         Require(n < N);
         return d_data + n;
@@ -116,7 +115,7 @@ template<class T> class ArrayWrap<T, 0>
     const_iterator begin() const { return const_iterator(0); }
     const_iterator end() const { return const_iterator(0); }
 
-    reference operator[](const unsigned) 
+    reference operator[](const unsigned)
     {
         Require(0);
         return d_data;

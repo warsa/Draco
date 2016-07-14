@@ -180,6 +180,7 @@
  * config/platform_checks.cmake::query_cxx11_features. */
 
 #cmakedefine CXX11_FEATURE_LIST "@CXX11_FEATURE_LIST@"
+#cmakedefine HAS_CXX11_ARRAY
 #cmakedefine HAS_CXX11_AUTO_TYPE
 #cmakedefine HAS_CXX11_DECLTYPE_AUTO
 #cmakedefine HAS_CXX11_NULLPTR
@@ -232,7 +233,6 @@
  * CPP definitions like DLL_PUBLIC_<pkg>
  * ---------------------------------------------------------------- */
 #include "ds++/dll_declspec.h"
-
 
 /* In MSVC, constants like M_PI are not defined by default in math.h.
  * To include them, we must define _USE_MATH_DEFINES. The undefs

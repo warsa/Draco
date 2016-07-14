@@ -75,20 +75,14 @@ set( CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}"        CACHE ST
 set( CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-# Optional compiler flags
-toggle_compiler_flag( HAVE_MIC                 "-mmic"        "C;CXX;EXE_LINKER" "")
-
-# Options -mmic and -xHost are not compatible.  This check needs to
-# appear after "-mmic" has been added to the compiler flags so that
-# xhost will report that it is not available.
-include(CheckCCompilerFlag)
-check_c_compiler_flag(-xHost HAS_XHOST)
-# If this is trinitite/trinity, do not use -xHost because front and back ends are different
-# architectures. Instead use -xCORE-AVX2 (the default).
-if( NOT ${SITENAME} STREQUAL "Trinitite" )
-  toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX"  "")
+# If this is a Cray, the compile wrappers take care of any xHost flags that are
+# needed.
+if( NOT CRAY_PE )
+  include(CheckCCompilerFlag)
+  check_c_compiler_flag(-xHost HAS_XHOST)
+#else()
+  # -craype-verbose
 endif()
-#toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX;EXE_LINKER" "" )
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "C;CXX" "" )
 
 #

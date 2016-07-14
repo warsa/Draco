@@ -7,10 +7,6 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
-# Let anyone who is interested in which FORTRAN compiler we're using
-# switch on this macro.
-set( CMAKE_Fortran_COMPILER_FLAVOR "GFORTRAN" )
-
 if( NOT Fortran_FLAGS_INITIALIZED )
   # gfortran < 4.3 won't compile Draco
   # gfortran < 4.7 won't compile Jayenne
