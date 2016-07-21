@@ -35,19 +35,18 @@ namespace rtt_dsxx
  * this class is to allow zero-length arrays, and to provide normal container
  * iterator stuff.
  */
-template<class T, unsigned N>
+template <class T, unsigned N>
 class ArrayWrap
 {
   public:
-    typedef T& reference;
+    typedef T & reference;
     typedef T const & const_reference;
-    typedef T* iterator;
+    typedef T * iterator;
     typedef T const * const_iterator;
     typedef unsigned size_type;
     typedef T value_type;
 
   public:
-
     bool empty() const { return false; }
 
     size_type size() const { return N; }
@@ -70,9 +69,9 @@ class ArrayWrap
     const_iterator end() const { return d_data + N; }
 
     reference front() { return d_data[0]; }
-    reference back() { return d_data[N-1]; }
+    reference back() { return d_data[N - 1]; }
 
-    T* c_array() { return d_data; }
+    T * c_array() { return d_data; }
     T const * c_array() const { return d_data; }
 
     T const * operator+(const unsigned n) const
@@ -91,22 +90,20 @@ class ArrayWrap
     T d_data[N];
 };
 
-
 // ---------------------------------------------------------------------------
 
-
 /* Specialization of the class for zero-length arrays */
-template<class T> class ArrayWrap<T, 0>
+template <class T>
+class ArrayWrap<T, 0>
 {
   public:
-    typedef T&  reference;
+    typedef T & reference;
     typedef T const & const_reference;
-    typedef T* iterator;
+    typedef T * iterator;
     typedef T const * const_iterator;
     typedef unsigned size_type;
 
   public:
-
     bool empty() const { return true; }
     size_type size() const { return 0; }
 
@@ -127,15 +124,12 @@ template<class T> class ArrayWrap<T, 0>
         return d_data;
     }
 
-
-    T* c_array() { return 0; }
+    T * c_array() { return 0; }
     T const * c_array() const { return 0; }
 
   private:
     T d_data;
-
 };
-
 }
 
 #endif // HAS_CXX11_ARRAY
