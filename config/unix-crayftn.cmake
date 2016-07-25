@@ -6,12 +6,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
-
-# Let anyone who is interested in which FORTRAN compiler we're using
-# switch on this macro.
-# set( CMAKE_Fortran_COMPILER_FLAVOR "IFORT" )
 
 #
 # Compiler flags:
@@ -46,25 +40,13 @@ set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        
 set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
 set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
 
-# Optional compiler flags
-#toggle_compiler_flag( HAVE_MIC    "-mmic"           "Fortran" "")
-#if( NOT ${SITENAME} STREQUAL "Trinitite" )
-#  toggle_compiler_flag( ENABLE_SSE  "-mia32 -axSSSE3" "Fortran" "") #sse3, ssse3
-#endif()
-# Use OpenMP_C_FLAGS here because cmake/3.1.1 fails to set
-# CMAKE_Fortran_COMPILER_VERSION for FC=mpiifort and FindOpenMP
-# chooses the deprecated '-openmp' instead of '-qopenmp'
-# Bug reported to Kitware by KT on 2015-01-26
-# http://public.kitware.com/Bug/view.php?id=15372
-toggle_compiler_flag( OPENMP_FOUND ${OpenMP_C_FLAGS} "Fortran" "" )
+toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
 
-# When cross-compiling with '-mmic', rpaths for libraries built from
-# Fortran code don't appear to be reported to the icpc linker.  As a
-# hack, save these libraries here for manual linking.
-#if( HAVE_MIC )
-#  find_library( libifport_loc   NAMES ifport   HINTS ENV LD_LIBRARY_PATH )
-#  find_library( libifcoremt_loc NAMES ifcoremt HINTS ENV LD_LIBRARY_PATH )
-#endif()
+# -craype-verbose
+# -hnegmsgs # show pos/neg messages about optimizations.
+# -hlist=m  # creates annotated listing (loopmark).
+#
+
 
 #------------------------------------------------------------------------------#
 # End config/unix-crayftn.cmake
