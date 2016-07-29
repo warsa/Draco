@@ -24,9 +24,8 @@ elseif( ${CMAKE_SYSTEM} MATCHES "Linux" OR ${CMAKE_SYSTEM} MATCHES "Catamount" )
    # If the OS is Linux, fpe_trap should work as long as
    # feenableexscept is available.  That is, it should work for both
    # GNU and Intel compiler suites.
-   #if( CMAKE_COMPILER_IS_GNUCXX )
-      set( FPETRAP_LINUX_X86 1 )
-   #endif()
+   set( FPETRAP_LINUX_X86 1 )
+
    # Turn fpe_trap off for PGI compilers.
    if( ${CMAKE_C_COMPILER} MATCHES pgcc )
       set( FPETRAP_LINUX_X86 0 )

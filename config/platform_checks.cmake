@@ -39,7 +39,7 @@ endmacro()
 ##---------------------------------------------------------------------------##
 ## Determine if gethostname() is available.
 ## Determine the value of HOST_NAME_MAX.
-## 
+##
 ## Used by ds++/SystemCall.cc and ds++/path.cc
 ##---------------------------------------------------------------------------##
 macro( query_have_gethostname )
@@ -82,13 +82,13 @@ macro( query_have_gethostname )
     if( NOT HAVE_MAXHOSTNAMELEN )
        unset( HAVE_MAXHOSTNAMELEN )
     endif()
-    
+
 endmacro()
 
 ##---------------------------------------------------------------------------##
 ## Determine if gethostname() is available.
 ## Determine the value of HOST_NAME_MAX.
-## 
+##
 ## Used by ds++/SystemCall.cc and ds++/path.cc
 ##---------------------------------------------------------------------------##
 macro( query_have_maxpathlen )
@@ -113,7 +113,7 @@ endmacro()
 ## Determine if some system headers exist
 ##---------------------------------------------------------------------------##
 macro( query_have_sys_headers )
-   
+
    include( CheckIncludeFiles )
    check_include_files( sys/types.h HAVE_SYS_TYPES_H )
    check_include_files( unistd.h    HAVE_UNISTD_H    )
@@ -144,14 +144,14 @@ endmacro()
 ## Detect support for the C99 restrict keyword
 ## Borrowed from http://cmake.3232098.n2.nabble.com/AC-C-RESTRICT-td7582761.html
 ##
-## A restrict-qualified pointer (or reference) is basically a promise to the 
-## compiler that for the scope of the pointer, the target of the pointer will 
+## A restrict-qualified pointer (or reference) is basically a promise to the
+## compiler that for the scope of the pointer, the target of the pointer will
 ## only be accessed through that pointer (and pointers copied from it).
 ##
 ## http://www.research.scea.com/research/pdfs/GDC2003_Memory_Optimization_18Mar03.pdf
 ##---------------------------------------------------------------------------##
 macro( query_have_restrict_keyword )
-   
+
    message(STATUS "Looking for the C99 restrict keyword")
    include( CheckCSourceCompiles )
    foreach( ac_kw __restrict __restrict__ _Restrict restrict )
@@ -164,7 +164,7 @@ macro( query_have_restrict_keyword )
             t[0] = 0;
             return foo(t); }
          "
-         HAVE_RESTRICT) 
+         HAVE_RESTRICT)
 
       if( HAVE_RESTRICT )
          set( RESTRICT_KEYWORD ${ac_kw} )
@@ -206,7 +206,8 @@ macro( query_cxx11_features )
   message( STATUS "Looking for required C++11 features..." )
   get_property(cxx_features GLOBAL PROPERTY CMAKE_CXX_KNOWN_FEATURES)
   # compatibility with the old C++11 feature detection system
-  set( CXX11_FEATURE_LIST "${cxx_features}" CACHE STRING "List of known C++11 features (ds++/config.h)." FORCE )
+  set( CXX11_FEATURE_LIST "${cxx_features}" CACHE STRING
+     "List of known C++11 features (ds++/config.h)." FORCE )
   set( cxx11_required_features
     cxx_auto_type
     cxx_decltype_auto
@@ -277,7 +278,7 @@ macro( query_cxx11_features )
 # cxx_variable_templates
 # cxx_variadic_macros
 # cxx_variadic_templates
-    
+
   foreach( cxx11reqfeature ${cxx11_required_features} )
     string( TOUPPER ${cxx11reqfeature} reqfeat )
     string( REPLACE "CXX_" "HAS_CXX11_" reqfeat ${reqfeat} )
@@ -287,8 +288,16 @@ macro( query_cxx11_features )
     # if not available, the variable will not be defined
     set( "${reqfeat}" ON CACHE BOOL "C++11 feature macro value." FORCE )
   endforeach()
+
+  # This one isn't known by cmake
+  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "XL"  OR
+      ${CMAKE_CXX_COMPILER_ID} STREQUAL "PGI" )
+      unset( HAS_CXX11_ARRAY )
+  else()
+      set( HAS_CXX11_ARRAY 1 )
+  endif()
   message( STATUS "Looking for required C++11 features...done.  See ds++/config.h for details." )
-  
+
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -302,7 +311,7 @@ macro( query_openmp_availability )
   message( STATUS "Looking for OpenMP...")
   find_package(OpenMP QUIET)
   if( OPENMP_FOUND )
-    message(STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS}")
+    message( STATUS "Looking for OpenMP... ${OpenMP_C_FLAGS}")
     set( OPENMP_FOUND ${OPENMP_FOUND} CACHE BOOL "Is OpenMP availalable?" FORCE )
   else()
     message(STATUS "Looking for OpenMP... not found")
@@ -352,6 +361,3 @@ endmacro()
 
 
 ##---------------------------------------------------------------------------##
-
-
-
