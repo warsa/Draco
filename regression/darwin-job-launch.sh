@@ -55,7 +55,7 @@ fi
 
 # Banner
 echo "==========================================================================="
-echo "Darwin Regression job launcher."
+echo "Darwin Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
@@ -70,6 +70,7 @@ echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
+echo "   build_autodoc  = ${build_autodoc}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -86,22 +87,17 @@ done
 
 darwin_regress_script="${regdir}/draco/regression/darwin-regress.msub"
 
-##---------------------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 # Proposed: Init, Configure, Build, Test and Submit
-# (1) Init (clone) from the front end.
-# (2) Configure, build and test from the backend
-# (3) Submit results from the front end.
+# (1) Configure, build and test from the backend
+# (2) Submit results from the front end.
 # Submit from the front end
 
-# Init from the front end (git clone)
-#export REGRESSION_PHASE=i
-#cmd="${darwin_regress_script} >& ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-i.log"
-#echo "${cmd}"
-#eval "${cmd}"
-
 # Configure, Build, Test on back end
+echo " "
+echo "Configure, Build, Test:"
 export REGRESSION_PHASE=cbt
-cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log ${darwin_regress_script}"
+cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -116,9 +112,11 @@ while test "`$SHOWQ | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+echo " "
+echo "Submit:"
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from darwin."
-cmd="${darwin_regress_script} >& ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
+cmd="${darwin_regress_script} >& ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 

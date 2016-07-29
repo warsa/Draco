@@ -1,16 +1,21 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/update_regression_scripts.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 umask 0002
-
 target="`uname -n | sed -e s/[.].*//`"
 MYHOSTNAME="`uname -n`"
-arch=`uname -m`
 
-# Helper function
-run () {
-  echo $1
-  if ! [ $dry_run ]; then eval $1; fi
-}
+# Locate the directory that this script is located in:
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# import some bash functions
+source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 case ${target} in
@@ -43,6 +48,7 @@ case ${target} in
     REGDIR=/usr/projects/draco/regress
 
     svnroot=/usr/projects/draco/regress/svn
+    gitroot=/usr/projects/draco/regress/git
     if ! test -d; then
       echo "*** SVN repository not found ***"
       exit 1
@@ -66,11 +72,24 @@ case ${target} in
       # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs7/ccs/codes/radtran/svn/jayenne
       # svnsync sync file:///${svnroot}/jayenne
     fi
+    # if ! test -d $gitroot; then
+    #   export https_proxy=http://proxyout.lanl.gov:8080
+    #   export HTTPS_PROXY=$https_proxy
+    #   run "mkdir -p $gitroot"
+    #   (run "cd $gitroot; git clone https://github.com/losalamos/Draco.git draco")
+    # fi
 
-    run "${SVN}sync --non-interactive sync file://${svnroot}/draco"
     run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
     run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
-    # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
+    # (run "cd $gitroot/draco; git pull origin develop")
+    ;;
+  ccscs*)
+    REGDIR=/scratch/regress
+    SVN=/scratch/vendors/subversion-1.9.3/bin/svn
+    /scratch/vendors/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa
+    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+       source $HOME/.keychain/$MYHOSTNAME-sh
+    fi
     ;;
   *)
     # module load user_contrib subversion
@@ -80,10 +99,10 @@ case ${target} in
 esac
 
 # Update main regression scripts
-run "cd ${REGDIR}/draco/config; ${SVN} update"
-run "cd ${REGDIR}/draco/regression; ${SVN} update"
-run "cd ${REGDIR}/draco/environment; ${SVN} update"
-run "cd ${REGDIR}/draco/tools; ${SVN} update"
+run "cd ${REGDIR}/draco; git pull"
 run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
-#run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
+
+##---------------------------------------------------------------------------##
+## End update_regression_scripts.sh
+##---------------------------------------------------------------------------##

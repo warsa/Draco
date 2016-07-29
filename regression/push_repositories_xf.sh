@@ -1,4 +1,11 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/push_repositories_xf.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # Q: How do I create a keytab that works with transfer 2.0
 # A: See
@@ -39,7 +46,7 @@ else
 fi
 
 # Repositories to push
-repos="draco jayenne capsaicin"
+repos="jayenne capsaicin"
 
 #
 for repo in $repos; do
@@ -176,3 +183,7 @@ run "chmod -R g+rwX,o=g-w  draco.git.tar draco.git"
 # * Part 5: Request principal migration to Red
 # ** https://transfer.lanl.gov/principal_request
 # ** Now, log onto the red web page, https://transfer.lanl.gov/principals to register the same identity.
+
+#------------------------------------------------------------------------------#
+# End push_repositories_xf.sh
+#------------------------------------------------------------------------------#

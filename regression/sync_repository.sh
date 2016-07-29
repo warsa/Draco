@@ -1,10 +1,16 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/sync_repository.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
-# This script is used to mirror portions of the Draco/Jayenne SVN
-# repositories to a HPC location.  The repository must be mirrored
-# because the ctest regression system must be run from the HPC backend
-# (via msub) where access to ccscs8:/ccs/codes/radtran/svn is not
-# available.
+# This script is used to mirror portions of the Jayenne and Capsaicin SVN
+# repositories to a HPC location. The repository must be mirrored because the
+# ctest regression system must be run from the HPC backend (via msub) where
+# access to ccscs7:/ccs/codes/radtran/svn is not available.
 
 #
 # MODULES
@@ -51,29 +57,12 @@ fi
 #
 # update the scripts directories in /usr/projects/jayenne
 #
-run "cd /usr/projects/draco/vendors/Modules; svn update"
 
-# dirs="jayenne/regression capsaicin/scripts asterisk/regression"
-
-if test -d $regdir/draco/config; then
-    run "cd $regdir/draco/config; svn update"
+if test -d $regdir/draco; then
+  run "cd $regdir/draco; git pull"
 else
-    run "mkdir -p $regdir/draco; cd $regdir/draco"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/draco/trunk/config"
-fi
-
-if test -d $regdir/draco/regression; then
-    run "cd $regdir/draco/regression; svn update"
-else
-    run "mkdir -p $regdir/draco; cd $regdir/draco"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/draco/trunk/regression"
-fi
-
-if test -d $regdir/draco/environment; then
-    run "cd $regdir/draco/environment; svn update"
-else
-    run "mkdir -p $regdir/draco; cd $regdir/draco"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/draco/trunk/environment"
+  run "cd $regdir"
+  run "git clone https://github.com/losalamos/Draco.git draco"
 fi
 
 if test -d $regdir/jayenne/regression; then
@@ -88,13 +77,6 @@ if test -d $regdir/capsaicin/scripts; then
 else
     run "mkdir -p $regdir/capsaicin; cd $regdir/capsaicin"
     run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
-fi
-
-if test -d $regdir/asterisk/regression; then
-    run "cd $regdir/asterisk/regression; svn update"
-else
-    run "mkdir -p $regdir/asterisk; cd $regdir/asterisk"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/asterisk/trunk/regression"
 fi
 
 #
@@ -125,7 +107,9 @@ if ! test -d $svnroot; then
     # svnsync sync file:///${svnroot}/jayenne
 fi
 
-run "svnsync --non-interactive sync file:///${svnroot}/draco"
 run "svnsync --non-interactive sync file:///${svnroot}/jayenne"
 run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
-run "svnsync --non-interactive sync file:///${svnroot}/asterisk"
+
+#------------------------------------------------------------------------------#
+# End sync_repository.sh
+#------------------------------------------------------------------------------#

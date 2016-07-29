@@ -35,7 +35,7 @@
 # Github and PRs
 #------------------------------------------------------------------------------#
 
-00 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -g -b Release -d Nightly -p "draco" &> /scratch/regress/logs/ccscs-Release-master-github.log
+# 00 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -g -b Release -d Nightly -p "draco" &> /scratch/regress/logs/ccscs-Release-master-github.log
 
 # 05 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -g -b Release -d Experimental -p "draco" -f pr1 &> /scratch/regress/logs/ccscs-Release-master-pr1.log
 
