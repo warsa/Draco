@@ -295,6 +295,8 @@ echo "--------------------(end environment)--------------------------"
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
+run "cp $COVFILE $COVFILE.bak"
+
 run "chgrp -R draco ${work_dir}"
 run "chmod -R g+rwX,o-rwX ${work_dir}"
 
