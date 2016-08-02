@@ -11,6 +11,14 @@ function run () {
   if test ${dry_run:-no} = "no"; then eval $1; fi
 }
 
+fn_exists()
+{
+    type $1 2>/dev/null | grep -q 'is a function'
+    res=$?
+    echo $res
+    return $res
+}
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#

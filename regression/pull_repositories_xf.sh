@@ -1,13 +1,17 @@
 #!/bin/bash
-
-#------------------------------------------------------------------------------#
+##---------------------------------------------------------------------------##
+## File  : regression/pull_repositories_xf.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 # Pull SVN repositories from Yellow
 #
 # Assumptions:
 # 1. Mercury requests must have the id tag set
 #    tag             tar file              directory name
 #    ---             ---------             ---------------
-#    draco.repo      draco.hotcopy.tar     draco.hotcopy
 #    jayenne.repo    jayenne.hotcopy.tar   jayenne.hotcopy
 #    capsaicin.repo  capsaicin.hotcopy.tar capsaicin.hotcopy
 # 2. SVN repositories live at /usr/projects/draco/svn
@@ -40,7 +44,7 @@ fn_exists()
     return $res
 }
 
-
+#------------------------------------------------------------------------------#
 function xfpull()
 {
     wantfile=$1
@@ -75,6 +79,7 @@ function xfpull()
     done
 }
 
+#------------------------------------------------------------------------------#
 unpack_repo() {
    pkg=$1
    echo "Remove old files..."
@@ -100,6 +105,7 @@ unpack_repo() {
    echo " "
 }
 
+#------------------------------------------------------------------------------#
 unpack_repo_git() {
   pkg=$1
   echo "Remove old files..."
@@ -121,6 +127,7 @@ unpack_repo_git() {
   echo " "
 }
 
+#------------------------------------------------------------------------------#
 # working directory
 start_dir=`pwd`
 work_dir=/usr/projects/draco/svn
@@ -139,20 +146,17 @@ possible_items_to_pull=`ssh red@transfer.lanl.gov myfiles | awk '{print $2}'`
 # Loop over all items that mercury listed, if 'draco.repo' is found,
 # then mark it for unpacking.
 
-draco_ready=0
 capsaicin_ready=0
 jayenne_ready=0
 draco_git_ready=0
 
 for item in $possible_items_to_pull; do
-   if test ${item} = "draco.hotcopy.tar";     then draco_ready=1; fi
    if test ${item} = "jayenne.hotcopy.tar";   then jayenne_ready=1; fi
    if test ${item} = "capsaicin.hotcopy.tar"; then capsaicin_ready=1; fi
    if test ${item} = "draco.git.tar";         then draco_git_ready=1; fi
 done
 
 # If found, pull the files
-if test ${draco_ready} = 1; then unpack_repo "draco"; fi
 if test ${jayenne_ready} = 1; then unpack_repo "jayenne"; fi
 if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
 run "cd ${work_dir}/../git"

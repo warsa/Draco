@@ -241,6 +241,11 @@ macro( parse_args )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
 
   # Post options: SubmitOnly or NoSubmit
+  set( CTEST_CONFIGURE OFF )
+  set( CTEST_BUILD     OFF )
+  set( CTEST_TEST      OFF )
+  set( CTEST_SUBMIT    OFF )
+  set( CTEST_AUTODOC   OFF )
   if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
      set( CTEST_CONFIGURE "ON" )
   endif()
@@ -345,7 +350,7 @@ macro( parse_args )
       if( "$ENV{featurebranch}notset" STREQUAL "notset" )
         message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
       endif()
-      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-github-$ENV{featurebranch}" )
+      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
     endif()
   endif()
 
@@ -543,7 +548,7 @@ macro( set_git_command gitpath )
     # assumes that this is run when PWD = ${CTEST_SOURCE_DIRECTORY} and git
     # clone was successful.
     # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_SOURCE_DIRECTORY}/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
-    set( CTEST_GIT_UPDATE_CUSTOM "/home/kellyt/draco/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
+    set( CTEST_GIT_UPDATE_CUSTOM "$ENV{rscriptdir}/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
   else()
     message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
   endif()
@@ -589,27 +594,27 @@ macro( setup_for_code_coverage )
             message( "Generating lines of code statistics...
 /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=$ENV{rscriptdir}/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code.log
-               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=$ENV{rscriptdir}/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
             ")
             execute_process(
                COMMAND /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
-               --exclude-list-file=/scratch/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=$ENV{rscriptdir}/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code.log
-               --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=$ENV{rscriptdir}/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3
                #  --diff

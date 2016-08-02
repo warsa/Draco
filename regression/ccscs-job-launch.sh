@@ -52,7 +52,7 @@ fi
 
 # Banner
 echo "==========================================================================="
-echo "CCSCS Regression job launcher"
+echo "CCSCS Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
@@ -82,9 +82,25 @@ for jobid in ${dep_jobids}; do
     done
 done
 
+if ! test -d $logdir; then
+  mkdir -p $logdir
+  chgrp draco $logdir
+  chmod g+rwX $logdir
+  chmod g+s $logdir
+fi
+
 # Configure, Build, Test and Submit (no Torque batch system here).
-export REGRESSION_PHASE=cbts
-cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
+# (c)onfigure, (b)uild, (t)est, (s)ubmit
+
+echo "Configure, Build, Test:"
+export REGRESSION_PHASE=cbt
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
+echo "${cmd}"
+eval "${cmd}"
+
+echo "Submit:"
+export REGRESSION_PHASE=s
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
