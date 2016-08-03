@@ -68,8 +68,7 @@ const std::string release()
 {
     std::ostringstream pkg_release;
     // Name and version
-    pkg_release << "Draco-" << DRACO_VERSION_MAJOR
-                << "_" << DRACO_VERSION_MINOR
+    pkg_release << "Draco-" << DRACO_VERSION_MAJOR << "_" << DRACO_VERSION_MINOR
                 << "_" << DRACO_VERSION_PATCH;
 
     // build date and type
