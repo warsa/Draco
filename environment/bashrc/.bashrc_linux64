@@ -29,7 +29,7 @@ fi
 
 target=`uname -n`
 case $target in
-ccscs[456789]*)
+ccscs[1-9]*)
     # Locate the vendor directory
     if test "${VENDOR_DIR}x" == "x"; then
       export VENDOR_DIR=/scratch/vendors
