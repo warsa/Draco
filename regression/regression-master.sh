@@ -26,7 +26,7 @@ print_use()
     echo " "
     echo "Usage: `basename $0` -b [Release|Debug] -d [Experimental|Nightly]"
     echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
-    echo "       -f <git branch name> -g -a"
+    echo "       -f <git branch name> -a"
     echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
     echo " "
     echo "All arguments are optional,  The first value listed is the default value."
@@ -36,9 +36,8 @@ print_use()
     echo "   -a    build autodoc"
     echo "   -b    build-type     = { Debug, Release }"
     echo "   -d    dashboard type = { Experimental, Nightly }"
-    echo "   -f    git feature branch, default=develop (implies -g)"
+    echo "   -f    git feature branch, default=develop"
     echo "         common: 'pr42'"
-    echo "   -g    use github instead of svn"
     echo "   -p    project names  = { draco, jayenne, capsaicin, asterisk }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
@@ -92,9 +91,6 @@ e)  extra_params=$OPTARG
 f)  featurebranch=$OPTARG
     USE_GITHUB=1
     prdash="-";;
-g)  featurebranch=develop # use default branch
-    prdash="-"
-    USE_GITHUB=1 ;;
 h)  print_use; exit 0 ;;
 p)  projects=$OPTARG ;;
 r)  regress_mode="on" ;;

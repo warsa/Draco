@@ -41,33 +41,28 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
-unset https_proxy
-unset HTTPS_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
 export VENDOR_DIR=/usr/projects/draco/vendors
-moniker=`whoami`
 machine=`uname -n`
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
+# import some bash functions
+source $rscriptdir/scripts/common.sh
 
 case $REGRESSION_PHASE in
 c) ctestparts=Configure;;
 bt) ctestparts=Build,Test;;
-s) ctestparts=Submit;;
+s)
+    ctestparts=Submit
+    # Submitting to CDash requires this
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    ;;
 esac
 
 echo "==========================================================================="
@@ -152,7 +147,7 @@ run "module list"
 
 # Use a unique regression folder for each github branch
 if test ${USE_GITHUB} == 1; then
-  comp=github-$featurebranch-$comp
+  comp=$comp-$featurebranch
 fi
 
 # ----------------------------------------
@@ -264,6 +259,9 @@ echo "--------------------(end environment)--------------------------"
 
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+run "chgrp -R draco ${work_dir}"
+run "chmod -R g+rwX,o-rwX ${work_dir}"
 
 echo "All done."
 

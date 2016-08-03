@@ -54,9 +54,6 @@ logfile=/scratch/${USER}/metrics.log
 if test -f $logfile; then
    rm $logfile
 fi
-if ! test -d /scratch/${USER}; then
-    mkdir /scratch/${USER}
-fi
 touch $logfile
 
 ##---------------------------------------------------------------------------##
@@ -72,7 +69,6 @@ fi
 module load bullseyecoverage
 
 CLOC=/scratch/vendors/bin/cloc
-
 work_dir=/scratch/regress/cdash
 
 ##---------------------------------------------------------------------------##
@@ -165,34 +161,37 @@ echo " "
 echo "Code coverage"
 echo "-------------"
 echo " "
-export COVFILE=`pwd`/metrics_report.cov
+export COVFILE=/scratch/$USER/metrics_report.cov
 if test -f $COVFILE; then
    rm -f $COVFILE
 fi
 cmd="covmerge -q --mp --no-banner -c -f $COVFILE "
 for proj in $projects; do
-   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov; then
-     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
+   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov.bak; then
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov.bak "
    else
-     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/CMake.cov "
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/CMake.cov.bak "
    fi
 done
 # create the new coverage file via covmerge
 eval $cmd
 # run covdir to generate a report (but omit entry for /source/src/)
+olddir=`pwd`
+cd $work_dir/..
 export COVDIRCFG=/scratch/regress/draco/regression/mcovdir.cfg
-covdir -w100 | sed -r \
-'s%../../draco/source/src/([A-Za-z0-9+_]+)/%\1/             %' \
-| sed -e 's/Directory          /Directory/' \
-| sed -e 's/-------------------------------------------/---------------------------------/' \
-| sed -e 's/Total          /Total/' \
+covdir -w120 | sed -r \
+'s%../../../scratch/source/src/([A-Za-z0-9+_]+)/%\1/             %' \
+| sed -e 's/Directory               /Directory/' \
+| sed -e 's/------------------------------------------------/---------------------------------/' \
+| sed -e 's/Total               /Total/' \
 | grep -v "../source/src/"
 #| grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
-
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"
 echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
+
+cd $olddir
 
 # Send the email
 /bin/mailx -r "${USER}@lanl.gov" -s "${subj}" ${recipients} < ${logfile}
