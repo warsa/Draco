@@ -9,28 +9,27 @@
  */
 //---------------------------------------------------------------------------//
 
-
 #ifndef rtt_ds_Release_hh
 #define rtt_ds_Release_hh
 
-#include <string>
-#include <map>
-#include <algorithm>
 #include "ds++/config.h"
+#include <algorithm>
+#include <map>
+#include <string>
 
 namespace rtt_dsxx
 {
 
 // Typedefs
-typedef std::multimap<size_t,std::string, std::greater<int> > mmdevs;
-typedef std::pair<size_t,std::string> fomdev;
+typedef std::multimap<size_t, std::string, std::greater<int>> mmdevs;
+typedef std::pair<size_t, std::string> fomdev;
 
 //! Query package for the release number.
-DLL_PUBLIC_dsxx  const std::string release();
+DLL_PUBLIC_dsxx const std::string release();
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx  const std::string author_list();
+DLL_PUBLIC_dsxx const std::string author_list();
 //! Return a list of Draco authors
-DLL_PUBLIC_dsxx  const std::string copyright();
+DLL_PUBLIC_dsxx const std::string copyright();
 
 //---------------------------------------------------------------------------//
 /*!
@@ -42,16 +41,15 @@ DLL_PUBLIC_dsxx  const std::string copyright();
  * \arg[in] list of developers
  * \return A formatted message.
  */
-DLL_PUBLIC_dsxx std::string print_devs(
-    size_t      const   maxlinelen,
-    std::string const & line_name,
-    mmdevs      const & devs);
+DLL_PUBLIC_dsxx std::string print_devs(size_t const maxlinelen,
+                                       std::string const & line_name,
+                                       mmdevs const & devs);
 
 } // end of rtt_ds++
 
 //! This version can be called by Fortran and wraps the C++ version.
-extern "C" DLL_PUBLIC_dsxx void ec_release( char * release_string,
-                                            size_t maxlen );
+extern "C" DLL_PUBLIC_dsxx void ec_release(char * release_string,
+                                           size_t maxlen);
 
 #endif // rtt_ds_Release_hh
 
