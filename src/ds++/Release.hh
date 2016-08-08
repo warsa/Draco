@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <functional>
 
 namespace rtt_dsxx
 {
