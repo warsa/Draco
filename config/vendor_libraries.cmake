@@ -71,7 +71,7 @@ macro( setupLAPACKLibrariesUnix )
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
       message( STATUS "Looking for lapack(MKL)...")
-      # CMake uses the 'Intel10_64lp' enum to indicate MKL.  
+      # CMake uses the 'Intel10_64lp' enum to indicate MKL.
       # For details see the cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
       find_package( BLAS QUIET )
@@ -126,6 +126,34 @@ macro( setupLAPACKLibrariesUnix )
       endif()
 
     endif()
+  endif()
+
+  # If the above searches for LAPACK failed, then try to find OpenBlas on the
+  # local system.
+
+  if( NOT lapack_FOUND )
+      message( STATUS "Looking for lapack(OpenBLAS)...")
+      # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro
+      # For details see the cmake documentation for FindBLAS.
+      set( BLA_VENDOR "OpenBLAS" )
+      find_package( BLAS QUIET )
+
+      if( BLAS_FOUND )
+        set( LAPACK_FOUND TRUE )
+        set( lapack_FOUND ON )
+        add_library( lapack SHARED IMPORTED)
+        add_library( blas   SHARED IMPORTED)
+        set_target_properties( blas PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        message(STATUS "Looking for lapack(OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
+      else()
+        message(STATUS "Looking for lapack(OpenBLAS)...NOTFOUND")
+      endif()
+
   endif()
 
 endmacro()
