@@ -28,10 +28,10 @@ function establish_permissions
   # Permissions - new files should be marked u+rwx,g+rwx,o+rx
   # Group is set to $1 or draco
   umask 0002
-  if test `groups | grep othello | wc -l` = 1; then
+  if test `groups | grep -c othello` = 1; then
     install_group="othello"
     install_permissions="g+rwX,o-rwX"
-  elif test `groups | grep dacodes | wc -l` = 1; then
+  elif test `groups | grep -c dacodes` = 1; then
     install_group="dacodes"
     install_permissions="g+rwX,o-rwX"
   else
@@ -208,7 +208,7 @@ function npes_build
   elif ! test "${SLURM_TASKS_PER_NODE:-notset}" = "notset"; then
     np=${SLURM_CPUS_ON_NODE}
   elif test -f /proc/cpuinfo; then
-    np=`cat /proc/cpuinfo | grep processor | wc -l`
+    np=`cat /proc/cpuinfo | grep -c processor`
   fi
   echo $np
 }
@@ -228,7 +228,7 @@ function npes_test
     # sinfo --long --partition=pdebug (show limits)
     np=64
   elif test -f /proc/cpuinfo; then
-    np=`cat /proc/cpuinfo | grep processor | wc -l`
+    np=`cat /proc/cpuinfo | grep -c processor`
   fi
   # For Cray systems limit the test count to 4.
   # local os=`osName`
@@ -386,7 +386,7 @@ function publish_release()
 
   # wait for jobs to finish
   for jobid in $jobids; do
-    while test `${SHOWQ} | grep $jobid | wc -l` -gt 0; do
+    while test `${SHOWQ} | grep -c $jobid` -gt 0; do
       ${SHOWQ} | grep $jobid
       sleep 5m
     done

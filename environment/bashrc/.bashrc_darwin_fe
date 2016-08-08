@@ -25,7 +25,7 @@ if test -n "$MODULESHOME"; then
 
   # Nodes that have MIC capability use different modules...
   if test "$SLURM_JOB_PARTITION" = "knc-mic"; then
-    # mic_status=`/usr/sbin/micctrl -s | egrep mic[0-9]+ | wc -l`
+    # mic_status=`/usr/sbin/micctrl -s | egrep -c mic[0-9]+`
     case `uname -n` in
       darwin-fe* ) mic_status=0 ;;
       *)           mic_status=1 ;;

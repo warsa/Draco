@@ -18,7 +18,7 @@
 # Determine if the module command is available
 modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
-if test "${modcmd}x" = "x"; then
+if [[ ! ${modcmd} ]]; then
    if test -f /usr/share/Modules/init/bash; then
       source /usr/share/Modules/init/bash
    else

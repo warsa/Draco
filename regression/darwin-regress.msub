@@ -18,23 +18,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${rscriptdir}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -93,7 +93,7 @@ export MPIEXEC=`which mpirun`
 # http://stackoverflow.com/questions/11959906/openmp-and-numa-relation
 export OMP_NUM_THREADS=8
 export OMP_PROC_BIND=true
-comp=`basename $CXX`
+comp=${CXX##*/}
 #echo "mpd --daemon"
 #mpd --daemon
 
@@ -133,10 +133,10 @@ fi
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
 
-if test "${dashboard_type}x" = "x"; then
+if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
   if test "${regress_mode}" = "off"; then
     scratch_dir=$HOME/cdash/darwin
     base_dir=${scratch_dir}
@@ -174,9 +174,6 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
-elif test "${subproj}" == asterisk; then
-    script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
-    script_name=Asterisk_Linux64.cmake
 fi
 
 if test "${regress_mode}" = "off"; then
@@ -190,7 +187,7 @@ echo "darwin-regress.msub: work_dir       = ${work_dir}"
 echo "darwin-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
-if ! test "${setup_dirs}x" = "x"; then
+if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}/source; then
       run "/usr/bin/install -d ${work_dir}/source"
    fi

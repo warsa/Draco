@@ -17,7 +17,7 @@ set -m
 print_use()
 {
     echo " "
-    echo "Usage: `basename $0` -d -n -t"
+    echo "Usage: ${0##*/} -d -n -t"
     echo " "
     echo "All arguments are optional."
     echo "  -d Diff mode only. Do not modifty files."
@@ -32,14 +32,14 @@ print_use()
 ##---------------------------------------------------------------------------##
 
 # clang-format must be in the PATH
-if ! test "${CLANG_FORMAT_VER}x" = "x"; then
+if [[ ${CLANG_FORMAT_VER} ]]; then
   cfver="-${CLANG_FORMAT_VER}"
 else
   cfver=""
 fi
 gcf=`which git-clang-format${cfver}`
 cf=`which clang-format${cfver}`
-if test "${gcf}notset" = "notset"; then
+if [[ ! ${gcf} ]]; then
    echo "ERROR: git-clang-format${cfver} was not found in your PATH."
    echo "pwd="
    pwd
@@ -94,10 +94,10 @@ if test "${pct_mode}" = "1"; then
   cmd='${gcf} --binary ${cf} -f --diff --extensions hh,cc develop'
   echo $cmd
   result=`eval $cmd`
-  allok=`echo $result | grep "did not modify" | wc -l`
+  allok=`echo $result | grep -c "did not modify"`
   # 2nd chance (maybe there are no files to check)
   if test $allok = 0; then
-    allok=`echo $result | grep "no modified files" | wc -l`
+    allok=`echo $result | grep -c "no modified files"`
   fi
 
   if test $allok = 1; then
@@ -128,7 +128,7 @@ else
     eval $cmd
   else
     result=`${gcf} --binary ${cf} -f --extensions hh,cc develop`
-    nonconformantfilesfound=`echo $result | grep "changed files" | wc -l`
+    nonconformantfilesfound=`echo $result | grep -c "changed files"`
     echo "The following files in your working directory were modified to meet the draco"
     echo "style requirement:"
     echo " "

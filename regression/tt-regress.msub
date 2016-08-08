@@ -17,23 +17,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${rscriptdir}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -154,10 +154,10 @@ fi
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
 
-if test "${dashboard_type}x" = "x"; then
+if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
     # base_dir=${regdir}/cdash/tt
 
     # There is a bug with how CI/CT mount NFS files spaces (Gabe
@@ -200,9 +200,6 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
-elif test "${subproj}" == asterisk; then
-    script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
-    script_name=Asterisk_Linux64.cmake
 fi
 
 if test "${regress_mode}" = "off"; then
