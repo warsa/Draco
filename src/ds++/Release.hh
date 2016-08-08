@@ -14,9 +14,9 @@
 
 #include "ds++/config.h"
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <string>
-#include <functional>
 
 namespace rtt_dsxx
 {
