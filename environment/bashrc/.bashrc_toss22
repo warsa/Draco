@@ -43,21 +43,26 @@ if test "${modcmd}x" = "x"; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
-#    export ucmf=$HOME/modulefiles
-#    module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`
+  # If modulefiles is located at $HOME, assume that the current developer wants
+  # to use his/her own checkout of user_contrib modulefiles.
+  if test -d $HOME/modulefiles; then
+    export ucmf=$HOME/modulefiles
+    module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`
+  else
     module load user_contrib
-    module load friendly-testing
+  fi
+  module load friendly-testing
 
-    export dracomodules="intel/15.0.5 openmpi mkl trilinos/12.6.1 \
+  export dracomodules="intel/15.0.5 openmpi mkl trilinos/12.6.1 \
 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
 svn/1.8.10 cmake/3.5.2 numdiff git totalview emacs grace"
 
-    # module hsi only available on yellow toss22 and rfta
-    target="`uname -n | sed -e s/[.].*//`"
-    case ${target} in
+  # module hsi only available on yellow toss22 and rfta
+  target="`uname -n | sed -e s/[.].*//`"
+  case ${target} in
     mp* | ml* | mu* | pi* | wf* )
-        dracomodules="$dracomodules hsi"
-    esac
+      dracomodules="$dracomodules hsi"
+  esac
 
 fi
 
