@@ -41,7 +41,7 @@ if [[ ! ${subproj} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
-if [[ ! ${build_ ]]; then
+if [[ ! ${build_type} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
@@ -58,7 +58,7 @@ echo " "
 echo "Environment:"
 echo "   subproj        = ${subproj}"
 echo "   build_type     = ${build_type}"
-if [[ ! ${extra_ ]]; then
+if [[ ! ${extra_params} ]]; then
   echo "   extra_params   = none"
 else
   echo "   extra_params   = ${extra_params}"
