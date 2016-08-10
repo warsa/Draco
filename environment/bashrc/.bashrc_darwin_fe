@@ -15,7 +15,7 @@ fi
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
 
-if test "${VENDOR_DIR:-notset}" == "notset"; then
+if [[ ! ${VENDOR_DIR} ]]; then
   export VENDOR_DIR=/usr/projects/draco/vendors
   export PATH=$PATH:$VENDOR_DIR/bin
 fi
@@ -50,17 +50,40 @@ if test -n "$MODULESHOME"; then
     # module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
   else
     module use --append ${VENDOR_DIR}/Modules
-    # setup for draco
-    module load emacs subversion/1.9.3 git
-    module load intel/15.0.4 impi/5.1.1.109 lapack/3.5.0 gsl/2.1
-    module load random123 cmake/3.5.2 numdiff/5.8.1 eospac/6.2.4
-    # additional setup for capsaicin
-    module load ndi metis parmetis superlu-dist trilinos
+    export dracomodules="emacs subversion/1.9.3 git intel/16.0.3 \
+gsl/2.1 random123 cmake/3.6.0 numdiff/5.8.1 \
+eospac/6.2.4 ndi metis parmetis superlu-dist trilinos"
   fi
-  export CXX=`which mpiicpc`
-  export CC=`which mpiicc`
-  export FC=`which mpiifort`
-  export MPIEXEC=`which mpirun`
+
+  function dracoenv ()
+  {
+    for m in $dracomodules; do
+      module load $m
+    done
+    export CXX=`which mpiicpc`
+    export CC=`which mpiicc`
+    export FC=`which mpiifort`
+    export MPIEXEC=`which mpirun`
+    echo "mpd --daemon"
+    mpd --daemon
+  }
+
+  function rmdracoenv ()
+  {
+    unset CXX
+    unset CC
+    unset FC
+    unset MPIEXEC
+    # unload in reverse order.
+    mods=( ${dracomodules} )
+    for ((i=${#mods[@]}-1; i>=0; i--)); do
+      loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
+      if test $loaded = 1; then
+        module unload ${mods[$i]}
+      fi
+    done
+  }
+
 fi
 
 # Avoid printing trigraph chars to the screen (eg: ���)

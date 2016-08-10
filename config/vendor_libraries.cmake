@@ -187,16 +187,10 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupCudaEnv )
 
-  option( USE_CUDA "If CUDA is available, should we use it?" ON )
+  option( USE_CUDA "If CUDA is available, should we use it?" OFF )
   if( USE_CUDA )
 
     message( STATUS "Looking for CUDA..." )
-    # special code for CT/CI (fixed in cmake-3.1.1)
-    # if( "${CMAKE_SYSTEM_PROCESSOR}notset" STREQUAL "notset" AND
-    #     ${CMAKE_SYSTEM_NAME} MATCHES "Catamount")
-    #   set( CMAKE_SYSTEM_PROCESSOR "x86_64" CACHE STRING
-    #     "For unix, this value is set from uname -p." FORCE)
-    # endif()
     find_package( CUDA QUIET )
     set_package_properties( CUDA PROPERTIES
       DESCRIPTION "Toolkit providing tools and libraries needed for GPU applications."
