@@ -58,6 +58,7 @@ REM set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
 REM set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
 REM set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
 REM set QTDIR=c:/Qt/5.3/msvc2013
+set USE_GITHUB=1
 
 :cdash
 rem set dashboard_type=Experimental
@@ -79,7 +80,7 @@ echo Environment:
 echo .
 set
 echo .
-echo -----     -----     -----     -----     -----     
+echo -----     -----     -----     -----     -----
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -125,6 +126,7 @@ rem --------------------------------------------------------------------------
 
 set script_dir=e:\cdash\jayenne\regression
 set script_name=Jayenne_Win32.cmake
+set USE_GITHUB=
 
 set subproj=jayenne
 set build_type=Release
@@ -170,5 +172,3 @@ ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestpart
 
 :done
 echo You need to remove -k from script launch to let this window close automatically.
-
-
