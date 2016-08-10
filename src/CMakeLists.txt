@@ -152,7 +152,7 @@ message(
   "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 ")
-if( CRAY_PE )
+if( CRAY_PE AND ENV{CRAYPE_VERSION} )
   message("Cray system detected: CC -craype-verbose -V:
 ")
   if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" )

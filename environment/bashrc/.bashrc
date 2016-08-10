@@ -187,7 +187,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       ;;
 
     # wtrw and rfta
-    red-wtrw* | rfta*)
+    red-wtrw* | rfta* | redcap* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
     # trinitite (tt-fey) | trinity (tr-fe)
