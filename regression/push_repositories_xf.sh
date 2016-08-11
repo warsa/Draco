@@ -34,7 +34,7 @@ run () {
 }
 
 # Sanity check
-if test `klist -l | grep $user | wc -l` = 0; then
+if test `klist -l | grep -c $user` = 0; then
     die "You must have an active kerberos ticket to run this script."
 fi
 

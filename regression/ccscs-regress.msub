@@ -13,23 +13,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${rscriptdir}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -200,10 +200,10 @@ fi
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug, Coverage
 
-if test "${dashboard_type}x" = "x"; then
+if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Nightly
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
    if test "${regress_mode}" = "off"; then
       moniker=`whoami`
       base_dir=/scratch/${moniker}
@@ -255,7 +255,7 @@ fi
 echo "ccscs-regress.msub: work_dir       = ${work_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
-if ! test "${setup_dirs}x" = "x"; then
+if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}; then
       /usr/bin/install -d ${work_dir}/source
       /usr/bin/install -d ${work_dir}/build

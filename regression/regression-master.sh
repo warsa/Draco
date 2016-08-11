@@ -24,7 +24,7 @@ set -m
 print_use()
 {
     echo " "
-    echo "Usage: `basename $0` -b [Release|Debug] -d [Experimental|Nightly]"
+    echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly]"
     echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
     echo "       -f <git branch name> -a"
     echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
@@ -126,7 +126,7 @@ for proj in ${projects}; do
    esac
 done
 
-if ! test "${extra_params}x" = "x"; then
+if [[ ${extra_params} ]]; then
    case $extra_params in
    none)
       # if 'none' set to blank
@@ -155,21 +155,6 @@ esac
 export host=`uname -n | sed -e 's/[.].*//g'`
 
 case ${host} in
-ct-*)
-    export machine_name_long=Cielito
-    export machine_name_short=ct
-    export regdir=/usr/projects/jayenne/regress
-    # Argument checks
-    if ! test "${extra_params}x" = "x"; then
-        case $extra_params in
-        none) extra_params=""; epdash="" ;;
-        fulldiagnostics | nr | perfbench ) # known, continue
-        ;;
-        *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-            print_use; exit 1 ;;
-        esac
-    fi
-    ;;
 ml-*)
     export machine_name_long=Moonlight
     export machine_name_short=ml
@@ -183,7 +168,7 @@ ml-*)
     module purge
     export regdir=/usr/projects/jayenne/regress
     # Argument checks
-    if ! test "${extra_params}x" = "x"; then
+    if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
         cuda | fulldiagnostics | nr | perfbench | pgi ) # known, continue
@@ -198,7 +183,7 @@ tt-*)
     export machine_name_short=tt
     export regdir=/usr/projects/jayenne/regress
     # Argument checks
-    if ! test "${extra_params}x" = "x"; then
+    if [[ ${extra_params} ]]; then
         case $extra_params in
         none) extra_params=""; epdash="" ;;
         fulldiagnostics | nr | perfbench ) # known, continue
@@ -215,7 +200,7 @@ ccscs[0-9])
        export regdir=/scratch/regress
     #fi
     # Argument checks
-    if ! test "${extra_params}x" = "x"; then
+    if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
         coverage | fulldiagnostics | nr | perfbench | bounds_checking ) # known, continue
@@ -232,7 +217,7 @@ darwin*)
     export machine_name_short=darwin
     export regdir=/usr/projects/draco/regress
     # Argument checks
-    if ! test "${extra_params}x" = "x"; then
+    if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
         cuda | fulldiagnostics | nr | perfbench ) # known, continue
@@ -308,7 +293,7 @@ if ! test -x ${rscriptdir}/${machine_name_short}-job-launch.sh; then
 fi
 
 export subproj=draco
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+if test `echo $projects | grep -c $subproj` -gt 0; then
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
@@ -323,7 +308,7 @@ unset prdash
 unset USE_GITHUB
 
 export subproj=jayenne
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+if test `echo $projects | grep -c $subproj` -gt 0; then
   # Run the *-job-launch.sh script (special for each platform).
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Spin until $draco_jobid disappears (indicates that draco has been
@@ -338,7 +323,7 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
 fi
 
 export subproj=capsaicin
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
+if test `echo $projects | grep -c $subproj` -gt 0; then
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
   case $extra_params in
@@ -354,18 +339,6 @@ if test `echo $projects | grep $subproj | wc -l` -gt 0; then
   eval "${cmd} &"
   sleep 1
   capsaicin_jobid=`jobs -p | sort -gr | head -n 1`
-fi
-
-export subproj=asterisk
-if test `echo $projects | grep $subproj | wc -l` -gt 0; then
-  cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
-  # Wait for wedgehog and capsaicin regressions to finish
-  cmd+=" ${jayenne_jobid} ${capsaicin_jobid}"
-  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
-  echo "${subproj}: $cmd"
-  eval "${cmd} &"
-  sleep 1
-  asterisk_jobid=`jobs -p | sort -gr | head -n 1`
 fi
 
 # Wait for all parallel jobs to finish

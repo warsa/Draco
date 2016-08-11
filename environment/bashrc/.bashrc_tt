@@ -15,7 +15,7 @@ fi
 ulimit -s unlimited
 
 # Where is the vendor directory
-if test "${VENDOR_DIR}x" == "x"; then
+if [[ ! ${VENDOR_DIR} ]]; then
    if test -d /usr/projects/draco/vendors; then
       VENDOR_DIR=/usr/projects/draco/vendors
    fi
@@ -24,7 +24,7 @@ fi
 # If LESS is set, is should include '-R' so that git diff's color
 # displays correctly.
 if test -n "${LESS}"; then
-  if test `echo $LESS | grep R | wc -l` = 0; then
+  if test `echo $LESS | grep -c R` = 0; then
     export LESS="${LESS} -R"
   fi
 fi
@@ -65,7 +65,7 @@ function rmdracoenv ()
   # unload in reverse order.
   mods=( ${dracomodules} )
   for ((i=${#mods[@]}-1; i>=0; i--)); do
-    loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+    loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
     if test $loaded = 1; then
       module unload ${mods[$i]}
     fi

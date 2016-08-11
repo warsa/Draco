@@ -73,7 +73,7 @@ cat $author_loc
 # for name in "${user_list[@]}"; do
 #   if ! test "$name" == "kgt" && ! test "$name" == "Kelly (KT) Thompson" && \
 #      ! test "$name" == 107638; then
-#     numlines=`grep "$name" $author_per_loc | wc -l`
+#     numlines=`grep -c "$name" $author_per_loc`
 #     echo "$numlines:$name"
 #   fi
 # done | sort -rn > $author_loc

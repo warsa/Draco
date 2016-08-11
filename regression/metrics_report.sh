@@ -39,7 +39,7 @@ if test "$mach" != "ccscs7.lanl.gov"; then
    exit 1
 fi
 
-if test "${USER}x" == "x"; then
+if [[ ! ${USER} ]]; then
    echo "FATAL ERROR: ENV{USER} not set.  Contact Kelly Thompson <kgt@lanl.gov>."
    exit 1
 fi

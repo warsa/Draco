@@ -51,7 +51,7 @@ function xfpull()
     filesavailable=`ssh red@transfer.lanl.gov myfiles`
     # sanity check: is the requested file in the list?
     fileready=`echo $filesavailable | grep $wantfile`
-    if test "${fileready}x" = "x"; then
+    if [[ ! ${fileready} ]]; then
         echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
         echo "       Run 'xfstatus' to see list of available files."
         return

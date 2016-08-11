@@ -18,14 +18,14 @@ for wantfile in $wantfiles; do
 
     # sanity check: is the requested file in the list?
     fileready=`echo $filesavailable | grep $wantfile`
-    if test "${fileready}x" = "x"; then
+    if [[ ! ${fileready} ]]; then
         echo "ERROR: File '${wantfile}' is not available (yet?) to pull."
         echo "       Run 'xfstatus' to see list of available files."
         return
     fi
-    
+
     # Find the file identifier for the requested file.  The variable
-    # filesavailable contains a list of pairs:  
+    # filesavailable contains a list of pairs:
     # { (id1, file1), (id2, file2), ... }.  Load each pair and if the
     # filename matches the requested filename then pull that file id.
     # Once pulled, remove the file from transfer.lanl.gov.
@@ -42,5 +42,3 @@ for wantfile in $wantfiles; do
 
 done # end loop over $wantfiles
 IFS=$saveifs
-
-

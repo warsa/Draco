@@ -118,9 +118,6 @@ function npwd_alt()
 function findsymbol()
 {
   local nm_opt='-a'
-  if test `uname` = OSF1; then
-    nm_opt=''
-  fi
   local a_libs=`\ls -1 *.a`
   if test -z "$a_libs"; then a_libs=""; fi
   local so_libs=`\ls -1 *.so`
@@ -256,7 +253,7 @@ function rm_from_path ()
 ##---------------------------------------------------------------------------##
 function proxy()
 {
-  if test "${http_proxy}x" = "x"; then
+  if [[ ! ${http_proxy} ]]; then
     # proxies not set, set them
     export http_proxy=http://proxyout.lanl.gov:8080
     export https_proxy=$http_proxy
