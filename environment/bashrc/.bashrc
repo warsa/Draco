@@ -145,7 +145,6 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
     export HTTPS_PROXY=$http_proxy
-    # export http_no_proxy="*.lanl.gov"
     export no_proxy=".lanl.gov"
     export NO_PROXY=$no_proxy
   fi
