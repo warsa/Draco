@@ -85,7 +85,7 @@ for jobid in ${dep_jobids}; do
     done
 done
 
-darwin_regress_script="${regdir}/draco/regression/darwin-regress.msub"
+darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 
 ##---------------------------------------------------------------------------##
 # Proposed: Init, Configure, Build, Test and Submit

@@ -43,7 +43,7 @@ if [[ ! ${modcmd} ]]; then
 else
 
   module use --append /usr/projects/packages/user_contrib/modulefiles/fta
-  module load svn numdiff hsi psi
+  module load hsi psi
 
 fi
 

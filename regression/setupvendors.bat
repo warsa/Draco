@@ -1,6 +1,6 @@
 @echo off
 
-set PATH=%PATH%;c:\MinGW\bin;C:\Program Files (x86)\CMake\bin;C:\Program Files\doxygen\bin
+set PATH=%PATH%;c:\MinGW\bin;C:\Program Files\CMake\bin;C:\Program Files\doxygen\bin
 rem c:\MinGW\msys\1.0\bin;
 
 set VENDOR_DIR=e:\work\vendors
@@ -21,8 +21,8 @@ rem set CAFS_Fortran_COMPILER=c:\MinGW\bin\gfortran.exe
 rem set PATH=e:\work\t\cmake\bin;%PATH%
 
 set PATH=c:\Program Files\Microsoft MPI\Bin;%PATH%
+rem CMake won't work if this is added to PATH because it also provides sh.exe.
 rem set PATH=c:\Program Files\Git\bin;%PATH%
 
 set CWD=%CD%
 echo cmake -DCMAKE_INSTALL_PREFIX=%CWD%..\t -G "Visual Studio 12 2013" e:\work\draco.git
-
