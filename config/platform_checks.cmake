@@ -290,8 +290,7 @@ macro( query_cxx11_features )
   endforeach()
 
   # This one isn't known by cmake
-  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "XL"  OR
-      ${CMAKE_CXX_COMPILER_ID} STREQUAL "PGI" )
+  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "XL"  )
       unset( HAS_CXX11_ARRAY )
   else()
       set( HAS_CXX11_ARRAY 1 )

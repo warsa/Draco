@@ -165,7 +165,8 @@ macro(dbsSetupCxx)
     else()
       include( unix-clang )
     endif()
-  elseif( ${my_cxx_compiler} STREQUAL "pgCC" )
+  elseif( ${my_cxx_compiler} STREQUAL "pgCC" OR
+      ${my_cxx_compiler} STREQUAL "pgc++" )
     include( unix-pgi )
   elseif( ${my_cxx_compiler} MATCHES "CC" )
     set( CRAY_PE ON CACHE BOOL
