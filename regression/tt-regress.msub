@@ -136,7 +136,7 @@ run "module unload xt-totalview xt-libsci "
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB} == 1; then
+if test ${USE_GITHUB:-0} = 1; then
   comp=$comp-$featurebranch
 fi
 

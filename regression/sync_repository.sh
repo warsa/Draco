@@ -36,7 +36,7 @@ run () {
     if ! test $dry_run; then eval $1; fi
 }
 
-run "module load user_contrib svn"
+run "module load user_contrib svn git"
 
 # Ensure that the permissions are correct
 run "umask 0002"
