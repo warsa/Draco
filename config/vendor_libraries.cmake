@@ -187,7 +187,9 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupCudaEnv )
 
-  option( USE_CUDA "If CUDA is available, should we use it?" OFF )
+  if( NOT DEFINED USE_CUDA )
+    option( USE_CUDA "If CUDA is available, should we use it?" OFF )
+  endif()
   if( USE_CUDA )
 
     message( STATUS "Looking for CUDA..." )
