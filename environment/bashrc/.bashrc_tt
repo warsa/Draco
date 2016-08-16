@@ -42,18 +42,18 @@ module load user_contrib friendly-testing
 #module use --append ~/modulefiles/trinitite
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
-gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 \
-subversion"
+gsl/2.1 cmake/3.6.1 numdiff ndi random123 eospac/6.2.4 \
+subversion git"
 
 function dracoenv ()
 {
   #module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu
   #module load PrgEnv-intel
-  module swap intel intel/15.0.5
+  #module swap intel intel/16.0.3
+  module unload gcc/6.1.0 cray-libsci
   for m in $dracomodules; do
     module load $m
   done
-  module unload xt-libsci
   export CXX=CC
   export CC=cc
   export FC=ftn
@@ -65,14 +65,15 @@ function rmdracoenv ()
   # unload in reverse order.
   mods=( ${dracomodules} )
   for ((i=${#mods[@]}-1; i>=0; i--)); do
-    loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
-    if test $loaded = 1; then
+    # loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
+    #if test $loaded = 1; then
       module unload ${mods[$i]}
-    fi
+    #fi
   done
-  module unload intel
+  # module unload intel
   # module unload gcc
-  # module unload PrgEnv-intel
+  module unload PrgEnv-intel
+  module load PrgEnv-intel
   # module load PrgEnv-pgi
 }
 
