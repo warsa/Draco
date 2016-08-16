@@ -105,13 +105,10 @@ run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 # Load new environment
 run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module unload intel"
-run "module load intel/15.0.5"
-run "module load cmake/3.5.2 numdiff subversion"
-run "module load gsl/2.1  random123 eospac/6.2.4 ndi"
+run "module unload cray-libsci gcc/6.1.0"
+run "module load cmake/3.6.1 numdiff subversion git"
+run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
-run "module load git"
 
 export CC=`which cc`
 export CXX=`which CC`
