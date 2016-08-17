@@ -1,8 +1,5 @@
 #!/bin/bash -l
 
-#MSUB -l walltime=08:00:00
-#MSUB -l nodes=8:ppn=32
-
 ##---------------------------------------------------------------------------##
 ## File  : regression/tt-regress.msub
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
@@ -56,6 +53,10 @@ machine=`uname -n`
 case $machine in
 tt-login[0-9]*)
     ctestparts="Test"
+
+    # Node type (aprun -n 1 lscpu)
+    partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
+
     # Force create of a new log file (don't append)
     echo "Purging ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log"
     echo "    " > ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log
@@ -81,6 +82,12 @@ echo "==========================================================================
 echo "Trinitite regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
 echo "==========================================================================="
+if [[ ${partition} ]]; then
+  echo " "
+  echo "Allocation configuration:"
+  echo $partition
+  echo " "
+fi
 
 # Modules
 # ----------------------------------------
@@ -91,7 +98,7 @@ else
     echo 'module function does not exist. defining a local function ...'
     module ()
     {
-        eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+        eval `/opt/cray/pe/modules/3.2.10.4/bin/modulecmd bash $*`
     }
 fi
 
@@ -114,11 +121,15 @@ export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
+    export OMP_NUM_THREADS=16
 comp=CC
-export OMP_NUM_THREADS=16
 
 # Extra parameers
 case $extra_params in
+knl)
+    run "module swap craype-haswell craype-mic-knl"
+    export OMP_NUM_THREADS=17
+    ;;
 "")
     # revert to intel/14 as the default setup.
     ;;
@@ -129,11 +140,10 @@ case $extra_params in
     exit 1
     ;;
 esac
-run "module unload xt-totalview xt-libsci "
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} = 1; then
+if test ${USE_GITHUB:-0} == 1; then
   comp=$comp-$featurebranch
 fi
 

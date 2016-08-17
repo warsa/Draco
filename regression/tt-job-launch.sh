@@ -84,6 +84,13 @@ for jobid in ${dep_jobids}; do
     done
 done
 
+# Select haswell or knl partition
+# option '-e knl' will select KNL, default is haswell.
+case $extra_params in
+knl) partition_options="-lnodes=8:knl:ppn=68,walltime=8:00:00" ;;
+*)   partition_options="-lnodes=8:haswell:ppn=32,walltime=8:00:00" ;;
+esac
+
 # Configure, Build on front end
 export REGRESSION_PHASE=cb
 echo "Configure and Build on the front end..."
@@ -98,7 +105,7 @@ echo " "
 export REGRESSION_PHASE=t
 echo "Test from the login node..."
 echo " "
-cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${rscriptdir}/tt-regress.msub"
+cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${partition_options} ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 jobid=`echo $jobid | sed '/^$/d'`
