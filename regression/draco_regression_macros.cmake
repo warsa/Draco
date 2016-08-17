@@ -740,14 +740,14 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     string( REPLACE "intel-perfbench" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
   endif()
 
-  find_file( ${dep_pkg}_target_dir
-    NAMES README.${dep_pkg}
-    HINTS
-    # if DRACO_DIR is defined, use it.
-    $ENV{DRACO_DIR}
-    # Try a path parallel to the work_dir
-    ${${dep_pkg}_work_dir}/target
-    )
+  # find_file( ${dep_pkg}_target_dir
+  #   NAMES README.${dep_pkg}
+  #   HINTS
+  #   # if DRACO_DIR is defined, use it.
+  #   $ENV{DRACO_DIR}
+  #   # Try a path parallel to the work_dir
+  #   ${${dep_pkg}_work_dir}/target
+  #   )
 
   # Second chance
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
