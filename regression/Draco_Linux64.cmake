@@ -95,6 +95,7 @@ if( ${CTEST_CONFIGURE} )
 
    message( "setup_for_code_coverage()" )
    setup_for_code_coverage() # from draco_regression_macros.cmake
+
    message(  "ctest_configure()" )
    ctest_configure(
       BUILD        "${CTEST_BINARY_DIRECTORY}"
@@ -125,9 +126,9 @@ if( ${CTEST_BUILD} )
 
    message( "ctest_build(
    TARGET install
+   RETURN_VALUE res
    NUMBER_ERRORS num_errors
-   NUMBER_WARNINGS num_warnings
-   RETURN_VALUE res )" )
+   NUMBER_WARNINGS num_warnings )" )
    ctest_build(
       TARGET install
       RETURN_VALUE res

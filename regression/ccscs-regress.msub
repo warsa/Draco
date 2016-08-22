@@ -43,7 +43,13 @@ export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
 export https_proxy=$http_proxy
 export HTTPS_PROXY=$http_proxy
+# ctest submit seems to ignore these no proxy settings, so we must unset the
+# above proxy env variables before submitting the results to cdash.
+export no_proxy="localhost,127.0.0.1,rtt.lanl.gov,.lanl.gov"
+export NO_PROXY=$no_proxy
 export VENDOR_DIR=/scratch/vendors
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
 # import some bash functions
 source $rscriptdir/scripts/common.sh
@@ -295,7 +301,9 @@ echo "--------------------(end environment)--------------------------"
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
-run "cp $COVFILE $COVFILE.bak"
+if test -f $COVFILE; then
+  run "cp $COVFILE $COVFILE.bak"
+fi
 
 run "chgrp -R draco ${work_dir}"
 run "chmod -R g+rwX,o-rwX ${work_dir}"

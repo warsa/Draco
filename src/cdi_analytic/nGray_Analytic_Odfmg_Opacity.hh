@@ -8,17 +8,11 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef __cdi_analytic_nGray_Analytic_Odfmg_Opacity_hh__
 #define __cdi_analytic_nGray_Analytic_Odfmg_Opacity_hh__
 
-#include "Analytic_Models.hh"
 #include "Analytic_Odfmg_Opacity.hh"
-#include "cdi/OpacityCommon.hh"
-#include "ds++/SP.hh"
-#include <string>
 
 namespace rtt_cdi_analytic
 {
@@ -31,10 +25,10 @@ namespace rtt_cdi_analytic
  *
  * Primarily code from Analytic_Multigroup_Opacity.
  */
-//
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity : public Analytic_Odfmg_Opacity
+class DLL_PUBLIC_cdi_analytic nGray_Analytic_Odfmg_Opacity :
+        public Analytic_Odfmg_Opacity
 {
   public:
     // Useful typedefs.
@@ -120,9 +114,7 @@ nGray_Analytic_Odfmg_Opacity::getDataDescriptor() const
     else if (reaction == rtt_cdi::SCATTERING)
         descriptor = "Analytic Odfmg Scattering";
     else
-    {
         Insist (0, "Invalid analytic multigroup model opacity!");
-    }
 
     return descriptor;
 }
