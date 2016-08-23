@@ -52,6 +52,24 @@ if [[ ! ${logdir} ]]; then
     exit 1
 fi
 
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+fi
+
+# What queue should we use
+#access_queue=""
+#if test -x /opt/MOAB/bin/drmgroups; then
+#   avail_queues=`/opt/MOAB/bin/drmgroups`
+avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
+case $avail_queues in
+*access*) access_queue="-A access" ;;
+esac
+#fi
+
 # Banner
 echo "==========================================================================="
 echo "Trinitite Regression job launcher for ${subproj} - ${build_type} flavor."
@@ -64,6 +82,9 @@ if [[ ! ${extra_params} ]]; then
   echo "   extra_params   = none"
 else
   echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"

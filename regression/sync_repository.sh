@@ -40,14 +40,20 @@ run "module load user_contrib svn git"
 
 # Ensure that the permissions are correct
 run "umask 0002"
+svnhostmachine=ccscs7
 MYHOSTNAME=`uname -n`
 regdir=/usr/projects/jayenne/regress
 svnroot=$regdir/svn
-svnhostmachine=ccscs7
+VENDOR_DIR=/usr/projects/draco/vendors
+keychain=keychain-2.7.1
+
+if ! test -d $regdir; then
+  mkdir -p $regdir
+fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-/usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
@@ -61,15 +67,13 @@ fi
 if test -d $regdir/draco; then
   run "cd $regdir/draco; git pull"
 else
-  run "cd $regdir"
-  run "git clone https://github.com/losalamos/Draco.git draco"
+  run "cd $regdir; git clone https://github.com/losalamos/Draco.git draco"
 fi
 
-if test -d $regdir/jayenne/regression; then
-    run "cd $regdir/jayenne/regression; svn update"
+if test -d $regdir/jayenne; then
+  run "cd $regdir/jayenne; git pull"
 else
-    run "mkdir -p $regdir/jayenne; cd $regdir/jayenne"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/jayenne-project/regression"
+  run "cd $regdir; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
 fi
 
 if test -d $regdir/capsaicin/scripts; then
@@ -107,7 +111,6 @@ if ! test -d $svnroot; then
     # svnsync sync file:///${svnroot}/jayenne
 fi
 
-run "svnsync --non-interactive sync file:///${svnroot}/jayenne"
 run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
 
 #------------------------------------------------------------------------------#
