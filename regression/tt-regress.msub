@@ -48,7 +48,7 @@ export HTTPS_PROXY=$http_proxy
 # above proxy env variables before submitting the results to cdash.
 export no_proxy="localhost,127.0.0.1,rtt.lanl.gov,.lanl.gov"
 export NO_PROXY=$no_proxy
-export VENDOR_DIR=/scratch/vendors
+export VENDOR_DIR=/usr/projects/draco/vendors
 # gitlab.lanl.gov has an unkown certificate, disable checking
 export GIT_SSL_NO_VERIFY=true
 
@@ -127,7 +127,7 @@ export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
-    export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=16
 comp=CC
 
 # Extra parameers

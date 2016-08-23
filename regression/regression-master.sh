@@ -42,7 +42,7 @@ print_use()
     echo "   -p    project names  = { draco, jayenne, capsaicin }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
-    echo "                            gcc530, gcc610, nr, perfbench, pgi}"
+    echo "                            knl, gcc530, gcc610, nr, perfbench, pgi}"
     echo " "
     echo "Example:"
     echo "./regression-master.sh -b Release -d Nightly -p \"draco jayenne capsaicin\""
@@ -147,9 +147,9 @@ if [[ ${extra_params} ]]; then
    none)
       # if 'none' set to blank
       extra_params=""; epdash="" ;;
-   coverage | cuda | fulldiagnostics | nr | perfbench | pgi )
+   bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
       ;;
-   bounds_checking | gcc530 | clang | gcc610 )
+   gcc610 | nr | perfbench | pgi )
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
        print_use; exit 1 ;;
@@ -202,7 +202,7 @@ tt-*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none) extra_params=""; epdash="" ;;
-        fulldiagnostics | nr | perfbench ) # known, continue
+        fulldiagnostics | knl | nr | perfbench ) # known, continue
         ;;
         *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
             print_use; exit 1 ;;

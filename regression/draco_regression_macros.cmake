@@ -743,7 +743,6 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
   # Assume that draco_work_dir is parallel to our current location.
   string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
-  message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
@@ -768,14 +767,14 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     endif()
   endif()
 
-  # find_file( ${dep_pkg}_target_dir
-  #   NAMES README.${dep_pkg}
-  #   HINTS
-  #   # if DRACO_DIR is defined, use it.
-  #   $ENV{DRACO_DIR}
-  #   # Try a path parallel to the work_dir
-  #   ${${dep_pkg}_work_dir}/target
-  #   )
+  find_file( ${dep_pkg}_target_dir
+    NAMES README.${dep_pkg}
+    HINTS
+    # if DRACO_DIR is defined, use it.
+    $ENV{DRACO_DIR}
+    # Try a path parallel to the work_dir
+    ${${dep_pkg}_work_dir}/target
+  )
 
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
     message( FATAL_ERROR
