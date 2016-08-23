@@ -84,11 +84,11 @@ unset nfb
 
 while getopts ":ab:d:e:f:ghp:r" opt; do
 case $opt in
-a)  build_autodoc="on" ;;
+a)  build_autodoc="on";;
 b)  build_type=$OPTARG ;;
 d)  dashboard_type=$OPTARG ;;
 e)  extra_params=$OPTARG
-    epdash="-" ;;
+    epdash="-";;
 f)  featurebranches=$OPTARG
     nfb=`echo $featurebranches | wc -w` ;;
 h)  print_use; exit 0 ;;
@@ -98,7 +98,6 @@ r)  regress_mode="on" ;;
 :)  echo "" ;echo "option -$OPTARG requires an argument."; print_use; exit 1 ;;
 esac
 done
-
 if [[ ${nfb} ]]; then
   # manually selecting feature branches -> must provide the same number of
   # feature branches as projects.
@@ -323,6 +322,7 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   sleep 1
   draco_jobid=`jobs -p | sort -gr | head -n 1`
 fi
+
 
 export subproj=jayenne
 if test `echo $projects | grep -c $subproj` -gt 0; then
