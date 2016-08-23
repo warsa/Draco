@@ -321,12 +321,11 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   eval "${cmd} &"
   sleep 1
   draco_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
 fi
-
 
 export subproj=jayenne
 if test `echo $projects | grep -c $subproj` -gt 0; then
-  ((ifb++))
   export featurebranch=${fb[$ifb]}
   # Run the *-job-launch.sh script (special for each platform).
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
@@ -339,6 +338,7 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   eval "${cmd} &"
   sleep 1
   jayenne_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
 fi
 
 # Only Draco is on github, other projects still use svn.
@@ -350,7 +350,6 @@ unset USE_GITHUB
 
 export subproj=capsaicin
 if test `echo $projects | grep -c $subproj` -gt 0; then
-  # ((ifb++))
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
   case $extra_params in

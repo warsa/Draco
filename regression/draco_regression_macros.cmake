@@ -33,7 +33,7 @@ macro( find_num_procs_avail_for_running_tests )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-    # If this is not a known batch system, the attempt to set values according
+    # If this is not a known batch system, then attempt to set values according
     # to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
@@ -741,8 +741,12 @@ endmacro(process_cc_or_da)
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
-  # Assume that draco_work_dir is parallel to our current location.
-  string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
+  # Assume that draco_work_dir is parallel to our current location, but
+  # only replace the directory name preceeding the dashboard name.
+  message("ENV{work_dir} = $ENV{work_dir}")
+  string( REGEX REPLACE "${this_pkg}/(Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
+    ${dep_pkg}_work_dir $ENV{work_dir} )
+  message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
@@ -756,13 +760,13 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     if( "${this_pkg}" MATCHES "jayenne" )
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
 
     if( "${this_pkg}" MATCHES "capsaicin" )
       # Probably building capsaicin, append '-develop' when looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental)_(.*)/" "\\1_\\2-develop/"
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)/" "\\1_\\2-develop/"
         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
   endif()
