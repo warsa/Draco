@@ -84,10 +84,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  message( "sitename = ${sitename}")
-  if( ${sitename} MATCHES "ct" )
-     set( sitename "Cielito" )
-  elseif( ${sitename} MATCHES "tt" )
+  if( ${sitename} MATCHES "tt" )
      set( sitename "Trinitite" )
   elseif( ${sitename} MATCHES "tr" )
      set( sitename "Trinity" )
@@ -189,8 +186,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
    # Echo settings
    if( ${drm_verbose} )
      message("
-ARGV     = ${ARGV}
-
 work_dir   = ${work_dir}
 
 CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
@@ -271,23 +266,23 @@ macro( parse_args )
 
   # refine compiler short name.
   set(USE_CUDA OFF)
-  if( $ENV{CXX} MATCHES "pgCC" OR $ENV{CXX} MATCHES "pgc[+][+]" )
-    if( $ENV{CXX} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  if( "$ENV{CXX}" MATCHES "pgCC" OR "$ENV{CXX}" MATCHES "pgc[+][+]" )
+    if( "$ENV{CXX}" MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
       string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        compiler_version $ENV{CXX} )
+        compiler_version "$ENV{CXX}" )
       set( compiler_short_name "pgi-${compiler_version}" )
     else()
       set( compiler_short_name "pgi" )
     endif()
-  elseif($ENV{CXX} MATCHES "clang" )
-    if( $ENV{CXX} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  elseif("$ENV{CXX}" MATCHES "clang" )
+    if( "$ENV{CXX}" MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
       string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        compiler_version $ENV{CXX} )
+        compiler_version "$ENV{CXX}" )
       set( compiler_short_name "clang-${compiler_version}" )
     else()
       set( compiler_short_name "clang" )
     endif()
-  elseif($ENV{CXX} MATCHES "icpc" )
+  elseif("$ENV{CXX}" MATCHES "icpc" )
      if( ${work_dir} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
         string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
            compiler_version ${work_dir} )
@@ -327,12 +322,12 @@ macro( parse_args )
     if( NOT "${compiler_version}x" STREQUAL "x" )
       set( compiler_short_name "${compiler_short_name}-${compiler_version}" )
     endif()
-  elseif( $ENV{CC} MATCHES ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  elseif( "$ENV{CC}" MATCHES ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
     # /scratch/vendors/gcc-5.3.0/bin/gcc
     string( REGEX REPLACE ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
       compiler_version $ENV{CC} )
     set( compiler_short_name "gcc-${compiler_version}" )
-  else( $ENV{CC} MATCHES "gcc" )
+  elseif( "$ENV{CC}" MATCHES "gcc" )
     # /usr/bin/gcc
     # /ccs/codes/radtran/vendors/bullseyecoverage-8.9.75/bin/gcc
     execute_process( COMMAND $ENV{CC} --version
@@ -341,6 +336,8 @@ macro( parse_args )
     string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1.\\2.\\3"
       cxx_version ${cxx_version} )
     set( compiler_short_name "gcc-${cxx_version}" )
+  else()
+    set( compiler_short_name "unknown" )
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
@@ -377,7 +374,7 @@ macro( parse_args )
 
   # Bounds Checking
   if( ${CTEST_SCRIPT_ARG} MATCHES bounds_checking )
-    if( "${compiler_short_name}" STREQUAL "gcc" )
+    if( "${compiler_short_name}" STREQUAL "gcc-4.8.5" )
       set( BOUNDS_CHECKING "GCC_ENABLE_GLIBCXX_DEBUG:BOOL=ON" )
     else()
       message(FATAL_ERROR "I don't know how to turn on bounds checking for compiler = ${compiler_short_name}" )
@@ -704,7 +701,7 @@ endmacro( setup_for_code_coverage )
 macro(process_cc_or_da)
    if( "${sitename}" MATCHES "ccscs[1-9]" AND
        "$ENV{CXX}" MATCHES "g[+][+]" AND
-       "${CTEST_BUILD_NAME}" MATCHES "Linux64_gcc_Debug" )
+       "${CTEST_BUILD_NAME}" MATCHES "Linux64_gcc-4.8.5_Debug" )
       if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
          if(ENABLE_C_CODECOVERAGE)
             message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
@@ -754,9 +751,8 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-
     if( "${this_pkg}" MATCHES "jayenne" )
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
