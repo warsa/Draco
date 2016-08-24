@@ -7,10 +7,22 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
-# This script is used to mirror portions of the Jayenne and Capsaicin SVN
-# repositories to a HPC location. The repository must be mirrored because the
-# ctest regression system must be run from the HPC backend (via msub) where
-# access to ccscs7:/ccs/codes/radtran/svn is not available.
+# This script is used for 2 similar but distinct operations:
+#
+# 1. It mirrors portions of the Capsaicin SVN repositories to a HPC
+#    location. The repository must be mirrored because the ctest regression
+#    system must be run from the HPC backend (via msub) where access to
+#    ccscs7:/ccs/codes/radtran/svn is not available.
+# 2. It also mirrors git@github.com/losalamos/Draco.git and
+#    git@gitlab.lanl.gov/jayenne/jayenne.git to ccscs7:/ccs/codes/radtran/git.
+#    This is done to allow Redmine to parse the current repository preseting a
+#    GUI view and scraping commit information that connects to tracked issues.
+
+target="`uname -n | sed -e s/[.].*//`"
+MYHOSTNAME="`uname -n`"
+
+# Locate the directory that this script is located in:
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #
 # MODULES
@@ -31,45 +43,81 @@ modcmd=`declare -f module`
 # Environment
 #
 
-run () {
-    echo $1
-    if ! test $dry_run; then eval $1; fi
-}
-
-run "module load user_contrib svn git"
+# import some bash functions
+source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 run "umask 0002"
-MYHOSTNAME=`uname -n`
-regdir=/usr/projects/jayenne/regress
-svnroot=$regdir/svn
 svnhostmachine=ccscs7
+
+case ${target} in
+ccscs*)
+    run "module load user_contrib subversion git"
+    regdir=/scratch/regress
+    gitroot=/ccs/codes/radtran/git
+    VENDOR_DIR=/scratch/vendors
+    keychain=keychain-2.8.2
+;;
+*)
+    run "module load user_contrib svn git"
+    regdir=/usr/projects/jayenne/regress
+    svnroot=$regdir/svn
+    VENDOR_DIR=/usr/projects/draco/vendors
+    keychain=keychain-2.7.1
+    ;;
+esac
+
+if ! test -d $regdir; then
+  mkdir -p $regdir
+fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-/usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_dsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
     echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
 fi
 
-#
-# update the scripts directories in /usr/projects/jayenne
-#
+case ${target} in
+ccscs*)
+    # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
+    # repositories. This location can be parsed by redmine.
+    if test -d $gitroot/Draco.git; then
+      run "cd $gitroot/Draco.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+    fi
+    if test -d $gitroot/jayenne.git; then
+      run "cd $gitroot/jayenne.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+    fi
+    ;;
+*)
+    #
+    # HPC: update the scripts directories in /usr/projects/jayenne
+    #
 
 if test -d $regdir/draco; then
   run "cd $regdir/draco; git pull"
 else
-  run "cd $regdir"
-  run "git clone https://github.com/losalamos/Draco.git draco"
+  run "cd $regdir; git clone https://github.com/losalamos/Draco.git draco"
 fi
 
-if test -d $regdir/jayenne/regression; then
-    run "cd $regdir/jayenne/regression; svn update"
+if test -d $regdir/jayenne; then
+  run "cd $regdir/jayenne; git pull"
 else
-    run "mkdir -p $regdir/jayenne; cd $regdir/jayenne"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/jayenne-project/regression"
+  run "cd $regdir; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
 fi
 
 if test -d $regdir/capsaicin/scripts; then
@@ -107,8 +155,9 @@ if ! test -d $svnroot; then
     # svnsync sync file:///${svnroot}/jayenne
 fi
 
-run "svnsync --non-interactive sync file:///${svnroot}/jayenne"
 run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+;;
+esac
 
 #------------------------------------------------------------------------------#
 # End sync_repository.sh

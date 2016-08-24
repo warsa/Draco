@@ -33,7 +33,7 @@ macro( find_num_procs_avail_for_running_tests )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-    # If this is not a known batch system, the attempt to set values according
+    # If this is not a known batch system, then attempt to set values according
     # to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
@@ -335,7 +335,12 @@ macro( parse_args )
   else( $ENV{CC} MATCHES "gcc" )
     # /usr/bin/gcc
     # /ccs/codes/radtran/vendors/bullseyecoverage-8.9.75/bin/gcc
-    set( compiler_short_name "gcc" )
+    execute_process( COMMAND $ENV{CC} --version
+      OUTPUT_VARIABLE cxx_version
+      OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1.\\2.\\3"
+      cxx_version ${cxx_version} )
+    set( compiler_short_name "gcc-${cxx_version}" )
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
@@ -537,8 +542,15 @@ endmacro()
 macro( set_git_command gitpath )
   set( CTEST_UPDATE_TYPE "git" )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
-    set( CTEST_CHECKOUT_COMMAND
-      "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+    if( ${gitpath} MATCHES "Draco" )
+      set( CTEST_CHECKOUT_COMMAND
+        "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+    else()
+      # This assumes that a valid ssh-key exists in the current environment and
+      # works with gitlab.lanl.gov.
+      set( CTEST_CHECKOUT_COMMAND
+        "${CTEST_GIT_COMMAND} clone git@gitlab.lanl.gov:${gitpath} source" )
+    endif()
   endif()
   # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
   # be set to something like pr42.
@@ -551,7 +563,14 @@ macro( set_git_command gitpath )
     # assumes that this is run when PWD = ${CTEST_SOURCE_DIRECTORY} and git
     # clone was successful.
     # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_SOURCE_DIRECTORY}/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
-    set( CTEST_GIT_UPDATE_CUSTOM "$ENV{rscriptdir}/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
+    if ( "${githost}x" STREQUAL "x" )
+      if( "${CTEST_CHECKOUT_COMMAND}" MATCHES "github" )
+        set( githost "github")
+      else()
+        set( githost "gitlab")
+      endif()
+    endif()
+    set( CTEST_GIT_UPDATE_CUSTOM "$ENV{rscriptdir}/fetch_co.sh;${CTEST_GIT_COMMAND};${githost};${featurebranch}")
   else()
     message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
   endif()
@@ -722,13 +741,12 @@ endmacro(process_cc_or_da)
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
-  # Assume that draco_work_dir is parallel to our current location.
-  string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
-
-  if( "${dep_pkg}" MATCHES "draco" )
-    string( REPLACE "cmake_jayenne/draco" "cmake_draco"
-      ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-  endif()
+  # Assume that draco_work_dir is parallel to our current location, but
+  # only replace the directory name preceeding the dashboard name.
+  message("ENV{work_dir} = $ENV{work_dir}")
+  string( REGEX REPLACE "${this_pkg}/(Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
+    ${dep_pkg}_work_dir $ENV{work_dir} )
+  message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
@@ -736,39 +754,37 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+
+    if( "${this_pkg}" MATCHES "jayenne" )
+      # If this is jayenne, we might be building a pull request. Replace the PR
+      # number in the path with '-develop' before looking for draco.
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
+        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    endif()
+
+    if( "${this_pkg}" MATCHES "capsaicin" )
+      # Probably building capsaicin, append '-develop' when looking for draco.
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)/" "\\1_\\2-develop/"
+        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    endif()
   endif()
 
-  # find_file( ${dep_pkg}_target_dir
-  #   NAMES README.${dep_pkg}
-  #   HINTS
-  #   # if DRACO_DIR is defined, use it.
-  #   $ENV{DRACO_DIR}
-  #   # Try a path parallel to the work_dir
-  #   ${${dep_pkg}_work_dir}/target
-  #   )
-
-  # Second chance
-  if( NOT EXISTS ${${dep_pkg}_target_dir} )
-    # might have a git branch name
-    string( REGEX REPLACE "(Nightly|Experimental)_(.*)/" "\\1_\\2-develop/"
-      ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    find_file( ${dep_pkg}_target_dir
-      NAMES README.${dep_pkg}
-      HINTS
-      # if DRACO_DIR is defined, use it.
-      $ENV{DRACO_DIR}
-      # Try a path parallel to the work_dir
-      ${${dep_pkg}_work_dir}/target
-      )
-  endif()
+  find_file( ${dep_pkg}_target_dir
+    NAMES README.${dep_pkg}
+    HINTS
+    # if DRACO_DIR is defined, use it.
+    $ENV{DRACO_DIR}
+    # Try a path parallel to the work_dir
+    ${${dep_pkg}_work_dir}/target
+  )
 
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
     message( FATAL_ERROR
-      "Could not locate the ${dep_pkg} installation directory. "
-      "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}"
-      "${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
+      "Could not locate the ${dep_pkg} installation directory.
+      ${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}
+      ${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
   endif()
 
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )

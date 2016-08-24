@@ -1,5 +1,19 @@
 # crontab for tt-fey
 
+#------------------------------------------------------------------------------#
+# Regression Options:
+# -a build autodoc
+# -r use regress account
+# -b build_type: Release|Debug
+# -d dashboard:  Nightly|Experimental
+# -p projects:
+# -e extra args:
+#    cuda  - build portions of the code that work with CUDA
+#    pgi   - build with the PGI compiler
+#    nr    - build with non-reproducible option.
+#    fulldiagnostics - build with IEEE checks enabled
+#------------------------------------------------------------------------------#
+
 # --------------------
 # Haswell
 # --------------------

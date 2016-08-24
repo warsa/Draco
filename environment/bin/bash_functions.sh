@@ -250,6 +250,7 @@ function rm_from_path ()
 
 ##---------------------------------------------------------------------------##
 ## Toggle LANL proxies on/off
+## https://wiki.archlinux.org/index.php/proxy_settings
 ##---------------------------------------------------------------------------##
 function proxy()
 {
@@ -259,8 +260,8 @@ function proxy()
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
     export HTTPS_PROXY=$http_proxy
-    export http_no_proxy="*.lanl.gov"
-    export no_proxy=lanl.gov
+    # export http_no_proxy="*.lanl.gov"
+    export no_proxy="localhost,127.0.0.1,.lanl.gov"
     export NO_PROXY=$no_proxy
   else
     # proxies are set, kill them
@@ -268,7 +269,7 @@ function proxy()
     unset https_proxy
     unset HTTP_PROXY
     unset HTTPS_PROXY
-    unset http_no_proxy
+    #unset http_no_proxy
     unset no_proxy
     unset NO_PROXY
   fi

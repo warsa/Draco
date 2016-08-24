@@ -59,6 +59,14 @@ if [[ ! ${logdir} ]]; then
     exit 1
 fi
 
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+fi
+
 # What queue should we use
 #access_queue=""
 #if test -x /opt/MOAB/bin/drmgroups; then
@@ -82,6 +90,9 @@ if [[ ! ${extra_params} ]]; then
 else
   echo "   extra_params   = ${extra_params}"
 fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
+fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
@@ -104,6 +115,13 @@ for jobid in ${dep_jobids}; do
        sleep 5m
     done
 done
+
+if ! test -d $logdir; then
+  mkdir -p $logdir
+  chgrp draco $logdir
+  chmod g+rwX $logdir
+  chmod g+s $logdir
+fi
 
 # Configure on the front end
 echo "Configure:"

@@ -31,23 +31,41 @@ done
 # sanity check
 if [[ ! ${regdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
 if [[ ! ${rscriptdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
 if [[ ! ${subproj} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
 if [[ ! ${build_type} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
 if [[ ! ${logdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
+fi
+
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
 fi
 
 # Banner
@@ -62,6 +80,9 @@ if [[ ! ${extra_params} ]]; then
   echo "   extra_params   = none"
 else
   echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"

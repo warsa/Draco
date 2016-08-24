@@ -46,8 +46,13 @@ export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
 export https_proxy=$http_proxy
 export HTTPS_PROXY=$http_proxy
-export VENDOR_DIR=/usr/projects/draco/vendors
-machine=`uname -n`
+# ctest submit seems to ignore these no proxy settings, so we must unset the
+# above proxy env variables before submitting the results to cdash.
+export no_proxy="localhost,127.0.0.1,rtt.lanl.gov,.lanl.gov"
+export NO_PROXY=$no_proxy
+export VENDOR_DIR=/scratch/vendors
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
 # import some bash functions
 source $rscriptdir/scripts/common.sh
@@ -65,6 +70,9 @@ s)
     ;;
 esac
 
+# Header
+# ----------------------------------------
+machine=`uname -n`
 echo "==========================================================================="
 echo "Moonlight regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
@@ -157,7 +165,7 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB:-0} = 1; then
+if test ${USE_GITHUB:-0} == 1; then
   comp=$comp-$featurebranch
 fi
 
@@ -176,7 +184,7 @@ fi
 # Build type     : Release, Debug
 
 if [[ ! ${dashboard_type} ]]; then
-   dashboard_type=Experimental
+   dashboard_type=Nightly
 fi
 if [[ ! ${base_dir} ]]; then
    # Keep build and target dirs out of /usr/projects locations to

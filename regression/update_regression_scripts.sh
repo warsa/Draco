@@ -19,10 +19,6 @@ source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 case ${target} in
-  darwin-login*)
-    echo "Please run regressions from darwin-fe instead of darwin-login."
-    exit 1
-    ;;
   darwin-fe* | cn[0-9]*)
     # personal copy of ssh-agent.
     export PATH=$HOME/bin:$PATH
@@ -79,13 +75,13 @@ case ${target} in
     #   (run "cd $gitroot; git clone https://github.com/losalamos/Draco.git draco")
     # fi
 
-    run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
     run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
     # (run "cd $gitroot/draco; git pull origin develop")
     ;;
   ccscs*)
     REGDIR=/scratch/regress
     SVN=/scratch/vendors/subversion-1.9.3/bin/svn
+    /scratch/vendors/keychain-2.8.2/keychain $HOME/.ssh/id_dsa
     /scratch/vendors/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa
     if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
        source $HOME/.keychain/$MYHOSTNAME-sh
@@ -99,8 +95,19 @@ case ${target} in
 esac
 
 # Update main regression scripts
-run "cd ${REGDIR}/draco; git pull"
-run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
+if ! test -d $REGDIR; then
+  run "mkdir -p ${REGDIR}"
+fi
+if test -d ${REGDIR}/draco; then
+  run "cd ${REGDIR}/draco; git pull"
+else
+  run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
+fi
+if test -d ${REGIDR}/jayenne; then
+  run "cd ${REGDIR}/jayenne; git pull"
+else
+  run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
+fi
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
 
 ##---------------------------------------------------------------------------##

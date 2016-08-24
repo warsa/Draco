@@ -25,7 +25,7 @@ print_use()
 {
     echo " "
     echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly]"
-    echo "       -h -p [\"draco jayenne capsaicin asterisk\"] -r"
+    echo "       -h -p [\"draco jayenne capsaicin\"] -r"
     echo "       -f <git branch name> -a"
     echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi]"
     echo " "
@@ -36,8 +36,9 @@ print_use()
     echo "   -a    build autodoc"
     echo "   -b    build-type     = { Debug, Release }"
     echo "   -d    dashboard type = { Experimental, Nightly }"
-    echo "   -f    git feature branch, default=develop"
-    echo "         common: 'pr42'"
+    echo "   -f    git feature branch, default=\"develop develop\""
+    echo "         common: 'develop pr42'"
+    echo "         requires one string per project listed in option -p"
     echo "   -p    project names  = { draco, jayenne, capsaicin }"
     echo "                          This is a space delimited list within double quotes."
     echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
@@ -72,10 +73,10 @@ epdash=""
 userlogdir=""
 export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Default to using GitHub for Draco
-featurebranch=develop # use default branch
-prdash="-"
+# Default to using GitHub for Draco and gitlab.lanl.gov for Jayenne
 USE_GITHUB=1
+prdash="-"
+unset nfb
 
 ##---------------------------------------------------------------------------##
 ## Command options
@@ -88,9 +89,8 @@ b)  build_type=$OPTARG ;;
 d)  dashboard_type=$OPTARG ;;
 e)  extra_params=$OPTARG
     epdash="-";;
-f)  featurebranch=$OPTARG
-    USE_GITHUB=1
-    prdash="-";;
+f)  featurebranches=$OPTARG
+    nfb=`echo $featurebranches | wc -w` ;;
 h)  print_use; exit 0 ;;
 p)  projects=$OPTARG ;;
 r)  regress_mode="on" ;;
@@ -98,6 +98,22 @@ r)  regress_mode="on" ;;
 :)  echo "" ;echo "option -$OPTARG requires an argument."; print_use; exit 1 ;;
 esac
 done
+if [[ ${nfb} ]]; then
+  # manually selecting feature branches -> must provide the same number of
+  # feature branches as projects.
+  if [[ ! `echo $projects | wc -w` == $nfb ]]; then
+    echo "Error: You must provide the same number of feature branches as the number of"
+    echo "projects specified. For example:"
+    echo "    -p \"draco jayenne\" -f \"develop pr42\""
+    exit 1
+  fi
+else
+  # default: use 'develop' for all git branches.
+  featurebranches=''
+  for p in $projects; do
+    featurebranches+="develop "
+  done
+fi
 
 ##---------------------------------------------------------------------------##
 ## Sanity Checks for input
@@ -119,7 +135,7 @@ esac
 
 for proj in ${projects}; do
    case $proj in
-   draco | jayenne | capsaicin) # known projects, continue
+   draco | jayenne | capsaicin ) # known projects, continue
       ;;
    *)  echo "" ;echo "FATAL ERROR: unknown project name (-p) = ${proj}"
        print_use; exit 1 ;;
@@ -240,7 +256,7 @@ export logdir="${regdir}/logs${userlogdir}"
 mkdir -p $logdir
 
 export build_type dashboard_type extra_params regress_mode epdash
-export featurebranch USE_GITHUB prdash build_autodoc
+export featurebranches USE_GITHUB prdash build_autodoc
 
 ##---------------------------------------------------------------------------##
 # Banner
@@ -263,7 +279,7 @@ echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   projects       = \"${projects}\""
 echo "   regress_mode   = ${regress_mode}"
-echo "   featurebranch  = ${featurebranch}"
+echo "   featurebranches  = ${featurebranches}"
 echo " "
 echo "Descriptions:"
 echo "   rscriptdir -  the location of the draco regression scripts."
@@ -281,6 +297,10 @@ echo " "
 ## Launch the jobs...
 ##---------------------------------------------------------------------------##
 
+# convert featurebranches into an array
+export fb=(${featurebranches})
+ifb=0
+
 # The job launch logic spawns a job for each project immediately, but the
 # *-job-launch.sh script will spin until all dependencies (jobids) are met.
 # Thus, the ml-job-launch.sh for milagro will start immediately, but it will not
@@ -294,33 +314,39 @@ fi
 
 export subproj=draco
 if test `echo $projects | grep -c $subproj` -gt 0; then
+  export featurebranch=${fb[$ifb]}
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
   draco_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
 fi
-
-# Only Draco is on github, other projects still use svn.
-unset featurebranch
-unset prdash
-unset USE_GITHUB
 
 export subproj=jayenne
 if test `echo $projects | grep -c $subproj` -gt 0; then
+  export featurebranch=${fb[$ifb]}
   # Run the *-job-launch.sh script (special for each platform).
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Spin until $draco_jobid disappears (indicates that draco has been
   # built and installed)
   cmd+=" ${draco_jobid}"
   # Log all output.
-  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
   jayenne_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
 fi
+
+# Only Draco is on github, other projects still use svn.
+unset featurebranch
+unset fb
+unset ifb
+unset prdash
+unset USE_GITHUB
 
 export subproj=capsaicin
 if test `echo $projects | grep -c $subproj` -gt 0; then
