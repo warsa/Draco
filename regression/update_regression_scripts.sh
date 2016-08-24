@@ -8,6 +8,7 @@
 ##---------------------------------------------------------------------------##
 
 umask 0002
+
 target="`uname -n | sed -e s/[.].*//`"
 MYHOSTNAME="`uname -n`"
 
@@ -81,7 +82,6 @@ case ${target} in
   ccscs*)
     REGDIR=/scratch/regress
     SVN=/scratch/vendors/subversion-1.9.3/bin/svn
-    /scratch/vendors/keychain-2.8.2/keychain $HOME/.ssh/id_dsa
     /scratch/vendors/keychain-2.8.2/keychain $HOME/.ssh/cmake_dsa
     if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
        source $HOME/.keychain/$MYHOSTNAME-sh
@@ -103,7 +103,7 @@ if test -d ${REGDIR}/draco; then
 else
   run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
 fi
-if test -d ${REGIDR}/jayenne; then
+if test -d ${REGDIR}/jayenne; then
   run "cd ${REGDIR}/jayenne; git pull"
 else
   run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
