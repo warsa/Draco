@@ -21,22 +21,11 @@ cmake_minimum_required(VERSION 3.0.0)
 set( CTEST_PROJECT_NAME "Draco" )
 message("source ${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
-
-# ====================================================================
-
 set_defaults()
 parse_args()
 find_tools()
-
-if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
   set_git_command("Draco.git")
-else()
-   string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/"
-   CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
-endif()
 
-string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/"
-   CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
 # Make machine name lower case
 string( TOLOWER "${CTEST_SITE}" CTEST_SITE )
 
@@ -82,7 +71,8 @@ message("
 message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
+# Init
+if( ${CTEST_CONFIGURE} )
   if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
     # Empty the binary directory and recreate the CMakeCache.txt
     message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
@@ -91,7 +81,7 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
 
   # dummy command to give the file system time to catch up before creating
   # CMakeCache.txt.
-  file( WRITE d:/foo.txt ${CTEST_INITIAL_CACHE} )
+  # file( WRITE $ENV{TEMP}/foo.txt ${CTEST_INITIAL_CACHE} )
   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 endif()
 
@@ -104,7 +94,7 @@ else()
 endif()
 
 # Update and Configure
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
+if( ${CTEST_CONFIGURE} )
    message( "ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )"  )
    ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
    message( "Files updated: ${res}" )
@@ -118,7 +108,7 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
 endif()
 
 # Autodoc
-if( "${CTEST_AUTODOC}" STREQUAL "ON" )
+if( ${CTEST_AUTODOC} )
   message( "ctest_build(
    TARGET autodoc
    NUMBER_ERRORS num_errors
@@ -137,7 +127,7 @@ if( "${CTEST_AUTODOC}" STREQUAL "ON" )
 endif()
 
 # Build
-if( "${CTEST_BUILD}" STREQUAL "ON" )
+if( ${CTEST_BUILD} )
    message( "ctest_build(
    TARGET install
    NUMBER_ERRORS num_errors
@@ -156,7 +146,8 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
 endif()
 
 # Test
-if( "${CTEST_TEST}" STREQUAL "ON" )
+if( ${CTEST_TEST} )
+
   find_num_procs_avail_for_running_tests() # returns num_test_procs
   set( ctest_test_options "SCHEDULE_RANDOM ON" )
   string( APPEND ctest_test_options " PARALLEL_LEVEL ${num_test_procs}" )
@@ -180,7 +171,7 @@ if( "${CTEST_TEST}" STREQUAL "ON" )
 endif()
 
 # Submit results
-if( "${CTEST_SUBMIT}" STREQUAL "ON" )
+if( ${CTEST_SUBMIT} )
    message( "ctest_submit()")
    ctest_submit()
 endif()

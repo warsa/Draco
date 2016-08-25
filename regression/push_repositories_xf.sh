@@ -42,11 +42,11 @@ fi
 if test -d /ccs/codes/radtran/svn; then
   run "cd /ccs/codes/radtran/svn"
 else
-  die "SVN root directory not found."
+  die "SVN root directory not found. Expected to find /ccs/codes/radtran/svn."
 fi
 
 # Repositories to push
-repos="jayenne capsaicin"
+repos="capsaicin"
 
 #
 for repo in $repos; do
@@ -76,29 +76,51 @@ done
 # Also clone the github repository and push it along with the svn
 # repositories.
 
-# Remove the old tar file.
-if test -f draco.git.tar; then
-  rm -f draco.git.tar
-fi
+gitdir=/ccs/codes/radtran/git
 
-# Checkout or update the git repository
-if test -d draco.git; then
-  run "cd draco.git"
-  run "git pull"
-  run "cd .."
+if test -d $gitdir; then
+  run "cd $gitdir"
 else
-  run "git clone https://github.com/losalamos/Draco.git draco.git"
+  die "GIT root directory not found. Expected to find $gitdir."
 fi
 
-# Tar it up
-run "tar -cvf draco.git.tar draco.git"
+repos="Draco.git jayenne.git"
 
-# Transfer the file via transfer.lanl.gov
-run "scp draco.git.tar red@transfer.lanl.gov:"
+for repo in $repos; do
 
-# Ensure the new files have group rwX permissions.
-run "chgrp -R draco draco.git.tar draco.git"
-run "chmod -R g+rwX,o=g-w  draco.git.tar draco.git"
+  # Remove the old tar file.
+  if test -f $repo.tar; then
+    rm -f $repo.tar
+  fi
+
+  # Checkout or update the git repository
+  # Assume this is already done by sync_repositories.sh (every 15 minutes).
+  #if test -d $repo; then
+  #  run "cd $repo"
+  #  run "git pull"
+  #  run "cd .."
+  #else
+  #  run "git clone https://github.com/losalamos/Draco.git draco.git"
+  #fi
+
+  if test -d $gitdir/$repo; then
+
+    # Tar it up
+    run "tar -cvf $repo.tar $repo"
+
+    # Ensure the new files have group rwX permissions.
+    run "chgrp -R draco $repo.tar"
+    run "chmod -R g+rwX,o=g-w  $repo.tar"
+
+    # Transfer the file via transfer.lanl.gov
+    run "scp $repo.tar red@transfer.lanl.gov:"
+
+  else
+    echo "Warning: git mirror repository $gitdir/$repo was not found."
+    echo "         Skipping to the next repository..."
+  fi
+
+done
 
 #------------------------------------------------------------------------------#
 # Notes on using Transfer 2.0 (copied from the Draco wiki):

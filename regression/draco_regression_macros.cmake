@@ -740,9 +740,10 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
   # Assume that draco_work_dir is parallel to our current location, but
   # only replace the directory name preceeding the dashboard name.
-  message("ENV{work_dir} = $ENV{work_dir}")
-  string( REGEX REPLACE "${this_pkg}/(Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
-    ${dep_pkg}_work_dir $ENV{work_dir} )
+  file( TO_CMAKE_PATH $ENV{work_dir} work_dir )
+  message("work_dir = ${work_dir}")
+  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
+    ${dep_pkg}_work_dir ${work_dir} )
   message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:

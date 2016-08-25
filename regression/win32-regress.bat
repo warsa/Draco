@@ -7,8 +7,8 @@ rem capture all output from batch file like this...
 rem win32_draco_regression.bat > mylog.txt 2>&1
 
 rem In Task Scheduler, create to actions:
-rem 1. d:\cdash\draco\regression\update_regression_dir.bat
-rem 2. c:\windows\system32\cmd.exe /k ""d:\cdash\draco\regression\win32_draco_regression.bat"" x86
+rem 1. d:\regress\draco\regression\update_regression_dir.bat
+rem 2. c:\windows\system32\cmd.exe /k ""d:\regress\draco\regression\win32_draco_regression.bat"" x86
 
 if "%1" == "" goto x86
 if not "%2" == "" goto usage
@@ -63,17 +63,17 @@ set USE_GITHUB=1
 :cdash
 rem set dashboard_type=Experimental
 set dashboard_type=Nightly
-set base_dir=e:\cdash
+set base_dir=e:\regress
 set comp=cl
-set script_dir=e:\cdash\draco\regression
+set script_dir=e:\regress\draco\regression
 set script_name=Draco_Win32.cmake
 set ctestparts=Configure,Build,Test,Submit
 
-:cdashdebug
+:dracodebug
 
 set subproj=draco
 set build_type=Debug
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem print some information
 echo Environment:
@@ -94,16 +94,14 @@ if not exist %work_dir%\target mkdir target
 
 rem goto :jayennerelease
 
-rem run the ctest script
-
 echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
 
-:cdashrelease
+:dracorelease
 
 set subproj=draco
 set build_type=Release
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -124,13 +122,12 @@ rem --------------------------------------------------------------------------
 
 :jayennerelease
 
-set script_dir=e:\cdash\jayenne\regression
+set script_dir=e:\regress\jayenne\regression
 set script_name=Jayenne_Win32.cmake
-set USE_GITHUB=
 
 set subproj=jayenne
 set build_type=Release
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -152,7 +149,7 @@ ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestpart
 :jayennedebug
 
 set build_type=Debug
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%

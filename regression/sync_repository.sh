@@ -74,7 +74,6 @@ fi
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
 $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_dsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
