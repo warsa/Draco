@@ -151,16 +151,16 @@ jayenne_ready=0
 draco_git_ready=0
 
 for item in $possible_items_to_pull; do
-   if test ${item} = "jayenne.hotcopy.tar";   then jayenne_ready=1; fi
    if test ${item} = "capsaicin.hotcopy.tar"; then capsaicin_ready=1; fi
-   if test ${item} = "draco.git.tar";         then draco_git_ready=1; fi
+   if test ${item} = "Draco.git.tar";         then draco_git_ready=1; fi
+   if test ${item} = "jayenne.git.tar";       then jayenne_ready=1; fi
 done
 
 # If found, pull the files
-if test ${jayenne_ready} = 1; then unpack_repo "jayenne"; fi
 if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
 run "cd ${work_dir}/../git"
-if test ${draco_git_ready} = 1; then unpack_repo_git "draco.git"; fi
+if test ${draco_git_ready} = 1; then unpack_repo_git "Draco.git"; fi
+if test ${jayenne_ready} = 1; then unpack_repo_git "jayenne.git"; fi
 
 # Update permisssions as needed
 run "cd ${work_dir}/.."
@@ -176,8 +176,3 @@ else
     echo 'module function does not exist. defining a local function ...'
     run "source /usr/share/Modules/init/bash"
 fi
-
-# Update Module directories
-module load user_contrib svn
-cd /usr/projects/draco/vendors/environment
-svn up

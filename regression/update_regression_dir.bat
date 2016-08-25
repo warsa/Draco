@@ -1,7 +1,13 @@
 @echo off
-set LOGDIR=e:\cdash\logs
+set LOGDIR=e:\regress\logs
 set GIT="c:\\Program Files\\Git\\bin\\git.exe"
-cd /d e:\cdash\draco
+echo cd e:\regress\draco
+cd /d e:\regress\draco
+echo %GIT% pull
+%GIT% pull
+echo cd e:\regress\jayenne
+cd /d e:\regress\jayenne
+echo %GIT% pull
 %GIT% pull
 
 rem set SVN_SSH="c:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe"
