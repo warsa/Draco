@@ -4,21 +4,20 @@
  * \author Thomas M. Evans, Kent Budge
  * \date   Thu Mar 21 16:56:17 2002
  * \brief  C4 MPI template implementation.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #ifndef c4_gatherv_t_hh
 #define c4_gatherv_t_hh
 
-#include "c4/config.h"
-#include "gatherv.hh"
 #include "C4_Functions.hh"
+#include "c4/config.h"
 #include "ds++/Assert.hh"
+#include "gatherv.hh"
 #include <algorithm>
+#include <limits>
 
 namespace rtt_c4
 {
@@ -39,7 +38,7 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
 
     // create container for return value
     std::vector< std::vector< char > > incoming_data_vvc( nodes() );
-    
+
     // Call intederminate_gatherv(...) for vector<char>.
     indeterminate_gatherv( outgoing_data_vc, incoming_data_vvc );
 
@@ -57,10 +56,10 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
             Check( incoming_data[i].size() > 0 );
         }
     }
-    
+
     return;
 }
-    
+
 //---------------------------------------------------------------------------//
 template<class T>
 DLL_PUBLIC_c4 void indeterminate_gatherv(
@@ -68,7 +67,7 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
     std::vector<std::vector<T> > & incoming_data )
 {
 #ifdef C4_MPI
-    { // This block is a no-op for with-c4=scalar 
+    { // This block is a no-op for with-c4=scalar
 
         unsigned const N( rtt_c4::nodes() );
         incoming_data.resize(N);
@@ -78,7 +77,7 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
         {
             std::vector<int> counts(N, -1);
             std::vector<int> displs(N, -1);
-            
+
             // for valid comm world, this should always be true.
             Check( counts.size() > 0 );
             Remember(int check = )
@@ -86,12 +85,17 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
                     &counts[0],
                     1 );
             Check(check == MPI_SUCCESS);
-            unsigned total_count( 0 );
+            uint64_t total_count_64(0);
             for( unsigned p=0; p<N; ++p )
             {
-                displs[p] = total_count;
-                total_count += counts[p];
+                displs[p] = total_count_64;
+                total_count_64 += counts[p];
             }
+            // Require that total_count_64 can be expressed as a 32-bit integer.
+            Insist(total_count_64 < std::numeric_limits<int>::max(),
+                   "The size of the array (nranks*vector.size()) exceeds "
+                   "32-bit unsigned integer limit.");
+            unsigned total_count = static_cast<unsigned>(total_count_64);
 
             // We can only use the &vec[0] notation if the vector is non-zero
             // in length.  An shorthand-if is used to pass 'NULL' to mpi if
@@ -106,7 +110,7 @@ DLL_PUBLIC_c4 void indeterminate_gatherv(
                 &displs[0]
                 );
             Check(check==MPI_SUCCESS);
-            
+
             for( unsigned p=0; p<N; ++p )
             {
                 incoming_data[p].assign( recbuf.begin()+displs[p],
@@ -148,9 +152,9 @@ DLL_PUBLIC_c4 void determinate_gatherv(
     std::vector<std::vector<T> > &incoming_data)
 {
     Require(static_cast<int>(incoming_data.size())==rtt_c4::nodes());
-    
+
 #ifdef C4_MPI
-    { // This block is a no-op for with-c4=scalar 
+    { // This block is a no-op for with-c4=scalar
         unsigned const N( rtt_c4::nodes() );
 
         int count( outgoing_data.size() );
@@ -158,14 +162,19 @@ DLL_PUBLIC_c4 void determinate_gatherv(
         {
             std::vector<int> counts(N,-1);
             std::vector<int> displs(N,-1);
-            unsigned total_count(0);
+            uint64_t total_count_64(0);
             for( unsigned p=0; p<N; ++p )
             {
                 counts[p] = incoming_data[p].size();
-                displs[p] = total_count;
-                total_count += counts[p];
+                displs[p] = static_cast<int>(total_count_64);
+                total_count_64 += counts[p];
             }
-            
+            // Require that total_count_64 can be expressed as a 32-bit integer.
+            Insist(total_count_64 < std::numeric_limits<int>::max(),
+                   "The size of the array (nranks*vector.size()) exceeds "
+                   "32-bit unsigned integer limit.");
+            unsigned total_count = static_cast<unsigned>(total_count_64);
+
             std::vector<T> recbuf(total_count,42);
             // &vec[0] is only valid if vector has non-zero length
             rtt_c4::gatherv(
@@ -175,7 +184,7 @@ DLL_PUBLIC_c4 void determinate_gatherv(
                 &counts[0],
                 &displs[0]
                 );
-            
+
             for( unsigned p=0; p<N; ++p )
             {
                 incoming_data[p].resize( counts[p] );
