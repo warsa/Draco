@@ -19,7 +19,6 @@
 #    GUI view and scraping commit information that connects to tracked issues.
 
 target="`uname -n | sed -e s/[.].*//`"
-MYHOSTNAME="`uname -n`"
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -73,6 +72,7 @@ fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
+MYHOSTNAME="`uname -n`"
 $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
     run "source $HOME/.keychain/$MYHOSTNAME-sh"
@@ -80,10 +80,17 @@ else
     echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
 fi
 
+# ---------------------------------------------------------------------------- #
+# Create copies of SVN and GIT repositories on the local file system
+# ---------------------------------------------------------------------------- #
+
 case ${target} in
 ccscs*)
     # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
     # repositories. This location can be parsed by redmine.
+
+    echo " "
+    echo "Copy Draco git repository to the local file system..."
     if test -d $gitroot/Draco.git; then
       run "cd $gitroot/Draco.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
@@ -93,6 +100,9 @@ ccscs*)
       run "cd $gitroot"
       run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
     fi
+
+    echo " "
+    echo "Copy Jayenne git repository to the local file system..."
     if test -d $gitroot/jayenne.git; then
       run "cd $gitroot/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
@@ -104,58 +114,37 @@ ccscs*)
     ;;
 *)
     #
-    # HPC: update the scripts directories in /usr/projects/jayenne
+    # HPC: Sync the repository to $svnroot
     #
+    if ! test -d $svnroot; then
+      echo "*** ERROR ***"
+      echo "*** SVN repository not found ***"
+      exit 1
+      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
+      # mkdir -p ${svnroot}; cd ${svnroot}
+      # svnadmin create ${svnroot}/jayenne
+      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
+      # cd jayenne/hooks
+      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
+      # vi pre-commit; comment out all code and add...
+      #if ! test `whoami` = 'kellyt'; then
+      #echo "This is a read only repository.  The real SVN repository is"
+      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+      #exit 1
+      #fi
+      #exit 0
+      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
+      #    pre-revprop-change
+      # vi pre-revprop-change --> comment out all code.
+      # cd $svnroot
+      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
+      # svnsync sync file:///${svnroot}/jayenne
+    fi
 
-if test -d $regdir/draco; then
-  run "cd $regdir/draco; git pull"
-else
-  run "cd $regdir; git clone https://github.com/losalamos/Draco.git draco"
-fi
-
-if test -d $regdir/jayenne; then
-  run "cd $regdir/jayenne; git pull"
-else
-  run "cd $regdir; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
-fi
-
-if test -d $regdir/capsaicin/scripts; then
-    run "cd $regdir/capsaicin/scripts; svn update"
-else
-    run "mkdir -p $regdir/capsaicin; cd $regdir/capsaicin"
-    run "svn co svn+ssh://$svnhostmachine/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
-fi
-
-#
-# Sync the repository to $svnroot
-#
-if ! test -d $svnroot; then
-    echo "*** ERROR ***"
-    echo "*** SVN repository not found ***"
-    exit 1
-    # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-    # mkdir -p ${svnroot}; cd ${svnroot}
-    # svnadmin create ${svnroot}/jayenne
-    # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-    # cd jayenne/hooks
-    # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-    # vi pre-commit; comment out all code and add...
-    #if ! test `whoami` = 'kellyt'; then
-    #echo "This is a read only repository.  The real SVN repository is"
-    #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
-    #exit 1
-    #fi
-    #exit 0
-    # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-    #    pre-revprop-change
-    # vi pre-revprop-change --> comment out all code.
-    # cd $svnroot
-    # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
-    # svnsync sync file:///${svnroot}/jayenne
-fi
-
-run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
-;;
+    echo " "
+    echo "Copy capsaicin svn repository to the local file system..."
+    run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+    ;;
 esac
 
 #------------------------------------------------------------------------------#
