@@ -84,10 +84,10 @@ fi
 echo " "
 echo "Updating $REGDIR/capsaicin..."
 if test -d ${REGDIR}/capsaicin/scripts; then
-  run "cd ${REGDIR}/capsaicin/scripts; svn update"
+  run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
 else
   run "mkdir -p ${REGDIR}/capsaicin; cd ${REGDIR}/capsaicin"
-  run "svn co svn+ssh://ccscs7.lanl.gov/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
+  run "${SVN} co svn+ssh://ccscs7.lanl.gov/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
 fi
 
 ##---------------------------------------------------------------------------##
