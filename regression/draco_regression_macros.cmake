@@ -545,8 +545,15 @@ macro( set_git_command gitpath )
     else()
       # This assumes that a valid ssh-key exists in the current environment and
       # works with gitlab.lanl.gov.
-      set( CTEST_CHECKOUT_COMMAND
-        "${CTEST_GIT_COMMAND} clone git@gitlab.lanl.gov:${gitpath} source" )
+      if( IS_DIRECTORY "$ENV{gitroot}" )
+        set( gitroot "$ENV{gitroot}/" )
+        set( CTEST_CHECKOUT_COMMAND
+          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+      else()
+        set( gitroot "git@gitlab.lanl.gov:" )
+        set( CTEST_CHECKOUT_COMMAND
+          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+      endif()
     endif()
   endif()
   # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will

@@ -14,9 +14,14 @@
 #    system must be run from the HPC backend (via msub) where access to
 #    ccscs7:/ccs/codes/radtran/svn is not available.
 # 2. It also mirrors git@github.com/losalamos/Draco.git and
-#    git@gitlab.lanl.gov/jayenne/jayenne.git to ccscs7:/ccs/codes/radtran/git.
-#    This is done to allow Redmine to parse the current repository preseting a
-#    GUI view and scraping commit information that connects to tracked issues.
+#    git@gitlab.lanl.gov/jayenne/jayenne.git to these locations:
+#    - ccscs7:/ccs/codes/radtran/git
+#    - darwin-fe:/usr/projects/draco/regress/git
+#    On ccscs7, this is done to allow Redmine to parse the current repository
+#    preseting a GUI view and scraping commit information that connects to
+#    tracked issues. On darwin, this is done to allow the regressions running on
+#    the compute node to access the latest git repository. This also copies down
+#    all pull requests.
 
 target="`uname -n | sed -e s/[.].*//`"
 
@@ -50,14 +55,21 @@ run "umask 0002"
 svnhostmachine=ccscs7
 
 case ${target} in
-ccscs*)
+  ccscs*)
     run "module load user_contrib subversion git"
     regdir=/scratch/regress
     gitroot=/ccs/codes/radtran/git
     VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
-;;
-*)
+    ;;
+  darwin-fe* | cn[0-9]*)
+    regdir=/usr/projects/draco/regress
+    gitroot=/usr/projects/draco/regress/git
+    VENDOR_DIR=/usr/projects/draco/vendors
+    keychain=keychain-2.7.1
+    ;;
+  *)
+    # HPC - Moonlight.
     run "module load user_contrib svn git"
     regdir=/usr/projects/jayenne/regress
     svnroot=$regdir/svn
@@ -108,13 +120,41 @@ ccscs*)
       run "git fetch origin +refs/heads/*:refs/heads/*"
       run "git reset --soft"
     else
+      run "mkdir -p $gitroot; cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+    fi
+    ;;
+darwin-fe*)
+    # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
+    # repositories. This location can be parsed by redmine. For darwin, the
+    # backend can't see gitlab, so keep a copy of the repository local.
+
+    echo " "
+    echo "Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco.git; then
+      run "cd $gitroot/Draco.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
       run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+    fi
+
+    echo " "
+    echo "Copy Jayenne git repository to the local file system..."
+    if test -d $gitroot/jayenne/jayenne.git; then
+      run "cd $gitroot/jayenne/jayenne.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
 *)
     #
-    # HPC: Sync the repository to $svnroot
+    # HPC: Mirror the capsaicin svn repository
     #
     if ! test -d $svnroot; then
       echo "*** ERROR ***"

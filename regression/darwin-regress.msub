@@ -47,9 +47,9 @@ export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
 export https_proxy=$http_proxy
 export HTTPS_PROXY=$http_proxy
-export no_proxy=".lanl.gov"
-export NO_PROXY=".lanl.gov"
 export VENDOR_DIR=/usr/projects/draco/vendors
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
 # import some bash functions
 source $rscriptdir/scripts/common.sh
@@ -78,7 +78,7 @@ run "ulimit -a"
 # Use modules found in the draco directory
 run "module use --append /usr/projects/draco/vendors/Modules"
 
-# Clear any tcsh loaded modules as these are invalid when staring a new shell.
+# Clear any default loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 run "module load git"
 run "module load intel/16.0.3"
@@ -135,7 +135,7 @@ fi
 # Build type     : Release, Debug
 
 if [[ ! ${dashboard_type} ]]; then
-   dashboard_type=Experimental
+   dashboard_type=Nightly
 fi
 if [[ ! ${base_dir} ]]; then
   if test "${regress_mode}" = "off"; then

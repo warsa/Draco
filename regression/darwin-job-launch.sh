@@ -53,6 +53,14 @@ if [[ ! ${logdir} ]]; then
     exit 1
 fi
 
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+fi
+
 # Banner
 echo "==========================================================================="
 echo "Darwin Regression job launcher for ${subproj} - ${build_type} flavor."
@@ -65,6 +73,9 @@ if [[ ! ${extra_params} ]]; then
   echo "   extra_params   = none"
 else
   echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
@@ -85,6 +96,18 @@ for jobid in ${dep_jobids}; do
     done
 done
 
+if ! test -d $logdir; then
+  mkdir -p $logdir
+  chgrp draco $logdir
+  chmod g+rwX $logdir
+  chmod g+s $logdir
+fi
+
+# Tell ctest to checkout jayenne from a local directory instead of gitlab. Also,
+# update the local repository to include any feature branches that might be
+# requested.
+export gitroot=/usr/projects/draco/regress/git
+
 darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 
 ##---------------------------------------------------------------------------##
@@ -97,7 +120,7 @@ darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 echo " "
 echo "Configure, Build, Test:"
 export REGRESSION_PHASE=cbt
-cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbt.log ${darwin_regress_script}"
+cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number

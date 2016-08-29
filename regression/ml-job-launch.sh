@@ -79,7 +79,7 @@ esac
 
 # Banner
 echo "==========================================================================="
-echo "ML Regression job launcher"
+echo "ML Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
