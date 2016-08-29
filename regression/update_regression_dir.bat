@@ -1,4 +1,12 @@
 @echo off
+rem ---------------------------------------------------------------------------
+rem File  : regression/update_regrssion_dir.bat
+rem Date  : Tuesday, May 31, 2016, 14:48 pm
+rem Author: Kelly Thompson
+rem Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+rem         All rights are reserved.
+rem ---------------------------------------------------------------------------
+
 set LOGDIR=e:\regress\logs
 set GIT="c:\\Program Files\\Git\\bin\\git.exe"
 echo cd e:\regress\draco

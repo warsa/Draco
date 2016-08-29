@@ -740,7 +740,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
   # Assume that draco_work_dir is parallel to our current location, but
   # only replace the directory name preceeding the dashboard name.
-  file( TO_CMAKE_PATH $ENV{work_dir} work_dir )
+  file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
   message("work_dir = ${work_dir}")
   string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
     ${dep_pkg}_work_dir ${work_dir} )
@@ -752,8 +752,9 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+
     if( "${this_pkg}" MATCHES "jayenne" )
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
