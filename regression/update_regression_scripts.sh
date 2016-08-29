@@ -28,6 +28,12 @@ case ${target} in
       export PATH=/projects/opt/centos7/subversion/1.9.2/bin:$PATH
     fi
     SVN=`which svn`
+    export http_proxy=http://proxyout.lanl.gov:8080;
+    export https_proxy=$http_proxy;
+    export HTTP_PROXY=$http_proxy;
+    export HTTPS_PROXY=$http_proxy;
+    export no_proxy="localhost,127.0.0.1,.lanl.gov";
+    export NO_PROXY=$no_proxy;
     ;;
   ccscs*)
     REGDIR=/scratch/regress
@@ -70,6 +76,18 @@ if test -d ${REGDIR}/draco; then
 else
   run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
 fi
+
+# Deal with proxy stuff on darwin
+case ${target} in
+  darwin-fe* | cn[0-9]*)
+    unset http_proxy;
+    unset https_proxy;
+    unset HTTP_PROXY;
+    unset HTTPS_PROXY;
+    unset no_proxy;
+    unset NO_PROXY;
+  ;;
+esac
 
 # Jayenne
 echo " "

@@ -134,6 +134,7 @@ darwin-fe*)
     if test -d $gitroot/Draco.git; then
       run "cd $gitroot/Draco.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/pull/*:refs/pull/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot"
@@ -146,6 +147,7 @@ darwin-fe*)
     if test -d $gitroot/jayenne/jayenne.git; then
       run "cd $gitroot/jayenne/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requets/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
