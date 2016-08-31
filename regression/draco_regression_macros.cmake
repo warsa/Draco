@@ -541,18 +541,18 @@ macro( set_git_command gitpath )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
     if( ${gitpath} MATCHES "Draco" )
       set( CTEST_CHECKOUT_COMMAND
-        "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+        "${CTEST_GIT_COMMAND} clone --depth 1 https://github.com/losalamos/${gitpath} source" )
     else()
       # This assumes that a valid ssh-key exists in the current environment and
       # works with gitlab.lanl.gov.
       if( IS_DIRECTORY "$ENV{gitroot}" )
         set( gitroot "$ENV{gitroot}/" )
         set( CTEST_CHECKOUT_COMMAND
-          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
       else()
         set( gitroot "git@gitlab.lanl.gov:" )
         set( CTEST_CHECKOUT_COMMAND
-          "${CTEST_GIT_COMMAND} clone ${gitroot}${gitpath} source" )
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
       endif()
     endif()
   endif()
