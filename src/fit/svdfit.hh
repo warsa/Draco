@@ -14,23 +14,15 @@
 #ifndef utils_svdfit_hh
 #define utils_svdfit_hh
 
-namespace rtt_utils
-{
+namespace rtt_utils {
 
 //! Compute a generalized least squares fit.
-template<typename RandomContainer,
-         typename Functor>
-DLL_PUBLIC_fit
-void svdfit(RandomContainer const &x,
-            RandomContainer const &y,
-            RandomContainer const &sig,
-            RandomContainer &a,
-            RandomContainer &u,
-            RandomContainer &v,
-            RandomContainer &w,
-            double &chisq,
-            Functor &funcs,
-            double TOL=1.0e-13);
+template <typename RandomContainer, typename Functor>
+DLL_PUBLIC_fit void svdfit(RandomContainer const &x, RandomContainer const &y,
+                           RandomContainer const &sig, RandomContainer &a,
+                           RandomContainer &u, RandomContainer &v,
+                           RandomContainer &w, double &chisq, Functor &funcs,
+                           double TOL = 1.0e-13);
 
 } // end namespace rtt_utils
 

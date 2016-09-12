@@ -15,9 +15,9 @@
 #if defined __GNUC__
 #pragma GCC system_header
 // Intel defines __GNUC__ by default
-#  ifdef __INTEL_COMPILER
-#    pragma warning push
-#  endif
+#ifdef __INTEL_COMPILER
+#pragma warning push
+#endif
 #elif defined __SUNPRO_CC
 #pragma disable_warn
 #elif defined _MSC_VER
@@ -27,10 +27,10 @@
 #include <cuda_runtime_api.h>
 
 #if defined __GNUC__
-#  pragma GCC system_header
-#  ifdef __INTEL_COMPILER
-#    pragma warning pop
-#  endif
+#pragma GCC system_header
+#ifdef __INTEL_COMPILER
+#pragma warning pop
+#endif
 #elif defined __SUNPRO_CC
 #pragma enable_warn
 #elif defined _MSC_VER

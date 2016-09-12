@@ -17,9 +17,8 @@
 #include <algorithm>
 #include <iterator>
 
-namespace rtt_dsxx
-{
- 
+namespace rtt_dsxx {
+
 //===========================================================================//
 /*!
  * \class Range_finder
@@ -57,94 +56,81 @@ namespace rtt_dsxx
  */
 //===========================================================================//
 
-enum RANGE_DIRECTION { LEFT = 0, RIGHT = 1};
+enum RANGE_DIRECTION { LEFT = 0, RIGHT = 1 };
 
-namespace
-{
+namespace {
 
 // Return false if the iterator pair indicate an out of range result.
 template <typename IT>
-bool validate(const std::pair<IT,IT> &it, IT begin, IT end)
-{
-    return !(it.first  == end ||        // v > *(end-1)
-             it.second == begin );      // v < *begin
-
+bool validate(const std::pair<IT, IT> &it, IT begin, IT end) {
+  return !(it.first == end ||   // v > *(end-1)
+           it.second == begin); // v < *begin
 }
-
 }
 
 //---------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_left(
-    IT begin,
-    IT end, 
-    typename std::iterator_traits<IT>::value_type value)
-{
-    const std::pair<IT,IT> it = std::equal_range(begin, end, value);
-    Require(validate(it,begin,end));
-    
-    const int index = static_cast<int>(it.second - begin) - 1;
-    Ensure(index >= 0); Ensure(begin+index < end);
+int Range_finder_left(IT begin, IT end,
+                      typename std::iterator_traits<IT>::value_type value) {
+  const std::pair<IT, IT> it = std::equal_range(begin, end, value);
+  Require(validate(it, begin, end));
 
-    return index;
+  const int index = static_cast<int>(it.second - begin) - 1;
+  Ensure(index >= 0);
+  Ensure(begin + index < end);
+
+  return index;
 }
 
 //---------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_right(
-    IT begin,
-    IT end,
-    typename std::iterator_traits<IT>::value_type value)
-{
-    const std::pair<IT,IT> it = std::equal_range(begin, end, value);
-    Require(validate(it,begin,end));
-    
-    const int index = static_cast<int>(it.first - begin) - 1;
-    Ensure(index >= 0); Ensure(begin+index < end);
+int Range_finder_right(IT begin, IT end,
+                       typename std::iterator_traits<IT>::value_type value) {
+  const std::pair<IT, IT> it = std::equal_range(begin, end, value);
+  Require(validate(it, begin, end));
 
-    return index;
+  const int index = static_cast<int>(it.first - begin) - 1;
+  Ensure(index >= 0);
+  Ensure(begin + index < end);
+
+  return index;
 }
 
 //---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_left_catch_end(
-    IT begin,
-    IT end,
-    typename std::iterator_traits<IT>::value_type value)
-{
-    const std::pair<IT,IT> it = std::equal_range(begin, end, value);
-    Require(validate(it,begin,end));
-    
-    const int index      = static_cast<int>(it.second - begin) - 1;
-    const int range_size = static_cast<int>(end-begin) - 1;
+    IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
+  const std::pair<IT, IT> it = std::equal_range(begin, end, value);
+  Require(validate(it, begin, end));
 
-    // If index==range_size, subtract one. This happens when value=*end.
-    const int fix_index = std::min(index, range_size - 1);
-    Ensure(fix_index >= 0); Ensure(begin+fix_index < end);
+  const int index = static_cast<int>(it.second - begin) - 1;
+  const int range_size = static_cast<int>(end - begin) - 1;
 
-    return fix_index;
+  // If index==range_size, subtract one. This happens when value=*end.
+  const int fix_index = std::min(index, range_size - 1);
+  Ensure(fix_index >= 0);
+  Ensure(begin + fix_index < end);
+
+  return fix_index;
 }
 
 //---------------------------------------------------------------------------//
 template <typename IT>
 int Range_finder_right_catch_end(
-    IT begin,
-    IT end,
-    typename std::iterator_traits<IT>::value_type value)
-{
-    const std::pair<IT,IT> it = std::equal_range(begin, end, value);
-    Require(validate(it,begin,end));
-    
-    // Extract the coordintate index (0..n-1)
-    const int index = static_cast<int>(it.first - begin) - 1;
+    IT begin, IT end, typename std::iterator_traits<IT>::value_type value) {
+  const std::pair<IT, IT> it = std::equal_range(begin, end, value);
+  Require(validate(it, begin, end));
 
-    // If we got -1 here, then v=v[0] and we want to catch this end value:
-    const int fix_index = std::max(index, 0);
-    Ensure(fix_index >= 0);  Ensure(begin+fix_index < end);
+  // Extract the coordintate index (0..n-1)
+  const int index = static_cast<int>(it.first - begin) - 1;
 
-    return fix_index;
+  // If we got -1 here, then v=v[0] and we want to catch this end value:
+  const int fix_index = std::max(index, 0);
+  Ensure(fix_index >= 0);
+  Ensure(begin + fix_index < end);
+
+  return fix_index;
 }
-
 
 //---------------------------------------------------------------------------//
 // Generic versions.
@@ -152,46 +138,37 @@ int Range_finder_right_catch_end(
 
 //---------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder(
-    IT begin,
-    IT end,
-    typename std::iterator_traits<IT>::value_type value,
-    RANGE_DIRECTION direction_indicator)
-{
-    Check (direction_indicator == 0 || direction_indicator <= 1);
+int Range_finder(IT begin, IT end,
+                 typename std::iterator_traits<IT>::value_type value,
+                 RANGE_DIRECTION direction_indicator) {
+  Check(direction_indicator == 0 || direction_indicator <= 1);
 
-    if (direction_indicator == LEFT)
-        return Range_finder_left(begin, end, value);
-    else if (direction_indicator == RIGHT)
-        return Range_finder_right(begin, end, value);
-    else 
-        Insist(0, "Invalid direction indicator in Range_finder");
+  if (direction_indicator == LEFT)
+    return Range_finder_left(begin, end, value);
+  else if (direction_indicator == RIGHT)
+    return Range_finder_right(begin, end, value);
+  else
+    Insist(0, "Invalid direction indicator in Range_finder");
 
-    return -1;
-
+  return -1;
 }
-
 
 //---------------------------------------------------------------------------//
 template <typename IT>
-int Range_finder_catch_end(
-    IT begin,
-    IT end,
-    typename std::iterator_traits<IT>::value_type value,
-    RANGE_DIRECTION direction_indicator)
-{
-    Check (direction_indicator == 0 || direction_indicator <= 1);
+int Range_finder_catch_end(IT begin, IT end,
+                           typename std::iterator_traits<IT>::value_type value,
+                           RANGE_DIRECTION direction_indicator) {
+  Check(direction_indicator == 0 || direction_indicator <= 1);
 
-    if (direction_indicator == LEFT)
-        return Range_finder_left_catch_end(begin, end, value);
-    else if (direction_indicator == RIGHT)
-        return Range_finder_right_catch_end(begin, end, value);
-    else
-        Insist(0, "Invalid direction indicator in Range_finder");
+  if (direction_indicator == LEFT)
+    return Range_finder_left_catch_end(begin, end, value);
+  else if (direction_indicator == RIGHT)
+    return Range_finder_right_catch_end(begin, end, value);
+  else
+    Insist(0, "Invalid direction indicator in Range_finder");
 
-    return -1;
+  return -1;
 }
-
 
 } // end namespace rtt_dsxx
 
