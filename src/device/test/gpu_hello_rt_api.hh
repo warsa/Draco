@@ -9,8 +9,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 // All this garbage suppresses warnings found in "cuda.h".
 // http://wiki.services.openoffice.org/wiki/Writing_warning-free_code#When_all_else_fails
@@ -19,8 +17,6 @@
 // Intel defines __GNUC__ by default
 #  ifdef __INTEL_COMPILER
 #    pragma warning push
-//#    pragma warning(disable:1011) // missing return statement at end of non-void function 
-//#    pragma warning(disable:381)  // more than one instance of overloaded function
 #  endif
 #elif defined __SUNPRO_CC
 #pragma disable_warn
@@ -46,4 +42,3 @@
 //---------------------------------------------------------------------------//
 // end of gpu_hello_rt_api.hh
 //---------------------------------------------------------------------------//
-

@@ -241,7 +241,10 @@ void sample_sum( rtt_dsxx::UnitTest &ut, bool const omrpn )
         Timer t2_omp_accumulate;
         t2_omp_accumulate.start();
 
+// clang-format adds spaces around this colon.
+// clang-format off
 #pragma omp parallel for reduction(+: omp_sum)
+// clang-format on
         for( int i=0; i<N; ++i )
             omp_sum += foo[i];
 
