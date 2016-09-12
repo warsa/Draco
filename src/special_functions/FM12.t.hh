@@ -7,13 +7,12 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef sf_FM12_t_hh
 #define sf_FM12_t_hh
 
 #include "FM12.hh"
+#include <cmath>
 
 namespace rtt_sf {
 
@@ -27,7 +26,7 @@ namespace rtt_sf {
  * This implementation is a translation of an implementation from the Chicago
  * Astrophysical Flash Center.  This uses a rational function expansion to get
  * the fermi-dirac integral. Reference: antia apjs 84,101 1993
- * 
+ *
  * \param eta Dimensionless chemical potential \f$\eta\f$
  *
  * \return Value of \f$F_{4/2}(\eta)\f$

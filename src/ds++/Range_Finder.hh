@@ -8,12 +8,11 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef __dsxx_Range_finder_hh__
 #define __dsxx_Range_finder_hh__
 
+#include "Assert.hh"
 #include <algorithm>
 #include <iterator>
 
@@ -26,8 +25,8 @@ namespace rtt_dsxx {
  * These functions locate a value in intervals described by an increasing
  * array. E.g. Let \c v[i] be an increasing array and \c r a value. These
  * functions look for \c i such that: \code v[i] < r < v[i+1] \endcode. The
- * different versions of the function have different behavior in the event
- * that \code r = v[i] \endcode for some \c i.
+ * different versions of the function have different behavior in the event that
+ * \code r = v[i] \endcode for some \c i.
  *
  * The 'left' versions assume the intervals are closed on the left, so that
  * \code v[i] <= r < v[i+1] \endcode. Likewise, the 'right' versions assume
@@ -35,24 +34,23 @@ namespace rtt_dsxx {
  *
  * The 'catch end' versions will allow equality for values at the ends of the
  * range when it would not normally be considered a part of the interval. For
- * example if \c r=v[0], Range_finder_left will consider \c r to be outside
- * the range, but Range_finder_left_catch_end will return \c i=0. Likewise for
- * \c r=v[n-1] (v's last value) Range_finder_right_catch_end will return \c
- * n-1 instead of considering the value to be out of range.
+ * example if \c r=v[0], Range_finder_left will consider \c r to be outside the
+ * range, but Range_finder_left_catch_end will return \c i=0. Likewise for \c
+ * r=v[n-1] (v's last value) Range_finder_right_catch_end will return \c n-1
+ * instead of considering the value to be out of range.
  *
  * The functions Range_funder and Range_finder_catch_end take an enumeration
  * parameter \c RANGE_DIRECTION to determine the direction: LEFT or RIGHT.
- * 
- * Values which are out of range will fail a DCB check, but pass silently if
- * DBC is off. You have been warned!
+ *
+ * Values which are out of range will fail a DCB check, but pass silently if DBC
+ * is off. You have been warned!
  *
  * This function uses the equal_range algorithm, which returns an iterator
  * pair. Both iterators will point to the first value _after_ \c r in \c v,
  * unless \c v[i]==r for some \c i, then the first iterator will point to \c
- * v[i] and the second to \c v[i+1]. This enables simple verification of out
- * of bound index detection and a simple compuation for the index which works
+ * v[i] and the second to \c v[i+1]. This enables simple verification of out of
+ * bound index detection and a simple compuation for the index which works
  * whrether or not equality is obtained.
- *
  */
 //===========================================================================//
 

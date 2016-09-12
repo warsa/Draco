@@ -301,6 +301,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
  */
 //---------------------------------------------------------------------------//
 
+// clang-format off
+
 #if !defined(DBC)
 #define DBC 7
 #endif
@@ -312,21 +314,15 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c)                                                             \
-  if (!(c))                                                                    \
-  rtt_dsxx::show_cookies(#c, __FILE__, __LINE__)
+#define Require(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c)
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c)                                                               \
-  if (!(c))                                                                    \
-  rtt_dsxx::show_cookies(#c, __FILE__, __LINE__)
-#define Assert(c)                                                              \
-  if (!(c))                                                                    \
-  rtt_dsxx::show_cookies(#c, __FILE__, __LINE__)
+#define Check(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Check(c)
 #define Assert(c)
@@ -334,9 +330,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
 #if DBC & 4
 #define ENSURE_ON
-#define Ensure(c)                                                              \
-  if (!(c))                                                                    \
-  rtt_dsxx::show_cookies(#c, __FILE__, __LINE__)
+#define Ensure(c) if (!(c)) rtt_dsxx::show_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Ensure(c)
 #endif
@@ -344,12 +338,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define Insist(c, m)                                                           \
-  if (!(c))                                                                    \
-  rtt_dsxx::insist(#c, m, __FILE__, __LINE__)
-#define Insist_ptr(c, m)                                                       \
-  if (!(c))                                                                    \
-  rtt_dsxx::insist_ptr(#c, m, __FILE__, __LINE__)
+#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
+#define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
 #elif DBC & 16
 
@@ -394,8 +384,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 // Always on
 //---------------------------------------------------------------------------//
 #define Insist(c, m) rtt_dsxx::check_insist(!!(c), #c, m, __FILE__, __LINE__)
-#define Insist_ptr(c, m)                                                       \
-  rtt_dsxx::check_insist_ptr(!!(c), #c, m, __FILE__, __LINE__)
+#define Insist_ptr(c,m) rtt_dsxx::check_insist_ptr( !!(c), #c, m, __FILE__, __LINE__ )
 
 #else // not DBC & 8 or DBC & 16
 
@@ -404,24 +393,16 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 #if DBC & 1
 #define REQUIRE_ON
-#define Require(c)                                                             \
-  if (!(c))                                                                    \
-  rtt_dsxx::toss_cookies(#c, __FILE__, __LINE__)
+#define Require(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Require(c)
 #endif
 
 #if DBC & 2
 #define CHECK_ON
-#define Check(c)                                                               \
-  if (!(c))                                                                    \
-  rtt_dsxx::toss_cookies(#c, __FILE__, __LINE__)
-#define Assert(c)                                                              \
-  if (!(c))                                                                    \
-  rtt_dsxx::toss_cookies(#c, __FILE__, __LINE__)
-#define Bad_Case(m)                                                            \
-  default:                                                                     \
-    rtt_dsxx::toss_cookies(m, __FILE__, __LINE__)
+#define Check(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Assert(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
+#define Bad_Case(m) default: rtt_dsxx::toss_cookies( m, __FILE__, __LINE__ )
 #else
 #define Check(c)
 #define Assert(c)
@@ -430,9 +411,7 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 
 #if DBC & 4
 #define ENSURE_ON
-#define Ensure(c)                                                              \
-  if (!(c))                                                                    \
-  rtt_dsxx::toss_cookies(#c, __FILE__, __LINE__)
+#define Ensure(c) if (!(c)) rtt_dsxx::toss_cookies( #c, __FILE__, __LINE__ )
 #else
 #define Ensure(c)
 #endif
@@ -440,12 +419,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 //---------------------------------------------------------------------------//
 // Always on
 //---------------------------------------------------------------------------//
-#define Insist(c, m)                                                           \
-  if (!(c))                                                                    \
-  rtt_dsxx::insist(#c, m, __FILE__, __LINE__)
-#define Insist_ptr(c, m)                                                       \
-  if (!(c))                                                                    \
-  rtt_dsxx::insist_ptr(#c, m, __FILE__, __LINE__)
+#define Insist(c,m) if (!(c)) rtt_dsxx::insist( #c, m, __FILE__, __LINE__ )
+#define Insist_ptr(c,m) if (!(c)) rtt_dsxx::insist_ptr( #c, m, __FILE__, __LINE__ )
 
 #endif // DBC & 8
 
@@ -462,6 +437,8 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #if defined(MSVC)
 #pragma warning(pop)
 #endif
+
+// clang-format on
 
 #endif // RTT_dsxx_Assert_HH
 

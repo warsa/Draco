@@ -8,14 +8,13 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef linear_btridag_i_hh
 #define linear_btridag_i_hh
 
 #include "ludcmp.hh"
 #include "ds++/Slice.hh"
+#include <vector>
 
 namespace rtt_linear {
 
@@ -24,7 +23,7 @@ namespace rtt_linear {
  * Solve a block tridiagonal system of linear equations.
  *
  * \arg \a FieldVector A random access container whose element type must
- * represent a field, such as the reals or the complex numbers. 
+ * represent a field, such as the reals or the complex numbers.
  *
  * \param a Subdiagonal of coefficient matrix.
  * \param b Diagonal of coefficient matrix.

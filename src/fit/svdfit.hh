@@ -8,11 +8,11 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef utils_svdfit_hh
 #define utils_svdfit_hh
+
+#include "ds++/dll_declspec.h"
 
 namespace rtt_utils {
 
