@@ -285,8 +285,8 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-add-style
 	 "draco" '
 	 (
-          ; Tab indent == 4 spaces
-	  (c-basic-offset . 4)
+          ; Tab indent == 2 spaces
+	  (c-basic-offset . 2)
           ; Snap #s to the first column
 	  (c-electric-pound-behavior . 'alignleft)
           ; Regexp to find the starting brace of a block

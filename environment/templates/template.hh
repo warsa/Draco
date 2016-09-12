@@ -10,14 +10,13 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef <spkg>_<class>_hh
-#define <spkg>_<class>_hh
+#ifndef < spkg > _ < class > _hh
+#define < spkg > _ < class > _hh
 
-namespace <namespace>
-{
+namespace<namespace> {
 
-//===========================================================================//
-/*!
+  //===========================================================================//
+  /*!
  * \class <class>
  * \brief
  *
@@ -31,34 +30,32 @@ namespace <namespace>
  *     cout << "Hello, world." << endl;
  * \endcode
  */
-/*! 
+  /*! 
  * \example <pkg>/test/tst<class>.cc
  *
  * Test of <class>.
  */
-//===========================================================================//
+  //===========================================================================//
 
-class <class> 
-{
+  class<class> {
   public:
-
     // NESTED CLASSES AND TYPEDEFS
 
     // CREATORS
-    
+
     //! Default constructors.
     <class>();
 
     //! Copy constructor (the long doxygen description is in the .cc file).
-    <class>(const <class> &rhs);
+    <class>(const<class> &rhs);
 
     //! Destructor.
     ~<class>();
 
     // MANIPULATORS
-    
+
     //! Assignment operator for <class>.
-    <class>& operator=(const <class> &rhs);
+    <class> &operator=(const<class> &rhs);
 
     // ACCESSORS
 
@@ -67,18 +64,15 @@ class <class>
     // STATICS
 
   protected:
-
     // IMPLEMENTATION
 
   private:
-
     // NESTED CLASSES AND TYPEDEFS
 
     // IMPLEMENTATION
 
     // DATA
-
-};
+  };
 
 } // end namespace <namespace>
 

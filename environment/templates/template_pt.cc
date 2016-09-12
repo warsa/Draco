@@ -15,10 +15,9 @@
 
 #include "<basename>.hh"
 
-namespace <namespace>
-{
+namespace<namespace> {
 
-// Explicit template instantiations go here.
+  // Explicit template instantiations go here.
 
 } // end namespace <namespace>
 

@@ -13,10 +13,7 @@
 
 #include "<basename>.hh"
 
-namespace <namespace>
-{
-
-} // end namespace <namespace>
+namespace<namespace> {} // end namespace <namespace>
 
 //---------------------------------------------------------------------------//
 // end of <basename>.cc

@@ -86,7 +86,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_1Da_(Quadrature_Class,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
@@ -104,7 +104,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2D_(Quadrature_Class,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class,
@@ -127,7 +127,7 @@ vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_2Da_(Quadrature_Class,
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Creates a mapping between moment index n and the index pair (k,l).
  */
 vector<Moment> Galerkin_Ordinate_Space::compute_n2lk_3D_(Quadrature_Class,
@@ -383,8 +383,8 @@ void Galerkin_Ordinate_Space::compute_operators() {
     for( unsigned n=0; n<numMoments; ++n )
     {
         unsigned const ell ( moments()[n].L() );
-        int      const k   ( moments()[n].M() ); 
-        
+        int      const k   ( moments()[n].M() );
+
         std::cout << " moment " << n
                   << "     l = " << ell << " k = " << k
                   << std::endl;
@@ -394,19 +394,19 @@ void Galerkin_Ordinate_Space::compute_operators() {
     dimsM.push_back( numMoments );
     dimsM.push_back( numOrdinates );
     print_matrix( "M", M_, dimsM );
-        
+
     std::vector< unsigned > dimsD;
     dimsD.push_back( numOrdinates );
     dimsD.push_back( numMoments );
     print_matrix( "D", D_, dimsD );
 
-    std::cout << " Ordinate Set (may differ from quadrature) " << std::endl; 
+    std::cout << " Ordinate Set (may differ from quadrature) " << std::endl;
     for (unsigned i=0; i<numOrdinates; ++i)
         std::cout << "   " << i
-                  << "   " << ordinates[i].mu() 
-                  << "   " << ordinates[i].eta() 
-                  << "   " << ordinates[i].xi() 
-                  << "   " << ordinates[i].wt() 
+                  << "   " << ordinates[i].mu()
+                  << "   " << ordinates[i].eta()
+                  << "   " << ordinates[i].xi()
+                  << "   " << ordinates[i].wt()
                   << std::endl;
 */
 }
@@ -546,10 +546,10 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
       /*
             if (n == 0)
                     std::cout << "   " << m
-                              << "   " << ordinates[m].mu() 
-                              << "   " << ordinates[m].eta() 
-                              << "   " << ordinates[m].xi() 
-                              << "   " << ordinates[m].wt() 
+                              << "   " << ordinates[m].mu()
+                              << "   " << ordinates[m].eta()
+                              << "   " << ordinates[m].xi()
+                              << "   " << ordinates[m].wt()
                               << "   " << polar
                               << "   " << azimuthal*180.0/3.141592653589793238462643383279
                               << std::endl;
@@ -565,7 +565,6 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
 /*! This computation uses an existing moment-to-discrete matrix M and ordinate
  *  weights W to compute a discrete-to-moment matrix D = M^{T} W
  */
-
 vector<double>
 Galerkin_Ordinate_Space::compute_D_SN(vector<Ordinate> const &ordinates,
                                       vector<double> const &Min) {

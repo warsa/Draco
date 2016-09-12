@@ -11,23 +11,16 @@
 // $Id$
 //---------------------------------------------------------------------------//
 
-#ifndef <spkg>_<class>_i_hh
-#define <spkg>_<class>_i_hh
+#ifndef < spkg > _ < class > _i_hh
+#define < spkg > _ < class > _i_hh
 
-namespace <namespace>
-{
+namespace<namespace> {
 
-<class>::<class>()
-{
-} // <class>::<class>
+  <class>::<class>(){} // <class>::<class>
 
-<class>::<class>(const <class> &rhs)
-{
-} // <class>::<class>
+  <class>::<class>(const<class> &rhs){} // <class>::<class>
 
-<class>::~<class>()
-{
-} // <class>::~<class>
+  <class>::~<class>() {} // <class>::~<class>
 
 } // end namespace <namespace>
 

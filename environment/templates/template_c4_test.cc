@@ -19,17 +19,14 @@
 // TESTS
 //---------------------------------------------------------------------------//
 
-
 //---------------------------------------------------------------------------//
-int main(int argc, char *argv[])
-{
-    rtt_c4::ParallelUnitTest ut(argc, argv, release);
-    try
-    {
-        // >>> UNIT TESTS
-    }
-    UT_EPILOG(ut);
-}   
+int main(int argc, char *argv[]) {
+  rtt_c4::ParallelUnitTest ut(argc, argv, release);
+  try {
+    // >>> UNIT TESTS
+  }
+  UT_EPILOG(ut);
+}
 
 //---------------------------------------------------------------------------//
 // end of <class>.cc
