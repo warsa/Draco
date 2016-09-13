@@ -5,7 +5,6 @@
  *         system calls.
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
- * \version $Id$
  */
 //---------------------------------------------------------------------------//
 
@@ -15,9 +14,9 @@
 #include "ds++/config.h"
 #include <string>
 #ifdef WIN32
-#include <WinSock2.h>  // Must be included before Windows.h
-#include <Windows.h>   // WIN32_FIND_DATA
-#include <sys/types.h> // _stat
+#include <WinSock2.h>
+#include <Windows.h>
+#include <sys/types.h>
 #endif
 #include <sys/stat.h> // stat (UNIX) or _stat (WIN32)
 
@@ -41,7 +40,7 @@ std::string const exeExtension("");
 /*! \section HOST_NAME_MAX
  *
  * The selection of a value for HOST_NAME_MAX is completed by
- ds++/CMakeLists.txt and ds++/config.h.in.
+ * ds++/CMakeLists.txt and ds++/config.h.in.
  *
  * - For most Linux platforms, \c HOST_NAME_MAX is defined in \c \<limits.h\>.
  *   However, according to the POSIX standard, \c HOST_NAME_MAX is a
