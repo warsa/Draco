@@ -515,6 +515,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
      const vector_int & get_cell_defs_node_map(int cell_def) const
      { return spCellDefs->get_node_map(cell_def);}
+
 /*!
  * \brief Returns the specified new node for the specified cell definition
  *        when redefinition has been performed.
@@ -525,13 +526,13 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
 //    int get_cell_defs_node_map(int cell_def, int node_ind) const
 //    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
-    // nodes access
 /*!
  * \brief Returns the coordinate values for each of the nodes.
  * \return The coordinate values for the nodes.
  */
     vector_vector_dbl get_nodes_coords() const
     { return spNodes->get_coords(); }
+
 /*!
  * \brief Returns all of the coordinate values for the specified node.
  * \param node_numb Node number.
@@ -539,6 +540,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_dbl get_nodes_coords(int node_numb) const
     { return spNodes->get_coords(node_numb); }
+
 /*!
  * \brief Returns the coordinate value for the specified node and direction
  *        (i.e., x, y, and z).
@@ -548,6 +550,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     double get_nodes_coords(int node_numb, int coord_index) const
     { return spNodes->get_coords(node_numb, coord_index); }
+
 /*!
  * \brief Returns the node parent for the specified node.
  * \param node_numb Node number.
@@ -555,6 +558,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     int get_nodes_parents(int node_numb) const
     { return spNodes->get_parents(node_numb); }
+
 /*!
  * \brief Returns the node flag for the specified node and flag.
  * \param node_numb Node number.
@@ -572,12 +576,14 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     int get_sides_type(int side_numb) const
     { return spSides->get_type(side_numb); }
+
 /*!
  * \brief Returns the node numbers associated with each side.
  * \return The node numbers for all of the sides.
  */
     vector_vector_int get_sides_nodes() const
     { return spSides->get_nodes(); }
+
 /*!
  * \brief Returns the node numbers associated with the specified side.
  * \param side_numb Side number.
@@ -585,6 +591,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_int get_sides_nodes(int side_numb) const
     { return spSides->get_nodes(side_numb); }
+
 /*!
  * \brief Returns the node number associated with the specified side and
  *        side-node index.
@@ -594,6 +601,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     int get_sides_nodes(int side_numb,int node_numb) const
     { return spSides->get_nodes(side_numb, node_numb); }
+
 /*!
  * \brief Returns the side flag for the specified side and flag.
  * \param side_numb Side number.
@@ -611,12 +619,14 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     int get_cells_type(int cell_numb) const
     { return spCells->get_type(cell_numb); }
+
 /*!
  * \brief Returns all of the node numbers for each of the cells.
  * \return The node numbers for all cells.
  */
     vector_vector_int get_cells_nodes() const
     { return spCells->get_nodes(); }
+
 /*!
  * \brief Returns all of the node numbers associated with the specified cell.
  * \param cell_numb Cell number.
@@ -624,6 +634,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_int get_cells_nodes(int cell_numb) const
     { return spCells->get_nodes(cell_numb); }
+
 /*!
  * \brief Returns the node number associated with the specified cell and
  *        cell-node index.
@@ -633,6 +644,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     int get_cells_nodes(int cell_numb,int node_numb) const
     { return spCells->get_nodes(cell_numb, node_numb); }
+
 /*!
  * \brief Returns the cell flag for the specified cell and flag.
  * \param cell_numb Cell number.
@@ -649,6 +661,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_vector_dbl get_node_data() const
     { return spNodeData->get_data(); }
+
 /*!
  * \brief Returns all of the data field values for the specified node.
  * \param node_numb Node number.
@@ -656,6 +669,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_dbl get_node_data(int node_numb) const
     { return spNodeData->get_data(node_numb); }
+
 /*!
  * \brief Returns the specified data field value for the specified node.
  * \param node_numb Node number.
@@ -672,6 +686,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_vector_dbl get_side_data() const
     { return spSideData->get_data(); }
+
 /*!
  * \brief Returns all of the data field values for the specified side.
  * \param side_numb Side number.
@@ -679,6 +694,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_dbl get_side_data(int side_numb) const
     { return spSideData->get_data(side_numb); }
+
 /*!
  * \brief Returns the specified data field value for the specified side.
  * \param side_numb Side number.
@@ -695,6 +711,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_vector_dbl get_cell_data() const
     { return spCellData->get_data(); }
+
 /*!
  * \brief Returns all of the data field values for the specified cell.
  * \param cell_numb Cell number.
@@ -702,6 +719,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
  */
     vector_dbl get_cell_data(int cell_numb) const
     { return spCellData->get_data(cell_numb); }
+
 /*!
  * \brief Returns the specified data field value for the specified cell.
  * \param cell_numb Cell number.
@@ -722,10 +740,8 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader
     void readEndKeyword(ifstream & meshfile);
 
   public:
-    void reformatData(
-        vector_vector_int const & cell_side_types_,
-        std::vector< std::vector< std::vector< size_t > > >
-        const& cell_ordered_sides_);
+    void reformatData(vector_vector_int const & cell_side_types_,
+                      std::vector< std::vector< std::vector< size_t > > > const& cell_ordered_sides_);
 };
 
 } // end namespace rtt_RTT_Format_Reader

@@ -146,8 +146,7 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
     string dummyString;
 
     meshfile >> dummyString;
-    Insist(dummyString == "end_rtt_mesh",
-	   "Invalid mesh file: RTT file missing end");
+    Insist(dummyString == "end_rtt_mesh", "Invalid mesh file: RTT file missing end");
     std::getline(meshfile, dummyString);
 }
 /*!
@@ -158,10 +157,8 @@ void RTT_Format_Reader::readEndKeyword(ifstream & meshfile)
  * \param cell_ordered_sides New ordered sides for each of the existing cell
  *        definitions.
  */
-void RTT_Format_Reader::reformatData(
-    vector_vector_int const & cell_side_types,
-    std::vector< std::vector< std::vector< size_t > > >
-    const & cell_ordered_sides)
+void RTT_Format_Reader::reformatData(vector_vector_int const & cell_side_types,
+                                     std::vector< std::vector< std::vector< size_t > > > const & cell_ordered_sides)
 {
     spCellDefs->redefineCellDefs(cell_side_types, cell_ordered_sides);
     spSides->redefineSides();

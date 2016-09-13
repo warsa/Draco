@@ -45,17 +45,25 @@ class Sides
     vector_vector_int flags;
 
   public:
-    Sides(const SideFlags & sideFlags_, const Dims & dims_,
-	  const CellDefs & cellDefs_) : 
-        sideFlags(sideFlags_), dims(dims_), cellDefs(cellDefs_), 
-	sideType(dims.get_nsides()), nodes(dims.get_nsides()),
-	flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) {}
-    ~Sides() {}
+
+    Sides(const SideFlags & sideFlags_, 
+          const Dims & dims_,
+	  const CellDefs & cellDefs_) 
+        : sideFlags(sideFlags_), 
+          dims(dims_), 
+          cellDefs(cellDefs_), 
+          sideType(dims.get_nsides()), 
+          nodes(dims.get_nsides()),
+          flags(dims.get_nsides(), vector_int(dims.get_nside_flag_types())) 
+    { /* empty */ }
+
+    ~Sides() { /* empty */ }
 
     void readSides(ifstream & meshfile);
     void redefineSides();
 
   private:
+
     void readKeyword(ifstream & meshfile);
     void readData(ifstream & meshfile);
     void readEndKeyword(ifstream & meshfile);

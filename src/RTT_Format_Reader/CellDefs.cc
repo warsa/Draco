@@ -83,18 +83,21 @@ void CellDefs::readEndKeyword(ifstream & meshfile)
  * \param cell_ordered_sides New ordered sides for each of the existing cell 
  *        definitions.
  */
-void CellDefs::redefineCellDefs(
-    vector_vector_int const & cell_side_types,
-    std::vector< std::vector< std::vector< size_t > > >
-    const & cell_ordered_sides)
+void CellDefs::redefineCellDefs(vector_vector_int const & cell_side_types,
+                                std::vector< std::vector< std::vector< size_t > > > const & cell_ordered_sides)
 {
-    Insist(cell_side_types.size()
-           == static_cast<size_t>(dims.get_ncell_defs()),
+    Insist(cell_side_types.size() == static_cast<size_t>(dims.get_ncell_defs()),
 	   "Error in supplied cell redefinition side types data.");
-    Insist(cell_ordered_sides.size()
-           == static_cast<size_t>(dims.get_ncell_defs()),
+    Insist(cell_ordered_sides.size() == static_cast<size_t>(dims.get_ncell_defs()),
 	   "Error in supplied cell redefinition ordered side data.");
-
+    
+    for (size_t cd = 0; cd < static_cast<size_t>(dims.get_ncell_defs()); cd ++)
+    {
+	Check(cd<defs.size());
+	Check(cd<cell_side_types.size());
+	Check(cd<cell_ordered_sides.size());    
+    }
+    
     redefined = true;
 
     for (size_t cd = 0; cd < static_cast<size_t>(dims.get_ncell_defs()); cd ++)
@@ -102,7 +105,7 @@ void CellDefs::redefineCellDefs(
 	Check(cd<defs.size());
 	Check(cd<cell_side_types.size());
 	Check(cd<cell_ordered_sides.size());
-        defs[cd]->redefineCellDef(cell_side_types[cd], cell_ordered_sides[cd]);
+        defs[cd]->redefineCellDef(cell_side_types[cd], cell_ordered_sides[cd], dims.get_ndim());
     }
 }
 /*!
@@ -153,6 +156,8 @@ void CellDef::readDef(ifstream & meshfile)
 	if (sides[i].size() > 0)
 	    std::getline(meshfile, dummyString);
     }
+
+    
 }
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file
@@ -161,13 +166,12 @@ void CellDef::readDef(ifstream & meshfile)
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
  */
-void CellDef::redefineCellDef(
-    vector_int const & new_side_types, 
-    std::vector< std::vector< size_t > > const & new_ordered_sides)
+void CellDef::redefineCellDef(vector_int const & new_side_types, 
+                              std::vector< std::vector< size_t > > const & new_ordered_sides,
+                              int const ndim)
 {
     Insist(new_side_types.size() == nsides, "New side types input error");
-    Insist(new_ordered_sides.size() == nsides,
-	   "New ordered sides input error");
+    Insist(new_ordered_sides.size() == nsides, "New ordered sides input error");
 
     node_map.resize(nnodes);
 
@@ -175,12 +179,12 @@ void CellDef::redefineCellDef(
     {
         node_map[0] = 0;
     }
-    else if (name == "line")
+    else if (name == "line" || name == "bar2")
     {
         node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
         node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
     }
-    else if (name == "line_qdr")
+    else if (name == "line_qdr" || name == "bar3")
     {
         node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
         node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
@@ -190,8 +194,7 @@ void CellDef::redefineCellDef(
         unsigned old_node;
         for (old_node=0; old_node<3; ++old_node)
         {
-            if (ordered_sides[0][0]!=old_node &&
-                ordered_sides[1][0]!=old_node)
+            if (ordered_sides[0][0]!=old_node && ordered_sides[1][0]!=old_node)
             {
                 break;
             }
@@ -199,15 +202,14 @@ void CellDef::redefineCellDef(
         unsigned new_node;
         for (new_node=0; new_node<3; ++new_node)
         {
-            if (new_ordered_sides[0][0]!=new_node &&
-                new_ordered_sides[1][0]!=new_node)
+            if (new_ordered_sides[0][0]!=new_node && new_ordered_sides[1][0]!=new_node)
             {
                 break;
             }
         }
         node_map[old_node] = new_node;
     }
-    else if (name == "triangle" || name == "quad")
+    else if (name == "triangle" || name == "tri3"  || name == "quad"  || name == "quad4") 
     {
         // Arbitrarily assign the first node in the old and the new cell 
         // definitions to be the same. This assumption is necessary because
@@ -223,12 +225,10 @@ void CellDef::redefineCellDef(
 	{
 	    // Find the new side that starts with this node.
 	    size_t new_side = 0;
-	    while (static_cast<size_t>(new_ordered_sides[new_side][0])
-                   != new_node)
+	    while (static_cast<size_t>(new_ordered_sides[new_side][0]) != new_node)
 	    {
 	        ++new_side;
-		Insist(new_side < nsides, 
-		       "Edge error for new two dimensional cell definition.");
+		Insist(new_side < nsides, "Edge error for new two dimensional cell definition.");
 	    }
 	    new_node = new_ordered_sides[new_side][1];
 	    // Find the old side that starts with this node.
@@ -236,14 +236,14 @@ void CellDef::redefineCellDef(
 	    while (ordered_sides[old_side][0] != old_node)
 	    {
 	        ++old_side;
-		Insist(old_side < nsides, 
-		       "Edge error for old two dimensional cell definition.");
+		Insist(old_side < nsides, "Edge error for old two dimensional cell definition.");
 	    }
 	    old_node = ordered_sides[old_side][1];
 	    node_map[old_node] = new_node;
 	}
     }
-    else if (name == "triangle_qdr")
+    else if (name == "triangle_qdr" || name == "tri6")
+// || name == "quad5"    || name == "quad6" || name == "quad7" || name == "quad8") 
     {
         // Arbitrarily assign the first node in the old and the new cell 
         // definitions to be the same. This assumption is necessary because
@@ -262,8 +262,7 @@ void CellDef::redefineCellDef(
 	    while (new_ordered_sides[new_side][0] != new_node)
 	    {
 	        ++new_side;
-		Insist(new_side < nsides, 
-		       "Edge error for new two dimensional cell definition.");
+		Insist(new_side < nsides, "Edge error for new two dimensional cell definition.");
 	    }
 	    new_node = new_ordered_sides[new_side][1];
 	    // Find the old side that starts with this node.
@@ -271,8 +270,7 @@ void CellDef::redefineCellDef(
 	    while (ordered_sides[old_side][0] != old_node)
 	    {
 	        ++old_side;
-		Insist(old_side < nsides, 
-		       "Edge error for old two dimensional cell definition.");
+		Insist(old_side < nsides, "Edge error for old two dimensional cell definition.");
 	    }
 	    old_node = ordered_sides[old_side][1];
 	    node_map[old_node] = new_node;
@@ -292,26 +290,21 @@ void CellDef::redefineCellDef(
         node_map[0] = 0;
 	// Find the one side definition that does not contain the first node.
 	size_t new_side = 0;
-	while (std::count(new_ordered_sides[new_side].begin(), 
-			  new_ordered_sides[new_side].end(), node_map[0]) > 0)
+	while (std::count(new_ordered_sides[new_side].begin(), new_ordered_sides[new_side].end(), node_map[0]) > 0)
 	{
 	    ++new_side;
-	    Insist(new_side < nsides, 
-		   "Side error for new tetrahedron cell definition.");
+	    Insist(new_side < nsides, "Side error for new tetrahedron cell definition.");
 	}
  	// Find the one side definition that does not contain the first node.
 	size_t old_side = 0;
-	while (std::count(ordered_sides[old_side].begin(), 
-			  ordered_sides[old_side].end(), node_map[0]) > 0)
+	while (std::count(ordered_sides[old_side].begin(), ordered_sides[old_side].end(), node_map[0]) > 0)
 	{
 	    ++old_side;
-	    Insist(old_side < nsides, 
-		   "Side error for old tetrahedron cell definition.");
+	    Insist(old_side < nsides, "Side error for old tetrahedron cell definition.");
 	}
 	// Now just apply the right-hand rule.
 	for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
-	    node_map[ordered_sides[old_side][n]] = 
-	        new_ordered_sides[new_side][n];
+	    node_map[ordered_sides[old_side][n]] = new_ordered_sides[new_side][n];
     }
     else if (name == "quad_pyr")
     {
@@ -338,18 +331,15 @@ void CellDef::redefineCellDef(
 	int old_node = 0;
 	for (size_t n = 0; n < nnodes; n++)
 	{
-	    if (std::count(new_ordered_sides[new_side].begin(), 
-			   new_ordered_sides[new_side].end(), n) == 0)
+	    if (std::count(new_ordered_sides[new_side].begin(), new_ordered_sides[new_side].end(), n) == 0)
 	        new_node = n;
-	    if (std::count(ordered_sides[old_side].begin(), 
-			   ordered_sides[old_side].end(), n) == 0)
+	    if (std::count(ordered_sides[old_side].begin(), ordered_sides[old_side].end(), n) == 0)
 	        old_node = n;
 	}
 	node_map[old_node] = new_node;
 	// Now just apply the right-hand rule to the quad side.
 	for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
-	    node_map[ordered_sides[old_side][n]] = 
-	        new_ordered_sides[new_side][n];
+	    node_map[ordered_sides[old_side][n]] = new_ordered_sides[new_side][n];
     }
     else if (name == "tri_prism")
     {
@@ -365,8 +355,7 @@ void CellDef::redefineCellDef(
 	    Insist(new_quad < nsides, 
 		   "Quad side error for new tri-prism cell definition.");
 	}
-	// Find the one quad side definition that does not contain the first 
-	// node.
+	// Find the one quad side definition that does not contain the first node.
 	size_t old_quad = 0;
 	while (ordered_sides[old_quad].size() != 4 ||
 	       std::count(ordered_sides[old_quad].begin(), 
@@ -378,8 +367,7 @@ void CellDef::redefineCellDef(
 	}
 	// Apply the right-hand rule to this quad.
 	for (size_t n = 0; n < ordered_sides[old_quad].size(); n++)
-	    node_map[ordered_sides[old_quad][n]] = 
-	        new_ordered_sides[new_quad][n];
+	    node_map[ordered_sides[old_quad][n]] = new_ordered_sides[new_quad][n];
 	// Equate the two remaining triangle nodes. Find the first node.
 	size_t old_tri = 0;
 	while (ordered_sides[old_tri].size() != 3 ||
@@ -421,21 +409,17 @@ void CellDef::redefineCellDef(
 	    Insist(new_node <  new_ordered_sides[new_tri].size(), 
 		   "Node error for new tri-prism cell definition.");
 	}
-	node_map[ordered_sides[old_tri][old_node]] = 
-	    new_ordered_sides[new_tri][new_node];
+	node_map[ordered_sides[old_tri][old_node]] = new_ordered_sides[new_tri][new_node];
 	// The node that is neither in the previous quad or triangle is all
 	// that is left.
 	for (size_t n = 0; n < nnodes; n++)
 	{
-	    if (std::count(new_ordered_sides[new_quad].begin(), 
-			   new_ordered_sides[new_quad].end(), n) == 0 &&
-		std::count(new_ordered_sides[new_tri].begin(), 
-			   new_ordered_sides[new_tri].end(), n) == 0)
+	    if (std::count(new_ordered_sides[new_quad].begin(), new_ordered_sides[new_quad].end(), n) == 0 &&
+		std::count(new_ordered_sides[new_tri].begin(), new_ordered_sides[new_tri].end(), n) == 0)
 	        new_node = n;
-	    if (std::count(ordered_sides[old_quad].begin(), 
-			   ordered_sides[old_quad].end(), n) == 0 &&
-		std::count(ordered_sides[old_tri].begin(), 
-			   ordered_sides[old_tri].end(), n) == 0)
+
+	    if (std::count(ordered_sides[old_quad].begin(), ordered_sides[old_quad].end(), n) == 0 &&
+		std::count(ordered_sides[old_tri].begin(), ordered_sides[old_tri].end(), n) == 0)
 	        old_node = n;		
 	}	    
 	node_map[old_node] = new_node;
@@ -458,12 +442,11 @@ void CellDef::redefineCellDef(
 	    node_map[old_node] = new_node;
 	    for (size_t s = 0; s < nsides; s++)
 	    {
-	        if (std::count(new_ordered_sides[s].begin(), 
-			       new_ordered_sides[s].end(), new_node) > 0)
+	        if (std::count(new_ordered_sides[s].begin(), new_ordered_sides[s].end(), new_node) > 0)
 		    for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
 		        ++new_node_count[new_ordered_sides[s][c]];
-		if (std::count(ordered_sides[s].begin(), 
-			       ordered_sides[s].end(), old_node) > 0)
+
+		if (std::count(ordered_sides[s].begin(), ordered_sides[s].end(), old_node) > 0)
 		    for (size_t c = 0; c < ordered_sides[s].size(); c++)
 		        ++old_node_count[ordered_sides[s][c]];
 	    }
@@ -481,43 +464,58 @@ void CellDef::redefineCellDef(
 	    std::fill(old_node_count.begin(), old_node_count.end(), 0);
 	}
     }
-    else // OTHER 
+    else 
     {
-        // Arbitrarily assign the first node in the old and the new cell 
-        // definitions to be the same. This assumption is necessary because
-        // the cell definitions do not assume a specific orientation relative
-        // to any coordinate system. The transformed cell may be rotated 
-        // about it's outward normal relative to the input cell definition.
-        node_map[0] = 0;
-	// The right hand rule has to apply, so only the ordering of the
-        // nodes (edges) can change for a two-dimensional cell.
-	size_t old_node = 0;
-	size_t new_node = 0;
-        for (size_t n = 0; n < nnodes - 1; n++)
-	{
-	    // Find the new side that starts with this node.
-	    size_t new_side = 0;
-	    while (new_ordered_sides[new_side][0] != new_node)
-	    {
-	        ++new_side;
-		Insist(new_side < nsides, 
-		       "Edge error for new two dimensional cell definition.");
-	    }
-	    new_node = new_ordered_sides[new_side][1];
-	    // Find the old side that starts with this node.
-	    size_t old_side = 0;
-	    while (ordered_sides[old_side][0] != old_node)
-	    {
-	        ++old_side;
-		Insist(old_side < nsides, 
-		       "Edge error for old two dimensional cell definition.");
-	    }
-	    old_node = ordered_sides[old_side][1];
-	    node_map[old_node] = new_node;
-	}
+        if (ndim == 2) // POLYGON
+        {
+            // Arbitrarily assign the first node in the old and the new cell 
+            // definitions to be the same. This assumption is necessary because
+            // the cell definitions do not assume a specific orientation relative
+            // to any coordinate system. The transformed cell may be rotated 
+            // about it's outward normal relative to the input cell definition.
+            node_map[0] = 0;
+            // The right hand rule has to apply, so only the ordering of the
+            // nodes (edges) can change for a two-dimensional cell.
+            size_t old_node = 0;
+            size_t new_node = 0;
+            for (size_t n = 0; n < nnodes - 1; n++)
+            {
+                // Find the new side that starts with this node.
+                size_t new_side = 0;
+                while (new_ordered_sides[new_side][0] != new_node)
+                {
+                    ++new_side;
+                    Insist(new_side < nsides, "Edge error for new two dimensional cell definition.");
+                }
+                new_node = new_ordered_sides[new_side][1];
+                // Find the old side that starts with this node.
+                size_t old_side = 0;
+                while (ordered_sides[old_side][0] != old_node)
+                {
+                    ++old_side;
+                    Insist(old_side < nsides, "Edge error for old two dimensional cell definition.");
+                }
+                old_node = ordered_sides[old_side][1];
+                node_map[old_node] = new_node;
+            }
+        }
+        else if (ndim == 3) // POLYHEDRON OR quad9 (assume the ordering is correct)
+        {
+            for (unsigned i=0; i<nnodes; ++i)
+                node_map[i] = i;    
+
+            std::cout << " Polyhedron OR quad9" << std::endl;
+            for (size_t i = 0; i < new_ordered_sides.size(); ++i)
+            {
+                std::cout << " Side " << i << " nodes: " << std::endl;
+                for (size_t n = 0; n < ordered_sides[i].size(); ++n)
+                    std::cout << " " << ordered_sides[i][n] << std::endl;
+                std::cout << std::endl;
+            }
+        }
     }
-    // Assign the new side types, sides, and ordered sides to this cell 
-    // definition.
+    
+    // Assign the new side types, sides, and ordered sides to this cell definition.
     side_types = new_side_types;
     ordered_sides = new_ordered_sides;
     for (size_t i = 0; i < ordered_sides.size(); ++i)

@@ -84,28 +84,48 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader : public rtt_meshReaders::Mes
     ~RTT_Mesh_Reader() {}
 
     // ACCESSORS
+
     // Virutal accessor function definitions based on the Mesh_Readers
     // abstract base class.
+
 /*!
  * \brief Returns the coordinate values for each of the nodes.
  * \return The coordinate values for the nodes.
  */
     virtual vector_vector_dbl get_node_coords() const
-    { return rttMesh->get_nodes_coords(); }
+    { 
+        return rttMesh->get_nodes_coords(); 
+    }
+
 /*!
  * \brief Returns the problem coordinate units (e.g, cm).
  * \return Coordinate units.
  */
     virtual string get_node_coord_units() const
-    { return rttMesh->get_dims_coor_units(); }
+    { 
+        return rttMesh->get_dims_coor_units(); 
+    }
+
 /*!
  * \brief Returns the topological dimenstion (1, 2 or 3).
  * \return Topological dimension.
  */
     virtual size_t get_dims_ndim() const
-    { return rttMesh->get_dims_ndim(); }
+    { 
+        return rttMesh->get_dims_ndim(); 
+    }
+
+    int get_dims_ncells() const
+    { 
+        return rttMesh->get_dims_ncells(); }
+
+    int get_dims_nsides() const
+    { 
+        return rttMesh->get_dims_nsides(); 
+    }
 
     virtual vector_vector_int get_element_nodes() const;
+
 /*!
  * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and
  *        TETRA_4).
@@ -113,11 +133,15 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader : public rtt_meshReaders::Mes
  */
     virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
     get_element_types() const
-    { return element_types; }
+    { 
+        return element_types; 
+    }
 
     virtual std::vector<rtt_dsxx::SP<rtt_mesh_element::Element_Definition> > 
     get_element_defs() const
-    { return element_defs; }
+    { 
+        return element_defs; 
+    }
 
 /*!
  * \brief Returns the unique element types (e.g., TRI_3 and TETRA_4) that 
@@ -126,8 +150,9 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader : public rtt_meshReaders::Mes
  */
     virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type> 
     get_unique_element_types() const
-    { return unique_element_types; }
-
+    { 
+        return unique_element_types; 
+    }
 
     virtual std::map<string, set_int > get_node_sets() const;
 
@@ -136,7 +161,10 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader : public rtt_meshReaders::Mes
  * \brief Returns the mesh file title.
  * \return Mesh file title.
  */
-    virtual string get_title() const { return rttMesh->get_header_title(); }
+    virtual string get_title() const 
+    { 
+        return rttMesh->get_header_title(); 
+    }
 
     virtual bool invariant() const;
 

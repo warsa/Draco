@@ -72,9 +72,9 @@ class CellDef
     ~CellDef(void) {/*empty*/}
 
     void readDef(ifstream & meshfile);
-    void redefineCellDef(
-         vector_int const & new_side_types_, 
-         std::vector< std::vector< size_t > > const & new_ordered_sides);
+    void redefineCellDef(vector_int const & new_side_types_, 
+                         std::vector< std::vector< size_t > > const & new_ordered_sides,
+                         int const ndim);
   public:
 
 /*!
@@ -102,8 +102,7 @@ class CellDef
 
     vector_int get_all_side_types() const {return side_types;}
     std::vector< std::vector< size_t > > get_all_sides() const {return sides;}
-    std::vector< std::vector< size_t > > get_all_ordered_sides() const {
-        return ordered_sides;}
+    std::vector< std::vector< size_t > > get_all_ordered_sides() const { return ordered_sides;}
 
     /*!
      * \brief Returns the side definition of the specified side index of this
@@ -122,8 +121,7 @@ class CellDef
      * \return The side definition (i.e., the cell-node indexes that comprise the 
      *         side).
      */
-    std::vector< size_t > const & get_ordered_side(size_t s) const {
-        return ordered_sides[s]; }
+    std::vector< size_t > const & get_ordered_side(size_t s) const { return ordered_sides[s]; }
 
     //---------------------------------------------------------------------------//
 
@@ -169,15 +167,18 @@ class CellDefs
     bool redefined;
 
   public:
-    CellDefs(const Dims & dims_) : dims(dims_), defs(dims.get_ncell_defs()),
-        redefined(false) {}
-    ~CellDefs() {}
+
+    CellDefs(const Dims & dims_) 
+        : dims(dims_), 
+          defs(dims.get_ncell_defs()),
+          redefined(false) 
+    {/*empty*/}
+
+    ~CellDefs() {/*empty*/}
 
     void readCellDefs(ifstream & meshfile);
-    void redefineCellDefs(
-        vector_vector_int const & cell_side_types,
-        std::vector< std::vector< std::vector< size_t > > >
-        const & cell_ordered_sides);
+    void redefineCellDefs(vector_vector_int const & cell_side_types,
+                          std::vector< std::vector< std::vector< size_t > > > const & cell_ordered_sides);
         
   private:
     void readKeyword(ifstream & meshfile);
