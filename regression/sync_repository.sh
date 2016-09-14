@@ -64,7 +64,7 @@ case ${target} in
     ;;
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
-    gitroot=/usr/projects/draco/regress/git
+    gitroot=$regdir/git
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -72,6 +72,7 @@ case ${target} in
     # HPC - Moonlight.
     run "module load user_contrib svn git"
     regdir=/usr/projects/jayenne/regress
+    gitroot=$regdir/git
     svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
@@ -119,14 +120,14 @@ case ${target} in
     if test -d $gitroot/jayenne.git; then
       run "cd $gitroot/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requets/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot; cd $gitroot"
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-  darwin-fe*)
+  darwin-fe* | ml-fey*)
     # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
     # repositories. This location can be parsed by redmine. For darwin, the
     # backend can't see gitlab, so keep a copy of the repository local.
@@ -149,7 +150,7 @@ case ${target} in
     if test -d $gitroot/jayenne/jayenne.git; then
       run "cd $gitroot/jayenne/jayenne.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requets/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
       run "git reset --soft"
     else
       run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
