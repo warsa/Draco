@@ -5,15 +5,15 @@
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC. 
- *         All rights reserved. 
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 // $Id$
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 #include "Element_Definition.hh"
 
@@ -21,7 +21,7 @@ namespace rtt_mesh_element
 {
 
 //---------------------------------------------------------------------------//
-Element_Definition::Element_Definition( Element_Type const & type_ )
+Element_Definition::Element_Definition(Element_Type const & type_)
     : name(),
       type(type_),
       dimension(0),
@@ -31,101 +31,99 @@ Element_Definition::Element_Definition( Element_Type const & type_ )
       side_type(),
       side_nodes()
 {
-    switch( type )
+    switch (type)
     {
-        case NODE :
-            construct_node();
-            break;
-	
-        case BAR_2 :
-        case BAR_3 :
-            construct_bar();
-            Ensure( invariant_satisfied() );
-            break;
+    case NODE:
+        construct_node();
+        break;
 
-        case TRI_3 :
-        case TRI_6 :
-            construct_tri();
-            Ensure( invariant_satisfied() );
-            break;
+    case BAR_2:
+    case BAR_3:
+        construct_bar();
+        Ensure(invariant_satisfied());
+        break;
 
-        case QUAD_4 :
-        case QUAD_5 :
-        case QUAD_6 :
-        case QUAD_7 :
-        case QUAD_8 :
-        case QUAD_9 :
-            construct_quad();
-            Ensure( invariant_satisfied() );
-            break;
+    case TRI_3:
+    case TRI_6:
+        construct_tri();
+        Ensure(invariant_satisfied());
+        break;
 
-        case TETRA_4  :
-        case TETRA_10 :
-            construct_tetra();
-            Ensure( invariant_satisfied() );
-            break;
+    case QUAD_4:
+    case QUAD_5:
+    case QUAD_6:
+    case QUAD_7:
+    case QUAD_8:
+    case QUAD_9:
+        construct_quad();
+        Ensure(invariant_satisfied());
+        break;
 
-        case PYRA_5  :
-        case PYRA_14 :
-            construct_pyra();
-            Ensure( invariant_satisfied() );
-            break;
+    case TETRA_4:
+    case TETRA_10:
+        construct_tetra();
+        Ensure(invariant_satisfied());
+        break;
 
-        case PENTA_6  :
-        case PENTA_15 :
-        case PENTA_18 :
-            construct_penta();
-            Ensure( invariant_satisfied() );
-            break;	
+    case PYRA_5:
+    case PYRA_14:
+        construct_pyra();
+        Ensure(invariant_satisfied());
+        break;
 
-        case HEXA_8  :
-        case HEXA_20 :
-        case HEXA_27 :
-            construct_hexa();
-            Ensure( invariant_satisfied() );
-            break;	
+    case PENTA_6:
+    case PENTA_15:
+    case PENTA_18:
+        construct_penta();
+        Ensure(invariant_satisfied());
+        break;
 
-        case POLYHEDRON:
-            dimension = 3;
-            break;	
+    case HEXA_8:
+    case HEXA_20:
+    case HEXA_27:
+        construct_hexa();
+        Ensure(invariant_satisfied());
+        break;
 
-        case POLYGON :
-            dimension = 2;
-            break;	
+    case POLYHEDRON:
+        dimension = 3;
+        break;
 
-        default :
-            Insist(false,"Unrecognized Element-Type Flag");
-	
+    case POLYGON:
+        dimension = 2;
+        break;
+
+    default:
+        Insist(false, "Unrecognized Element-Type Flag");
     }
 
-//     number_of_face_nodes.resize(side_type.size());
-//     for (unsigned s=0; s < side_type.size(); ++s)
-//         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
+    //     number_of_face_nodes.resize(side_type.size());
+    //     for (unsigned s=0; s < side_type.size(); ++s)
+    //         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
 
-//     face_nodes.resize(side_nodes.size());
+    //     face_nodes.resize(side_nodes.size());
 
-//     for (unsigned s=0; s < face_nodes.size(); ++s)
-//     {
-//         std::vector<int> nodes(get_side_nodes(s)); 
-//         face_nodes[s].resize(nodes.size());
+    //     for (unsigned s=0; s < face_nodes.size(); ++s)
+    //     {
+    //         std::vector<int> nodes(get_side_nodes(s));
+    //         face_nodes[s].resize(nodes.size());
 
-//         for (unsigned n=0; n < nodes.size(); ++n)
-//             face_nodes[s][n] = nodes[n];
-//     }
-    
+    //         for (unsigned n=0; n < nodes.size(); ++n)
+    //             face_nodes[s][n] = nodes[n];
+    //     }
 }
-    
+
 //---------------------------------------------------------------------------//
-Element_Definition::
-Element_Definition( std::string  name_,
-                    size_t dimension_,
-                    size_t number_of_nodes_,
-                    size_t number_of_sides_,
-                    std::vector< Element_Definition >  const & elem_defs_,
-                    std::vector< int >                 const & side_type_,
-                    std::vector< std::vector<size_t> > const & side_nodes_)
+Element_Definition::Element_Definition(
+    std::string name_,
+    size_t dimension_,
+    size_t number_of_nodes_,
+    size_t number_of_sides_,
+    std::vector<Element_Definition> const & elem_defs_,
+    std::vector<int> const & side_type_,
+    std::vector<std::vector<size_t>> const & side_nodes_)
     : name(name_),
-      type((dimension_==2)?POLYGON:POLYHEDRON),
+      type((dimension_ == 2) ? POLYGON : POLYHEDRON),
       dimension(dimension_),
       number_of_nodes(number_of_nodes_),
       number_of_sides(number_of_sides_),
@@ -135,191 +133,207 @@ Element_Definition( std::string  name_,
 {
     //---------------------------------------------------------------------------//
     // Check input first, before any modifications
-    
-    Require( number_of_nodes_>0 );
-    
-    for (unsigned i=0; i<elem_defs_.size(); ++i)
+
+    Require(number_of_nodes_ > 0);
+
+    for (unsigned i = 0; i < elem_defs_.size(); ++i)
     {
-        Require( elem_defs_[i].get_dimension()+1==dimension_ );
+        Require(elem_defs_[i].get_dimension() + 1 == dimension_);
     }
-    Require( side_type_.size()==number_of_sides_ );
-    for (unsigned i=0; i<number_of_sides_; ++i)
+    Require(side_type_.size() == number_of_sides_);
+    for (unsigned i = 0; i < number_of_sides_; ++i)
     {
-        Require( static_cast<unsigned>(side_type_[i])<elem_defs_.size() );
+        Require(static_cast<unsigned>(side_type_[i]) < elem_defs_.size());
     }
-    Require( side_nodes_.size()==number_of_sides_ );
-    for (unsigned i=0; i<number_of_sides_; ++i)
+    Require(side_nodes_.size() == number_of_sides_);
+    for (unsigned i = 0; i < number_of_sides_; ++i)
     {
-        Require( side_nodes_[i].size() == elem_defs_[side_type_[i]].get_number_of_nodes() );
-        for (unsigned j=0; j<side_nodes_[i].size(); ++j)
+        Require(side_nodes_[i].size() ==
+                elem_defs_[side_type_[i]].get_number_of_nodes());
+        for (unsigned j = 0; j < side_nodes_[i].size(); ++j)
         {
-            Require( static_cast<unsigned>(side_nodes_[i][j]) < number_of_nodes_ );
+            Require(static_cast<unsigned>(side_nodes_[i][j]) <
+                    number_of_nodes_);
         }
     }
-    
-    Ensure( get_type()==Element_Definition::POLYGON || get_type()==Element_Definition::POLYHEDRON );
-    Ensure( get_name()==name_  );
-    Ensure( get_dimension()==dimension_  );
-    Ensure( get_number_of_nodes()==number_of_nodes_  );
-    Ensure( get_number_of_sides()==number_of_sides_  );
-    
-    for (unsigned i=0; i<number_of_sides; ++i)
+
+    Ensure(get_type() == Element_Definition::POLYGON ||
+           get_type() == Element_Definition::POLYHEDRON);
+    Ensure(get_name() == name_);
+    Ensure(get_dimension() == dimension_);
+    Ensure(get_number_of_nodes() == number_of_nodes_);
+    Ensure(get_number_of_sides() == number_of_sides_);
+
+    for (unsigned i = 0; i < number_of_sides; ++i)
     {
-        Ensure( get_side_nodes(i)==side_nodes_[i]  );
+        Ensure(get_side_nodes(i) == side_nodes_[i]);
     }
-    
+
     //---------------------------------------------------------------------------//
     // Modify POLYHEDRON, if necessary
 
-/*
-    if (type == POLYHEDRON)
-    {
-        // first check to see if there are any QUAD_9 elements present in the elem_defs 
-        int quad9_side(-1);
-        for (unsigned s=0; s<number_of_sides; ++s)
+    /*
+        if (type == POLYHEDRON)
         {
-            Element_Definition elem_def(elem_defs_[s]);
-            if (elem_def.get_type() == QUAD_9) 
-            {
-                quad9_side = s;
-                break;
-            }
-        }
-        
-        // remove the QUAD_9 elements and create four QUAD_4 elements for each
-        if (quad9_side >= 0)
-        {
-            // remove the QUAD_9 element from elem_defs (should be only one present, if any)
-            elem_defs.erase(elem_defs.begin()+quad9_side);
-
-            // check to see if the QUAD_4 element is present in the elem_defs 
-            int quad4_side(-1);
+            // first check to see if there are any QUAD_9 elements present in
+       the elem_defs
+            int quad9_side(-1);
             for (unsigned s=0; s<number_of_sides; ++s)
             {
-                Element_Definition elem_def(elem_defs[s]);
-                if (elem_def.get_type() == QUAD_4) 
+                Element_Definition elem_def(elem_defs_[s]);
+                if (elem_def.get_type() == QUAD_9)
                 {
-                    quad4_side = s;
+                    quad9_side = s;
                     break;
                 }
             }
 
-            Insist(quad4_side >= 0, "Expected to find a QUAD_4 cell definition");
-
-            // Now erase the side_nodes and side_types, and decrement number of sides for each QUAD_9
-            // (should be at least one QUAD_9 side_type)
-
-            int num(std::count(side_type.begin(), side_type.end(), quad9_side));
-            Check(num>0);
-
-            while (num)
+            // remove the QUAD_9 elements and create four QUAD_4 elements for
+       each
+            if (quad9_side >= 0)
             {
-                // find the first QUAD_9 side_type and remove it from the side_type list after 
-                // getting the vector index 
+                // remove the QUAD_9 element from elem_defs (should be only one
+       present, if any)
+                elem_defs.erase(elem_defs.begin()+quad9_side);
 
-                std::vector<int>::iterator it(find(side_type.begin(), side_type.end(), quad9_side));
-                Check(it!=side_type.end());
+                // check to see if the QUAD_4 element is present in the
+       elem_defs
+                int quad4_side(-1);
+                for (unsigned s=0; s<number_of_sides; ++s)
+                {
+                    Element_Definition elem_def(elem_defs[s]);
+                    if (elem_def.get_type() == QUAD_4)
+                    {
+                        quad4_side = s;
+                        break;
+                    }
+                }
 
-                int element(std::distance(side_type.begin(), it));
-                side_type.erase(it);
+                Insist(quad4_side >= 0, "Expected to find a QUAD_4 cell
+       definition");
 
-                // store the QUAD_9 nodes and then remove it from the side_nodes list
-                std::vector<size_t> quad9_nodes(side_nodes[element]);
-                Check(quad9_nodes.size() == 9);
-                
-                side_nodes.erase(side_nodes.begin()+element);
+                // Now erase the side_nodes and side_types, and decrement number
+       of sides for each QUAD_9
+                // (should be at least one QUAD_9 side_type)
 
-                // decrement number of sides (having removed the QUAD_9) and decrement the countdown 
-                --number_of_sides;
-                --num;
+                int num(std::count(side_type.begin(), side_type.end(),
+       quad9_side));
+                Check(num>0);
 
-                // create the four QUAD_4 elements, pushing them on the side_type and side_nodes, 
-                // and incrementing the number of sides
-                
-                std::vector<size_t> quad4_nodes(4);
-                
-                // First QUAD_4
-                ++number_of_sides;
-                side_type.push_back(quad4_side);
-                quad4_nodes[0] = quad9_nodes[0];
-                quad4_nodes[1] = quad9_nodes[4];
-                quad4_nodes[2] = quad9_nodes[8];
-                quad4_nodes[3] = quad9_nodes[7];
-                side_nodes.push_back(quad4_nodes);
-                
-                // Second QUAD_4
-                ++number_of_sides;
-                side_type.push_back(quad4_side);
-                quad4_nodes[0] = quad9_nodes[4];
-                quad4_nodes[1] = quad9_nodes[1];
-                quad4_nodes[2] = quad9_nodes[5];
-                quad4_nodes[3] = quad9_nodes[8];
-                side_nodes.push_back(quad4_nodes);
-                
-                // Third QUAD_4
-                ++number_of_sides;
-                side_type.push_back(quad4_side);
-                quad4_nodes[0] = quad9_nodes[8];
-                quad4_nodes[1] = quad9_nodes[5];
-                quad4_nodes[2] = quad9_nodes[2];
-                quad4_nodes[3] = quad9_nodes[6];
-                side_nodes.push_back(quad4_nodes);
-                
-                // Fourth QUAD_4
-                ++number_of_sides;
-                side_type.push_back(quad4_side);
-                quad4_nodes[0] = quad9_nodes[7];
-                quad4_nodes[1] = quad9_nodes[8];
-                quad4_nodes[2] = quad9_nodes[6];
-                quad4_nodes[3] = quad9_nodes[3];
-                side_nodes.push_back(quad4_nodes);
+                while (num)
+                {
+                    // find the first QUAD_9 side_type and remove it from the
+       side_type list after
+                    // getting the vector index
+
+                    std::vector<int>::iterator it(find(side_type.begin(),
+       side_type.end(), quad9_side));
+                    Check(it!=side_type.end());
+
+                    int element(std::distance(side_type.begin(), it));
+                    side_type.erase(it);
+
+                    // store the QUAD_9 nodes and then remove it from the
+       side_nodes list
+                    std::vector<size_t> quad9_nodes(side_nodes[element]);
+                    Check(quad9_nodes.size() == 9);
+
+                    side_nodes.erase(side_nodes.begin()+element);
+
+                    // decrement number of sides (having removed the QUAD_9) and
+       decrement the countdown
+                    --number_of_sides;
+                    --num;
+
+                    // create the four QUAD_4 elements, pushing them on the
+       side_type and side_nodes,
+                    // and incrementing the number of sides
+
+                    std::vector<size_t> quad4_nodes(4);
+
+                    // First QUAD_4
+                    ++number_of_sides;
+                    side_type.push_back(quad4_side);
+                    quad4_nodes[0] = quad9_nodes[0];
+                    quad4_nodes[1] = quad9_nodes[4];
+                    quad4_nodes[2] = quad9_nodes[8];
+                    quad4_nodes[3] = quad9_nodes[7];
+                    side_nodes.push_back(quad4_nodes);
+
+                    // Second QUAD_4
+                    ++number_of_sides;
+                    side_type.push_back(quad4_side);
+                    quad4_nodes[0] = quad9_nodes[4];
+                    quad4_nodes[1] = quad9_nodes[1];
+                    quad4_nodes[2] = quad9_nodes[5];
+                    quad4_nodes[3] = quad9_nodes[8];
+                    side_nodes.push_back(quad4_nodes);
+
+                    // Third QUAD_4
+                    ++number_of_sides;
+                    side_type.push_back(quad4_side);
+                    quad4_nodes[0] = quad9_nodes[8];
+                    quad4_nodes[1] = quad9_nodes[5];
+                    quad4_nodes[2] = quad9_nodes[2];
+                    quad4_nodes[3] = quad9_nodes[6];
+                    side_nodes.push_back(quad4_nodes);
+
+                    // Fourth QUAD_4
+                    ++number_of_sides;
+                    side_type.push_back(quad4_side);
+                    quad4_nodes[0] = quad9_nodes[7];
+                    quad4_nodes[1] = quad9_nodes[8];
+                    quad4_nodes[2] = quad9_nodes[6];
+                    quad4_nodes[3] = quad9_nodes[3];
+                    side_nodes.push_back(quad4_nodes);
+                }
+
+                Check(number_of_sides == side_type.size());
             }
-            
-            Check(number_of_sides == side_type.size());
         }
-    }
-*/
-    
-    Ensure( invariant_satisfied() );
+    */
+
+    Ensure(invariant_satisfied());
 }
 
 //---------------------------------------------------------------------------//
 bool Element_Definition::invariant_satisfied() const
 {
-    bool ldum = ( name.empty() == false );
-    
-    if( type == NODE )
+    bool ldum = (name.empty() == false);
+
+    if (type == NODE)
     {
-	ldum = ldum && (dimension         == 0);
-	ldum = ldum && (number_of_nodes   == 1);
-	ldum = ldum && (number_of_sides   == 0);	
-	ldum = ldum && (elem_defs.size()  == 0);
+        ldum = ldum && (dimension == 0);
+        ldum = ldum && (number_of_nodes == 1);
+        ldum = ldum && (number_of_sides == 0);
+        ldum = ldum && (elem_defs.size() == 0);
     }
     else
     {
-	ldum = ldum && (dimension > 0); 
-	ldum = ldum && (dimension < 4);
-	ldum = ldum && (number_of_nodes > dimension);
-	ldum = ldum && (number_of_sides <= number_of_nodes);
-	ldum = ldum && (number_of_sides > dimension); 
-	ldum = ldum && (elem_defs.size() > 0);
+        ldum = ldum && (dimension > 0);
+        ldum = ldum && (dimension < 4);
+        ldum = ldum && (number_of_nodes > dimension);
+        ldum = ldum && (number_of_sides <= number_of_nodes);
+        ldum = ldum && (number_of_sides > dimension);
+        ldum = ldum && (elem_defs.size() > 0);
     }
-    
-    ldum = ldum && (side_type.size()  == number_of_sides);
+
+    ldum = ldum && (side_type.size() == number_of_sides);
     ldum = ldum && (side_nodes.size() == number_of_sides);
-    
-    for( size_t i=0; i < elem_defs.size(); i++ )
-	ldum = ldum && (elem_defs[i].dimension == dimension-1);
-    
-    for( size_t i=0; i < side_nodes.size(); i++ )
+
+    for (size_t i = 0; i < elem_defs.size(); i++)
+        ldum = ldum && (elem_defs[i].dimension == dimension - 1);
+
+    for (size_t i = 0; i < side_nodes.size(); i++)
     {
-	ldum = ldum && (side_nodes[i].size() > 0);
-	ldum = ldum && (side_nodes[i].size() == elem_defs[ side_type[i] ].number_of_nodes);
-	for( size_t j=0; j < side_nodes[i].size(); j++ )
-	{
-	    // ldum = ldum && (side_nodes[i][j] >= 0);
-	    ldum = ldum && (side_nodes[i][j] < number_of_nodes);
-	}
+        ldum = ldum && (side_nodes[i].size() > 0);
+        ldum = ldum && (side_nodes[i].size() ==
+                        elem_defs[side_type[i]].number_of_nodes);
+        for (size_t j = 0; j < side_nodes[i].size(); j++)
+        {
+            // ldum = ldum && (side_nodes[i][j] >= 0);
+            ldum = ldum && (side_nodes[i][j] < number_of_nodes);
+        }
     }
 
     return ldum;
@@ -330,9 +344,9 @@ bool Element_Definition::invariant_satisfied() const
 void Element_Definition::construct_node()
 {
     name = "NODE";
-    dimension=0;
-    number_of_sides=0;
-    number_of_nodes=1;
+    dimension = 0;
+    number_of_sides = 0;
+    number_of_nodes = 1;
 }
 
 //---------------------------------------------------------------------------//
@@ -340,32 +354,32 @@ void Element_Definition::construct_node()
 void Element_Definition::construct_bar()
 {
     std::vector<size_t> tmp;
-    dimension=1;
-    number_of_sides=2;
+    dimension = 1;
+    number_of_sides = 2;
     tmp.clear();
     tmp.push_back(0);
     side_nodes.push_back(tmp);
     tmp[0] = 1;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case BAR_2 :
-	name = "BAR_2";
-	number_of_nodes=2;
-	break;
-    case BAR_3 :
-	name = "BAR_3";
-	number_of_nodes=3;
-	break;
-    default :
-	Insist(false,"#2 Unrecognized Element-Type Flag");
+    case BAR_2:
+        name = "BAR_2";
+        number_of_nodes = 2;
+        break;
+    case BAR_3:
+        name = "BAR_3";
+        number_of_nodes = 3;
+        break;
+    default:
+        Insist(false, "#2 Unrecognized Element-Type Flag");
     }
 
-    elem_defs.push_back( Element_Definition(NODE) );
+    elem_defs.push_back(Element_Definition(NODE));
 
-    for( size_t i = 0; i < number_of_sides; i++ )
-	side_type.push_back(0);
+    for (size_t i = 0; i < number_of_sides; i++)
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -373,11 +387,11 @@ void Element_Definition::construct_bar()
 void Element_Definition::construct_tri()
 {
     std::vector<size_t> tmp;
-    dimension=2;
-    number_of_sides=3;
+    dimension = 2;
+    number_of_sides = 3;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(1); 
+    tmp.push_back(1);
     side_nodes.push_back(tmp);
     tmp[0] = 1;
     tmp[1] = 2;
@@ -386,27 +400,27 @@ void Element_Definition::construct_tri()
     tmp[1] = 0;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case  TRI_3 :
-	name = "TRI_3";
-	elem_defs.push_back(Element_Definition(BAR_2));
-	number_of_nodes=3;
-	break;
-    case TRI_6 :
-	name = "TRI_6";
-	elem_defs.push_back(Element_Definition(BAR_3));
-	number_of_nodes=6;
-	side_nodes[0].push_back(3);
-	side_nodes[1].push_back(4);
-	side_nodes[2].push_back(5);
-	break;
-    default :
-	Insist(false,"#3 Unrecognized Element-Type Flag");
-    } 
+    case TRI_3:
+        name = "TRI_3";
+        elem_defs.push_back(Element_Definition(BAR_2));
+        number_of_nodes = 3;
+        break;
+    case TRI_6:
+        name = "TRI_6";
+        elem_defs.push_back(Element_Definition(BAR_3));
+        number_of_nodes = 6;
+        side_nodes[0].push_back(3);
+        side_nodes[1].push_back(4);
+        side_nodes[2].push_back(5);
+        break;
+    default:
+        Insist(false, "#3 Unrecognized Element-Type Flag");
+    }
 
-    for( size_t i = 0; i < number_of_sides; i++ )
-	side_type.push_back(0);
+    for (size_t i = 0; i < number_of_sides; i++)
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -414,11 +428,11 @@ void Element_Definition::construct_tri()
 void Element_Definition::construct_quad()
 {
     std::vector<size_t> tmp;
-    dimension=2;
-    number_of_sides=4;
+    dimension = 2;
+    number_of_sides = 4;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(1);    
+    tmp.push_back(1);
     side_nodes.push_back(tmp);
     tmp[0] = 1;
     tmp[1] = 2;
@@ -430,106 +444,105 @@ void Element_Definition::construct_quad()
     tmp[1] = 0;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-        case QUAD_4 :
-            name = "QUAD_4";
-            number_of_nodes=4;
-            elem_defs.push_back(Element_Definition(BAR_2));
+    case QUAD_4:
+        name = "QUAD_4";
+        number_of_nodes = 4;
+        elem_defs.push_back(Element_Definition(BAR_2));
 
-            for( size_t i=0; i<number_of_sides; i++ )
-                side_type.push_back(0);
+        for (size_t i = 0; i < number_of_sides; i++)
+            side_type.push_back(0);
 
-            break;
+        break;
 
-        case QUAD_5 :
-            name = "QUAD_5";
-            number_of_nodes=5;
+    case QUAD_5:
+        name = "QUAD_5";
+        number_of_nodes = 5;
 
-            elem_defs.push_back(Element_Definition(BAR_2));
-            elem_defs.push_back(Element_Definition(BAR_3));
+        elem_defs.push_back(Element_Definition(BAR_2));
+        elem_defs.push_back(Element_Definition(BAR_3));
 
-            for (size_t i=0; i<3; i++)
-                side_type.push_back(0);
+        for (size_t i = 0; i < 3; i++)
+            side_type.push_back(0);
 
-            for (size_t i=3; i<number_of_sides; i++)
-            {
-                side_type.push_back(1);
-                side_nodes[i].push_back(i-3+number_of_sides);
-            }
+        for (size_t i = 3; i < number_of_sides; i++)
+        {
+            side_type.push_back(1);
+            side_nodes[i].push_back(i - 3 + number_of_sides);
+        }
 
-            break;
+        break;
 
-        case QUAD_6 :
-            name = "QUAD_6";
-            number_of_nodes=6;
+    case QUAD_6:
+        name = "QUAD_6";
+        number_of_nodes = 6;
 
-            elem_defs.push_back(Element_Definition(BAR_2));
-            elem_defs.push_back(Element_Definition(BAR_3));
+        elem_defs.push_back(Element_Definition(BAR_2));
+        elem_defs.push_back(Element_Definition(BAR_3));
 
-            for (size_t i=0; i<2; i++)
-                side_type.push_back(0);
+        for (size_t i = 0; i < 2; i++)
+            side_type.push_back(0);
 
-            for (size_t i=2; i<number_of_sides; i++)
-            {
-                side_type.push_back(1);
-                side_nodes[i].push_back(i-2+number_of_sides);
-            }
+        for (size_t i = 2; i < number_of_sides; i++)
+        {
+            side_type.push_back(1);
+            side_nodes[i].push_back(i - 2 + number_of_sides);
+        }
 
-            break;
+        break;
 
-        case QUAD_7 :
-            name = "QUAD_7";
-            number_of_nodes=7;
+    case QUAD_7:
+        name = "QUAD_7";
+        number_of_nodes = 7;
 
-            elem_defs.push_back(Element_Definition(BAR_2));
-            elem_defs.push_back(Element_Definition(BAR_3));
+        elem_defs.push_back(Element_Definition(BAR_2));
+        elem_defs.push_back(Element_Definition(BAR_3));
 
-            for (size_t i=0; i<1; i++)
-                side_type.push_back(0);
+        for (size_t i = 0; i < 1; i++)
+            side_type.push_back(0);
 
-            for (size_t i=1; i<number_of_sides; i++)
-            {
-                side_type.push_back(1);
-                side_nodes[i].push_back(i-1+number_of_sides);
-            }
+        for (size_t i = 1; i < number_of_sides; i++)
+        {
+            side_type.push_back(1);
+            side_nodes[i].push_back(i - 1 + number_of_sides);
+        }
 
-            break;
+        break;
 
-        case QUAD_8 :
-            name = "QUAD_8";
-            number_of_nodes=8;
+    case QUAD_8:
+        name = "QUAD_8";
+        number_of_nodes = 8;
 
-            elem_defs.push_back(Element_Definition(BAR_3));
+        elem_defs.push_back(Element_Definition(BAR_3));
 
-            for( size_t i=0; i<number_of_sides; i++ )
-                side_type.push_back(0);
+        for (size_t i = 0; i < number_of_sides; i++)
+            side_type.push_back(0);
 
-            side_nodes[0].push_back(4);
-            side_nodes[1].push_back(5);
-            side_nodes[2].push_back(6);
-            side_nodes[3].push_back(7);
+        side_nodes[0].push_back(4);
+        side_nodes[1].push_back(5);
+        side_nodes[2].push_back(6);
+        side_nodes[3].push_back(7);
 
-            break;
+        break;
 
-        case QUAD_9 :
-            name = "QUAD_9";
-            number_of_nodes=9;
-            elem_defs.push_back(Element_Definition(BAR_3));
+    case QUAD_9:
+        name = "QUAD_9";
+        number_of_nodes = 9;
+        elem_defs.push_back(Element_Definition(BAR_3));
 
-            for( size_t i = 0; i < number_of_sides; i++ )
-                side_type.push_back(0);
+        for (size_t i = 0; i < number_of_sides; i++)
+            side_type.push_back(0);
 
-            side_nodes[0].push_back(4);
-            side_nodes[1].push_back(5);
-            side_nodes[2].push_back(6);
-            side_nodes[3].push_back(7);
+        side_nodes[0].push_back(4);
+        side_nodes[1].push_back(5);
+        side_nodes[2].push_back(6);
+        side_nodes[3].push_back(7);
 
-            break;
-        default:
-            Insist(false,"#5 Unrecognized Element-Type Flag");
+        break;
+    default:
+        Insist(false, "#5 Unrecognized Element-Type Flag");
     }
-    
 }
 
 //---------------------------------------------------------------------------//
@@ -602,11 +615,11 @@ void Element_Definition::construct_pentagon()
 void Element_Definition::construct_pentagon()
 {
     std::vector<size_t> tmp;
-    dimension=2;
-    number_of_sides=5;
+    dimension = 2;
+    number_of_sides = 5;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(1);    
+    tmp.push_back(1);
     side_nodes.push_back(tmp);
     tmp[0] = 1;
     tmp[1] = 2;
@@ -621,19 +634,19 @@ void Element_Definition::construct_pentagon()
     tmp[1] = 0;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case PENTAGON_5 :
-	name = "PENTAGON_5";
-	number_of_nodes=5;
-	elem_defs.push_back(Element_Definition(BAR_2));
-	break;
-    default :
-	Insist(false,"#5 Unrecognized Element-Type Flag");
+    case PENTAGON_5:
+        name = "PENTAGON_5";
+        number_of_nodes = 5;
+        elem_defs.push_back(Element_Definition(BAR_2));
+        break;
+    default:
+        Insist(false, "#5 Unrecognized Element-Type Flag");
     }
 
-    for( size_t i = 0; i < number_of_sides; i++ )
-	side_type.push_back(0);
+    for (size_t i = 0; i < number_of_sides; i++)
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -641,12 +654,12 @@ void Element_Definition::construct_pentagon()
 void Element_Definition::construct_tetra()
 {
     std::vector<size_t> tmp;
-    dimension=3;
-    number_of_sides=4;
+    dimension = 3;
+    number_of_sides = 4;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(2); 
-    tmp.push_back(1);    
+    tmp.push_back(2);
+    tmp.push_back(1);
     side_nodes.push_back(tmp);
     tmp[0] = 0;
     tmp[1] = 1;
@@ -661,40 +674,40 @@ void Element_Definition::construct_tetra()
     tmp[2] = 3;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case TETRA_4 :
-	name = "TETRA_4";
-	number_of_nodes=4;
-	elem_defs.push_back(Element_Definition(TRI_3));
-	break;
-    case TETRA_10 :
-	name = "TETRA_10";
-	number_of_nodes=10;
-	elem_defs.push_back(Element_Definition(TRI_6));
-	
-	side_nodes[0].push_back(6);
-	side_nodes[0].push_back(5);
-	side_nodes[0].push_back(4);
-	
-	side_nodes[1].push_back(4);
-	side_nodes[1].push_back(8);
-	side_nodes[1].push_back(7);
-	
-	side_nodes[2].push_back(5);
-	side_nodes[2].push_back(9);
-	side_nodes[2].push_back(8);
-	
-	side_nodes[3].push_back(6);
-	side_nodes[3].push_back(7);
-	side_nodes[3].push_back(9);
-	
-	break;
-    default :
-	Insist(false,"#6 Unrecognized Element-Type Flag");
+    case TETRA_4:
+        name = "TETRA_4";
+        number_of_nodes = 4;
+        elem_defs.push_back(Element_Definition(TRI_3));
+        break;
+    case TETRA_10:
+        name = "TETRA_10";
+        number_of_nodes = 10;
+        elem_defs.push_back(Element_Definition(TRI_6));
+
+        side_nodes[0].push_back(6);
+        side_nodes[0].push_back(5);
+        side_nodes[0].push_back(4);
+
+        side_nodes[1].push_back(4);
+        side_nodes[1].push_back(8);
+        side_nodes[1].push_back(7);
+
+        side_nodes[2].push_back(5);
+        side_nodes[2].push_back(9);
+        side_nodes[2].push_back(8);
+
+        side_nodes[3].push_back(6);
+        side_nodes[3].push_back(7);
+        side_nodes[3].push_back(9);
+
+        break;
+    default:
+        Insist(false, "#6 Unrecognized Element-Type Flag");
     }
     for (size_t i = 0; i < number_of_sides; i++)
-	side_type.push_back(0);
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -702,11 +715,11 @@ void Element_Definition::construct_tetra()
 void Element_Definition::construct_pyra()
 {
     std::vector<size_t> tmp;
-    dimension=3;
-    number_of_sides=5;
+    dimension = 3;
+    number_of_sides = 5;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(3); 
+    tmp.push_back(3);
     tmp.push_back(2);
     tmp.push_back(1);
     side_nodes.push_back(tmp);
@@ -728,48 +741,48 @@ void Element_Definition::construct_pyra()
     tmp[2] = 4;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case PYRA_5 :
-	name = "PYRA_5";
-	number_of_nodes=5;
-	elem_defs.push_back(Element_Definition(QUAD_4));
-	elem_defs.push_back(Element_Definition(TRI_3));
-	break;
-    case PYRA_14 :
-	name = "PYRA_14";
-	number_of_nodes=14;
-	elem_defs.push_back(Element_Definition(QUAD_8));
-	elem_defs.push_back(Element_Definition(TRI_6));
-	
-	side_nodes[0].push_back(8);
-	side_nodes[0].push_back(7);
-	side_nodes[0].push_back(6);
-	side_nodes[0].push_back(5);
-	
-	side_nodes[1].push_back(5);
-	side_nodes[1].push_back(10);
-	side_nodes[1].push_back(9);
-	
-	side_nodes[2].push_back(6);
-	side_nodes[2].push_back(11);
-	side_nodes[2].push_back(10);
-	
-	side_nodes[3].push_back(7);
-	side_nodes[3].push_back(12);
-	side_nodes[3].push_back(11);
-	
-	side_nodes[4].push_back(8);
-	side_nodes[4].push_back(9);
-	side_nodes[4].push_back(12);
-	break;
-    default :
-	Insist(false,"#7 Unrecognized Element-Type Flag");
+    case PYRA_5:
+        name = "PYRA_5";
+        number_of_nodes = 5;
+        elem_defs.push_back(Element_Definition(QUAD_4));
+        elem_defs.push_back(Element_Definition(TRI_3));
+        break;
+    case PYRA_14:
+        name = "PYRA_14";
+        number_of_nodes = 14;
+        elem_defs.push_back(Element_Definition(QUAD_8));
+        elem_defs.push_back(Element_Definition(TRI_6));
+
+        side_nodes[0].push_back(8);
+        side_nodes[0].push_back(7);
+        side_nodes[0].push_back(6);
+        side_nodes[0].push_back(5);
+
+        side_nodes[1].push_back(5);
+        side_nodes[1].push_back(10);
+        side_nodes[1].push_back(9);
+
+        side_nodes[2].push_back(6);
+        side_nodes[2].push_back(11);
+        side_nodes[2].push_back(10);
+
+        side_nodes[3].push_back(7);
+        side_nodes[3].push_back(12);
+        side_nodes[3].push_back(11);
+
+        side_nodes[4].push_back(8);
+        side_nodes[4].push_back(9);
+        side_nodes[4].push_back(12);
+        break;
+    default:
+        Insist(false, "#7 Unrecognized Element-Type Flag");
     }
 
     side_type.push_back(0);
-    for( size_t i = 1; i < number_of_sides; i++ )
-	side_type.push_back(1);
+    for (size_t i = 1; i < number_of_sides; i++)
+        side_type.push_back(1);
 }
 
 //---------------------------------------------------------------------------//
@@ -777,13 +790,13 @@ void Element_Definition::construct_pyra()
 void Element_Definition::construct_penta()
 {
     std::vector<size_t> tmp;
-    dimension=3;
-    number_of_sides=5;
+    dimension = 3;
+    number_of_sides = 5;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(1); 
-    tmp.push_back(4); 
-    tmp.push_back(3);   
+    tmp.push_back(1);
+    tmp.push_back(4);
+    tmp.push_back(3);
     side_nodes.push_back(tmp);
     tmp[0] = 1;
     tmp[1] = 2;
@@ -805,67 +818,67 @@ void Element_Definition::construct_penta()
     tmp[2] = 5;
     side_nodes.push_back(tmp);
 
-    switch ( type )
-    { 
-    case PENTA_6 :
-	name = "PENTA_6";
-	number_of_nodes=6;
-	elem_defs.push_back(Element_Definition(QUAD_4));
-	elem_defs.push_back(Element_Definition(TRI_3));
-	break;
-    case PENTA_15 :
-    case PENTA_18 :
-	side_nodes[0].push_back(6);
-	side_nodes[0].push_back(10);
-	side_nodes[0].push_back(12);
-	side_nodes[0].push_back(9);
-	
-	side_nodes[1].push_back(7);
-	side_nodes[1].push_back(11);
-	side_nodes[1].push_back(13);
-	side_nodes[1].push_back(10);
-	
-	side_nodes[2].push_back(8);
-	side_nodes[2].push_back(9);
-	side_nodes[2].push_back(14);
-	side_nodes[2].push_back(11);
-	
-	side_nodes[3].push_back(8);
-	side_nodes[3].push_back(7);
-	side_nodes[3].push_back(6);
-	
-	side_nodes[4].push_back(12);
-	side_nodes[4].push_back(13);
-	side_nodes[4].push_back(14);
-	switch ( type )
-	{
-	case PENTA_15 :
-	    name = "PENTA_15";
-	    number_of_nodes=15;
-	    elem_defs.push_back(Element_Definition(QUAD_8));
-	    elem_defs.push_back(Element_Definition(TRI_6));
-	    break;
-	case PENTA_18 :
-	    name = "PENTA_18";
-	    number_of_nodes=18;
-	    elem_defs.push_back(Element_Definition(QUAD_9));
-	    elem_defs.push_back(Element_Definition(TRI_6));
-	    side_nodes[0].push_back(15);
-	    side_nodes[1].push_back(16);
-	    side_nodes[2].push_back(17);
-	    break;
-	default :
-	    Insist(false,"#8 Unrecognized Element-Type Flag");
-	}
-	break;
-    default :
-	Insist(false,"#9 Unrecognized Element-Type Flag");
+    switch (type)
+    {
+    case PENTA_6:
+        name = "PENTA_6";
+        number_of_nodes = 6;
+        elem_defs.push_back(Element_Definition(QUAD_4));
+        elem_defs.push_back(Element_Definition(TRI_3));
+        break;
+    case PENTA_15:
+    case PENTA_18:
+        side_nodes[0].push_back(6);
+        side_nodes[0].push_back(10);
+        side_nodes[0].push_back(12);
+        side_nodes[0].push_back(9);
+
+        side_nodes[1].push_back(7);
+        side_nodes[1].push_back(11);
+        side_nodes[1].push_back(13);
+        side_nodes[1].push_back(10);
+
+        side_nodes[2].push_back(8);
+        side_nodes[2].push_back(9);
+        side_nodes[2].push_back(14);
+        side_nodes[2].push_back(11);
+
+        side_nodes[3].push_back(8);
+        side_nodes[3].push_back(7);
+        side_nodes[3].push_back(6);
+
+        side_nodes[4].push_back(12);
+        side_nodes[4].push_back(13);
+        side_nodes[4].push_back(14);
+        switch (type)
+        {
+        case PENTA_15:
+            name = "PENTA_15";
+            number_of_nodes = 15;
+            elem_defs.push_back(Element_Definition(QUAD_8));
+            elem_defs.push_back(Element_Definition(TRI_6));
+            break;
+        case PENTA_18:
+            name = "PENTA_18";
+            number_of_nodes = 18;
+            elem_defs.push_back(Element_Definition(QUAD_9));
+            elem_defs.push_back(Element_Definition(TRI_6));
+            side_nodes[0].push_back(15);
+            side_nodes[1].push_back(16);
+            side_nodes[2].push_back(17);
+            break;
+        default:
+            Insist(false, "#8 Unrecognized Element-Type Flag");
+        }
+        break;
+    default:
+        Insist(false, "#9 Unrecognized Element-Type Flag");
     }
 
-    for( size_t i = 0; i < 3; i++ )
-	side_type.push_back(0);
-    for( size_t i = 3; i < number_of_sides; i++ )
-	side_type.push_back(1);
+    for (size_t i = 0; i < 3; i++)
+        side_type.push_back(0);
+    for (size_t i = 3; i < number_of_sides; i++)
+        side_type.push_back(1);
 }
 
 //---------------------------------------------------------------------------//
@@ -873,13 +886,13 @@ void Element_Definition::construct_penta()
 void Element_Definition::construct_hexa()
 {
     std::vector<size_t> tmp;
-    dimension=3;
-    number_of_sides=6;
+    dimension = 3;
+    number_of_sides = 6;
     tmp.clear();
     tmp.push_back(0);
-    tmp.push_back(3); 
-    tmp.push_back(2); 
-    tmp.push_back(1);   
+    tmp.push_back(3);
+    tmp.push_back(2);
+    tmp.push_back(1);
     side_nodes.push_back(tmp);
     tmp[0] = 0;
     tmp[1] = 4;
@@ -907,108 +920,109 @@ void Element_Definition::construct_hexa()
     tmp[3] = 7;
     side_nodes.push_back(tmp);
 
-    switch ( type )
+    switch (type)
     {
-    case HEXA_8 :
-	name = "HEXA_8";
-	number_of_nodes=8;
-	elem_defs.push_back(Element_Definition(QUAD_4));
-	break;
-    case HEXA_20 :
-    case HEXA_27 :
-	
-	side_nodes[0].push_back(11);
-	side_nodes[0].push_back(10);
-	side_nodes[0].push_back(9);
-	side_nodes[0].push_back(8);
-	
-	side_nodes[1].push_back(12);
-	side_nodes[1].push_back(19);
-	side_nodes[1].push_back(15);
-	side_nodes[1].push_back(11);
-	
-	side_nodes[2].push_back(10);
-	side_nodes[2].push_back(15);
-	side_nodes[2].push_back(18);
-	side_nodes[2].push_back(14);
-	
-	side_nodes[3].push_back(9);
-	side_nodes[3].push_back(14);
-	side_nodes[3].push_back(17);
-	side_nodes[3].push_back(13);
-	
-	side_nodes[4].push_back(8);
-	side_nodes[4].push_back(13);
-	side_nodes[4].push_back(16);
-	side_nodes[4].push_back(12);
-	
-	side_nodes[5].push_back(16);
-	side_nodes[5].push_back(17);
-	side_nodes[5].push_back(18);
-	side_nodes[5].push_back(19);
-	switch ( type )
-	{
-	case HEXA_20 :
-	    name = "HEXA_20";
-	    number_of_nodes=20;
-	    elem_defs.push_back(Element_Definition(QUAD_8));
-	    break;
-	case HEXA_27 :
-	    name = "HEXA_27";
-	    number_of_nodes=27;
-	    elem_defs.push_back(Element_Definition(QUAD_9));
-	    for (size_t i=0; i < number_of_sides; i++)
-		side_nodes[i].push_back(i+20);
-	    break;
-	default :
-	    Insist(false,"#10 Unrecognized Element-Type Flag");
-	}
-	break;
-    default :
-	Insist(false,"#11 Unrecognized Element-Type Flag");
+    case HEXA_8:
+        name = "HEXA_8";
+        number_of_nodes = 8;
+        elem_defs.push_back(Element_Definition(QUAD_4));
+        break;
+    case HEXA_20:
+    case HEXA_27:
+
+        side_nodes[0].push_back(11);
+        side_nodes[0].push_back(10);
+        side_nodes[0].push_back(9);
+        side_nodes[0].push_back(8);
+
+        side_nodes[1].push_back(12);
+        side_nodes[1].push_back(19);
+        side_nodes[1].push_back(15);
+        side_nodes[1].push_back(11);
+
+        side_nodes[2].push_back(10);
+        side_nodes[2].push_back(15);
+        side_nodes[2].push_back(18);
+        side_nodes[2].push_back(14);
+
+        side_nodes[3].push_back(9);
+        side_nodes[3].push_back(14);
+        side_nodes[3].push_back(17);
+        side_nodes[3].push_back(13);
+
+        side_nodes[4].push_back(8);
+        side_nodes[4].push_back(13);
+        side_nodes[4].push_back(16);
+        side_nodes[4].push_back(12);
+
+        side_nodes[5].push_back(16);
+        side_nodes[5].push_back(17);
+        side_nodes[5].push_back(18);
+        side_nodes[5].push_back(19);
+        switch (type)
+        {
+        case HEXA_20:
+            name = "HEXA_20";
+            number_of_nodes = 20;
+            elem_defs.push_back(Element_Definition(QUAD_8));
+            break;
+        case HEXA_27:
+            name = "HEXA_27";
+            number_of_nodes = 27;
+            elem_defs.push_back(Element_Definition(QUAD_9));
+            for (size_t i = 0; i < number_of_sides; i++)
+                side_nodes[i].push_back(i + 20);
+            break;
+        default:
+            Insist(false, "#10 Unrecognized Element-Type Flag");
+        }
+        break;
+    default:
+        Insist(false, "#11 Unrecognized Element-Type Flag");
     }
 
-    for( size_t i = 0; i < number_of_sides; i++ )
-	side_type.push_back(0);	
+    for (size_t i = 0; i < number_of_sides; i++)
+        side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
 
-std::ostream& Element_Definition::print( std::ostream & os_out ) const
+std::ostream & Element_Definition::print(std::ostream & os_out) const
 {
     os_out << "Element Type   : " << get_type() << std::endl;
     os_out << "Element Name   : " << get_name() << std::endl;
-    os_out << "Number of Nodes: " << get_number_of_nodes() <<
-	std::endl;
+    os_out << "Number of Nodes: " << get_number_of_nodes() << std::endl;
     os_out << "Dimension      : " << get_dimension() << std::endl;
     os_out << "Number of Sides: " << get_number_of_sides() << std::endl;
     os_out << std::endl;
-    if( get_number_of_sides() != 0 ) 
+    if (get_number_of_sides() != 0)
     {
-	os_out << "Side Types     : ";
-	for( size_t j=0; j<get_number_of_sides(); j++ )
-	    os_out << get_side_type(j).get_name() << " ";
-	os_out << std::endl;
-	
-	std::vector< size_t > tmp;
-	os_out << "Side Nodes     : " << std::endl;
-	for( size_t j=0; j<get_number_of_sides(); j++ )
-	{
-	    tmp = get_side_nodes(j);
-	    os_out << "  " << "side# " << j << " -    ";
-	    for( size_t k=0; k<tmp.size(); k++ )
-		os_out << tmp[k] << " ";
-	    os_out << std::endl;
-	}
+        os_out << "Side Types     : ";
+        for (size_t j = 0; j < get_number_of_sides(); j++)
+            os_out << get_side_type(j).get_name() << " ";
+        os_out << std::endl;
+
+        std::vector<size_t> tmp;
+        os_out << "Side Nodes     : " << std::endl;
+        for (size_t j = 0; j < get_number_of_sides(); j++)
+        {
+            tmp = get_side_nodes(j);
+            os_out << "  "
+                   << "side# " << j << " -    ";
+            for (size_t k = 0; k < tmp.size(); k++)
+                os_out << tmp[k] << " ";
+            os_out << std::endl;
+        }
     }
     {
         std::vector<unsigned> num_face_nodes = get_number_of_face_nodes();
-        std::vector<std::vector<unsigned> > face_nodes = get_face_nodes();
-        os_out <<"Face Nodes: " << num_face_nodes.size() << std::endl;
-        for (size_t j=0; j<num_face_nodes.size(); ++j)
+        std::vector<std::vector<unsigned>> face_nodes = get_face_nodes();
+        os_out << "Face Nodes: " << num_face_nodes.size() << std::endl;
+        for (size_t j = 0; j < num_face_nodes.size(); ++j)
         {
-            os_out << "  Face " << j << ": " << num_face_nodes[j] << " nodes : ";
-            for (size_t k=0; k<num_face_nodes[j]; ++k)
+            os_out << "  Face " << j << ": " << num_face_nodes[j]
+                   << " nodes : ";
+            for (size_t k = 0; k < num_face_nodes[j]; ++k)
             {
                 os_out << face_nodes[j][k] << " ";
             }
