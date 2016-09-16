@@ -3,17 +3,18 @@
 ;; Kelly Thompson
 ;; 8 Dec 2004
 ;;
-;; $Id$
-;;
 ;; Define some global key bindings
-;; 
+;;
 ;; Usage: (require 'draco-global-keys)
 ;; ======================================================================
 
-;; Clang-format
-(require 'clang-format)
-(global-set-key [(f12)] 'clang-format-region) ;; Windows/Linux
-(global-set-key [(C-M-tab)] 'clang-format-region) ;; Mac/Linux
+;; Clang-format (doesn't work for XEmacs)
+(if (> emacs-major-version 23)
+    (progn
+      (require 'clang-format)
+      (global-set-key [(f12)] 'clang-format-region) ;; Windows/Linux
+      (global-set-key [(C-M-tab)] 'clang-format-region) ;; Mac/Linux
+      ))
 
 ;; Kill default XEmacs key binding annoyances:
 
@@ -57,9 +58,9 @@
 
 ;; (if (string-match "lambda" machine-name)
 ;;     (progn
-;;       (define-key global-map [(button4)] 
+;;       (define-key global-map [(button4)]
 ;;         '(lambda () (interactive) (scroll-down 5)))
-;;       (define-key global-map [(button5)] 
+;;       (define-key global-map [(button5)]
 ;;         '(lambda () (interactive) (scroll-up 5)))))
 
 ;(if (or (string-match "ffe1" machine-name)
@@ -74,7 +75,7 @@
   "History for the `ack' command.")
 (defun ack (command-args)
   (interactive
-   (let ((ack-command 
+   (let ((ack-command
           ;; "ack --nocolor --nogroup --with-filename --all "))
           "ack --nocolor --nogroup --with-filename "))
      (list (read-shell-command "Run ack (like this): "
