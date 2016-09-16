@@ -52,57 +52,14 @@ class is_cell
 void test_polyhedron(rtt_dsxx::UnitTest & ut)
 {
 
-    // Read quad9 mesh file
+    vector<string> filenames(3);
+    filenames[0] = "rttquad5.mesh";
+    filenames[1] = "rttquad9.mesh";
+    filenames[2] = "rttquad.mesh";
+
+    for (unsigned i = 0; i < 3; ++i)
     {
-        string filename("rttquad9.mesh");
-        SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
-
-        ostringstream m;
-        m << "Read mesh file " << filename << std::endl;
-        ut.passes(m.str());
-
-        unsigned const ndim = mesh->get_dims_ndim();
-        if (ndim != 2)
-        {
-            FAILMSG("Unexpected dimension.");
-        }
-
-        vector<SP<Element_Definition>> const element_defs(
-            mesh->get_element_defs());
-        for (size_t i = 0; i < element_defs.size(); ++i)
-        {
-            cout << "Element definition for element " << i << endl;
-            element_defs[i]->print(cout);
-        }
-    }
-
-    // Read quad5 mesh file
-    {
-        string filename("rttquad5.mesh");
-        SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
-
-        ostringstream m;
-        m << "Read mesh file " << filename << std::endl;
-        ut.passes(m.str());
-
-        unsigned const ndim = mesh->get_dims_ndim();
-        if (ndim != 2)
-        {
-            FAILMSG("Unexpected dimension.");
-        }
-
-        vector<SP<Element_Definition>> const element_defs(
-            mesh->get_element_defs());
-        for (size_t i = 0; i < element_defs.size(); ++i)
-        {
-            cout << "Element definition for element " << i << endl;
-            element_defs[i]->print(cout);
-        }
-    }
-
-    // Read quad mesh file with quad4, quad5 and quad 9
-    {
-        string filename("rttquad.mesh");
+        string filename(filenames[i]);
         SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
 
         ostringstream m;
