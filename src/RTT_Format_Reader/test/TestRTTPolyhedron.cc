@@ -17,7 +17,7 @@
 #include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
 
-#include "../RTT_Mesh_Reader.hh"
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 
 using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
 using rtt_mesh_element::Element_Definition;
@@ -25,9 +25,6 @@ using rtt_mesh_element::Element_Definition;
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_RTT_Format_Reader;
-
-#define PASSMSG(m) ut.passes(m)
-#define FAILMSG(m) ut.failure(m)
 
 class is_cell
 {
@@ -141,12 +138,10 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
 
         // Investigate and report on the mesh
 
-        // The element types begins with side types, followed by cell types. We
-        // can
-        // distinguish these by their dimensionality. Cell types have the full
-        // dimensionality of the mesh; we assume side types have one less than
-        // the full
-        // dimensionality of the mesh.
+        // The element types begins with side types, followed by cell types.
+        // We can distinguish these by their dimensionality. Cell types have
+        // the full dimensionality of the mesh; we assume side types have one
+        // less than the full dimensionality of the mesh.
 
         unsigned const ndim = mesh->get_dims_ndim();
         vector<Element_Definition::Element_Type> const element_types(
@@ -160,6 +155,10 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
         {
             FAILMSG("Unexpected dimension.");
         }
+        else
+        {
+            PASSMSG("Correct dimension.");
+        }
 
         for (size_t i = 0; i < element_defs.size(); ++i)
         {
@@ -172,11 +171,14 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
         unsigned const mcells = mesh->get_dims_ncells();
         if (ncells != mcells)
         {
-            FAILMSG("Unexpected number of sides.");
+            FAILMSG("Unexpected number of cells.");
         }
         else
+        {
+            PASSMSG("Correct number of cells.");
             std::cout << " There are " << ncells << " cells in the mesh"
                       << std::endl;
+        }
 
         unsigned const nsides =
             static_cast<unsigned>(element_types.size()) - ncells;
@@ -186,8 +188,11 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
             FAILMSG("Unexpected number of sides.");
         }
         else
+        {
+            PASSMSG("Correct number of sides.");
             std::cout << " There are " << nsides << " sides in the mesh"
                       << std::endl;
+        }
 
         for (map<string, set<int>>::const_iterator i = element_sets.begin();
              i != element_sets.end();
@@ -235,29 +240,13 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
             ncorner += number_of_nodes;
         }
 
-        std::cout << " There are " << ncorner << " corners in the the mesh"
-                  << std::endl;
-
-        unsigned corner = 0;
-        vector<unsigned> cell_to_node_linkage(ncorner);
-        for (unsigned et = nsides; et < element_types.size(); et++)
+        if (ncorner != 13)
         {
-            unsigned const c = et - nsides;
-            SP<Element_Definition> cell_def = element_defs[c];
-            unsigned const number_of_nodes = cell_def->get_number_of_nodes();
-
-            if (number_of_nodes != element_nodes[et].size())
-            {
-                FAILMSG("Unexpected number of nodes in element.");
-            }
-
-            std::cout << " cell " << c << " nodes " << std::endl;
-            for (unsigned n = 0; n < number_of_nodes; n++)
-            {
-                cell_to_node_linkage[n + corner] = element_nodes[c][n];
-                std::cout << "   node " << n << " is node number "
-                          << element_nodes[et][n] << std::endl;
-            }
+            FAILMSG("Number of corners should be 13");
+        }
+        else
+        {
+            PASSMSG("Number of corners is correct be 13");
         }
 
     } // End polyhedron mesh test

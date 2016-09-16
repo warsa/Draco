@@ -134,8 +134,9 @@ void RTT_Mesh_Reader::transform2CGNS(void)
 
             if (have_quad9)
             {
-                Insist(have_quad4, "quad or quad4 must appear in the cell_defs "
-                                   "block when a quad9 is in a polyhedron");
+                Insist(have_quad4,
+                       "quad or quad4 must appear in the cell_defs "
+                       "block when a quad9 is in a polyhedron");
             }
 
             for (unsigned s = 0; s < cell_definition->get_nsides(); ++s)

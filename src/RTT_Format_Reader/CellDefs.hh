@@ -140,20 +140,6 @@ class CellDef
      * \return New nodes map.
      */
     const vector_int & get_node_map() const { return node_map; }
-
-    //     //---------------------------------------------------------------------------//
-    //     /*!
-    //      * \brief Returns the specified new node when cell redefinition has
-    //      been
-    //      *        performed.
-    //      * \param node_ind Node number index.
-    //      * \return New node number.
-    //      */
-    //     int get_node_map( int node_ind ) const
-    //     {
-    // 	Require( node_map.size() > node_ind );
-    // 	return node_map[node_ind];
-    //     }
 };
 
 //---------------------------------------------------------------------------//
@@ -285,15 +271,6 @@ class CellDefs
     {
         return defs[cell_def]->get_node_map();
     }
-    /*!
-     * \brief Returns the specified new node for the specified cell definition
-     *        when redefinition has been performed.
-     * \param cell_def Cell definition index.
-     * \param node_ind Node number index.
-     * \return New node number.
-     */
-    //     int get_node_map(int cell_def, int node_ind) const
-    //     { return defs[cell_def]->get_node_map(node_ind);}
 };
 
 } // end namespace rtt_RTT_Format_Reader

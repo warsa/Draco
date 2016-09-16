@@ -94,13 +94,6 @@ void CellDefs::redefineCellDefs(
                static_cast<size_t>(dims.get_ncell_defs()),
            "Error in supplied cell redefinition ordered side data.");
 
-    for (size_t cd = 0; cd < static_cast<size_t>(dims.get_ncell_defs()); cd++)
-    {
-        Check(cd < defs.size());
-        Check(cd < cell_side_types.size());
-        Check(cd < cell_ordered_sides.size());
-    }
-
     redefined = true;
 
     for (size_t cd = 0; cd < static_cast<size_t>(dims.get_ncell_defs()); cd++)
@@ -165,6 +158,7 @@ void CellDef::readDef(ifstream & meshfile)
  *        (e.g., CYGNUS).
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
+ * \param dimension Topological dimension of the cells in the mesh.
  */
 void CellDef::redefineCellDef(
     vector_int const & new_side_types,
@@ -173,6 +167,8 @@ void CellDef::redefineCellDef(
 {
     Insist(new_side_types.size() == nsides, "New side types input error");
     Insist(new_ordered_sides.size() == nsides, "New ordered sides input error");
+
+    Require(ndim >= 0 && ndim <= 3);
 
     node_map.resize(nnodes);
 
