@@ -272,7 +272,7 @@ macro( setupCrayMPI )
 
   # Extra flags for OpenMP + MPI
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_POSTFLAGS "-b -d $ENV{OMP_NUM_THREADS}" CACHE
+    set( MPIEXEC_OMP_POSTFLAGS "-q -b -m 2 -d $ENV{OMP_NUM_THREADS}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
     message( STATUS "
@@ -283,7 +283,7 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
   # -b        Bypass transfer of application executable to the compute node.
   # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
   # -q        Quiet
-  set( MPIEXEC_POSTFLAGS "-q -b -cc none" CACHE STRING
+  set( MPIEXEC_POSTFLAGS "-q -b -m 2" CACHE STRING
     "extra mpirun flags (list)." FORCE)
 
 endmacro()

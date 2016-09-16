@@ -469,9 +469,9 @@ macro( register_scalar_test targetname runcmd command cmd_args )
   # On Cray machines, multiple independent processes cannot share cores on a
   # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
   # be exactly the number of cores per node.
-  if( CRAY_PE )
-    set( num_procs ${MPI_CORES_PER_CPU} )
-  else()
+#  if( CRAY_PE )
+#    set( num_procs ${MPI_CORES_PER_CPU} )
+#  else()
     # For application unit tests, a parallel job is forked that needs more
     # cores.
     if( addscalartest_APPLICATION_UNIT_TEST )
@@ -482,7 +482,7 @@ macro( register_scalar_test targetname runcmd command cmd_args )
         math( EXPR num_procs  "${num_procs} + 1" )
       endif()
     endif()
-  endif()
+#  endif()
 
   # set pass fail criteria, processors required, etc.
   set_tests_properties( ${targetname}
@@ -532,8 +532,8 @@ macro( register_parallel_test targetname numPE command cmd_args )
 
   # For Cray Environments, we want each job to fill an entire node.  To do this
   # we set the '-d' (depth) option so that n*d=MPI_CORES_PER_CPU
-  if( "${MPIEXEC}" MATCHES "aprun" )
-    math( EXPR rpt_aprun_depth "${MPI_CORES_PER_CPU} / ${numPE}")
+#  if( "${MPIEXEC}" MATCHES "aprun" )
+#    math( EXPR rpt_aprun_depth "${MPI_CORES_PER_CPU} / ${numPE}")
     #math( EXPR rpt_remainder "${MPI_CORES_PER_CPU} % ${numPE}" )
     #if( ${rpt_remainder} GREATER "0" )
     #  message(FATAL_ERROR
@@ -543,8 +543,8 @@ macro( register_parallel_test targetname numPE command cmd_args )
     #" )
     #endif()
     #unset(rpt_remainder)
-    set( rpt_aprun_depth "-d ${rpt_aprun_depth}" )
-  endif()
+#    set( rpt_aprun_depth "-d ${rpt_aprun_depth}" )
+#  endif()
 
   if( addparalleltest_MPI_PLUS_OMP )
     string( REPLACE " " ";" mpiexec_omp_postflags_list "${MPIEXEC_OMP_POSTFLAGS}" )
@@ -597,16 +597,16 @@ macro( register_parallel_test targetname numPE command cmd_args )
     endif()
 
     # On Cray machines, multiple independent processes cannot share cores on a
-    # node.  To prevent ctest from oversubcribing, force numPE and numthreads to
+    # node. To prevent ctest from oversubcribing, force numPE and numthreads to
     # be exactly the number of cores per node.
-    if( "${MPIEXEC}" MATCHES "aprun" )
-      math( EXPR nnodes "${numthreads} / ${MPI_CORES_PER_CPU}" )
-      math( EXPR nnodes_remainder "${numthreads} % ${MPI_CORES_PER_CPU}" )
-      if( "${nnodes_remainder}" GREATER "0" )
-        math( EXPR nnodes "${nnodes} + 1" )
-      endif()
-      math( EXPR numthreads "${nnodes} * ${MPI_CORES_PER_CPU}" )
-    endif()
+    # if( "${MPIEXEC}" MATCHES "aprun" )
+    #   math( EXPR nnodes "${numthreads} / ${MPI_CORES_PER_CPU}" )
+    #   math( EXPR nnodes_remainder "${numthreads} % ${MPI_CORES_PER_CPU}" )
+    #   if( "${nnodes_remainder}" GREATER "0" )
+    #     math( EXPR nnodes "${nnodes} + 1" )
+    #   endif()
+    #   math( EXPR numthreads "${nnodes} * ${MPI_CORES_PER_CPU}" )
+    # endif()
 
     if( MPI_HYPERTHREADING )
       math( EXPR numthreads "2 * ${numthreads}" )
@@ -630,8 +630,15 @@ macro( register_parallel_test targetname numPE command cmd_args )
       #message("
       #  set_tests_properties( ${targetname}
       #    PROPERTIES PROCESSORS ${MPI_CORES_PER_CPU} )")
+#      set_tests_properties( ${targetname}
+#        PROPERTIES PROCESSORS "${MPI_CORES_PER_CPU}" )
+
+message("
       set_tests_properties( ${targetname}
-        PROPERTIES PROCESSORS "${MPI_CORES_PER_CPU}" )
+        PROPERTIES PROCESSORS ${numPE} )
+")
+      set_tests_properties( ${targetname}
+        PROPERTIES PROCESSORS "${numPE}" )
     else()
       set_tests_properties( ${targetname}
         PROPERTIES PROCESSORS "${numPE}" )
@@ -640,7 +647,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
   endif()
 
   # cleanup
-  unset( rpt_aprun_depth )
+#  unset( rpt_aprun_depth )
 endmacro()
 
 #----------------------------------------------------------------------#
@@ -830,19 +837,14 @@ macro( add_scalar_tests test_sources )
 
   # Special Cases:
   # ------------------------------------------------------------
-  # On some platforms (Cielo, Cielito, RedStorm), even scalar tests
-  # must be run underneath MPIEXEC (yod, aprun):
+  # On some platforms (Trinity), even scalar tests must be run underneath
+  # MPIEXEC (aprun):
   separate_arguments(MPIEXEC_POSTFLAGS)
   if( "${MPIEXEC}" MATCHES "aprun" )
-    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1 )
+    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1)
     set( APT_TARGET_FILE_PREFIX "./" )
-  elseif(  "${MPIEXEC}" MATCHES "yod" )
-    set( RUN_CMD ${MPIEXEC} -np 1 )
   elseif( "${MPIEXEC}" MATCHES "srun" )
     set( RUN_CMD ${MPIEXEC} -n 1 )
-  elseif( HAVE_MIC )
-    # ssh mic-node <wrapper-script> <work_dir> <unit_test arg1 arg2 arg3...>
-    set( RUN_CMD ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $ENV{HOSTNAME}-mic0 ${DRACO_MIC_TEST_DRIVER} ${CMAKE_CURRENT_BINARY_DIR})
   else()
     unset( RUN_CMD )
   endif()
