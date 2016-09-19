@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Assert.hh"
@@ -21,11 +19,11 @@
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  rtt_c4::ParallelUnitTest ut(argc, argv, release);
-  try {
-    // >>> UNIT TESTS
-  }
-  UT_EPILOG(ut);
+    rtt_c4::ParallelUnitTest ut(argc, argv, release);
+    try {
+        // >>> UNIT TESTS
+    }
+    UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//

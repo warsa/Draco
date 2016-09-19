@@ -8,14 +8,12 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 
 using namespace rtt_dsxx;
-using namespace<namespace>;
+using namespace <namespace>;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -23,12 +21,12 @@ using namespace<namespace>;
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  ScalarUnitTest ut(argc, argv, release);
-  try {
-    // >>> UNIT TESTS
-  }
-  UT_EPILOG(ut);
-}
+    ScalarUnitTest ut(argc, argv, release);
+    try {
+        // >>> UNIT TESTS
+    }
+    UT_EPILOG(ut);
+}   
 
 //---------------------------------------------------------------------------//
 // end of <class>.cc

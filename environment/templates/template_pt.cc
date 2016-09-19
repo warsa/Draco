@@ -6,16 +6,14 @@
  * \brief  Explicit template instatiations for class <basename>.
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
- * 
+ *
  * <start>
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "<basename>.hh"
 
-namespace<namespace> {
+namespace <namespace> {
 
   // Explicit template instantiations go here.
 

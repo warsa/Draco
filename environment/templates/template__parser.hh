@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*---------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   <pkg>/<class>__parser.hh
  * \author <user>
@@ -6,25 +6,23 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//--------------------------------------------------------------------------------------//
-// $Id: template.hh 7862 2016-02-03 16:03:54Z kellyt $
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
-#ifndef < spkg > _ < class > __parser_hh
-#define < spkg > _ < class > __parser_hh
+#ifndef <spkg>_<class>__parser_hh
+#define <spkg>_<class>__parser_hh
 
 #include "<class>.hh"
 #include "parser/Class_Parse_Table.hh"
 
 namespace rtt_parser {
-using<namespace>::<class>;
+using <namespace>::<class>;
 
-//=======================================================================================//
-template <> class Class_Parse_Table << class >> {
+//============================================================================//
+template <> class Class_Parse_Table <<class>> {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
-  typedef<class> Return_Class;
+  typedef <class> Return_Class;
 
   // CREATORS
 
@@ -41,7 +39,7 @@ public:
 
   void check_completeness(Token_Stream & tokens);
 
-  SP << class >> create_object();
+  SP <<class>> create_object();
 
   // STATICS
 
@@ -69,6 +67,6 @@ private:
 
 #endif // <spkg>_<class>__parser_hh
 
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of <pkg>/<class>__parser.hh
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

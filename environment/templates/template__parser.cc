@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*---------------------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   <pkg>/<class>__parser.cc
  * \author <user>
@@ -6,12 +6,9 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//--------------------------------------------------------------------------------------//
-// $Id: template.hh 7862 2016-02-03 16:03:54Z kellyt $
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "<class>__parser.hh"
-
 #include "parser/utilities.hh"
 
 namespace rtt_parser {
@@ -21,12 +18,12 @@ using namespace<namespace>;
 Class_Parse_Table << class >> *Class_Parse_Table << class >> ::current_;
 Parse_Table Class_Parse_Table << class >> ::parse_table_;
 
-//--------------------------------------------------------------------------------------//
-Class_Parse_Table << class >> ::Class_Parse_Table() {
+//----------------------------------------------------------------------------//
+Class_Parse_Table <<class>> ::Class_Parse_Table() {
   static bool first_time = true;
   if (first_time) {
     const Keyword keywords[] = {
-        //                {"sample", parse_sample, 0, ""},
+        // {"sample", parse_sample, 0, ""},
     };
 
     const unsigned number_of_keywords = sizeof(keywords) / sizeof(Keyword);
@@ -41,21 +38,22 @@ Class_Parse_Table << class >> ::Class_Parse_Table() {
   current_ = this;
 }
 
-//--------------------------------------------------------------------------------------//
-void Class_Parse_Table << class >> ::check_completeness(Token_Stream &tokens) {}
+//----------------------------------------------------------------------------//
+void Class_Parse_Table <<class>> ::check_completeness(Token_Stream &tokens) {
+}
 
-//--------------------------------------------------------------------------------------//
-SP << class >> Class_Parse_Table << class >> ::create_object() {
+//----------------------------------------------------------------------------//
+SP <<class>> Class_Parse_Table <<class>> ::create_object() {
   return SP << class >> (new<class>());
 }
 
-//--------------------------------------------------------------------------------------//
-template <> SP << class >> parse_class << class >> (Token_Stream & tokens) {
+//----------------------------------------------------------------------------//
+template<> SP<<class>> parse_class<<class>> (Token_Stream & tokens) {
   return parse_class_from_table<Class_Parse_Table << class>>> (tokens);
 }
 
 } // end namespace rtt_parser
 
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of <pkg>/<class>__parser.hh
-//--------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
