@@ -247,9 +247,16 @@ macro( aut_register_test )
     endif()
   endif(VERBOSE_DEBUG)
 
+  # Look for python, which is used to drive application unit tests
+  find_program(PYTHON_COMMAND python)
+  if( NOT EXISTS ${PYTHON_COMMAND})
+    message( FATAL_ERROR "Python not found in PATH")
+  endif()
+
   add_test(
     NAME ${ctestname_base}${argname}
-    COMMAND ${CMAKE_COMMAND}
+    COMMAND ${PYTHON_COMMAND}
+    ${aut_DRIVER}
     -DAPP=${aut_APP}
     -DARGVALUE=${argvalue}
     -DWORKDIR=${aut_WORKDIR}
@@ -266,7 +273,6 @@ macro( aut_register_test )
     -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
     -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
     ${BUILDENV}
-    -P ${aut_DRIVER}
     )
 
   set_tests_properties( ${ctestname_base}${argname}

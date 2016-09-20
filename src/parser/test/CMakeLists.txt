@@ -60,7 +60,7 @@ add_scalar_tests(
 if( NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
   include( ApplicationUnitTest )
   add_app_unit_test(
-    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/driver4tstConsole_Token_Stream.cmake
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/driver4tstConsole_Token_Stream.py
     APP       $<TARGET_FILE_DIR:Exe_tstConsole_Token_Stream>/$<TARGET_FILE_NAME:Exe_tstConsole_Token_Stream>
     STDINFILE "${CMAKE_CURRENT_SOURCE_DIR}/console_test.inp" )
 endif()

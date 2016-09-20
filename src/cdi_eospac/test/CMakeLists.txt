@@ -44,7 +44,7 @@ include( ApplicationUnitTest )
 # from the file QueryEospacInput.dat.  Save the output to
 # QueryEospacInput.out and compare this to the gold file.
 add_app_unit_test(
-  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.cmake
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.py
   APP    $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
   STDINFILE ${PROJECT_SOURCE_DIR}/QueryEospacInput.dat
   GOLDFILE  ${PROJECT_SOURCE_DIR}/QueryEospac.gold
@@ -53,7 +53,7 @@ add_app_unit_test(
 # Run the QueryEospac executable with options '--version' and '--help'
 # to ensure these options print the expected output.
 add_app_unit_test(
-  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.cmake
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tQueryEospac.py
   APP    $<TARGET_FILE_DIR:Exe_QueryEospac>/$<TARGET_FILE_NAME:Exe_QueryEospac>
   TEST_ARGS "--version;--help"
 )
