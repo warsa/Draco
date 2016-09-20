@@ -15,7 +15,7 @@ fi
 ulimit -s unlimited
 
 # Where is the vendor directory
-if test "${VENDOR_DIR}x" == "x"; then
+if [[ ! ${VENDOR_DIR} ]]; then
    if test -d /usr/projects/draco/vendors; then
       VENDOR_DIR=/usr/projects/draco/vendors
    fi
@@ -27,7 +27,7 @@ fi
 # 1. Determine if the module command is available
 modcmd=`declare -f module`
 #    If not found, look for it in /usr/share/Modules (ML)
-if test "${modcmd}x" = "x"; then
+if [[ ! ${modcmd} ]]; then
    if test -f /usr/share/Modules/init/bash; then
       source /usr/share/Modules/init/bash
    else
@@ -38,12 +38,12 @@ modcmd=`declare -f module`
 
 # 2. Use modules found in the draco directory
 
-if test "${modcmd}x" = "x"; then
+if [[ ! ${modcmd} ]]; then
    echo "ERROR: The module command was not found. No modules will be loaded."
 else
 
   module use --append /usr/projects/packages/user_contrib/modulefiles/fta
-  module load svn numdiff hsi psi
+  module load hsi psi
 
 fi
 

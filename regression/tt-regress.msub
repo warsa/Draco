@@ -1,8 +1,5 @@
 #!/bin/bash -l
 
-#MSUB -l walltime=08:00:00
-#MSUB -l nodes=8:ppn=32
-
 ##---------------------------------------------------------------------------##
 ## File  : regression/tt-regress.msub
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
@@ -17,19 +14,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
+   echo "Fatal Error, rscriptdir not found in environment."
+   exit 1
+fi
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -39,28 +40,29 @@ fi
 umask 0002
 ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
+# ctest submit seems to ignore these no proxy settings, so we must unset the
+# above proxy env variables before submitting the results to cdash.
+export no_proxy="localhost,127.0.0.1,rtt.lanl.gov,.lanl.gov"
+export NO_PROXY=$no_proxy
 export VENDOR_DIR=/usr/projects/draco/vendors
-moniker=`whoami`
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
+# import some bash functions
+source $rscriptdir/scripts/common.sh
 
 machine=`uname -n`
 case $machine in
 tt-login[0-9]*)
     ctestparts="Test"
+
+    # Node type (aprun -n 1 lscpu)
+    partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
+
     # Force create of a new log file (don't append)
     echo "Purging ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log"
     echo "    " > ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log
@@ -70,6 +72,11 @@ tt-fey*)
        ctestparts="Configure,Build"
     elif test "${REGRESSION_PHASE}" = "s"; then
        ctestparts="Submit"
+       # Submitting to CDash requires this
+       unset http_proxy
+       unset https_proxy
+       unset HTTP_PROXY
+       unset HTTPS_PROXY
     else
        echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
        exit 1
@@ -79,31 +86,31 @@ esac
 
 echo "==========================================================================="
 echo "Trinitite regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
 echo "==========================================================================="
+if [[ ${partition} ]]; then
+  echo " "
+  echo "Allocation configuration:"
+  echo $partition
+  echo " "
+fi
 
 # Modules
 # ----------------------------------------
 result=`fn_exists module`
-#echo "result = $result"
 if test $result -eq 0; then
     echo 'module function is defined'
 else
     echo 'module function does not exist. defining a local function ...'
     module ()
     {
-        eval `/opt/modules/3.2.6.7/bin/modulecmd bash $*`
+        eval `/opt/cray/pe/modules/3.2.10.4/bin/modulecmd bash $*`
     }
 fi
 
-# moddirs="${VENDOR_DIR}/Modules/hpc"
-# for dir in $moddirs; do
-#   if test -z `echo $MODULEPATH | grep $dir`; then
-#     run "module use $dir"
-#   fi
-# done
+run "module load user_contrib friendly-testing"
 
-run "module load friendly-testing user_contrib"
+# Clean up old environment
 run "module unload cmake numdiff svn subversion"
 run "module unload gsl random123 eospac"
 run "module unload trilinos ndi"
@@ -111,22 +118,24 @@ run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 # Load new environment
 run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module unload intel"
-run "module load intel/15.0.5"
-run "module load cmake/3.5.2 numdiff subversion"
-run "module load gsl/2.1  random123 eospac/6.2.4 ndi"
+run "module unload cray-libsci gcc/6.1.0"
+run "module load cmake/3.6.1 numdiff subversion git"
+run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.6.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
-run "module load git"
+
 export CC=`which cc`
 export CXX=`which CC`
 export FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
-comp=CC
 export OMP_NUM_THREADS=16
+comp=CC
 
 # Extra parameers
 case $extra_params in
+knl)
+    run "module swap craype-haswell craype-mic-knl"
+    export OMP_NUM_THREADS=17
+    ;;
 "")
     # revert to intel/14 as the default setup.
     ;;
@@ -137,8 +146,25 @@ case $extra_params in
     exit 1
     ;;
 esac
-run "module unload xt-totalview xt-libsci "
 run "module list"
+
+# Use a unique regression folder for each github branch
+if test ${USE_GITHUB:-0} == 1; then
+  comp=$comp-$featurebranch
+fi
+
+# When run by crontab, use a special ssh-key to allow authentication to gitlab
+if test "$USER" == "kellyt"; then
+  run "module load git"
+  MYHOSTNAME="`uname -n`"
+  keychain=keychain-2.7.1
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  fi
+fi
 
 # ----------------------------------------
 # Run the CTest script:
@@ -154,10 +180,10 @@ run "module list"
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
 
-if test "${dashboard_type}x" = "x"; then
+if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
     # base_dir=${regdir}/cdash/tt
 
     # There is a bug with how CI/CT mount NFS files spaces (Gabe
@@ -165,7 +191,7 @@ if test "${base_dir}x" = "x"; then
     # deleting a directory with data and imediately recreating that
     # structure will not work correctly (meta data issue?)  Thus,
     # build and target directories will be in the scratch directory.
-    scratch_dir=/scratch1/${USER}/cdash/tt
+    scratch_dir=/lustre/ttscratch1/${USER}/cdash/tt
     mkdir -p $scratch_dir
     if ! test -d ${scratch_dir}; then
       echo "Fatal Error, scratch_dir=${scratch_dir} not found.."
@@ -200,9 +226,6 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
-elif test "${subproj}" == asterisk; then
-    script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
-    script_name=Asterisk_Linux64.cmake
 fi
 
 if test "${regress_mode}" = "off"; then
@@ -255,6 +278,9 @@ date
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 echo " "
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+run "chgrp -R draco ${work_dir}"
+run "chmod -R g+rwX,o-rwX ${work_dir}"
 
 echo "All done."
 

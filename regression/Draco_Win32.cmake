@@ -21,16 +21,11 @@ cmake_minimum_required(VERSION 3.0.0)
 set( CTEST_PROJECT_NAME "Draco" )
 message("source ${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
 include( "${CTEST_SCRIPT_DIRECTORY}/draco_regression_macros.cmake" )
-
-# ====================================================================
-
 set_defaults()
 parse_args()
 find_tools()
-set_svn_command("draco/trunk")
-# Add username and fully qualified machine name.
-string( REPLACE "//ccscs7/" "//kellyt@ccscs7.lanl.gov/"
-   CTEST_CVS_CHECKOUT ${CTEST_CVS_CHECKOUT} )
+  set_git_command("Draco.git")
+
 # Make machine name lower case
 string( TOLOWER "${CTEST_SITE}" CTEST_SITE )
 
@@ -76,23 +71,30 @@ message("
 message("Parsing ${CTEST_SOURCE_DIRECTORY}/CTestCustom.cmake")
 ctest_read_custom_files("${CTEST_SOURCE_DIRECTORY}")
 
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
-   # Empty the binary directory and recreate the CMakeCache.txt
-   message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
-   ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
-   # dummy command to give the file system time to catch up before creating CMakeCache.txt.
-   file( WRITE d:/foo.txt ${CTEST_INITIAL_CACHE} )
-   file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
+# Init
+if( ${CTEST_CONFIGURE} )
+  if( EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
+    # Empty the binary directory and recreate the CMakeCache.txt
+    message( "ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )" )
+    ctest_empty_binary_directory( ${CTEST_BINARY_DIRECTORY} )
+  endif()
+
+  # dummy command to give the file system time to catch up before creating
+  # CMakeCache.txt.
+  # file( WRITE $ENV{TEMP}/foo.txt ${CTEST_INITIAL_CACHE} )
+  file( WRITE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt ${CTEST_INITIAL_CACHE} )
 endif()
 
-# Start
-message( "ctest_start( ${CTEST_MODEL} )")
-ctest_start( ${CTEST_MODEL} )
-
-message( "${CTEST_COMMAND}" )
+if( ${CTEST_CONFIGURE} )
+  message( "ctest_start( ${CTEST_MODEL} )")
+  ctest_start( ${CTEST_MODEL} )
+else()
+  message( "ctest_start( ${CTEST_MODEL} APPEND )")
+  ctest_start( ${CTEST_MODEL} APPEND )
+endif()
 
 # Update and Configure
-if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
+if( ${CTEST_CONFIGURE} )
    message( "ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )"  )
    ctest_update( SOURCE ${CTEST_SOURCE_DIRECTORY} RETURN_VALUE res )
    message( "Files updated: ${res}" )
@@ -105,10 +107,32 @@ if( "${CTEST_CONFIGURE}" STREQUAL "ON" )
       RETURN_VALUE res) # LABELS label1 [label2]
 endif()
 
+# Autodoc
+if( ${CTEST_AUTODOC} )
+  message( "ctest_build(
+   TARGET autodoc
+   NUMBER_ERRORS num_errors
+   NUMBER_WARNINGS num_warnings
+   RETURN_VALUE res )" )
+  ctest_build(
+    TARGET autodoc
+    RETURN_VALUE res
+    NUMBER_ERRORS num_errors
+    NUMBER_WARNINGS num_warnings
+    )
+  message( "build result:
+   ${res}
+   Build errors  : ${num_errors}
+   Build warnings: ${num_warnings}" )
+endif()
+
 # Build
-if( "${CTEST_BUILD}" STREQUAL "ON" )
-   # Main build
-   message( "ctest_build( TARGET install RETURN_VALUE res )" )
+if( ${CTEST_BUILD} )
+   message( "ctest_build(
+   TARGET install
+   NUMBER_ERRORS num_errors
+   NUMBER_WARNINGS num_warnings
+   RETURN_VALUE res )" )
    ctest_build(
       TARGET install
       RETURN_VALUE res
@@ -122,16 +146,32 @@ if( "${CTEST_BUILD}" STREQUAL "ON" )
 endif()
 
 # Test
-if( "${CTEST_TEST}" STREQUAL "ON" )
-   message( "ctest_test( PARALLEL_LEVEL ${MPIEXEC_MAX_NUMPROCS} SCHEDULE_RANDOM ON )" )
-   ctest_test(
-     PARALLEL_LEVEL  ${MPIEXEC_MAX_NUMPROCS}
-     SCHEDULE_RANDOM ON
-     TEST_LOAD       ${MPIEXEC_MAX_NUMPROCS} )
+if( ${CTEST_TEST} )
+
+  find_num_procs_avail_for_running_tests() # returns num_test_procs
+  set( ctest_test_options "SCHEDULE_RANDOM ON" )
+  string( APPEND ctest_test_options " PARALLEL_LEVEL ${num_test_procs}" )
+
+  # if we are running on a machine that openly shares resources, use the
+  # TEST_LOAD feature to limit the number of cores used while testing. For
+  # machines that run schedulers, the whole allocation is available so there is
+  # no need to limit the load.
+  if( "${CTEST_SITE}" MATCHES "ccscs" )
+    string( APPEND ctest_test_options " TEST_LOAD ${max_system_load}" )
+  endif()
+
+  message( "ctest_test( ${ctest_test_options} )" )
+  # convert string to a cmake list
+  string( REPLACE " " ";" ctest_test_options "${ctest_test_options}" )
+  ctest_test( ${ctest_test_options} )
+
+  # Process code coverage (bullseye) or dynamic analysis (valgrind)
+  message("Processing code coverage or dynamic analysis")
+  process_cc_or_da()
 endif()
 
 # Submit results
-if( "${CTEST_SUBMIT}" STREQUAL "ON" )
+if( ${CTEST_SUBMIT} )
    message( "ctest_submit()")
    ctest_submit()
 endif()

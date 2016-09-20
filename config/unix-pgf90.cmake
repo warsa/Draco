@@ -7,10 +7,6 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
-# Let anyone who is interested in which FORTRAN compiler we're using
-# switch on this macro.
-set( CMAKE_Fortran_COMPILER_FLAVOR "PGI" )
-
 #
 # Compiler Flags
 #
@@ -39,38 +35,6 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 # Toggle compiler flags for optional features
 #
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
-
-# [2015-01-21 KT] Not sure if we still need the code below...
-# ------------------------------------------------------------
-# Find and save compiler libraries.  These may need to be used when
-# the main code is C++ that links to Fortran libraries.
-# ------------------------------------------------------------
-
-# # Order of libraries is important
-# set( f90_system_lib libzceh.a libstd.a libC.a )
-
-# # Static libraries from the /lib directory (useful for target_link_library command).
-# set( CMAKE_Fortran_compiler_libs "" CACHE INTERNAL
-#    "Fortran system libraries that are needed by the applications built with Intel Fortran (only optimized versions are redistributable.)" )
-
-# # Intel Fortran lib directory
-# get_filename_component( CMAKE_Fortran_BIN_DIR ${CMAKE_Fortran_COMPILER} PATH )
-# string( REPLACE "bin" "lib" CMAKE_Fortran_LIB_DIR ${CMAKE_Fortran_BIN_DIR} )
-
-# # Generate a list of run time libraries.
-# foreach( lib ${f90_system_lib} )
-
-#    get_filename_component( libwe ${lib} NAME_WE )
-#    # optimized library
-#    find_file( CMAKE_Fortran_${libwe}_lib
-#       NAMES ${lib}
-#       PATHS "${CMAKE_Fortran_LIB_DIR}"
-#       HINTS ENV LD_LIBRARY_PATH
-#       )
-#    mark_as_advanced( CMAKE_Fortran_${libwe}_lib )
-#    list( APPEND CMAKE_Fortran_compiler_libs ${CMAKE_Fortran_${libwe}_lib} )
-
-# endforeach()
 
 #------------------------------------------------------------------------------#
 # End config/unix-pgf90.cmake

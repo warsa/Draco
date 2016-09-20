@@ -19,7 +19,7 @@
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
-scriptname=`basename $0`
+scriptname=${0##*/}
 host=`uname -n`
 
 export MOABHOMEDIR=/opt/MOAB
@@ -38,25 +38,33 @@ for (( i=0; i < $nargs ; ++i )); do
 done
 
 # sanity check
-if test "${regdir}x" = "x"; then
+if [[ ! ${regdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
     exit 1
 fi
-if test "${rscriptdir}x" = "x"; then
+if [[ ! ${rscriptdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
-if test "${subproj}x" = "x"; then
+if [[ ! ${subproj} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
-if test "${build_type}x" = "x"; then
+if [[ ! ${build_type} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
-if test "${logdir}x" = "x"; then
+if [[ ! ${logdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
     exit 1
+fi
+
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
 fi
 
 # What queue should we use
@@ -71,21 +79,25 @@ esac
 
 # Banner
 echo "==========================================================================="
-echo "ML Regression job launcher"
+echo "ML Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
 echo "   subproj        = ${subproj}"
 echo "   build_type     = ${build_type}"
-if test "${extra_params}x" == "x"; then
-echo "   extra_params   = none"
+if [[ ! ${extra_params} ]]; then
+  echo "   extra_params   = none"
 else
-echo "   extra_params   = ${extra_params}"
+  echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
+echo "   build_autodoc  = ${build_autodoc}"
 echo "   MOAB queue     = ${access_queue}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
@@ -93,26 +105,34 @@ echo " "
 
 echo "module purge &> /dev/null"
 module purge &> /dev/null
-echo "module list"
-module list
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
 
 for jobid in ${dep_jobids}; do
-    while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
+    while [ `ps --no-headers -u ${USER} -o pid | grep -c ${jobid}` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 min)."
        sleep 5m
     done
 done
 
+if ! test -d $logdir; then
+  mkdir -p $logdir
+  chgrp draco $logdir
+  chmod g+rwX $logdir
+  chmod g+s $logdir
+fi
+
 # Configure on the front end
+echo "Configure:"
 export REGRESSION_PHASE=c
-cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-c.log"
+cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
 # Build, Test on back end
+echo " "
+echo "Build, Test:"
 export REGRESSION_PHASE=bt
 cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${rscriptdir}/ml-regress.msub"
 echo "${cmd}"
@@ -128,6 +148,8 @@ while test "`$SHOWQ | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+echo " "
+echo "Submit:"
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from ${host}."
 cmd="${rscriptdir}/ml-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"

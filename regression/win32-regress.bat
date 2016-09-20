@@ -1,14 +1,20 @@
 @echo off
-rem This file copied from c:\program files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat
+rem ---------------------------------------------------------------------------
+rem File  : regression/win32-regress.bat
+rem Date  : Tuesday, May 31, 2016, 14:48 pm
+rem Author: Kelly Thompson
+rem Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+rem         All rights are reserved.
+rem ---------------------------------------------------------------------------
 
-REM %comspec% /[k|c] ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
-
-rem capture all output from batch file like this...
-rem win32_draco_regression.bat > mylog.txt 2>&1
-
-rem In Task Scheduler, create to actions:
-rem 1. d:\cdash\draco\regression\update_regression_dir.bat
-rem 2. c:\windows\system32\cmd.exe /k ""d:\cdash\draco\regression\win32_draco_regression.bat"" x86
+rem This file copied from c:\program files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat.  
+rem It establishes a Visual Studio environment in a command prompt.  The 
+rem Windows shortcut runs the following command:
+rem
+rem %comspec% /[k|c] ""C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"" x86
+rem
+rem This fill is called from win32-regression-master.bat so that all outpout
+rem can be captured in a log file.
 
 if "%1" == "" goto x86
 if not "%2" == "" goto usage
@@ -52,34 +58,29 @@ rem ----------------------------------------------------------------------------
 
 :vendorsetup
 call e:\work\vendors\setupvendors.bat
-REM set PATH=%PATH%;c:\MinGW\bin
-REM set VENDOR_DIR=e:\work\vendors
-REM set GSL_ROOT_DIR=%VENDOR_DIR%\gsl-1.16
-REM set LAPACK_LIB_DIR=%VENDOR_DIR%\lapack-3.4.2\lib
-REM set LAPACK_INC_DIR=%VENDOR_DIR%\lapack-3.4.2\include
-REM set QTDIR=c:/Qt/5.3/msvc2013
+set USE_GITHUB=1
 
 :cdash
 rem set dashboard_type=Experimental
 set dashboard_type=Nightly
-set base_dir=e:\cdash
+set base_dir=e:\regress
 set comp=cl
-set script_dir=e:\cdash\draco\regression
+set script_dir=e:\regress\draco\regression
 set script_name=Draco_Win32.cmake
 set ctestparts=Configure,Build,Test,Submit
 
-:cdashdebug
+:dracodebug
 
 set subproj=draco
 set build_type=Debug
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem print some information
 echo Environment:
 echo .
 set
 echo .
-echo -----     -----     -----     -----     -----     
+echo -----     -----     -----     -----     -----
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -93,16 +94,14 @@ if not exist %work_dir%\target mkdir target
 
 rem goto :jayennerelease
 
-rem run the ctest script
-
 echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log"
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log
 
-:cdashrelease
+:dracorelease
 
 set subproj=draco
 set build_type=Release
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -123,12 +122,12 @@ rem --------------------------------------------------------------------------
 
 :jayennerelease
 
-set script_dir=e:\cdash\jayenne\regression
+set script_dir=e:\regress\jayenne\regression
 set script_name=Jayenne_Win32.cmake
 
 set subproj=jayenne
 set build_type=Release
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -150,7 +149,7 @@ ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestpart
 :jayennedebug
 
 set build_type=Debug
-set work_dir=%base_dir%\%subproj%\%dashboard_type%_%comp%\%build_type%
+set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -170,5 +169,3 @@ ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestpart
 
 :done
 echo You need to remove -k from script launch to let this window close automatically.
-
-

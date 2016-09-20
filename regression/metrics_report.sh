@@ -27,7 +27,7 @@ print_use()
 ## Sanity Checks and Setup
 ##---------------------------------------------------------------------------##
 
-if test "${4}x" = "x"; then
+if [[ ! ${4} ]]; then
    echo "ERROR: You must provide at least 4 arguments."
    print_use
    exit 1
@@ -39,7 +39,7 @@ if test "$mach" != "ccscs7.lanl.gov"; then
    exit 1
 fi
 
-if test "${USER}x" == "x"; then
+if [[ ! ${USER} ]]; then
    echo "FATAL ERROR: ENV{USER} not set.  Contact Kelly Thompson <kgt@lanl.gov>."
    exit 1
 fi
@@ -53,9 +53,6 @@ fi
 logfile=/scratch/${USER}/metrics.log
 if test -f $logfile; then
    rm $logfile
-fi
-if ! test -d /scratch/${USER}; then
-    mkdir /scratch/${USER}
 fi
 touch $logfile
 
@@ -72,9 +69,7 @@ fi
 module load bullseyecoverage
 
 CLOC=/scratch/vendors/bin/cloc
-
 work_dir=/scratch/regress/cdash
-#work_dir=/scratch/kellyt
 
 ##---------------------------------------------------------------------------##
 # Process arguments
@@ -146,10 +141,14 @@ echo "Lines of code"
 echo "-------------"
 cmd="${CLOC} --sum-reports --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs"
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log "
+   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log; then
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/lines-of-code.log"
+   else
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/lines-of-code.log"
+   fi
 done
 # Use grep and head to clean up the output:
-cmd="$cmd | grep -v sourceforge | head -n 24"
+cmd="$cmd | grep -v sourceforge | head -n 28 | grep -v AlDanial"
 eval $cmd
 
 # ${CLOC} --sum-reports \
@@ -162,23 +161,37 @@ echo " "
 echo "Code coverage"
 echo "-------------"
 echo " "
-export COVFILE=`pwd`/metrics_report.cov
-export COVDIRCFG=/scratch/regress/draco/regression/covdir.cfg
+export COVFILE=/scratch/$USER/metrics_report.cov
 if test -f $COVFILE; then
    rm -f $COVFILE
 fi
 cmd="covmerge -q --mp --no-banner -c -f $COVFILE "
 for proj in $projects; do
-   cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov "
+   if test -f ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov.bak; then
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc/Coverage/build/CMake.cov.bak "
+   else
+     cmd="$cmd ${work_dir}/${proj}/Nightly_gcc-develop/Coverage/build/CMake.cov.bak "
+   fi
 done
 # create the new coverage file via covmerge
 eval $cmd
 # run covdir to generate a report (but omit entry for /source/src/)
-covdir | grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
+olddir=`pwd`
+cd $work_dir/..
+export COVDIRCFG=/scratch/regress/draco/regression/mcovdir.cfg
+covdir -w120 | sed -r \
+'s%../../../scratch/source/src/([A-Za-z0-9+_]+)/%\1/             %' \
+| sed -e 's/Directory               /Directory/' \
+| sed -e 's/------------------------------------------------/---------------------------------/' \
+| sed -e 's/Total               /Total/' \
+| grep -v "../source/src/"
+#| grep -v "source/.*src/ " | grep -v "source/ " | grep -v "^src"
 
 echo " "
 echo "* C/D Coverage is condition/decision coverage"
 echo "  http://www.bullseye.com/coverage.html#basic_conditionDecision"
+
+cd $olddir
 
 # Send the email
 /bin/mailx -r "${USER}@lanl.gov" -s "${subj}" ${recipients} < ${logfile}

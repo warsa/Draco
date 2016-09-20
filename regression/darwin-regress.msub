@@ -18,23 +18,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${rscriptdir}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -42,34 +42,31 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
-unset https_proxy
-unset HTTPS_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
 export VENDOR_DIR=/usr/projects/draco/vendors
-moniker=`whoami`
-machine=`uname -n`
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
-
-run () {
-    echo $1
-    if ! [ $dry_run ]; then eval $1; fi
-}
+# import some bash functions
+source $rscriptdir/scripts/common.sh
 
 case $REGRESSION_PHASE in
 cbt) ctestparts=Configure,Build,Test;;
-s)   ctestparts=Submit;;
+s)
+  ctestparts=Submit
+  # Submitting to CDash requires this
+  unset http_proxy
+  unset https_proxy
+  unset HTTP_PROXY
+  unset HTTPS_PROXY
+  ;;
 esac
 
+machine=`uname -n`
 echo "==========================================================================="
 echo "Darwin regression: ${ctestparts} from ${machine}."
 echo "                   ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
@@ -81,12 +78,11 @@ run "ulimit -a"
 # Use modules found in the draco directory
 run "module use --append /usr/projects/draco/vendors/Modules"
 
-# Clear any tcsh loaded modules as these are invalid when staring a new shell.
+# Clear any default loaded modules as these are invalid when staring a new shell.
 run "module purge &> /dev/null"
 run "module load git"
-run "module load intel/15.0.4 impi/5.1.1.109"
-run "module load lapack/3.5.0"
-run "module load cmake/3.5.2 numdiff/5.8.1 subversion random123 eospac/6.2.4"
+run "module load intel/16.0.3"
+run "module load cmake/3.6.0 numdiff/5.8.1 subversion random123 eospac/6.2.4"
 run "module load gsl/2.1 ndi metis parmetis superlu-dist trilinos"
 run "module list"
 
@@ -96,12 +92,11 @@ export CC=`which mpiicc`
 export FC=`which mpiifort`
 export MPIEXEC=`which mpirun`
 # http://stackoverflow.com/questions/11959906/openmp-and-numa-relation
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=`lscpu | grep "per socket" | awk '{print $4}'`
 export OMP_PROC_BIND=true
-comp=`basename $CXX`
+comp=${CXX##*/}
 #echo "mpd --daemon"
 #mpd --daemon
-printenv
 
 case $extra_params in
 "")
@@ -121,8 +116,8 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB} == 1; then
-  comp=github-$featurebranch-$comp
+if test ${USE_GITHUB:-0} == 1; then
+  comp=$comp-$featurebranch
 fi
 
 # ----------------------------------------
@@ -139,10 +134,10 @@ fi
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug
 
-if test "${dashboard_type}x" = "x"; then
+if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
   if test "${regress_mode}" = "off"; then
     scratch_dir=$HOME/cdash/darwin
     base_dir=${scratch_dir}
@@ -180,9 +175,6 @@ elif test "${subproj}" == jayenne; then
 elif test "${subproj}" == capsaicin; then
     script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
     script_name=Capsaicin_Linux64.cmake
-elif test "${subproj}" == asterisk; then
-    script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
-    script_name=Asterisk_Linux64.cmake
 fi
 
 if test "${regress_mode}" = "off"; then
@@ -196,7 +188,7 @@ echo "darwin-regress.msub: work_dir       = ${work_dir}"
 echo "darwin-regress.msub: scratch_dir    = ${scratch_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
-if ! test "${setup_dirs}x" = "x"; then
+if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}/source; then
       run "/usr/bin/install -d ${work_dir}/source"
    fi
@@ -231,8 +223,18 @@ echo "--------------------(environment)------------------------------"
 set
 echo "--------------------(end environment)--------------------------"
 
+date
+
+echo " "
+echo "Proxy Settings:"
+printenv | grep -i proxy
+echo " "
+
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
+
+run "chgrp -R draco ${work_dir}"
+run "chmod -R g+rwX,o-rwX ${work_dir}"
 
 echo "All done."
 

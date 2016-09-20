@@ -8,11 +8,8 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id: Tigs.cc 6056 2012-06-19 19:05:27Z kellyt $
-//---------------------------------------------------------------------------//
 
 #include "TigsTrace.hh"
-#include "accumulatev.hh"
 #include <cstdlib>
 #include <functional>
 
@@ -54,20 +51,20 @@ namespace rtt_c4
  *    \param JMap The values of the above indirection for the local domain
  *    \param J    the value of Jn for the current process.
  */
-TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
-    : onProcDomain( M.size() ),
-      onProcRange( J ),
+TigsTrace::TigsTrace(std::vector<int> const & M, unsigned const J)
+    : onProcDomain(M.size()),
+      onProcRange(J),
       IM(),
       IMV(),
       counts(),
       IsideBufferSize(0),
       JsideBufferSize(0),
       IsideConnects(),
-      IsideIndirect(), 
+      IsideIndirect(),
       JsideConnects(),
       JsideIndirect(),
       BmapList(),
-      countsList() 
+      countsList()
 {
     if( rtt_c4::nodes()==1 )
     {
@@ -116,7 +113,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
                 }
             }
         }
-        
+
         JsideBufferSize=total_count;
     }
     else
@@ -129,9 +126,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
         std::vector<int> Jstarb(rtt_c4::nodes(),0);
         std::vector<int> Jstar(rtt_c4::nodes()+1,0);
         Jstarb[rtt_c4::node()]=J;
-        int const initial_value(0);
-        rtt_c4::accumulatev( Jstarb.begin(), Jstarb.end(),
-                             initial_value,  std::plus<int>());
+        rtt_c4::global_sum(&Jstarb[0], Jstarb.size());
         for( int pe=1; pe<rtt_c4::nodes()+1; pe++ )
             Jstar[pe]=Jstar[pe-1] + Jstarb[pe-1];
 
@@ -163,12 +158,12 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
         TigsComm_map Itilde;
         TigsComm_map Jtilde;
         for( size_t i=0; i<M.size(); i++ )
-        {    
+        {
             // make sure the processor is actually communicating with another
             // pe
             if( Pbar[i] >= 0 )
             {
-                Itilde[Pbar[i]].push_back(i); 
+                Itilde[Pbar[i]].push_back(i);
                 Jtilde[Pbar[i]].push_back(jbar[i]);
             }
         }
@@ -178,7 +173,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
 
         // now check to see if we have a send-to-self in Itilde
         if( Itilde.count(rtt_c4::node()) == 1 ) recv_from_self = 1;
-        
+
         // All processors now need to know how many messages they should
         // expect during a gather_list or scatter_list operation. gathers and
         // scatters are implemented by post processing those more basic data
@@ -206,20 +201,18 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
             JsideIndirectA[s] = jtb->second;
         }
 
-        rtt_c4::accumulatev(numSrcProcs.begin(), numSrcProcs.end(),
-                            initial_value, std::plus<int>() );
-        rtt_c4::global_barrier();
-        
+        rtt_c4::global_sum(&numSrcProcs[0], numSrcProcs.size());
+
         // Now we have enough data to make the maps, we need to get the Jside
         // information over to the processors that have the Jside data.
         // Currently the data is stored in JsideIndirectA, but that will be
         // moved to the processor local to the Jside data and stored as
         // JsideIndirect there.
-        
+
         // Post the receives so that the processes can trade buffer size
         // information, buf size will receive 2 ints, the first will be the
         // source process rank, the second will be the amount of data coming
-        // from the source process.        
+        // from the source process.
         size_t const numRecv=numSrcProcs[rtt_c4::node()];
         std::vector< std::vector<int> > rbufsiz(numRecv,std::vector<int>(2));
         std::vector< std::vector<int> > sbufsiz(numSend,std::vector<int>(2));
@@ -266,7 +259,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
         // wait on all communication
         for( size_t s=0; s<reqs_recv.size(); ++s )
             reqs_recv[s].wait();
-        
+
         // wait for communications to finish
         rtt_c4::global_barrier();
 
@@ -288,7 +281,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
             sortRcv[rbufsiz[r][0]]=rbufsiz[r][1];
         }
         std::map<int, int>::iterator its=sortRcv.begin();
-      
+
         for( int r=0; its!=sortRcv.end(); its++, r++ )
         {
             JsideConnects[r] =  its->first;;
@@ -317,7 +310,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
             }
         }
         Check( np == numPostRecv );
-        
+
         itb=Jtilde.begin();
         for( size_t s=0; s<numSend ; s++, itb++ )
         {
@@ -351,10 +344,10 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
         // finally, before leaving lets set the total buffer size needed for
         // the sends and receives
         IsideBufferSize=0;
-        for( size_t s=0; s<numSend; s++ ) 
+        for (size_t s = 0; s < numSend; s++)
             IsideBufferSize+=IsideIndirect[s].size();
         JsideBufferSize=0;
-        for( size_t r=0; r<numRecv; r++ ) 
+        for (size_t r = 0; r < numRecv; r++)
             JsideBufferSize+=JsideIndirect[r].size();
 
         Check( JsideConnects.size() == numRecv );
@@ -370,7 +363,7 @@ TigsTrace::TigsTrace( std::vector<int> const & M, unsigned const J )
                 Bmap[JsideIndirect[r][l]].push_back(k++);
             }
         }
-          
+
         // flatten the loops
         countsList.resize(onProcRange);
         BmapList.resize(JsideBufferSize);

@@ -33,7 +33,7 @@ macro( find_num_procs_avail_for_running_tests )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
-    # If this is not a known batch system, the attempt to set values according
+    # If this is not a known batch system, then attempt to set values according
     # to machine name:
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
@@ -84,10 +84,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   # Set the sitename, but strip any domain information
   site_name( sitename )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  message( "sitename = ${sitename}")
-  if( ${sitename} MATCHES "ct" )
-     set( sitename "Cielito" )
-  elseif( ${sitename} MATCHES "tt" )
+  if( ${sitename} MATCHES "tt" )
      set( sitename "Trinitite" )
   elseif( ${sitename} MATCHES "tr" )
      set( sitename "Trinity" )
@@ -189,8 +186,6 @@ win32$ set work_dir=c:/full/path/to/work_dir
    # Echo settings
    if( ${drm_verbose} )
      message("
-ARGV     = ${ARGV}
-
 work_dir   = ${work_dir}
 
 CTEST_PROJECT_NAME     = ${CTEST_PROJECT_NAME}
@@ -241,6 +236,11 @@ macro( parse_args )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
 
   # Post options: SubmitOnly or NoSubmit
+  set( CTEST_CONFIGURE OFF )
+  set( CTEST_BUILD     OFF )
+  set( CTEST_TEST      OFF )
+  set( CTEST_SUBMIT    OFF )
+  set( CTEST_AUTODOC   OFF )
   if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
      set( CTEST_CONFIGURE "ON" )
   endif()
@@ -266,38 +266,41 @@ macro( parse_args )
 
   # refine compiler short name.
   set(USE_CUDA OFF)
-  if( $ENV{CXX} MATCHES "pgCC" )
-    if( $ENV{CXX} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  if( "$ENV{CXX}" MATCHES "pgCC" OR "$ENV{CXX}" MATCHES "pgc[+][+]" )
+    if( "$ENV{CXX}" MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
       string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        compiler_version $ENV{CXX} )
+        compiler_version "$ENV{CXX}" )
       set( compiler_short_name "pgi-${compiler_version}" )
     else()
       set( compiler_short_name "pgi" )
     endif()
-  elseif($ENV{CXX} MATCHES "clang" )
-    if( $ENV{CXX} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  elseif("$ENV{CXX}" MATCHES "clang" )
+    if( "$ENV{CXX}" MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
       string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
-        compiler_version $ENV{CXX} )
+        compiler_version "$ENV{CXX}" )
       set( compiler_short_name "clang-${compiler_version}" )
     else()
       set( compiler_short_name "clang" )
     endif()
-  elseif($ENV{CXX} MATCHES "icpc" )
+  elseif("$ENV{CXX}" MATCHES "icpc" )
      if( ${work_dir} MATCHES ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
         string( REGEX REPLACE ".*[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
            compiler_version ${work_dir} )
-     elseif( ${work_dir} MATCHES ".*cuda.*" )
-        set( compiler_version "cuda" )
+     elseif( NOT "$ENV{LCOMPILERVER}x" STREQUAL "x" )
+        set( compiler_version $ENV{LCOMPILERVER} )
+     endif()
+     if( ${work_dir} MATCHES ".*cuda.*" )
+        set( compiler_version "${compiler_version}-cuda" )
         set(USE_CUDA ON)
      elseif( ${work_dir} MATCHES ".*fulldiagnostics.*" )
-        set( compiler_version "fulldiagnostics" )
+        set( compiler_version "${compiler_version}-fulldiagnostics" )
         set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
 #DRACO_TIMING:STRING=2 <-- breaks milagro tests (python cannot parse output).
      elseif( ${work_dir} MATCHES "intel-nr" )
         set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
-        set( compiler_version "nr" )
+        set( compiler_version "${compiler_version}-nr" )
      elseif( ${work_dir} MATCHES "intel-perfbench" )
-       set( compiler_version "perfbench" )
+       set( compiler_version "${compiler_version}-perfbench" )
      endif()
      if( "${compiler_version}x" STREQUAL "x" )
         set( compiler_short_name "intel" )
@@ -319,15 +322,22 @@ macro( parse_args )
     if( NOT "${compiler_version}x" STREQUAL "x" )
       set( compiler_short_name "${compiler_short_name}-${compiler_version}" )
     endif()
-  elseif( $ENV{CC} MATCHES ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
+  elseif( "$ENV{CC}" MATCHES ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" )
     # /scratch/vendors/gcc-5.3.0/bin/gcc
     string( REGEX REPLACE ".*gcc[-]([0-9]+[.][0-9]+[.-][0-9]+).*" "\\1"
       compiler_version $ENV{CC} )
     set( compiler_short_name "gcc-${compiler_version}" )
-  else( $ENV{CC} MATCHES "gcc" )
+  elseif( "$ENV{CC}" MATCHES "gcc" )
     # /usr/bin/gcc
     # /ccs/codes/radtran/vendors/bullseyecoverage-8.9.75/bin/gcc
-    set( compiler_short_name "gcc" )
+    execute_process( COMMAND $ENV{CC} --version
+      OUTPUT_VARIABLE cxx_version
+      OUTPUT_STRIP_TRAILING_WHITESPACE )
+    string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1.\\2.\\3"
+      cxx_version ${cxx_version} )
+    set( compiler_short_name "gcc-${cxx_version}" )
+  else()
+    set( compiler_short_name "unknown" )
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
@@ -345,7 +355,7 @@ macro( parse_args )
       if( "$ENV{featurebranch}notset" STREQUAL "notset" )
         message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
       endif()
-      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-github-$ENV{featurebranch}" )
+      set( CTEST_BUILD_NAME "Linux64_${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
     endif()
   endif()
 
@@ -357,14 +367,17 @@ macro( parse_args )
     endif()
     set( ENABLE_C_CODECOVERAGE ON )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_Cov" )
-    # Also reset the build parallelism to scalar.
-    #set( num_compile_procs 1 )
-    #set(CTEST_BUILD_FLAGS "-j${num_compile_procs}")
+  endif()
+
+  # DynamicAnalysis (valgrind)
+  if( ${CTEST_SCRIPT_ARG} MATCHES DynamicAnalysis )
+    set( ENABLE_DYNAMICANALYSIS ON )
+    set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}_DA" )
   endif()
 
   # Bounds Checking
   if( ${CTEST_SCRIPT_ARG} MATCHES bounds_checking )
-    if( "${compiler_short_name}" STREQUAL "gcc" )
+    if( "${compiler_short_name}" STREQUAL "gcc-4.8.5" )
       set( BOUNDS_CHECKING "GCC_ENABLE_GLIBCXX_DEBUG:BOOL=ON" )
     else()
       message(FATAL_ERROR "I don't know how to turn on bounds checking for compiler = ${compiler_short_name}" )
@@ -383,9 +396,9 @@ compiler_short_name         = ${compiler_short_name}
 compiler_version            = ${compiler_version}
 CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
+ENABLE_DYNAMICANALYSIS      = ${ENABLE_DYNAMICANALYSIS}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
 ")
-# CTEST_BUILD_FLAGS           = ${CTEST_BUILD_FLAGS}
   endif()
 endmacro( parse_args )
 
@@ -529,8 +542,22 @@ endmacro()
 macro( set_git_command gitpath )
   set( CTEST_UPDATE_TYPE "git" )
   if( NOT EXISTS ${CTEST_SOURCE_DIRECTORY}/CMakeLists.txt )
-    set( CTEST_CHECKOUT_COMMAND
-      "${CTEST_GIT_COMMAND} clone https://github.com/losalamos/${gitpath} source" )
+    if( ${gitpath} MATCHES "Draco" )
+      set( CTEST_CHECKOUT_COMMAND
+        "${CTEST_GIT_COMMAND} clone --depth 1 https://github.com/losalamos/${gitpath} source" )
+    else()
+      # This assumes that a valid ssh-key exists in the current environment and
+      # works with gitlab.lanl.gov.
+      if( IS_DIRECTORY "$ENV{gitroot}" )
+        set( gitroot "$ENV{gitroot}/" )
+        set( CTEST_CHECKOUT_COMMAND
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
+      else()
+        set( gitroot "git@gitlab.lanl.gov:" )
+        set( CTEST_CHECKOUT_COMMAND
+          "${CTEST_GIT_COMMAND} clone --depth 1 ${gitroot}${gitpath} source" )
+      endif()
+    endif()
   endif()
   # normaly, just use the 'develop' branch.  Otherwise ENV{featurebranch} will
   # be set to something like pr42.
@@ -543,7 +570,14 @@ macro( set_git_command gitpath )
     # assumes that this is run when PWD = ${CTEST_SOURCE_DIRECTORY} and git
     # clone was successful.
     # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_SOURCE_DIRECTORY}/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
-    set( CTEST_GIT_UPDATE_CUSTOM "/home/kellyt/draco/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
+    if ( "${githost}x" STREQUAL "x" )
+      if( "${CTEST_CHECKOUT_COMMAND}" MATCHES "github" )
+        set( githost "github")
+      else()
+        set( githost "gitlab")
+      endif()
+    endif()
+    set( CTEST_GIT_UPDATE_CUSTOM "$ENV{rscriptdir}/fetch_co.sh;${CTEST_GIT_COMMAND};${githost};${featurebranch}")
   else()
     message( FATAL_ERROR "I don't know how to checkout git feature branch named '$ENV{featurebranch}'.")
   endif()
@@ -589,27 +623,27 @@ macro( setup_for_code_coverage )
             message( "Generating lines of code statistics...
 /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
-               --exclude-list-file=/home/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=$ENV{rscriptdir}/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code.log
-               --force-lang-def=/home/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=$ENV{rscriptdir}/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
             ")
             execute_process(
                COMMAND /scratch/vendors/bin/cloc
                --exclude-dir=heterogeneous,chimpy
-               --exclude-list-file=/scratch/regress/draco/regression/cloc-exclude.cfg
+               --exclude-list-file=$ENV{rscriptdir}/cloc-exclude.cfg
                --exclude-lang=Text,Postscript
                --categorize=cloc-categorize.log
                --counted=cloc-counted.log
                --ignored=cloc-ignored.log
                --progress-rate=0
                --report-file=lines-of-code.log
-               --force-lang-def=/scratch/regress/draco/regression/cloc-lang.defs
+               --force-lang-def=$ENV{rscriptdir}/cloc-lang.defs
                ${CTEST_SOURCE_DIRECTORY}
                #  --3
                #  --diff
@@ -675,34 +709,30 @@ endmacro( setup_for_code_coverage )
 # dyanmic analysis excludes tests with label "nomemcheck"
 # ------------------------------------------------------------
 macro(process_cc_or_da)
-   if( "${sitename}" MATCHES "ccscs[1-9]" AND
-       "$ENV{CXX}" MATCHES "g[+][+]" AND
-       "${CTEST_BUILD_NAME}" MATCHES "Linux64_gcc_Debug" )
-      if( ${CTEST_BUILD_CONFIGURATION} MATCHES Debug )
-         if(ENABLE_C_CODECOVERAGE)
-            message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
-            ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
-            message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
+  if(ENABLE_C_CODECOVERAGE)
+    message( "ctest_coverage( BUILD \"${CTEST_BINARY_DIRECTORY}\" )")
+    ctest_coverage( BUILD "${CTEST_BINARY_DIRECTORY}" )
+    message( "Generating code coverage log file: ${CTEST_BINARY_DIRECTORY}/covdir.log
 
 cd ${CTEST_BINARY_DIRECTORY}
 covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
-            execute_process(
-              COMMAND
-              covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log
-              WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
-              )
-            list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
-            execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
-          else()
-            set( CTEST_TEST_TIMEOUT 7200 )
-            message( "ctest_memcheck( SCHEDULE_RANDOM ON
+    execute_process(
+      COMMAND
+      covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log
+      WORKING_DIRECTORY ${CTEST_BINARY_DIRECTORY}
+      )
+    list( APPEND CTEST_NOTES_FILES "${CTEST_BINARY_DIRECTORY}/covdir.log")
+    execute_process(COMMAND "${COV01}" --off RESULT_VARIABLE RES)
+  endif()
+
+  if( ${ENABLE_DYNAMICANALYSIS} )
+    set( CTEST_TEST_TIMEOUT 7200 )
+    message( "ctest_memcheck( SCHEDULE_RANDOM ON
                 EXCLUDE_LABEL nomemcheck )")
-            ctest_memcheck(
-               SCHEDULE_RANDOM ON
-               EXCLUDE_LABEL "nomemcheck")
-         endif()
-      endif()
-   endif()
+    ctest_memcheck(
+      SCHEDULE_RANDOM ON
+      EXCLUDE_LABEL "nomemcheck")
+  endif()
 endmacro(process_cc_or_da)
 
 # ------------------------------------------------------------
@@ -714,13 +744,13 @@ endmacro(process_cc_or_da)
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
   string( TOUPPER ${dep_pkg} dep_pkg_caps )
-  # Assume that draco_work_dir is parallel to our current location.
-  string( REPLACE ${this_pkg} ${dep_pkg} ${dep_pkg}_work_dir $ENV{work_dir} )
-
-  if( "${dep_pkg}" MATCHES "draco" )
-    string( REPLACE "cmake_jayenne/draco" "cmake_draco"
-      ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-  endif()
+  # Assume that draco_work_dir is parallel to our current location, but
+  # only replace the directory name preceeding the dashboard name.
+  file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
+  message("work_dir = ${work_dir}")
+  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
+    ${dep_pkg}_work_dir ${work_dir} )
+  message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
   # If this is a coverage/nr build, link to the Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
@@ -728,8 +758,21 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "icpc"   ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+
+    if( "${this_pkg}" MATCHES "jayenne" )
+      # If this is jayenne, we might be building a pull request. Replace the PR
+      # number in the path with '-develop' before looking for draco.
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
+        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    endif()
+
+    if( "${this_pkg}" MATCHES "capsaicin" )
+      # Probably building capsaicin, append '-develop' when looking for draco.
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)/" "\\1_\\2-develop/"
+        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    endif()
   endif()
 
   find_file( ${dep_pkg}_target_dir
@@ -737,16 +780,15 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     HINTS
     # if DRACO_DIR is defined, use it.
     $ENV{DRACO_DIR}
-    # regress account on ccscs7
-    /home/regress/cmake_draco/${CTEST_MODEL}_${compiler_short_name}/${CTEST_BUILD_CONFIGURATION}/target
     # Try a path parallel to the work_dir
     ${${dep_pkg}_work_dir}/target
-    )
+  )
 
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
     message( FATAL_ERROR
-      "Could not locate the ${dep_pkg} installation directory. "
-      "${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}" )
+      "Could not locate the ${dep_pkg} installation directory.
+      ${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}
+      ${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
   endif()
 
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )

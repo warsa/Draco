@@ -33,15 +33,6 @@ case ${-} in
    shopt -s checkwinsize # autocorrect window size
    #shopt -s cdspell # autocorrect spelling errors on cd command line.
 
-   # X server resources
-   # if test -f ${HOME}/.Xdefaults; then
-   #     if test -x /usr/X11R6/bin/xrdb; then
-   #         if test ! "${DISPLAY}x" = "x"; then
-   #             /usr/X11R6/bin/xrdb ${HOME}/.Xdefaults
-   #         fi
-   #     fi
-   # fi
-
    ##------------------------------------------------------------------------##
    ## Common aliases
    ##------------------------------------------------------------------------##
@@ -148,14 +139,13 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   # Tell wget to use LANL's www proxy (see
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
   # export http_proxy=http://wpad.lanl.gov/wpad.dat
-  found=`nslookup proxyout.lanl.gov | grep Name | wc -l`
+  found=`nslookup proxyout.lanl.gov | grep -c Name`
   if test ${found} == 1; then
     export http_proxy=http://proxyout.lanl.gov:8080
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
     export HTTPS_PROXY=$http_proxy
-    export http_no_proxy="*.lanl.gov"
-    export no_proxy=lanl.gov
+    export no_proxy=".lanl.gov"
     export NO_PROXY=$no_proxy
   fi
 
@@ -176,18 +166,13 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
       ;;
 
-    # Cielito | Cielo
-    c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_ct
-      ;;
-
     # Mapache | Moonlight | Mustang | Pinto | Wolf | Luna
     mp* | ml* | mu* | pi* | wf* | lu* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 
     # wtrw and rfta
-    red-wtrw* | rfta*)
+    red-wtrw* | rfta* | redcap* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
     # trinitite (tt-fey) | trinity (tr-fe)
@@ -218,7 +203,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   esac
 
   # Generic functions for loading/unloaded the default set of modules.
-  fn_exists=`type dracoenv 2>/dev/null | head -n 1 | grep 'is a function' | wc -l`
+  fn_exists=`type dracoenv 2>/dev/null | head -n 1 | grep -c 'is a function'`
   if test $fn_exists = 0; then
     # only define if they do not already exist...
     function dracoenv ()
@@ -232,7 +217,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       # unload in reverse order.
       mods=( ${dracomodules} )
       for ((i=${#mods[@]}-1; i>=0; i--)); do
-        loaded=`echo $LOADEDMODULES | grep ${mods[$i]} | wc -l`
+        loaded=`echo $LOADEDMODULES | grep -c ${mods[$i]}`
         if test $loaded = 1; then
           module unload ${mods[$i]}
         fi

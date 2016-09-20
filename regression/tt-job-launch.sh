@@ -19,7 +19,7 @@
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
-scriptname=`basename $0`
+scriptname=${0##*/}
 host=`uname -n`
 
 export SHOWQ=/opt/MOAB/bin/showq
@@ -31,26 +31,44 @@ for (( i=0; i < $nargs ; ++i )); do
 done
 
 # sanity check
-if test "${regdir}x" = "x"; then
+if [[ ! ${regdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
     exit 1
 fi
-if test "${rscriptdir}x" = "x"; then
+if [[ ! ${rscriptdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
     exit 1
 fi
-if test "${subproj}x" = "x"; then
+if [[ ! ${subproj} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
     exit 1
 fi
-if test "${build_type}x" = "x"; then
+if [[ ! ${build_type} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
     exit 1
 fi
-if test "${logdir}x" = "x"; then
+if [[ ! ${logdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
     exit 1
 fi
+
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+fi
+
+# What queue should we use
+#access_queue=""
+#if test -x /opt/MOAB/bin/drmgroups; then
+#   avail_queues=`/opt/MOAB/bin/drmgroups`
+avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
+case $avail_queues in
+*access*) access_queue="-A access" ;;
+esac
+#fi
 
 # Banner
 echo "==========================================================================="
@@ -60,15 +78,19 @@ echo " "
 echo "Environment:"
 echo "   subproj        = ${subproj}"
 echo "   build_type     = ${build_type}"
-if test "${extra_params}x" == "x"; then
-echo "   extra_params   = none"
+if [[ ! ${extra_params} ]]; then
+  echo "   extra_params   = none"
 else
-echo "   extra_params   = ${extra_params}"
+  echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
 echo "   logdir         = ${logdir}"
 echo "   dashboard_type = ${dashboard_type}"
+echo "   build_autodoc  = ${build_autodoc}"
 echo " "
 echo "   ${subproj}: dep_jobids = ${dep_jobids}"
 echo " "
@@ -77,26 +99,34 @@ echo " "
 # Wait for all dependencies to be met before creating a new job
 
 for jobid in ${dep_jobids}; do
-    while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
+    while [ `ps --no-headers -u ${USER} -o pid | grep -c ${jobid}` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 min)."
        sleep 5m
     done
 done
 
+# Select haswell or knl partition
+# option '-e knl' will select KNL, default is haswell.
+case $extra_params in
+knl) partition_options="-lnodes=8:knl:ppn=68,walltime=8:00:00" ;;
+*)   partition_options="-lnodes=8:haswell:ppn=32,walltime=8:00:00" ;;
+esac
+
 # Configure, Build on front end
 export REGRESSION_PHASE=cb
-echo " "
 echo "Configure and Build on the front end..."
+echo " "
 cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
 # Wait for CB (Configure and Build) before starting the testing and
 # reporting from the login node:
-export REGRESSION_PHASE=t
 echo " "
+export REGRESSION_PHASE=t
 echo "Test from the login node..."
-cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${rscriptdir}/tt-regress.msub"
+echo " "
+cmd="/opt/MOAB/bin/msub -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${partition_options} ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 jobid=`echo $jobid | sed '/^$/d'`
@@ -110,8 +140,10 @@ while test "`${SHOWQ} | grep $jobid`" != ""; do
 done
 
 # Submit from the front end
+echo " "
+echo "Submit:"
 export REGRESSION_PHASE=s
-echo "Jobs done, now submitting ${build_type} results from tt-fey."
+echo "- jobs done, now submitting ${build_type} results from tt-fey."
 cmd="${rscriptdir}/tt-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"

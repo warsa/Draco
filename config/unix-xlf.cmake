@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # Let anyone who is interested in which FORTRAN compiler we're using
 # switch on this macro.
@@ -40,7 +38,6 @@ set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" 
 # Toggle compiler flags for optional features
 #
 toggle_compiler_flag( OPENMP_FOUND ${OpenMP_Fortran_FLAGS} "Fortran" "" )
-#toggle_compiler_flag( USE_OPENMP "-qsmp=omp" "Fortran" "")
 
 # ----------------------------------------------------------------------------
 # Helper macro to fix the value of

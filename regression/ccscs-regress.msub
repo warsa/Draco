@@ -13,23 +13,23 @@
 
 # Sanity Check
 # ----------------------------------------
-if test "${subproj}x" == "x"; then
+if [[ ! ${subproj} ]]; then
    echo "Fatal Error, subproj not found in environment."
    exit 1
 fi
-if test "${regdir}x" == "x"; then
+if [[ ! ${regdir} ]]; then
    echo "Fatal Error, regdir not found in environment."
    exit 1
 fi
-if test "${rscriptdir}x" == "x"; then
+if [[ ! ${rscriptdir} ]]; then
    echo "Fatal Error, rscriptdir not found in environment."
    exit 1
 fi
-if test "${build_type}x" == "x"; then
+if [[ ! ${build_type} ]]; then
    echo "Fatal Error, build_type not found in environment."
    exit 1
 fi
-if test "${logdir}x" == "x"; then
+if [[ ! ${logdir} ]]; then
    echo "Fatal Error, logdir not found in environment."
    exit 1
 fi
@@ -39,49 +39,45 @@ fi
 umask 0002
 ulimit -a
 
-unset http_proxy
-unset HTTP_PROXY
-unset https_proxy
-unset HTTPS_PROXY
+export http_proxy=http://proxyout.lanl.gov:8080
+export HTTP_PROXY=$http_proxy
+export https_proxy=$http_proxy
+export HTTPS_PROXY=$http_proxy
+# ctest submit seems to ignore these no proxy settings, so we must unset the
+# above proxy env variables before submitting the results to cdash.
+export no_proxy="localhost,127.0.0.1,rtt.lanl.gov,.lanl.gov"
+export NO_PROXY=$no_proxy
 export VENDOR_DIR=/scratch/vendors
+# gitlab.lanl.gov has an unkown certificate, disable checking
+export GIT_SSL_NO_VERIFY=true
 
-run () {
-    echo $1
-    if ! [ $dry_run ]; then
-       eval $1
+# import some bash functions
+source $rscriptdir/scripts/common.sh
+
+case $REGRESSION_PHASE in
+cbt)
+    ctestparts=Configure,Build,Test
+    if test "${build_autodoc:-off}" == "on"; then
+      ctestparts="${ctestparts},Autodoc"
     fi
-}
-
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
+    ;;
+s)
+    ctestparts=Submit
+    # Submitting to CDash requires this
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    ;;
+esac
 
 # Header
 # ----------------------------------------
 machine=`uname -n | sed -e 's/[.].*//g'`
-case $machine in
-ccscs[0-9])
-    ctestparts=Configure,Build,Test,Submit
-    if test "${build_autodoc:-off}" == "on"; then
-      ctestparts="${ctestparts},Autodoc"
-    fi
-    # Force new log file (vs appending)
-    echo "     " > ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log
-    echo "==========================================================================="
-    echo "CCSCS Regression: ${ctestparts} from ${machine}."
-    echo "                  ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
-    echo "==========================================================================="
-    ;;
-#ccscs-fey*)
-#    ctestparts=Submit ;;
-*)
-    echo "FATAL ERROR: Machine ( $machine ) unknown by regression system"
-    exit 1 ;;
-esac
+echo "==========================================================================="
+echo "CCSCS Regression: ${ctestparts} from ${machine}."
+echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
+echo "==========================================================================="
 
 # Modules
 # ----------------------------------------
@@ -182,6 +178,14 @@ gcc530bc)
     run "module load ndi metis parmetis trilinos"
     comp=gcc-6.1.0
   ;;
+valgrind)
+  echo "Dynamic Analysis (valgrind) option selected."
+  if ! test "${build_type}" == "Debug"; then
+    echo "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+    exit 1
+  fi
+  build_type=DynamicAnalysis
+  ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
@@ -192,8 +196,21 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
-if test ${USE_GITHUB} == 1; then
-  comp=github-$featurebranch-$comp
+if test ${USE_GITHUB:-0} == 1; then
+  comp=$comp-$featurebranch
+fi
+
+# When run by crontab, use a special ssh-key to allow authentication to gitlab
+if test "$USER" == "kellyt"; then
+  run "module load git"
+  MYHOSTNAME="`uname -n`"
+  keychain=keychain-2.8.2
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+  if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  fi
 fi
 
 # ----------------------------------------
@@ -210,10 +227,10 @@ fi
 # Regression type: Experimental (default), Nightly, Continuous
 # Build type     : Release, Debug, Coverage
 
-if test "${dashboard_type}x" = "x"; then
-   dashboard_type=Nightly
+if [[ ! ${dashboard_type} ]]; then
+   dashboard_type=Experimental
 fi
-if test "${base_dir}x" = "x"; then
+if [[ ! ${base_dir} ]]; then
    if test "${regress_mode}" = "off"; then
       moniker=`whoami`
       base_dir=/scratch/${moniker}
@@ -265,7 +282,7 @@ fi
 echo "ccscs-regress.msub: work_dir       = ${work_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
-if ! test "${setup_dirs}x" = "x"; then
+if [[ ${setup_dirs} ]]; then
    if ! test -d ${work_dir}; then
       /usr/bin/install -d ${work_dir}/source
       /usr/bin/install -d ${work_dir}/build
@@ -292,6 +309,10 @@ if test "${build_type}" = "Coverage"; then
       cov01 --on
    fi
 fi
+if test "${build_type}" = "DynamicAnalysis"; then
+   # DynamicAnalysis builds imply Debug builds.
+   build_type="Debug,${build_type}"
+fi
 if test "${bounds_checking:-off}" = "on"; then
     build_type="${build_type},bounds_checking"
 fi
@@ -305,8 +326,12 @@ echo "--------------------(end environment)--------------------------"
 echo ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctestparts}
 
+if test -f "$COVFILE"; then
+  run "cp $COVFILE $COVFILE.bak"
+fi
+
 run "chgrp -R draco ${work_dir}"
-run "chmod -R g+rwX ${work_dir}"
+run "chmod -R g+rwX,o-rwX ${work_dir}"
 
 echo "All done."
 

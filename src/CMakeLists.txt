@@ -113,7 +113,8 @@ else()
   string( TOUPPER ${CMAKE_BUILD_TYPE} Draco_BUILD_TYPE )
 endif()
 
-message("Draco build summary:
+message("
+Draco build summary:
 
 Version     : Draco ${DRACO_VERSION_FULL}
 Build type  : ${Draco_BUILD_TYPE}
@@ -137,11 +138,11 @@ if( CMAKE_CONFIGURATION_TYPES )
     message("FC Release F: ${CMAKE_Fortran_FLAGS_RELEASE}")
   endif()
 else()
-  message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${Draco_BUILD_TYPE}}")
-  message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${Draco_BUILD_TYPE}}")
+  message("C FLAGS     : ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
+  message("CXX FLAGS   : ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
   if( _LANGUAGES_ MATCHES Fortran)
     message("Fortran     : ${CMAKE_Fortran_COMPILER}")
-    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${Draco_BUILD_TYPE}}")
+    message("FC FLAGS    : ${CMAKE_Fortran_FLAGS} ${CMAKE_Fortran_FLAGS_${CMAKE_BUILD_TYPE}}")
   endif()
 endif()
 if( CAFS_Fortran_COMPILER )
@@ -151,6 +152,20 @@ message(
   "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 ")
+if( CRAY_PE AND ENV{CRAYPE_VERSION} )
+  message("Cray system detected: CC -craype-verbose -V:
+")
+  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" )
+    set( ver_opt "--version")
+  else( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
+    set( ver_opt "-V")
+  endif()
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -craype-verbose ${ver_opt}
+    OUTPUT_VARIABLE tmp
+    )
+  message("${tmp}")
+endif()
 
 # Push some variables up one level
 set( Draco_EXPORT_TARGET_PROPERTIES

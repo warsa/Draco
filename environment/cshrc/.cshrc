@@ -73,39 +73,6 @@ case redcap*:
     module load git svn
     breaksw
 
-case ct*:
-case ci*:
-    setenv VENDOR_DIR /usr/projects/draco/vendors
-    # source /usr/projects/crestone/dotfiles/Cshrc
-    module load user_contrib friendly-testing
-
-    # Move some environment out of the way.
-    module unload PrgEnv-intel PrgEnv-pgi
-    module unload cmake numdiff svn gsl
-    module unload papi perftools
-
-    # load the Intel programming env, but then unloda libsci and totalview
-    module load PrgEnv-intel # this loads xt-libsci and intel/XXX
-    module unload xt-libsci intel # xt-totalview
-    module load intel/15.0.5.223
-
-    # draco modules start here.
-    module load metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3
-    module load gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4 emacs
-    module load subversion git gcc
-
-    setenv OMP_NUM_THREADS 8
-    setenv CXX CC
-    setenv CC cc
-    setenv FC ftn
-    setenv CRAYPE_LINK_TYPE dynamic
-
-    # Avoid run time messages of the form:
-    # "OMP: Warning #72: KMP_AFFINITY: affinity only supported for Intel(R) processors."
-    # Ref: http://software.intel.com/en-us/articles/bogus-openmp-kmp_affinity-warnings-on-non-intel-processor-hosts/
-    setenv KMP_AFFINITY none
-    breaksw
-
 case tt*:
 case tr*:
 
@@ -120,13 +87,12 @@ case tr*:
 
     # load the Intel programming env, but then unloda libsci and totalview
     module load PrgEnv-intel # this loads xt-libsci and intel/XXX
-    module unload xt-libsci intel # xt-totalview
-    module load intel/15.0.5
+    module unload cray-libsci gcc/6.1.0
 
     # draco modules start here.
     module load metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3
-    module load gsl/2.1 cmake/3.5.2 numdiff ndi random123 eospac/6.2.4
-    module load subversion
+    module load gsl/2.1 cmake/3.6.1 numdiff ndi random123 eospac/6.2.4
+    module load subversion git
 
     setenv OMP_NUM_THREADS 16
     setenv CXX CC

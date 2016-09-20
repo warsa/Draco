@@ -7,10 +7,8 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
- * Functors for use with accumulatev.
+ * Functors for use with TiggsTrace (scatter).
  */
-//---------------------------------------------------------------------------//
-// $Id: Functors.hh 6056 2012-06-19 19:05:27Z kellyt $
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_c4_Functors_hh
@@ -29,26 +27,20 @@ namespace rtt_c4
 template <class T>
 struct max
 {
-    T operator()(const T& x, const T& y) const
-    { 
-        return (x > y)  ? x : y;
-    }
+    T operator()(const T & x, const T & y) const { return (x > y) ? x : y; }
 };
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief A binary functor to find the minimum of two items
  * \param x, the first operand
  * \param y, the second operand
  * \return the lesser value of x or y
- */  
+ */
 template <class T>
-struct min 
+struct min
 {
-    T operator()(const T& x, const T& y) const
-    { 
-        return (x < y) ? x : y;
-    }
+    T operator()(const T & x, const T & y) const { return (x < y) ? x : y; }
 };
 
 } // end namespace rtt_c4

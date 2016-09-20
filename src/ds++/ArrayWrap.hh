@@ -4,7 +4,6 @@
   \author  Paul Henning
   \brief   Declaration of class ArrayWrap
   \note    Copyright 2016 Los Alamos National Security, LLC.
-  \version $Id$
 */
 //---------------------------------------------------------------------------//
 #ifndef ArrayWrap_hh
@@ -21,7 +20,7 @@
 
 // This class should not be removed unless
 // jayenne/clubimc/src/imc/*_Particle.* routines can be compiled with
-// std::array.  
+// std::array.
 
 #else
 
@@ -36,19 +35,18 @@ namespace rtt_dsxx
  * this class is to allow zero-length arrays, and to provide normal container
  * iterator stuff.
  */
-template<class T, unsigned N>
+template <class T, unsigned N>
 class ArrayWrap
 {
   public:
-    typedef T& reference;
+    typedef T & reference;
     typedef T const & const_reference;
-    typedef T* iterator;
+    typedef T * iterator;
     typedef T const * const_iterator;
     typedef unsigned size_type;
     typedef T value_type;
 
   public:
-    
     bool empty() const { return false; }
 
     size_type size() const { return N; }
@@ -71,9 +69,9 @@ class ArrayWrap
     const_iterator end() const { return d_data + N; }
 
     reference front() { return d_data[0]; }
-    reference back() { return d_data[N-1]; }
-    
-    T* c_array() { return d_data; }
+    reference back() { return d_data[N - 1]; }
+
+    T * c_array() { return d_data; }
     T const * c_array() const { return d_data; }
 
     T const * operator+(const unsigned n) const
@@ -82,7 +80,7 @@ class ArrayWrap
         return d_data + n;
     }
 
-    T * operator+(const unsigned n) 
+    T * operator+(const unsigned n)
     {
         Require(n < N);
         return d_data + n;
@@ -92,22 +90,20 @@ class ArrayWrap
     T d_data[N];
 };
 
-
 // ---------------------------------------------------------------------------
 
-
 /* Specialization of the class for zero-length arrays */
-template<class T> class ArrayWrap<T, 0>
+template <class T>
+class ArrayWrap<T, 0>
 {
   public:
-    typedef T&  reference;
+    typedef T & reference;
     typedef T const & const_reference;
-    typedef T* iterator;
+    typedef T * iterator;
     typedef T const * const_iterator;
     typedef unsigned size_type;
 
   public:
-
     bool empty() const { return true; }
     size_type size() const { return 0; }
 
@@ -116,7 +112,7 @@ template<class T> class ArrayWrap<T, 0>
     const_iterator begin() const { return const_iterator(0); }
     const_iterator end() const { return const_iterator(0); }
 
-    reference operator[](const unsigned) 
+    reference operator[](const unsigned)
     {
         Require(0);
         return d_data;
@@ -128,15 +124,12 @@ template<class T> class ArrayWrap<T, 0>
         return d_data;
     }
 
-
-    T* c_array() { return 0; }
+    T * c_array() { return 0; }
     T const * c_array() const { return 0; }
 
   private:
     T d_data;
-
 };
-
 }
 
 #endif // HAS_CXX11_ARRAY

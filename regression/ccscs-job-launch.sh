@@ -19,7 +19,7 @@
 # command line arguments
 args=( "$@" )
 nargs=${#args[@]}
-scriptname=`basename $0`
+scriptname=${0##*/}
 host=`uname -n`
 
  # Dependencies: wait for these jobs to finish
@@ -29,39 +29,60 @@ for (( i=0; i < $nargs ; ++i )); do
 done
 
 # sanity check
-if test "${regdir}x" = "x"; then
+if [[ ! ${regdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
-if test "${rscriptdir}x" = "x"; then
+if [[ ! ${rscriptdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
-if test "${subproj}x" = "x"; then
+if [[ ! ${subproj} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
-if test "${build_type}x" = "x"; then
+if [[ ! ${build_type} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
 fi
-if test "${logdir}x" = "x"; then
+if [[ ! ${logdir} ]]; then
     echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    echo "printenv -> "
+    printenv
     exit 1
+fi
+
+if test $subproj == draco || test $subproj == jayenne; then
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
 fi
 
 # Banner
 echo "==========================================================================="
-echo "CCSCS Regression job launcher"
+echo "CCSCS Regression job launcher for ${subproj} - ${build_type} flavor."
 echo "==========================================================================="
 echo " "
 echo "Environment:"
 echo "   subproj        = ${subproj}"
 echo "   build_type     = ${build_type}"
-if test "${extra_params}x" == "x"; then
-echo "   extra_params   = none"
+if [[ ! ${extra_params} ]]; then
+  echo "   extra_params   = none"
 else
-echo "   extra_params   = ${extra_params}"
+  echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
 fi
 echo "   regdir         = ${regdir}"
 echo "   rscriptdir     = ${rscriptdir}"
@@ -76,15 +97,31 @@ echo " "
 # Wait for all dependencies to be met before creating a new job
 
 for jobid in ${dep_jobids}; do
-    while [ `ps --no-headers -u ${USER} -o pid | grep ${jobid} | wc -l` -gt 0 ]; do
+    while [ `ps --no-headers -u ${USER} -o pid | grep -c ${jobid}` -gt 0 ]; do
        echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 min)."
        sleep 5m
     done
 done
 
+if ! test -d $logdir; then
+  mkdir -p $logdir
+  chgrp draco $logdir
+  chmod g+rwX $logdir
+  chmod g+s $logdir
+fi
+
 # Configure, Build, Test and Submit (no Torque batch system here).
-export REGRESSION_PHASE=cbts
-cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-cbts.log"
+# (c)onfigure, (b)uild, (t)est, (s)ubmit
+
+echo "Configure, Build, Test:"
+export REGRESSION_PHASE=cbt
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
+echo "${cmd}"
+eval "${cmd}"
+
+echo "Submit:"
+export REGRESSION_PHASE=s
+cmd="${rscriptdir}/ccscs-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 

@@ -1,76 +1,51 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/update_regression_scripts.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 umask 0002
 
 target="`uname -n | sed -e s/[.].*//`"
-MYHOSTNAME="`uname -n`"
-arch=`uname -m`
 
-# Helper function
-run () {
-  echo $1
-  if ! [ $dry_run ]; then eval $1; fi
-}
+# Locate the directory that this script is located in:
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Ensure that the permissions are correct
+# import some bash functions
+source $scriptdir/scripts/common.sh
+
+# Per machine setup
 case ${target} in
-  darwin-login*)
-    echo "Please run regressions from darwin-fe instead of darwin-login."
-    exit 1
-    ;;
   darwin-fe* | cn[0-9]*)
+    REGDIR=/usr/projects/draco/regress
+    keychain=keychain-2.7.1
+    VENDOR_DIR=/usr/projects/draco/vendors
     # personal copy of ssh-agent.
     export PATH=$HOME/bin:$PATH
-    /usr/projects/draco/vendors/keychain-2.7.1/keychain $HOME/.ssh/cmake_dsa
-    if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-       source $HOME/.keychain/$MYHOSTNAME-sh
-    fi
-
-    # Load keytab: (see notes at draco/regression/push_repositories_xf.sh)
-    # Use a different cache location to avoid destroying any active user's
-    # kerberos.
-    # export KRB5CCNAME=/tmp/regress_kerb_cache
-    # Obtain kerberos authentication via keytab
-    # run "kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov"
-
-    #module unload subversion
-    #module load subversion
     if test -d /projects/opt/centos7/subversion/1.9.2/bin; then
       export PATH=/projects/opt/centos7/subversion/1.9.2/bin:$PATH
     fi
     SVN=`which svn`
-    # SVN=/projects/opt/centos7/subversion/1.9.2/bin/svnsync
-    REGDIR=/usr/projects/draco/regress
-
-    svnroot=/usr/projects/draco/regress/svn
-    if ! test -d; then
-      echo "*** SVN repository not found ***"
-      exit 1
-      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-      # mkdir -p ${svnroot}; cd ${svnroot}
-      # svnadmin create ${svnroot}/jayenne
-      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-      # cd jayenne/hooks
-      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-      # vi pre-commit; comment out all code and add...
-      #if ! test `whoami` = 'kellyt'; then
-      #echo "This is a read only repository.  The real SVN repository is"
-      #echo "at svn+ssh://ccscs7/ccs/codes/radtran/svn/draco."
-      #exit 1
-      #fi
-      #exit 0
-      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-      #    pre-revprop-change
-      # vi pre-revprop-change --> comment out all code.
-      # cd $svnroot
-      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs7/ccs/codes/radtran/svn/jayenne
-      # svnsync sync file:///${svnroot}/jayenne
-    fi
-
-    run "${SVN}sync --non-interactive sync file://${svnroot}/draco"
-    run "${SVN}sync --non-interactive sync file://${svnroot}/jayenne"
-    run "${SVN}sync --non-interactive sync file://${svnroot}/capsaicin"
-    # run "${SVN}sync --non-interactive sync file:///${svnroot}/asterisk"
+    export http_proxy=http://proxyout.lanl.gov:8080;
+    export https_proxy=$http_proxy;
+    export HTTP_PROXY=$http_proxy;
+    export HTTPS_PROXY=$http_proxy;
+    export no_proxy="localhost,127.0.0.1,.lanl.gov";
+    export NO_PROXY=$no_proxy;
+    ;;
+  ccscs*)
+    REGDIR=/scratch/regress
+    keychain=keychain-2.8.2
+    SVN=/scratch/vendors/subversion-1.9.3/bin/svn
+    ;;
+  ml-*)
+    REGDIR=/usr/projects/jayenne/regress
+    keychain=keychain-2.7.1
+    VENDOR_DIR=/usr/projects/draco/vendors
+    SVN=/usr/projects/hpcsoft/toss2/common/subversion/1.9.1/bin/svn
     ;;
   *)
     # module load user_contrib subversion
@@ -79,11 +54,60 @@ case ${target} in
     ;;
 esac
 
-# Update main regression scripts
-run "cd ${REGDIR}/draco/config; ${SVN} update"
-run "cd ${REGDIR}/draco/regression; ${SVN} update"
-run "cd ${REGDIR}/draco/environment; ${SVN} update"
-run "cd ${REGDIR}/draco/tools; ${SVN} update"
-run "cd ${REGDIR}/jayenne/regression; ${SVN} update"
+# Load some identities used for accessing gitlab.
+MYHOSTNAME="`uname -n`"
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+fi
+
+# ---------------------------------------------------------------------------- #
+# Update the regression script directories
+# ---------------------------------------------------------------------------- #
+
+# Draco
+echo " "
+echo "Updating $REGDIR/draco..."
+if ! test -d $REGDIR; then
+  run "mkdir -p ${REGDIR}"
+fi
+if test -d ${REGDIR}/draco; then
+  run "cd ${REGDIR}/draco; git pull"
+else
+  run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
+fi
+# Deal with proxy stuff on darwin
+case ${target} in
+  darwin-fe* | cn[0-9]*)
+    unset http_proxy;
+    unset https_proxy;
+    unset HTTP_PROXY;
+    unset HTTPS_PROXY;
+    unset no_proxy;
+    unset NO_PROXY;
+  ;;
+esac
+
+# Jayenne
+echo " "
+echo "Updating $REGDIR/jayenne..."
+if test -d ${REGDIR}/jayenne; then
+  run "cd ${REGDIR}/jayenne; git pull"
+else
+  run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:jayenne/jayenne.git"
+fi
+# Capsaicin
+echo " "
+echo "Updating $REGDIR/capsaicin..."
+if test -d ${REGDIR}/capsaicin/scripts; then
 run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
-#run "cd ${REGDIR}/asterisk/regression; ${SVN} update"
+else
+  run "mkdir -p ${REGDIR}/capsaicin; cd ${REGDIR}/capsaicin"
+  run "${SVN} co svn+ssh://ccscs7.lanl.gov/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
+fi
+
+##---------------------------------------------------------------------------##
+## End update_regression_scripts.sh
+##---------------------------------------------------------------------------##
