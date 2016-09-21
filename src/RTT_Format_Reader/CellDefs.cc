@@ -543,15 +543,6 @@ void CellDef::redefineCellDef(
         {
             for (unsigned i = 0; i < nnodes; ++i)
                 node_map[i] = i;
-
-            std::cout << " Polyhedron OR quad9" << std::endl;
-            for (size_t i = 0; i < new_ordered_sides.size(); ++i)
-            {
-                std::cout << " Side " << i << " nodes: " << std::endl;
-                for (size_t n = 0; n < ordered_sides[i].size(); ++n)
-                    std::cout << " " << ordered_sides[i][n] << std::endl;
-                std::cout << std::endl;
-            }
         }
     }
 
