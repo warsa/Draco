@@ -203,7 +203,7 @@ void test_polyhedron(rtt_dsxx::UnitTest & ut)
         }
         else
         {
-            PASSMSG("Number of corners is correct be 13");
+            PASSMSG("Number of corners is correct 13");
         }
 
     } // End polyhedron mesh test
