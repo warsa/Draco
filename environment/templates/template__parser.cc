@@ -13,10 +13,10 @@
 
 namespace rtt_parser {
 using namespace rtt_dsxx;
-using namespace<namespace>;
+using namespace <namespace>;
 
-Class_Parse_Table << class >> *Class_Parse_Table << class >> ::current_;
-Parse_Table Class_Parse_Table << class >> ::parse_table_;
+Class_Parse_Table <<class>> *Class_Parse_Table <<class>> ::current_;
+Parse_Table Class_Parse_Table <<class>> ::parse_table_;
 
 //----------------------------------------------------------------------------//
 Class_Parse_Table <<class>> ::Class_Parse_Table() {
