@@ -1,21 +1,19 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/CellDefs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDefs class.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
-// $Id$
 //---------------------------------------------------------------------------//
 
 #include "CellDefs.hh"
 
 namespace rtt_RTT_Format_Reader {
 /*!
- * \brief Parses the cell_defs (cell definitions) data block from the mesh 
+ * \brief Parses the cell_defs (cell definitions) data block from the mesh
  *        file via calls to private member functions.
  * \param meshfile Mesh file name.
  */
@@ -71,11 +69,11 @@ void CellDefs::readEndKeyword(ifstream &meshfile) {
 }
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file
- *        to an alternative coordinate-system independent cell definition 
+ *        to an alternative coordinate-system independent cell definition
  *        (e.g., CYGNUS).
- * \param cell_side_types New side types for each of the existing cell 
+ * \param cell_side_types New side types for each of the existing cell
  *        definitions.
- * \param cell_ordered_sides New ordered sides for each of the existing cell 
+ * \param cell_ordered_sides New ordered sides for each of the existing cell
  *        definitions.
  */
 void CellDefs::redefineCellDefs(
@@ -144,7 +142,7 @@ void CellDef::readDef(ifstream &meshfile) {
 }
 /*!
  * \brief Changes the cell definitions specified in the RTT_Format file
- *        to an alternative coordinate-system independent cell definition 
+ *        to an alternative coordinate-system independent cell definition
  *        (e.g., CYGNUS).
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
@@ -383,6 +381,7 @@ void CellDef::redefineCellDef(
           std::count(new_ordered_sides[new_tri].begin(),
                      new_ordered_sides[new_tri].end(), n) == 0)
         new_node = n;
+
       if (std::count(ordered_sides[old_quad].begin(),
                      ordered_sides[old_quad].end(), n) == 0 &&
           std::count(ordered_sides[old_tri].begin(),
@@ -409,6 +408,7 @@ void CellDef::redefineCellDef(
                        new_node) > 0)
           for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
             ++new_node_count[new_ordered_sides[s][c]];
+
         if (std::count(ordered_sides[s].begin(), ordered_sides[s].end(),
                        old_node) > 0)
           for (size_t c = 0; c < ordered_sides[s].size(); c++)
@@ -464,16 +464,9 @@ void CellDef::redefineCellDef(
     {
       for (unsigned i = 0; i < nnodes; ++i)
         node_map[i] = i;
-
-      std::cout << " Polyhedron OR quad9" << std::endl;
-      for (size_t i = 0; i < new_ordered_sides.size(); ++i) {
-        std::cout << " Side " << i << " nodes: " << std::endl;
-        for (size_t n = 0; n < ordered_sides[i].size(); ++n)
-          std::cout << " " << ordered_sides[i][n] << std::endl;
-        std::cout << std::endl;
-      }
     }
   }
+
   // Assign the new side types, sides, and ordered sides to this cell
   // definition.
   side_types = new_side_types;
