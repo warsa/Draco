@@ -61,31 +61,6 @@ macro( setupLAPACKLibrariesUnix )
     message( STATUS "Looking for lapack....not found")
   endif()
 
-  # If the above searches for LAPACK failed, then try to find netlib-lapack and
-  # netlib-blas on the local system (without the cmake config files).
-
-  if( NOT lapack_FOUND )
-      message( STATUS "Looking for lapack (no cmake config files)...")
-      find_package( BLAS QUIET )
-
-      if( BLAS_FOUND )
-        find_package( LAPACK QUIET)
-        set( lapack_FOUND TRUE )
-        add_library( lapack SHARED IMPORTED)
-        add_library( blas   SHARED IMPORTED)
-        set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_blas_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${LAPACK_lapack_LIBRARY}"
-          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        message(STATUS "Looking for lapack(no cmake config)...found ${LAPACK_lapack_LIBRARY}")
-      else()
-        message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
-      endif()
-
-  endif()
-
   mark_as_advanced( lapack_DIR lapack_FOUND )
 
   # Above we tried to find lapack-config.cmake at
@@ -177,6 +152,31 @@ macro( setupLAPACKLibrariesUnix )
         message(STATUS "Looking for lapack(OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
       else()
         message(STATUS "Looking for lapack(OpenBLAS)...NOTFOUND")
+      endif()
+
+  endif()
+
+  # If the above searches for LAPACK failed, then try to find netlib-lapack and
+  # netlib-blas on the local system (without the cmake config files).
+
+  if( NOT lapack_FOUND )
+      message( STATUS "Looking for lapack (no cmake config files)...")
+      find_package( BLAS QUIET )
+
+      if( BLAS_FOUND )
+        find_package( LAPACK QUIET)
+        set( lapack_FOUND TRUE )
+        add_library( lapack SHARED IMPORTED)
+        add_library( blas   SHARED IMPORTED)
+        set_target_properties( blas PROPERTIES
+          IMPORTED_LOCATION                 "${BLAS_blas_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LOCATION                 "${LAPACK_lapack_LIBRARY}"
+          IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
+        message(STATUS "Looking for lapack(no cmake config)...found ${LAPACK_lapack_LIBRARY}")
+      else()
+        message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
       endif()
 
   endif()
