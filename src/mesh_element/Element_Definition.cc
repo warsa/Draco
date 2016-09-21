@@ -9,10 +9,9 @@
  *         All rights reserved. 
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "Element_Definition.hh"
+#include <algorithm>
 #include <iostream>
 
 namespace rtt_mesh_element {
@@ -20,7 +19,7 @@ namespace rtt_mesh_element {
 //---------------------------------------------------------------------------//
 Element_Definition::Element_Definition(Element_Type const &type_)
     : name(), type(type_), dimension(0), number_of_nodes(0), number_of_sides(0),
-      elem_defs(), side_type(), side_nodes(), node_loc() {
+      elem_defs(), side_type(), side_nodes() {
   switch (type) {
 
   case NODE:
@@ -40,6 +39,9 @@ Element_Definition::Element_Definition(Element_Type const &type_)
     break;
 
   case QUAD_4:
+  case QUAD_5:
+  case QUAD_6:
+  case QUAD_7:
   case QUAD_8:
   case QUAD_9:
     construct_quad();
@@ -72,6 +74,9 @@ Element_Definition::Element_Definition(Element_Type const &type_)
     Ensure(invariant_satisfied());
     break;
 
+  case POLYHEDRON:
+    dimension = 3;
+    break;
   case POLYGON:
     dimension = 2;
     break;
@@ -79,21 +84,6 @@ Element_Definition::Element_Definition(Element_Type const &type_)
   default:
     Insist(false, "Unrecognized Element-Type Flag");
   }
-
-  //     number_of_face_nodes.resize(side_type.size());
-  //     for (unsigned s=0; s < side_type.size(); ++s)
-  //         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
-
-  //     face_nodes.resize(side_nodes.size());
-
-  //     for (unsigned s=0; s < face_nodes.size(); ++s)
-  //     {
-  //         std::vector<int> nodes(get_side_nodes(s));
-  //         face_nodes[s].resize(nodes.size());
-
-  //         for (unsigned n=0; n < nodes.size(); ++n)
-  //             face_nodes[s][n] = nodes[n];
-  //     }
 }
 
 //---------------------------------------------------------------------------//
@@ -101,72 +91,43 @@ Element_Definition::Element_Definition(
     std::string name_, size_t dimension_, size_t number_of_nodes_,
     size_t number_of_sides_, std::vector<Element_Definition> const &elem_defs_,
     std::vector<int> const &side_type_,
-    std::vector<std::vector<size_t>> const &side_nodes_,
-    std::vector<Node_Location> const &node_loc_)
-    : name(name_), type(POLYGON), dimension(dimension_),
-      number_of_nodes(number_of_nodes_), number_of_sides(number_of_sides_),
-      elem_defs(elem_defs_), side_type(side_type_), side_nodes(side_nodes_),
-      node_loc(node_loc_) {
+    std::vector<std::vector<size_t>> const &side_nodes_)
+    : name(name_), type((dimension_ == 2) ? POLYGON : POLYHEDRON),
+      dimension(dimension_), number_of_nodes(number_of_nodes_),
+      number_of_sides(number_of_sides_), elem_defs(elem_defs_),
+      side_type(side_type_), side_nodes(side_nodes_) {
+  //---------------------------------------------------------------------------//
+  // Check input first, before any modifications
   Require(number_of_nodes_ > 0);
 
-#if DBC & 1
   for (unsigned i = 0; i < elem_defs_.size(); ++i) {
     Require(elem_defs_[i].get_dimension() + 1 == dimension_);
   }
-#endif
   Require(side_type_.size() == number_of_sides_);
-#if DBC & 1
   for (unsigned i = 0; i < number_of_sides_; ++i) {
-    Require(static_cast<unsigned>(side_type_[i]) < elem_defs.size());
+    Require(static_cast<unsigned>(side_type_[i]) < elem_defs_.size());
   }
-#endif
   Require(side_nodes_.size() == number_of_sides_);
-  Require(node_loc_.size() == number_of_nodes_);
-#if DBC & 1
   for (unsigned i = 0; i < number_of_sides_; ++i) {
     Require(side_nodes_[i].size() ==
             elem_defs_[side_type_[i]].get_number_of_nodes());
 
     for (unsigned j = 0; j < side_nodes_[i].size(); ++j) {
       Require(static_cast<unsigned>(side_nodes_[i][j]) < number_of_nodes_);
-
-      Require(elem_defs_[side_type_[i]].get_node_location(j) ==
-              node_loc_[side_nodes_[i][j]]);
     }
   }
-#endif
 
-  Ensure(invariant_satisfied());
-
-  Ensure(get_type() == Element_Definition::POLYGON);
+  Ensure(get_type() == Element_Definition::POLYGON ||
+         get_type() == Element_Definition::POLYHEDRON);
   Ensure(get_name() == name_);
   Ensure(get_dimension() == dimension_);
   Ensure(get_number_of_nodes() == number_of_nodes_);
   Ensure(get_number_of_sides() == number_of_sides_);
-#if DBC & 4
-  for (unsigned i = 0; i < number_of_nodes; ++i) {
-    Ensure(get_node_location(i) == node_loc_[i]);
-  }
   for (unsigned i = 0; i < number_of_sides; ++i) {
-    //         Ensure( get_side_type(i)==elem_defs_[side_type_[i]]  );
     Ensure(get_side_nodes(i) == side_nodes_[i]);
   }
-#endif
 
-  //     number_of_face_nodes.resize(side_type.size());
-  //     for (unsigned s=0; s < side_type.size(); ++s)
-  //         number_of_face_nodes[s] = get_side_type(s).get_number_of_nodes();
-
-  //     face_nodes.resize(side_nodes.size());
-
-  //     for (unsigned s=0; s < face_nodes.size(); ++s)
-  //     {
-  //         std::vector<int> nodes(get_side_nodes(s));
-  //         face_nodes[s].resize(nodes.size());
-
-  //         for (unsigned n=0; n < nodes.size(); ++n)
-  //             face_nodes[s][n] = nodes[n];
-  //     }
+  Ensure(invariant_satisfied());
 }
 
 //---------------------------------------------------------------------------//
@@ -189,7 +150,6 @@ bool Element_Definition::invariant_satisfied() const {
 
   ldum = ldum && (side_type.size() == number_of_sides);
   ldum = ldum && (side_nodes.size() == number_of_sides);
-  ldum = ldum && (node_loc.size() == number_of_nodes);
 
   for (size_t i = 0; i < elem_defs.size(); i++)
     ldum = ldum && (elem_defs[i].dimension == dimension - 1);
@@ -201,8 +161,6 @@ bool Element_Definition::invariant_satisfied() const {
     for (size_t j = 0; j < side_nodes[i].size(); j++) {
       // ldum = ldum && (side_nodes[i][j] >= 0);
       ldum = ldum && (side_nodes[i][j] < number_of_nodes);
-      ldum = ldum && (node_loc[side_nodes[i][j]] ==
-                      elem_defs[side_type[i]].node_loc[j]);
     }
   }
 
@@ -216,7 +174,6 @@ void Element_Definition::construct_node() {
   dimension = 0;
   number_of_sides = 0;
   number_of_nodes = 1;
-  node_loc.push_back(CORNER);
 }
 
 //---------------------------------------------------------------------------//
@@ -230,8 +187,6 @@ void Element_Definition::construct_bar() {
   side_nodes.push_back(tmp);
   tmp[0] = 1;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 2; i++)
-    node_loc.push_back(CORNER);
   switch (type) {
   case BAR_2:
     name = "BAR_2";
@@ -240,7 +195,6 @@ void Element_Definition::construct_bar() {
   case BAR_3:
     name = "BAR_3";
     number_of_nodes = 3;
-    node_loc.push_back(EDGE);
     break;
   default:
     Insist(false, "#2 Unrecognized Element-Type Flag");
@@ -266,8 +220,6 @@ void Element_Definition::construct_tri() {
   tmp[0] = 2;
   tmp[1] = 0;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 3; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case TRI_3:
@@ -282,8 +234,6 @@ void Element_Definition::construct_tri() {
     side_nodes[0].push_back(3);
     side_nodes[1].push_back(4);
     side_nodes[2].push_back(5);
-    for (size_t i = 0; i < 3; i++)
-      node_loc.push_back(EDGE);
     break;
   default:
     Insist(false, "#3 Unrecognized Element-Type Flag");
@@ -312,44 +262,94 @@ void Element_Definition::construct_quad() {
   tmp[0] = 3;
   tmp[1] = 0;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 4; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case QUAD_4:
     name = "QUAD_4";
     number_of_nodes = 4;
     elem_defs.push_back(Element_Definition(BAR_2));
+    for (size_t i = 0; i < number_of_sides; i++)
+      side_type.push_back(0);
+
+    break;
+
+  case QUAD_5:
+    name = "QUAD_5";
+    number_of_nodes = 5;
+
+    elem_defs.push_back(Element_Definition(BAR_2));
+    elem_defs.push_back(Element_Definition(BAR_3));
+
+    for (size_t i = 0; i < 3; i++)
+      side_type.push_back(0);
+
+    for (size_t i = 3; i < number_of_sides; i++) {
+      side_type.push_back(1);
+      side_nodes[i].push_back(i - 3 + number_of_sides);
+    }
+
+    break;
+
+  case QUAD_6:
+    name = "QUAD_6";
+    number_of_nodes = 6;
+
+    elem_defs.push_back(Element_Definition(BAR_2));
+    elem_defs.push_back(Element_Definition(BAR_3));
+
+    for (size_t i = 0; i < 2; i++)
+      side_type.push_back(0);
+
+    for (size_t i = 2; i < number_of_sides; i++) {
+      side_type.push_back(1);
+      side_nodes[i].push_back(i - 2 + number_of_sides);
+    }
+
+    break;
+
+  case QUAD_7:
+    name = "QUAD_7";
+    number_of_nodes = 7;
+
+    elem_defs.push_back(Element_Definition(BAR_2));
+    elem_defs.push_back(Element_Definition(BAR_3));
+
+    for (size_t i = 0; i < 1; i++)
+      side_type.push_back(0);
+
+    for (size_t i = 1; i < number_of_sides; i++) {
+      side_type.push_back(1);
+      side_nodes[i].push_back(i - 1 + number_of_sides);
+    }
+
     break;
   case QUAD_8:
-  case QUAD_9:
+    name = "QUAD_8";
+    number_of_nodes = 8;
     elem_defs.push_back(Element_Definition(BAR_3));
-    for (size_t i = 0; i < 4; i++)
-      node_loc.push_back(EDGE);
+    for (size_t i = 0; i < number_of_sides; i++)
+      side_type.push_back(0);
     side_nodes[0].push_back(4);
     side_nodes[1].push_back(5);
     side_nodes[2].push_back(6);
     side_nodes[3].push_back(7);
-    switch (type) {
-    case QUAD_8:
-      name = "QUAD_8";
-      number_of_nodes = 8;
-      break;
-    case QUAD_9:
-      name = "QUAD_9";
-      number_of_nodes = 9;
-      node_loc.push_back(FACE);
-      break;
-    default:
-      Insist(false, "#4 Unrecognized Element-Type Flag");
-    }
+    break;
+  case QUAD_9:
+    name = "QUAD_9";
+    number_of_nodes = 9;
+    elem_defs.push_back(Element_Definition(BAR_3));
+
+    for (size_t i = 0; i < number_of_sides; i++)
+      side_type.push_back(0);
+
+    side_nodes[0].push_back(4);
+    side_nodes[1].push_back(5);
+    side_nodes[2].push_back(6);
+    side_nodes[3].push_back(7);
     break;
   default:
     Insist(false, "#5 Unrecognized Element-Type Flag");
   }
-
-  for (size_t i = 0; i < number_of_sides; i++)
-    side_type.push_back(0);
 }
 
 //---------------------------------------------------------------------------//
@@ -439,8 +439,6 @@ void Element_Definition::construct_pentagon() {
   tmp[0] = 4;
   tmp[1] = 0;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 4; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case PENTAGON_5:
@@ -479,8 +477,6 @@ void Element_Definition::construct_tetra() {
   tmp[1] = 0;
   tmp[2] = 3;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 4; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case TETRA_4:
@@ -509,8 +505,6 @@ void Element_Definition::construct_tetra() {
     side_nodes[3].push_back(7);
     side_nodes[3].push_back(9);
 
-    for (size_t i = 0; i < 6; i++)
-      node_loc.push_back(EDGE);
     break;
   default:
     Insist(false, "#6 Unrecognized Element-Type Flag");
@@ -548,8 +542,6 @@ void Element_Definition::construct_pyra() {
   tmp[1] = 0;
   tmp[2] = 4;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 5; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case PYRA_5:
@@ -563,9 +555,6 @@ void Element_Definition::construct_pyra() {
     number_of_nodes = 14;
     elem_defs.push_back(Element_Definition(QUAD_8));
     elem_defs.push_back(Element_Definition(TRI_6));
-    for (size_t i = 0; i < 8; i++)
-      node_loc.push_back(EDGE);
-    node_loc.push_back(CELL);
 
     side_nodes[0].push_back(8);
     side_nodes[0].push_back(7);
@@ -628,8 +617,6 @@ void Element_Definition::construct_penta() {
   tmp[1] = 4;
   tmp[2] = 5;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 6; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case PENTA_6:
@@ -640,8 +627,6 @@ void Element_Definition::construct_penta() {
     break;
   case PENTA_15:
   case PENTA_18:
-    for (size_t i = 0; i < 9; i++)
-      node_loc.push_back(EDGE);
 
     side_nodes[0].push_back(6);
     side_nodes[0].push_back(10);
@@ -674,8 +659,6 @@ void Element_Definition::construct_penta() {
       break;
     case PENTA_18:
       name = "PENTA_18";
-      for (size_t i = 0; i < 3; i++)
-        node_loc.push_back(FACE);
       number_of_nodes = 18;
       elem_defs.push_back(Element_Definition(QUAD_9));
       elem_defs.push_back(Element_Definition(TRI_6));
@@ -734,8 +717,6 @@ void Element_Definition::construct_hexa() {
   tmp[2] = 6;
   tmp[3] = 7;
   side_nodes.push_back(tmp);
-  for (size_t i = 0; i < 8; i++)
-    node_loc.push_back(CORNER);
 
   switch (type) {
   case HEXA_8:
@@ -745,8 +726,6 @@ void Element_Definition::construct_hexa() {
     break;
   case HEXA_20:
   case HEXA_27:
-    for (size_t i = 0; i < 12; i++)
-      node_loc.push_back(EDGE);
 
     side_nodes[0].push_back(11);
     side_nodes[0].push_back(10);
@@ -785,9 +764,6 @@ void Element_Definition::construct_hexa() {
       break;
     case HEXA_27:
       name = "HEXA_27";
-      for (size_t i = 0; i < 6; i++)
-        node_loc.push_back(FACE);
-      node_loc.push_back(CELL);
       number_of_nodes = 27;
       elem_defs.push_back(Element_Definition(QUAD_9));
       for (size_t i = 0; i < number_of_sides; i++)
@@ -813,9 +789,6 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
   os_out << "Number of Nodes: " << get_number_of_nodes() << std::endl;
   os_out << "Dimension      : " << get_dimension() << std::endl;
   os_out << "Number of Sides: " << get_number_of_sides() << std::endl;
-  os_out << "Node Locations : ";
-  for (size_t j = 0; j < get_number_of_nodes(); j++)
-    os_out << get_node_location(j) << " ";
   os_out << std::endl;
   if (get_number_of_sides() != 0) {
     os_out << "Side Types     : ";
@@ -837,7 +810,7 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
   {
     std::vector<unsigned> num_face_nodes = get_number_of_face_nodes();
     std::vector<std::vector<unsigned>> face_nodes = get_face_nodes();
-    os_out << "Face Nodes: " << std::endl;
+    os_out << "Face Nodes: " << num_face_nodes.size() << std::endl;
     for (size_t j = 0; j < num_face_nodes.size(); ++j) {
       os_out << "  Face " << j << ": " << num_face_nodes[j] << " nodes : ";
       for (size_t k = 0; k < num_face_nodes[j]; ++k) {
@@ -853,5 +826,5 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
 } // end namespace rtt_mesh_element
 
 //---------------------------------------------------------------------------//
-//                       end of Element_Definition.cc
+// end of Element_Definition.cc
 //---------------------------------------------------------------------------//

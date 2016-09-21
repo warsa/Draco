@@ -8,8 +8,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "Cells.hh"
 
@@ -60,6 +58,11 @@ void Cells::readData(ifstream &meshfile) {
       meshfile >> nodes[i][j];
       --nodes[i][j];
     }
+    // std::cout << " Read the following nodes for cell " << i << std::endl;
+    // for (unsigned j = 0; j < cellDefs.get_nnodes(cellType[i]); ++j)
+    //    std::cout << " " << nodes[i][j];
+    // std::cout << std::endl;
+
     for (size_t j = 0; j < static_cast<size_t>(dims.get_ncell_flag_types());
          ++j) {
       Check(j < flags[i].size());

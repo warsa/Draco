@@ -100,6 +100,10 @@ public:
  */
   virtual size_t get_dims_ndim() const { return rttMesh->get_dims_ndim(); }
 
+  int get_dims_ncells() const { return rttMesh->get_dims_ncells(); }
+
+  int get_dims_nsides() const { return rttMesh->get_dims_nsides(); }
+
   virtual vector_vector_int get_element_nodes() const;
   /*!
  * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and

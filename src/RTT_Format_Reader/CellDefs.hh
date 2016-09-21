@@ -68,7 +68,8 @@ public:
   void readDef(ifstream &meshfile);
   void
   redefineCellDef(vector_int const &new_side_types_,
-                  std::vector<std::vector<size_t>> const &new_ordered_sides);
+                  std::vector<std::vector<size_t>> const &new_ordered_sides,
+                  int const ndim);
 
 public:
   /*!
@@ -110,11 +111,13 @@ public:
      */
   std::vector<size_t> const &get_side(size_t s) const { return sides[s]; }
   /*!
-     * \brief Returns the side definition of the specified side index of this cell
+     * \brief Returns the side definition of the specified side index of this
+     * cell
      *        definition with the returned cell-node indexes ordered to preserve 
      *        the right hand rule for the outward-directed normal.
      * \param s Side index number.
-     * \return The side definition (i.e., the cell-node indexes that comprise the 
+     * \return The side definition (i.e., the cell-node indexes that comprise
+     * the
      *         side).
      */
   std::vector<size_t> const &get_ordered_side(size_t s) const {
@@ -129,19 +132,6 @@ public:
      * \return New nodes map.
      */
   const vector_int &get_node_map() const { return node_map; }
-
-  //     //---------------------------------------------------------------------------//
-  //     /*!
-  //      * \brief Returns the specified new node when cell redefinition has been
-  //      *        performed.
-  //      * \param node_ind Node number index.
-  //      * \return New node number.
-  //      */
-  //     int get_node_map( int node_ind ) const
-  //     {
-  // 	Require( node_map.size() > node_ind );
-  // 	return node_map[node_ind];
-  //     }
 };
 
 //---------------------------------------------------------------------------//
@@ -164,8 +154,11 @@ class CellDefs {
 
 public:
   CellDefs(const Dims &dims_)
-      : dims(dims_), defs(dims.get_ncell_defs()), redefined(false) {}
-  ~CellDefs() {}
+      : dims(dims_), defs(dims.get_ncell_defs()), redefined(false) { /*empty*/
+  }
+
+  ~CellDefs() { /*empty*/
+  }
 
   void readCellDefs(ifstream &meshfile);
   void redefineCellDefs(
@@ -249,7 +242,8 @@ public:
  */
   //    int get_ncell_defs() const { return dims.get_ncell_defs(); }
   /*!
- * \brief Returns the status of the flag indicating that the cell definitions
+     * \brief Returns the status of the flag indicating that the cell
+     * definitions
  *        have been redefined.
  * \return The status of the redefined flag.
  */
@@ -263,15 +257,6 @@ public:
   const vector_int &get_node_map(int cell_def) const {
     return defs[cell_def]->get_node_map();
   }
-  /*!
- * \brief Returns the specified new node for the specified cell definition 
- *        when redefinition has been performed.
- * \param cell_def Cell definition index.
- * \param node_ind Node number index.
- * \return New node number.
- */
-  //     int get_node_map(int cell_def, int node_ind) const
-  //     { return defs[cell_def]->get_node_map(node_ind);}
 };
 
 } // end namespace rtt_RTT_Format_Reader

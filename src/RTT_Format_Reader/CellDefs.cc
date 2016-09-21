@@ -93,7 +93,8 @@ void CellDefs::redefineCellDefs(
     Check(cd < defs.size());
     Check(cd < cell_side_types.size());
     Check(cd < cell_ordered_sides.size());
-    defs[cd]->redefineCellDef(cell_side_types[cd], cell_ordered_sides[cd]);
+    defs[cd]->redefineCellDef(cell_side_types[cd], cell_ordered_sides[cd],
+                              dims.get_ndim());
   }
 }
 /*!
@@ -147,21 +148,24 @@ void CellDef::readDef(ifstream &meshfile) {
  *        (e.g., CYGNUS).
  * \param new_side_types New cell side types.
  * \param new_ordered_sides New cell ordered sides.
+ * \param dimension Topological dimension of the cells in the mesh.
  */
 void CellDef::redefineCellDef(
     vector_int const &new_side_types,
-    std::vector<std::vector<size_t>> const &new_ordered_sides) {
+    std::vector<std::vector<size_t>> const &new_ordered_sides, int const ndim) {
   Insist(new_side_types.size() == nsides, "New side types input error");
   Insist(new_ordered_sides.size() == nsides, "New ordered sides input error");
+
+  Require(ndim >= 0 && ndim <= 3);
 
   node_map.resize(nnodes);
 
   if (name == "point") {
     node_map[0] = 0;
-  } else if (name == "line") {
+  } else if (name == "line" || name == "bar2") {
     node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
     node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
-  } else if (name == "line_qdr") {
+  } else if (name == "line_qdr" || name == "bar3") {
     node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
     node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
     // kgb (060307): I'm guessing BTA never thought about how to map
@@ -181,7 +185,8 @@ void CellDef::redefineCellDef(
       }
     }
     node_map[old_node] = new_node;
-  } else if (name == "triangle" || name == "quad") {
+  } else if (name == "triangle" || name == "tri3" || name == "quad" ||
+             name == "quad4") {
     // Arbitrarily assign the first node in the old and the new cell
     // definitions to be the same. This assumption is necessary because
     // the cell definitions do not assume a specific orientation relative
@@ -211,7 +216,10 @@ void CellDef::redefineCellDef(
       old_node = ordered_sides[old_side][1];
       node_map[old_node] = new_node;
     }
-  } else if (name == "triangle_qdr") {
+  } else if (name == "triangle_qdr" || name == "tri6")
+  // || name == "quad5"    || name == "quad6" || name == "quad7" || name ==
+  // "quad8")
+  {
     // Arbitrarily assign the first node in the old and the new cell
     // definitions to be the same. This assumption is necessary because
     // the cell definitions do not assume a specific orientation relative
@@ -418,36 +426,52 @@ void CellDef::redefineCellDef(
       std::fill(new_node_count.begin(), new_node_count.end(), 0);
       std::fill(old_node_count.begin(), old_node_count.end(), 0);
     }
-  } else // OTHER
-  {
-    // Arbitrarily assign the first node in the old and the new cell
-    // definitions to be the same. This assumption is necessary because
-    // the cell definitions do not assume a specific orientation relative
-    // to any coordinate system. The transformed cell may be rotated
-    // about it's outward normal relative to the input cell definition.
-    node_map[0] = 0;
-    // The right hand rule has to apply, so only the ordering of the
-    // nodes (edges) can change for a two-dimensional cell.
-    size_t old_node = 0;
-    size_t new_node = 0;
-    for (size_t n = 0; n < nnodes - 1; n++) {
-      // Find the new side that starts with this node.
-      size_t new_side = 0;
-      while (new_ordered_sides[new_side][0] != new_node) {
-        ++new_side;
-        Insist(new_side < nsides,
-               "Edge error for new two dimensional cell definition.");
+  } else {
+    if (ndim == 2) // POLYGON
+    {
+      // Arbitrarily assign the first node in the old and the new cell
+      // definitions to be the same. This assumption is necessary because
+      // the cell definitions do not assume a specific orientation
+      // relative
+      // to any coordinate system. The transformed cell may be rotated
+      // about it's outward normal relative to the input cell definition.
+      node_map[0] = 0;
+      // The right hand rule has to apply, so only the ordering of the
+      // nodes (edges) can change for a two-dimensional cell.
+      size_t old_node = 0;
+      size_t new_node = 0;
+      for (size_t n = 0; n < nnodes - 1; n++) {
+        // Find the new side that starts with this node.
+        size_t new_side = 0;
+        while (new_ordered_sides[new_side][0] != new_node) {
+          ++new_side;
+          Insist(new_side < nsides,
+                 "Edge error for new two dimensional cell definition.");
+        }
+        new_node = new_ordered_sides[new_side][1];
+        // Find the old side that starts with this node.
+        size_t old_side = 0;
+        while (ordered_sides[old_side][0] != old_node) {
+          ++old_side;
+          Insist(old_side < nsides,
+                 "Edge error for old two dimensional cell definition.");
+        }
+        old_node = ordered_sides[old_side][1];
+        node_map[old_node] = new_node;
       }
-      new_node = new_ordered_sides[new_side][1];
-      // Find the old side that starts with this node.
-      size_t old_side = 0;
-      while (ordered_sides[old_side][0] != old_node) {
-        ++old_side;
-        Insist(old_side < nsides,
-               "Edge error for old two dimensional cell definition.");
+    } else if (ndim ==
+               3) // POLYHEDRON OR quad9 (assume the ordering is correct)
+    {
+      for (unsigned i = 0; i < nnodes; ++i)
+        node_map[i] = i;
+
+      std::cout << " Polyhedron OR quad9" << std::endl;
+      for (size_t i = 0; i < new_ordered_sides.size(); ++i) {
+        std::cout << " Side " << i << " nodes: " << std::endl;
+        for (size_t n = 0; n < ordered_sides[i].size(); ++n)
+          std::cout << " " << ordered_sides[i][n] << std::endl;
+        std::cout << std::endl;
       }
-      old_node = ordered_sides[old_side][1];
-      node_map[old_node] = new_node;
     }
   }
   // Assign the new side types, sides, and ordered sides to this cell

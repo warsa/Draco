@@ -280,7 +280,8 @@ public:
     return spNodeFlags->get_flag_type(flagtype);
   }
   /*!
- * \brief Returns the index to the node flag type that contains the specified
+     * \brief Returns the index to the node flag type that contains the
+     * specified
  *        string.
  * \param desired_flag_type Flag type.
  * \return The node flag type index.
@@ -289,7 +290,8 @@ public:
     return spNodeFlags->get_flag_type_index(desired_flag_type);
   }
   /*!
- * \brief Returns the node flag number associated with the specified node flag
+     * \brief Returns the node flag number associated with the specified node
+     * flag
  *        type and node flag index.
  * \param flagtype Node flag type number.
  * \param flag_index Node flag index.
@@ -327,7 +329,8 @@ public:
     return spSideFlags->get_flag_type(flagtype);
   }
   /*!
- * \brief Returns the index to the side flag type that contains the specified
+     * \brief Returns the index to the side flag type that contains the
+     * specified
  *        string.
  * \param desired_flag_type Flag type.
  * \return The side flag type index.
@@ -336,7 +339,8 @@ public:
     return spSideFlags->get_flag_type_index(desired_flag_type);
   }
   /*!
- * \brief Returns the side flag number associated with the specified side flag
+     * \brief Returns the side flag number associated with the specified side
+     * flag
  *        type and side flag index.
  * \param flag_index Side flag index.
  * \return The side flag number.
@@ -372,7 +376,8 @@ public:
     return spCellFlags->get_flag_type(flagtype);
   }
   /*!
- * \brief Returns the index to the cell flag type that contains the specified
+     * \brief Returns the index to the cell flag type that contains the
+     * specified
  *        string.
  * \param desired_flag_type Flag type.
  * \return The cell flag type index.
@@ -381,7 +386,8 @@ public:
     return spCellFlags->get_flag_type_index(desired_flag_type);
   }
   /*!
- * \brief Returns the cell flag number associated with the specified cell flag
+     * \brief Returns the cell flag number associated with the specified cell
+     * flag
  *        type and cell flag index.
  * \param flagtype Cell flag type number.
  * \param flag_index Cell flag index.
@@ -536,7 +542,8 @@ public:
     return spCellDefs->get_ordered_side(i, s);
   }
   /*!
- * \brief Returns the status of the flag indicating that the cell definitions
+     * \brief Returns the status of the flag indicating that the cell
+     * definitions
  *        have been redefined.
  * \return The status of the redefined flag.
  */
@@ -560,7 +567,6 @@ public:
   //    int get_cell_defs_node_map(int cell_def, int node_ind) const
   //    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
-  // nodes access
   /*!
  * \brief Returns the coordinate values for each of the nodes.
  * \return The coordinate values for the nodes.
@@ -659,7 +665,8 @@ public:
  */
   vector_vector_int get_cells_nodes() const { return spCells->get_nodes(); }
   /*!
- * \brief Returns all of the node numbers associated with the specified cell.
+     * \brief Returns all of the node numbers associated with the specified
+     * cell.
  * \param cell_numb Cell number.
  * \return The cell node numbers.
  */
