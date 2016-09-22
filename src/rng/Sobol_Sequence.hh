@@ -13,12 +13,11 @@
 #ifndef rng_Sobol_Sequence_hh
 #define rng_Sobol_Sequence_hh
 
-#include <vector>
 #include "gsl/gsl_qrng.h"
 #include "ds++/config.h"
+#include <vector>
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 //===========================================================================//
 /*!
@@ -36,47 +35,44 @@ namespace rtt_rng
  */
 //===========================================================================//
 
-class DLL_PUBLIC_rng Sobol_Sequence
-{
-  public:
+class DLL_PUBLIC_rng Sobol_Sequence {
+public:
+  // CREATORS
 
-    // CREATORS
+  //! Default constructor.
+  explicit Sobol_Sequence(unsigned const dimension = 1);
 
-    //! Default constructor.
-    explicit Sobol_Sequence(unsigned const dimension=1);
+  //! Destructor
+  ~Sobol_Sequence();
 
-    //! Destructor
-    ~Sobol_Sequence();
+  // MANIPULATORS
 
-    // MANIPULATORS
+  //! Advance sequence.
+  void shift();
 
-    //! Advance sequence.
-    void shift();
+  // ACCESSORS
 
-    // ACCESSORS
+  //! Examine elements of sequence.
+  std::vector<double> const &values() const { return values_; }
 
-    //! Examine elements of sequence.
-    std::vector<double> const &values() const { return values_; }
+  bool check_class_invariants() const;
 
-    bool check_class_invariants() const;
+private:
+  // NESTED CLASSES AND TYPEDEFS
 
-  private:
+  // IMPLEMENTATION
 
-    // NESTED CLASSES AND TYPEDEFS
+  //! Not implemented
+  Sobol_Sequence(Sobol_Sequence const &);
 
-    // IMPLEMENTATION
+  //! Not implemented
+  Sobol_Sequence &operator=(Sobol_Sequence const &);
 
-    //! Not implemented
-    Sobol_Sequence(Sobol_Sequence const &);
+  // DATA
 
-    //! Not implemented
-    Sobol_Sequence &operator=(Sobol_Sequence const&);
+  gsl_qrng *gsl_;
 
-    // DATA
-
-    gsl_qrng *gsl_;
-
-    std::vector<double> values_;  // Values of the current element of sequence.
+  std::vector<double> values_; // Values of the current element of sequence.
 };
 
 } // end namespace rtt_rng

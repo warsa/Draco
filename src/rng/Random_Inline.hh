@@ -14,16 +14,15 @@
 #ifndef rtt_rng_Random_Inline_hh
 #define rtt_rng_Random_Inline_hh
 
-#include <stdint.h>
 #include "Rnd_Control_Inline.hh"
+#include <stdint.h>
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 /*! rn_stream is not used for anything in this library.  It is simply a global
  * variable that some applications use for holding a stream number.
  */
-DLL_PUBLIC_rng extern uint64_t rn_stream;  
+DLL_PUBLIC_rng extern uint64_t rn_stream;
 }
 
 #endif // rtt_rng_Random_Inline_hh
@@ -31,5 +30,3 @@ DLL_PUBLIC_rng extern uint64_t rn_stream;
 //---------------------------------------------------------------------------//
 // end of rng/Random_Inline.hh
 //---------------------------------------------------------------------------//
-
-

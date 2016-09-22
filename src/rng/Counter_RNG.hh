@@ -16,17 +16,18 @@
 #ifdef _MSC_FULL_VER
 // Engines have multiple copy constructors, quite legal C++, disable MSVC
 // complaint.
-#pragma warning (disable : 4521)
+#pragma warning(disable : 4521)
 #endif
 
-#if defined (__ICC)
+#if defined(__ICC)
 // Suppress Intel's "unrecognized preprocessor directive" warning, triggered
 // by use of #warning in Random123/features/sse.h.
 #pragma warning disable 11
 #endif
 
-#define GNUC_VERSION (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__)
-#if (GNUC_VERSION >= 40204) && !defined (__ICC) && !defined(NVCC)
+#define GNUC_VERSION                                                           \
+  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and
 // an "unused local typedef" warning, from a pre-C++11 implementation of a
 // static assertion in compilerfeatures.h.
@@ -46,11 +47,10 @@
 #endif
 
 #include "uniform.hpp"
-#include <ds++/Data_Table.hh>
 #include <algorithm>
+#include <ds++/Data_Table.hh>
 
-namespace rtt_rng
-{
+namespace rtt_rng {
 
 // Forward declaration.
 class Counter_RNG;
@@ -59,8 +59,8 @@ class Counter_RNG;
 typedef r123::Threefry2x64 CBRNG;
 
 // Counter and key types.
-typedef CBRNG::ctr_type    ctr_type;
-typedef CBRNG::key_type    key_type;
+typedef CBRNG::ctr_type ctr_type;
+typedef CBRNG::key_type key_type;
 
 #define CBRNG_DATA_SIZE 4
 
@@ -82,14 +82,12 @@ namespace // anonymous
  * version of the RNG seed, stream number, and spawn indicator and then
  * returns the lower 64 bits of the result.
  */
-static inline
-uint64_t _get_unique_num(const ctr_type::value_type * const data)
-{
-    CBRNG hash;
-    const ctr_type ctr = {{data[3], data[2]}};
-    const key_type key = {{data[1] >> 32, 0}};
-    const ctr_type result = hash(ctr, key);
-    return result[0];
+static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
+  CBRNG hash;
+  const ctr_type ctr = {{data[3], data[2]}};
+  const key_type key = {{data[1] >> 32, 0}};
+  const ctr_type result = hash(ctr, key);
+  return result[0];
 }
 
 //---------------------------------------------------------------------------//
@@ -98,30 +96,28 @@ uint64_t _get_unique_num(const ctr_type::value_type * const data)
  * Given a pointer to RNG state data, this function returns a random double in
  * the open interval (0, 1)---i.e., excluding the endpoints.
  */
-static inline
-double _ran(ctr_type::value_type * const data)
-{
-    CBRNG rng;
+static inline double _ran(ctr_type::value_type *const data) {
+  CBRNG rng;
 
-    // Assemble a counter from the first two elements in data.
-    ctr_type ctr = {{data[0], data[1]}};
+  // Assemble a counter from the first two elements in data.
+  ctr_type ctr = {{data[0], data[1]}};
 
-    // Assemble a key from the last two elements in data.
-    const key_type key = {{data[2], data[3]}};
+  // Assemble a key from the last two elements in data.
+  const key_type key = {{data[2], data[3]}};
 
-    // Invoke the counter-based rng.
-    const ctr_type result = rng(ctr, key);
+  // Invoke the counter-based rng.
+  const ctr_type result = rng(ctr, key);
 
-    // Increment the counter.
-    ctr.incr();
+  // Increment the counter.
+  ctr.incr();
 
-    // Copy the updated counter back into data.
-    data[0] = ctr[0];
-    data[1] = ctr[1];
+  // Copy the updated counter back into data.
+  data[0] = ctr[0];
+  data[1] = ctr[1];
 
-    // Convert the first 64 bits of the RNG output into a double-precision
-    // value in the open interval (0, 1) and return it.
-    return r123::u01fixedpt<double, ctr_type::value_type>(result[0]);
+  // Convert the first 64 bits of the RNG output into a double-precision
+  // value in the open interval (0, 1) and return it.
+  return r123::u01fixedpt<double, ctr_type::value_type>(result[0]);
 }
 
 } // end anonymous
@@ -139,37 +135,34 @@ double _ran(ctr_type::value_type * const data)
  * construction.
  */
 //===========================================================================//
-class Counter_RNG_Ref
-{
-  public:
-    //! Constructor.  db and de specify the extents of an RNG state block.
-    Counter_RNG_Ref(ctr_type::value_type * const db,
-                    ctr_type::value_type * const de)
-        : data(db, de) 
-    {
-        Require(std::distance(db, de) * sizeof(ctr_type::value_type) ==
-                sizeof(ctr_type) + sizeof(key_type));
-    }
+class Counter_RNG_Ref {
+public:
+  //! Constructor.  db and de specify the extents of an RNG state block.
+  Counter_RNG_Ref(ctr_type::value_type *const db,
+                  ctr_type::value_type *const de)
+      : data(db, de) {
+    Require(std::distance(db, de) * sizeof(ctr_type::value_type) ==
+            sizeof(ctr_type) + sizeof(key_type));
+  }
 
-    //! Return a random double in the open interval (0, 1).
-    double ran() const { return _ran(data.access()); }
+  //! Return a random double in the open interval (0, 1).
+  double ran() const { return _ran(data.access()); }
 
-    //! Spawn a new, independent generator from this reference.
-    inline void spawn(Counter_RNG& new_gen) const;
+  //! Spawn a new, independent generator from this reference.
+  inline void spawn(Counter_RNG &new_gen) const;
 
-    //! Return the stream number.
-    uint64_t get_num() const { return data[2]; }
+  //! Return the stream number.
+  uint64_t get_num() const { return data[2]; }
 
-    //! Return a unique identifier for this generator.
-    uint64_t get_unique_num() const { return _get_unique_num(data.access()); }
+  //! Return a unique identifier for this generator.
+  uint64_t get_unique_num() const { return _get_unique_num(data.access()); }
 
-    //! Is this Counter_RNG_Ref a reference to rng?
-    inline bool is_alias_for(Counter_RNG const &rng) const;
+  //! Is this Counter_RNG_Ref a reference to rng?
+  inline bool is_alias_for(Counter_RNG const &rng) const;
 
-  private:
-    mutable rtt_dsxx::Data_Table<ctr_type::value_type> data;
+private:
+  mutable rtt_dsxx::Data_Table<ctr_type::value_type> data;
 };
-
 
 //===========================================================================//
 /*!
@@ -192,94 +185,87 @@ class Counter_RNG_Ref
  * initialize a generator that was instantiated outside of its control.
  */
 //===========================================================================//
-class Counter_RNG
-{
-    friend class Counter_RNG_Ref;
-    friend class Rnd_Control;
+class Counter_RNG {
+  friend class Counter_RNG_Ref;
+  friend class Rnd_Control;
 
-  public:
+public:
+  typedef ctr_type::const_iterator const_iterator;
 
-    typedef ctr_type::const_iterator const_iterator;
-
-    /*! \brief Default constructor.
+  /*! \brief Default constructor.
      *
      * This default constructor is invoked when a client wants to create a
      * Counter_RNG but delegate its initialization to an Rnd_Control object.
      */
-    Counter_RNG()
-    {
-        Require(sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
-    }
+  Counter_RNG() {
+    Require(sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
+  }
 
-    //! Construct a Counter_RNG using a seed and stream number.
-    Counter_RNG(const uint32_t seed, const uint64_t streamnum)
-    {
-        initialize(seed, streamnum);
-    }
+  //! Construct a Counter_RNG using a seed and stream number.
+  Counter_RNG(const uint32_t seed, const uint64_t streamnum) {
+    initialize(seed, streamnum);
+  }
 
-    //! Create a new Counter_RNG from data.
-    Counter_RNG(const ctr_type::value_type * const begin,
-                const ctr_type::value_type * const end)
-    {
-        Require(std::distance(begin, end) * sizeof(ctr_type::value_type) ==
-                sizeof(ctr_type) + sizeof(key_type));
+  //! Create a new Counter_RNG from data.
+  Counter_RNG(const ctr_type::value_type *const begin,
+              const ctr_type::value_type *const end) {
+    Require(std::distance(begin, end) * sizeof(ctr_type::value_type) ==
+            sizeof(ctr_type) + sizeof(key_type));
 
-        std::copy(begin, end, data);
-    }
+    std::copy(begin, end, data);
+  }
 
-    //! Return a random double in the interval (0, 1).
-    double ran() const { return _ran(data); }
+  //! Return a random double in the interval (0, 1).
+  double ran() const { return _ran(data); }
 
-    //! Spawn a new, independent generator from this one.
-    void spawn(Counter_RNG& new_gen) const { new_gen._spawn(data); }
+  //! Spawn a new, independent generator from this one.
+  void spawn(Counter_RNG &new_gen) const { new_gen._spawn(data); }
 
-    //! Return the stream number.
-    uint64_t get_num() const { return data[2]; }
+  //! Return the stream number.
+  uint64_t get_num() const { return data[2]; }
 
-    //! Return a unique identifier for this generator.
-    uint64_t get_unique_num() const { return _get_unique_num(data); }
+  //! Return a unique identifier for this generator.
+  uint64_t get_unique_num() const { return _get_unique_num(data); }
 
-    //! Return an iterator to the beginning of the state block.
-    const_iterator begin() const { return data; }
+  //! Return an iterator to the beginning of the state block.
+  const_iterator begin() const { return data; }
 
-    //! Return an iterator to the end of the state block.
-    const_iterator end() const { return data + size(); }
+  //! Return an iterator to the end of the state block.
+  const_iterator end() const { return data + size(); }
 
-    //! Test for equality.
-    bool operator==(Counter_RNG const & rhs) const
-    {
-        return std::equal(begin(), end(), rhs.begin());
-    }
+  //! Test for equality.
+  bool operator==(Counter_RNG const &rhs) const {
+    return std::equal(begin(), end(), rhs.begin());
+  }
 
-    //! Test for inequality.
-    bool operator!=(Counter_RNG const & rhs) const
-    {
-        return ! std::equal(begin(), end(), rhs.begin());
-    }
+  //! Test for inequality.
+  bool operator!=(Counter_RNG const &rhs) const {
+    return !std::equal(begin(), end(), rhs.begin());
+  }
 
-    //! Return a Counter_RNG_Ref corresponding to this Counter_RNG.
-    Counter_RNG_Ref ref() const { return Counter_RNG_Ref(data, data + size()); }
+  //! Return a Counter_RNG_Ref corresponding to this Counter_RNG.
+  Counter_RNG_Ref ref() const { return Counter_RNG_Ref(data, data + size()); }
 
-    //! Return the size of this Counter_RNG.
-    size_t size() const { return size_bytes() / sizeof(ctr_type::value_type); }
+  //! Return the size of this Counter_RNG.
+  size_t size() const { return size_bytes() / sizeof(ctr_type::value_type); }
 
-    //! Return the size of this Counter_RNG in bytes.
-    size_t size_bytes() const { return sizeof(data); }
-    
-  private:
-    mutable ctr_type::value_type data[CBRNG_DATA_SIZE];
+  //! Return the size of this Counter_RNG in bytes.
+  size_t size_bytes() const { return sizeof(data); }
 
-    //! Private copy constructor.
-    Counter_RNG(const Counter_RNG &);
+private:
+  mutable ctr_type::value_type data[CBRNG_DATA_SIZE];
 
-    //! Private assignment operator.
-    Counter_RNG& operator=(const Counter_RNG &);
+  //! Private copy constructor.
+  Counter_RNG(const Counter_RNG &);
 
-    //! Initialize internal state from a seed and stream number.
-    inline void initialize(const uint32_t seed, const uint64_t streamnum);
+  //! Private assignment operator.
+  Counter_RNG &operator=(const Counter_RNG &);
 
-    //! Spawn a new, independent generator from the provided state block.
-    inline void _spawn(ctr_type::value_type * const parent_data);
+  //! Initialize internal state from a seed and stream number.
+  inline void initialize(const uint32_t seed, const uint64_t streamnum);
+
+  //! Spawn a new, independent generator from the provided state block.
+  inline void _spawn(ctr_type::value_type *const parent_data);
 };
 
 //---------------------------------------------------------------------------//
@@ -287,38 +273,33 @@ class Counter_RNG
 //---------------------------------------------------------------------------//
 /*! \brief Spawn a new, independent generator from this reference.
  */
-inline
-void Counter_RNG_Ref::spawn(Counter_RNG& new_gen) const
-{
-    new_gen._spawn(data.access());
+inline void Counter_RNG_Ref::spawn(Counter_RNG &new_gen) const {
+  new_gen._spawn(data.access());
 }
 
 //---------------------------------------------------------------------------//
 /*! \brief Is this Counter_RNG_Ref a reference to rng?
  */
-inline
-bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng) const
-{
-    return rng.begin() == data.access();
+inline bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng) const {
+  return rng.begin() == data.access();
 }
 
 //---------------------------------------------------------------------------//
 /*! \brief Initialize internal state from a seed and stream number.
  */
-inline
-void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
-{
-    // Low bits of the counter.
-    data[0] = 0;
+inline void Counter_RNG::initialize(const uint32_t seed,
+                                    const uint64_t streamnum) {
+  // Low bits of the counter.
+  data[0] = 0;
 
-    // High bits of the counter; used for the seed.
-    data[1] = static_cast<uint64_t>(seed) << 32;
+  // High bits of the counter; used for the seed.
+  data[1] = static_cast<uint64_t>(seed) << 32;
 
-    // Low bits of the key; used for the stream number.
-    data[2] = streamnum;
+  // Low bits of the key; used for the stream number.
+  data[2] = streamnum;
 
-    // High bits of the key; used as a spawn counter.
-    data[3] = 0;
+  // High bits of the key; used as a spawn counter.
+  data[3] = 0;
 }
 
 //---------------------------------------------------------------------------//
@@ -380,37 +361,35 @@ void Counter_RNG::initialize(const uint32_t seed, const uint64_t streamnum)
  * from node 0, this process provides \f$\sum_{i=1}^{M-1} i = 2016\f$
  * generators for \f$M = 64\f$.
  */
-inline
-void Counter_RNG::_spawn(ctr_type::value_type * const parent_data)
-{
-    // Initialize this generator with the seed and stream number from the
-    // parent.
-    uint32_t seed = parent_data[1] >> 32;
-    uint64_t streamnum = parent_data[2];
-    initialize(seed, streamnum);
+inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
+  // Initialize this generator with the seed and stream number from the
+  // parent.
+  uint32_t seed = parent_data[1] >> 32;
+  uint64_t streamnum = parent_data[2];
+  initialize(seed, streamnum);
 
-    ctr_type::value_type next_id = parent_data[3];
+  ctr_type::value_type next_id = parent_data[3];
 
-    // If the child generator would overflow the key...
-    if (2*parent_data[3] + 2 < parent_data[3])
-    {
-        // ... look back up the tree for the parent of the first spawned
-        // child; it will be the first even-numbered node...
-        while (next_id % 2)
-            next_id = (next_id - 1) / 2;
+  // If the child generator would overflow the key...
+  if (2 * parent_data[3] + 2 < parent_data[3]) {
+    // ... look back up the tree for the parent of the first spawned
+    // child; it will be the first even-numbered node...
+    while (next_id % 2)
+      next_id = (next_id - 1) / 2;
 
-        // ... shift to the right subtree of that original parent...
-        next_id = 2*next_id + 2;
+    // ... shift to the right subtree of that original parent...
+    next_id = 2 * next_id + 2;
 
-        // ... and wrap back to 0 if we've run out of subtrees.
-        if (next_id > parent_data[3]) next_id = 0;
-    }
+    // ... and wrap back to 0 if we've run out of subtrees.
+    if (next_id > parent_data[3])
+      next_id = 0;
+  }
 
-    // Shift the parent to the left child.
-    parent_data[3] = 2*next_id + 1;
+  // Shift the parent to the left child.
+  parent_data[3] = 2 * next_id + 1;
 
-    // Shift this generator to the right child.
-    data[3] = parent_data[3] + 1;
+  // Shift this generator to the right child.
+  data[3] = parent_data[3] + 1;
 }
 
 } // end namespace rtt_rng
