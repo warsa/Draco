@@ -46,10 +46,7 @@ private:
 
 void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
-  vector<string> filenames(3);
-  filenames[0] = "rttquad5.mesh";
-  filenames[1] = "rttquad9.mesh";
-  filenames[2] = "rttquad.mesh";
+    vector<string> filenames={"rttquad5.mesh", "rttquad9.mesh", "rttquad.mesh"};
 
   for (unsigned i = 0; i < 3; ++i) {
     string filename(filenames[i]);
@@ -76,8 +73,11 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
   // Read polyhedron mesh file - this is the mesh that is of most interest in
   // this test
   {
-    string filename("rttpolyhedron.mesh");
-    SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
+      vector<string> filenames={"rttpolyhedron.mesh", "rttpolyhedron.2.mesh"};
+
+    for (unsigned i = 0; i < 2; ++i) {
+      string filename(filenames[i]);
+      SP<RTT_Mesh_Reader> mesh(new RTT_Mesh_Reader(filename));
 
     ostringstream m;
     m << "Read mesh file " << filename << std::endl;
@@ -167,10 +167,11 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
     if (ncorner != 13) {
       FAILMSG("Number of corners should be 13");
     } else {
-      PASSMSG("Number of corners is correct be 13");
+      PASSMSG("Number of corners is correct 13");
     }
 
-  } // End polyhedron mesh test
+  } // End polyhedron mesh tests
+  }
 }
 
 //---------------------------------------------------------------------------//

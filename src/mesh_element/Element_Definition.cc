@@ -41,6 +41,8 @@ Element_Definition::Element_Definition(Element_Type const &type_)
   case QUAD_4:
   case QUAD_5:
   case QUAD_6:
+  case QUAD_6a:
+  case QUAD_6o:
   case QUAD_7:
   case QUAD_8:
   case QUAD_9:
@@ -77,6 +79,7 @@ Element_Definition::Element_Definition(Element_Type const &type_)
   case POLYHEDRON:
     dimension = 3;
     break;
+
   case POLYGON:
     dimension = 2;
     break;
@@ -280,9 +283,11 @@ void Element_Definition::construct_quad() {
     elem_defs.push_back(Element_Definition(BAR_2));
     elem_defs.push_back(Element_Definition(BAR_3));
 
+    // Three BAR_2 sides 
     for (size_t i = 0; i < 3; i++)
       side_type.push_back(0);
 
+    // One BAR_2 side 
     for (size_t i = 3; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 3 + number_of_sides);
@@ -291,19 +296,49 @@ void Element_Definition::construct_quad() {
     break;
 
   case QUAD_6:
+  case QUAD_6a:
     name = "QUAD_6";
     number_of_nodes = 6;
 
     elem_defs.push_back(Element_Definition(BAR_2));
     elem_defs.push_back(Element_Definition(BAR_3));
 
+    // Nodes on adjacent sides
+
+    // Two BAR_2 sides 
     for (size_t i = 0; i < 2; i++)
       side_type.push_back(0);
 
+    // Two BAR_3 sides (add midpoint nodes)
     for (size_t i = 2; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 2 + number_of_sides);
     }
+
+    break;
+
+  case QUAD_6o:
+    name = "QUAD_6o";
+    number_of_nodes = 6;
+
+    elem_defs.push_back(Element_Definition(BAR_2));
+    elem_defs.push_back(Element_Definition(BAR_3));
+
+    // Nodes on opposite sides
+
+    // First BAR_2 side
+    side_type.push_back(0);
+
+    // First BAR_3 side (add midpoint node)
+    side_type.push_back(1);
+    side_nodes[1].push_back(4);
+
+    // Second BAR_2 side
+    side_type.push_back(0);
+
+    // Second BAR_3 side (add midpoint node)
+    side_type.push_back(1);
+    side_nodes[3].push_back(5);
 
     break;
 

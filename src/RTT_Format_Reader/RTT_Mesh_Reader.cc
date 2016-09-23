@@ -50,6 +50,10 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       cell_def = Element_Definition::QUAD_5;
     else if (cell_name == "quad6")
       cell_def = Element_Definition::QUAD_6;
+    else if (cell_name == "quad6a")
+      cell_def = Element_Definition::QUAD_6a;
+    else if (cell_name == "quad6o")
+      cell_def = Element_Definition::QUAD_6o;
     else if (cell_name == "quad7")
       cell_def = Element_Definition::QUAD_7;
     else if (cell_name == "quad8")
