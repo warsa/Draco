@@ -7,13 +7,10 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Subrandom_Generator_hh
 #define rng_Subrandom_Generator_hh
 
-//#include "Halton_Sequence.hh"
 #include "ds++/config.h"
 
 namespace rtt_rng {

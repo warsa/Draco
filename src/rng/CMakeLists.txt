@@ -6,8 +6,6 @@
 # note   Copyright (C) 2010-2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( rng CXX )
 
@@ -15,9 +13,14 @@ project( rng CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 
-if( HAS_CXX11_EXPLICIT_CONVERSION AND HAS_CXX11_STATIC_ASSERT AND
-      HAS_CXX11_TYPE_TRAITS AND HAS_CXX11_UNRESTRICTED_UNIONS AND
-      HAS_CXX11_LONG_LONG AND HAS_CXX11_CONSTEXPR AND NOT USE_CUDA )
+# Random123 with C++11 requries
+# - HAS_CXX11_EXPLICIT_CONVERSION 
+# - HAS_CXX11_STATIC_ASSERT 
+# - HAS_CXX11_TYPE_TRAITS 
+# - HAS_CXX11_UNRESTRICTED_UNIONS
+# - HAS_CXX11_LONG_LONG 
+# - HAS_CXX11_CONSTEXPR
+if( NOT USE_CUDA )
    set( R123_USE_CXX11 1 )
 endif()
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/rng/config.h )
