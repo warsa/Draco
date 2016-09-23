@@ -12,13 +12,13 @@
 #include <fstream>
 #include <iostream>
 
+#include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "rng/Halton_Sequence.hh"
 #include "rng/Halton_Subrandom_Generator.hh"
 #include "rng/LC_Subrandom_Generator.hh"
 #include "rng/Sobol_Sequence.hh"
-#include "ds++/Release.hh"
-#include "ds++/ScalarUnitTest.hh"
-#include "ds++/Soft_Equivalence.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
