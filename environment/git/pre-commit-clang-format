@@ -16,8 +16,22 @@
 # SETTINGS
 # set path to clang-format binary. If clang-format is not available, then don't
 # run this hook. Style issues will be caught during by the pull request process.
+
+function version_gt()
+{
+  test "$(echo "$@" | tr " " "\n" | sort -V | head -n 1)" != "$1";
+}
+
 CLANG_FORMAT=`which clang-format`
 if ! test -x $CLANG_FORMAT; then
+  exit 0
+fi
+
+cf_min_ver=3.8
+cf_ver=`$CLANG_FORMAT --version`
+if version_gt $cf_ver_min $cf_min; then
+  echo "ERROR: Your version of clang-format is too old. Expecting v 3.8+."
+  echo "       pre-commit-hook disabled."
   exit 0
 fi
 
