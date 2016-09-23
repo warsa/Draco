@@ -8,19 +8,17 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include <fstream>
 #include <iostream>
 
-#include "../Halton_Sequence.hh"
-#include "../Halton_Subrandom_Generator.hh"
-#include "../LC_Subrandom_Generator.hh"
-#include "../Sobol_Sequence.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include "rng/Halton_Sequence.hh"
+#include "rng/Halton_Subrandom_Generator.hh"
+#include "rng/LC_Subrandom_Generator.hh"
+#include "rng/Sobol_Sequence.hh"
 
 using namespace std;
 using namespace rtt_dsxx;
