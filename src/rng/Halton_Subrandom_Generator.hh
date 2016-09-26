@@ -7,8 +7,6 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Halton_Subrandom_Generator_hh
 #define rng_Halton_Subrandom_Generator_hh

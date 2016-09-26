@@ -7,14 +7,12 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef rng_Sobol_Sequence_hh
 #define rng_Sobol_Sequence_hh
 
-#include "gsl/gsl_qrng.h"
-#include "ds++/config.h"
+#include "ds++/Assert.hh"
+#include <gsl/gsl_qrng.h>
 #include <vector>
 
 namespace rtt_rng {
@@ -58,21 +56,18 @@ public:
   bool check_class_invariants() const;
 
 private:
-  // NESTED CLASSES AND TYPEDEFS
-
   // IMPLEMENTATION
 
-  //! Not implemented
+  //! Not implemented (disable)
   Sobol_Sequence(Sobol_Sequence const &);
 
-  //! Not implemented
+  //! Not implemented (disable)
   Sobol_Sequence &operator=(Sobol_Sequence const &);
 
   // DATA
 
   gsl_qrng *gsl_;
-
-  std::vector<double> values_; // Values of the current element of sequence.
+  std::vector<double> values_; //!< Values of the current element of sequence.
 };
 
 } // end namespace rtt_rng

@@ -8,8 +8,10 @@
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
+
 #include "ds++/config.h"
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 /// Define the derived type as a C structure
