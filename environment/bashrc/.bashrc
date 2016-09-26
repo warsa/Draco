@@ -154,7 +154,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
 
   # Hooks for clang-format as git commit hook:
   # Possible values: ON, TRUE, OFF, FALSE, DIFF (the default value is ON).
-  # export DRACO_AUTO_CLANG_FORMAT=ON
+  export DRACO_AUTO_CLANG_FORMAT=ON
 
   ##---------------------------------------------------------------------------##
   ## ENVIRONMENTS - machine specific settings
