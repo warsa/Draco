@@ -83,7 +83,9 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   type_list.push_back(Element_Definition::TRI_6);
   type_list.push_back(Element_Definition::QUAD_4);
   type_list.push_back(Element_Definition::QUAD_5);
-  type_list.push_back(Element_Definition::QUAD_6);  // Call all three QUAD_6 elements in a single test
+  type_list.push_back(
+      Element_Definition::
+          QUAD_6); // Call all three QUAD_6 elements in a single test
   type_list.push_back(Element_Definition::QUAD_6a);
   type_list.push_back(Element_Definition::QUAD_6o);
   type_list.push_back(Element_Definition::QUAD_7);
@@ -132,7 +134,8 @@ void runTest(rtt_dsxx::UnitTest &ut) {
   elem_defs.pop_front();
   rtt_mesh_element_test::test_quad_5(ut, elem_defs.front());
   elem_defs.pop_front();
-  rtt_mesh_element_test::test_quad_6(ut, elem_defs.front()); // Call all three QUAD_6 elements in a single test
+  rtt_mesh_element_test::test_quad_6(
+      ut, elem_defs.front()); // Call all three QUAD_6 elements in a single test
   elem_defs.pop_front();
   rtt_mesh_element_test::test_quad_6(ut, elem_defs.front());
   elem_defs.pop_front();
@@ -176,8 +179,8 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 
   vector<int> polyg_side_type(8,  // number of sides
                               0); // index into elem_defs
-  
-  vector<vector<size_t> > polyg_side_nodes(8);
+
+  vector<vector<size_t>> polyg_side_nodes(8);
   for (unsigned side = 0; side < 8; ++side) {
     polyg_side_nodes[side].push_back(side);
     polyg_side_nodes[side].push_back((side + 1) % 8);
@@ -188,7 +191,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
                            8,       // number_of_nodes
                            8,       // number_of_sides
                            polyg_elem_defs, polyg_side_type, polyg_side_nodes);
-  
+
   //---------------------------------------------------------------------------//
   // Test the POLYHEDRON element.
   //---------------------------------------------------------------------------//
@@ -197,7 +200,7 @@ void runTest(rtt_dsxx::UnitTest &ut) {
 
   vector<Element_Definition> polyh_elem_defs;
   vector<int> polyh_side_type;
-  vector<vector<size_t> > polyh_side_nodes;
+  vector<vector<size_t>> polyh_side_nodes;
 
   // First side is QUAD_4
   polyh_elem_defs.push_back(Element_Definition(Element_Definition::QUAD_4));
@@ -490,62 +493,59 @@ bool test_quad_6(rtt_dsxx::UnitTest &ut,
   // Test the QUAD_6 element.
   using rtt_mesh_element::Element_Definition;
 
-  bool ldum = (elem_def.get_type() == Element_Definition::QUAD_6 || 
+  bool ldum = (elem_def.get_type() == Element_Definition::QUAD_6 ||
                elem_def.get_type() == Element_Definition::QUAD_6a ||
                elem_def.get_type() == Element_Definition::QUAD_6o);
 
-  if (elem_def.get_type() == Element_Definition::QUAD_6 || 
-      elem_def.get_type() == Element_Definition::QUAD_6a)
-  {
-      string ename = "QUAD_6";
-      ldum = ldum && elem_def.get_name() == ename;
-      
-      ldum = ldum && elem_def.get_number_of_nodes() == 6;
-      ldum = ldum && elem_def.get_dimension() == 2;
-      ldum = ldum && elem_def.get_number_of_sides() == 4;
-      
-      ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
-      
-      ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
-      
-      int s0[2] = {0, 1};
-      int s1[2] = {1, 2};
-      int s2[3] = {2, 3, 4};
-      int s3[3] = {3, 0, 5};
-      ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-      ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 2);
-      ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 3);
-      ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+  if (elem_def.get_type() == Element_Definition::QUAD_6 ||
+      elem_def.get_type() == Element_Definition::QUAD_6a) {
+    string ename = "QUAD_6";
+    ldum = ldum && elem_def.get_name() == ename;
+
+    ldum = ldum && elem_def.get_number_of_nodes() == 6;
+    ldum = ldum && elem_def.get_dimension() == 2;
+    ldum = ldum && elem_def.get_number_of_sides() == 4;
+
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
+
+    int s0[2] = {0, 1};
+    int s1[2] = {1, 2};
+    int s2[3] = {2, 3, 4};
+    int s3[3] = {3, 0, 5};
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 2);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 3);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
+  } else {
+    string ename = "QUAD_6o";
+    ldum = ldum && elem_def.get_name() == ename;
+
+    ldum = ldum && elem_def.get_number_of_nodes() == 6;
+    ldum = ldum && elem_def.get_dimension() == 2;
+    ldum = ldum && elem_def.get_number_of_sides() == 4;
+
+    ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
+
+    ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
+    ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
+
+    int s0[2] = {0, 1};
+    int s1[3] = {1, 2, 4};
+    int s2[2] = {2, 3};
+    int s3[3] = {3, 0, 5};
+    ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
+    ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 3);
+    ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 2);
+    ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
   }
-  else 
-  {
-      string ename = "QUAD_6o";
-      ldum = ldum && elem_def.get_name() == ename;
-      
-      ldum = ldum && elem_def.get_number_of_nodes() == 6;
-      ldum = ldum && elem_def.get_dimension() == 2;
-      ldum = ldum && elem_def.get_number_of_sides() == 4;
-      
-      ldum = ldum && elem_def.get_number_of_face_nodes().size() == 4;
-      
-      ldum = ldum && elem_def.get_number_of_face_nodes()[0] == 2;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[1] == 3;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[2] == 2;
-      ldum = ldum && elem_def.get_number_of_face_nodes()[3] == 3;
-      
-      int s0[2] = {0, 1};
-      int s1[3] = {1, 2, 4};
-      int s2[2] = {2, 3};
-      int s3[3] = {3, 0, 5};
-      ldum = ldum && elem_def.get_side_nodes(0) == vector<size_t>(s0, s0 + 2);
-      ldum = ldum && elem_def.get_side_nodes(1) == vector<size_t>(s1, s1 + 3);
-      ldum = ldum && elem_def.get_side_nodes(2) == vector<size_t>(s2, s2 + 2);
-      ldum = ldum && elem_def.get_side_nodes(3) == vector<size_t>(s3, s3 + 3);
-  }
-      
+
   if (ldum) {
     ostringstream message;
     message << " QUAD_6 element OK." << endl;
