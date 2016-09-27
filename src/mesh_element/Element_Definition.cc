@@ -108,6 +108,11 @@ Element_Definition::Element_Definition(
   }
   Require(side_type_.size() == number_of_sides_);
   for (unsigned i = 0; i < number_of_sides_; ++i) {
+    std::cout << " side number " << i << " is side type " << side_type_[i]
+              << std::endl;
+    std::cout << "    which is " << elem_defs_[side_type_[i]].get_name()
+              << " element " << std::endl;
+
     Require(static_cast<unsigned>(side_type_[i]) < elem_defs_.size());
   }
   Require(side_nodes_.size() == number_of_sides_);
@@ -120,8 +125,10 @@ Element_Definition::Element_Definition(
     }
   }
 
+  // Only time this constructor should be called
   Ensure(get_type() == Element_Definition::POLYGON ||
          get_type() == Element_Definition::POLYHEDRON);
+
   Ensure(get_name() == name_);
   Ensure(get_dimension() == dimension_);
   Ensure(get_number_of_nodes() == number_of_nodes_);
@@ -283,11 +290,11 @@ void Element_Definition::construct_quad() {
     elem_defs.push_back(Element_Definition(BAR_2));
     elem_defs.push_back(Element_Definition(BAR_3));
 
-    // Three BAR_2 sides 
+    // Three BAR_2 sides
     for (size_t i = 0; i < 3; i++)
       side_type.push_back(0);
 
-    // One BAR_2 side 
+    // One BAR_3 side (add midpoint nodes)
     for (size_t i = 3; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 3 + number_of_sides);
@@ -305,7 +312,7 @@ void Element_Definition::construct_quad() {
 
     // Nodes on adjacent sides
 
-    // Two BAR_2 sides 
+    // Two BAR_2 sides
     for (size_t i = 0; i < 2; i++)
       side_type.push_back(0);
 
@@ -349,9 +356,11 @@ void Element_Definition::construct_quad() {
     elem_defs.push_back(Element_Definition(BAR_2));
     elem_defs.push_back(Element_Definition(BAR_3));
 
+    // One BAR_2 side
     for (size_t i = 0; i < 1; i++)
       side_type.push_back(0);
 
+    // Three BAR_3 sides (add midpoint nodes)
     for (size_t i = 1; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 1 + number_of_sides);

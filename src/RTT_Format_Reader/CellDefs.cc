@@ -214,10 +214,7 @@ void CellDef::redefineCellDef(
       old_node = ordered_sides[old_side][1];
       node_map[old_node] = new_node;
     }
-  } else if (name == "triangle_qdr" || name == "tri6")
-  // || name == "quad5"    || name == "quad6" || name == "quad7" || name ==
-  // "quad8")
-  {
+  } else if (name == "triangle_qdr" || name == "tri6") {
     // Arbitrarily assign the first node in the old and the new cell
     // definitions to be the same. This assumption is necessary because
     // the cell definitions do not assume a specific orientation relative
@@ -459,8 +456,7 @@ void CellDef::redefineCellDef(
         old_node = ordered_sides[old_side][1];
         node_map[old_node] = new_node;
       }
-    } else if (ndim ==
-               3) // POLYHEDRON OR quad9 (assume the ordering is correct)
+    } else if (ndim == 3) // POLYHEDRON
     {
       for (unsigned i = 0; i < nnodes; ++i)
         node_map[i] = i;

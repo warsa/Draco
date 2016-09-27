@@ -48,10 +48,8 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       cell_def = Element_Definition::QUAD_4;
     else if (cell_name == "quad5")
       cell_def = Element_Definition::QUAD_5;
-    else if (cell_name == "quad6")
+    else if (cell_name == "quad6" || cell_name == "quad6a")
       cell_def = Element_Definition::QUAD_6;
-    else if (cell_name == "quad6a")
-      cell_def = Element_Definition::QUAD_6a;
     else if (cell_name == "quad6o")
       cell_def = Element_Definition::QUAD_6o;
     else if (cell_name == "quad7")
@@ -96,21 +94,17 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
              "Polyhedron cell definition only supported in 3D");
       rtt_dsxx::SP<CellDef> cell_definition(rttMesh->get_cell_defs_def(cd));
 
-      std::vector<int> side_types;
-      std::vector<Element_Definition> elem_defs;
-
-      // check to see if the QUAD_9 element is present in the
-      // cell_definitions
-      // and check for QUAD_4 in the event that a QUAD_9 is in fact
-      // present
+      // check to see if the QUAD_9 element is present in the cell_definitions
+      // and check for QUAD_4 in the event that a QUAD_9 is in fact present
       bool have_quad9(false);
       bool have_quad4(false);
+      std::vector<int> check_types;
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
         int side_type(cell_definition->get_side_types(s));
 
         std::vector<int>::iterator sit(
-            std::find(side_types.begin(), side_types.end(), side_type));
-        if (sit == side_types.end()) {
+            std::find(check_types.begin(), check_types.end(), side_type));
+        if (sit == check_types.end()) {
           Element_Definition elem_def(*cell_definitions[side_type]);
           if (elem_def.get_type() == Element_Definition::QUAD_4)
             have_quad4 = true;
@@ -120,30 +114,35 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       }
 
       if (have_quad9) {
-        Insist(have_quad4, "quad or quad4 must appear in the cell_defs "
-                           "block when a quad9 is in a polyhedron");
+        Insist(have_quad4, "quad or quad4 must appear in the cell_defs block "
+                           "when a quad9 is in a polyhedron");
       }
+
+      // Create the unique side element definitions
+      std::vector<int> unique_side_types;
+      std::vector<Element_Definition> elem_defs;
 
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
         int side_type(cell_definition->get_side_types(s));
 
-        // check to see if this side type has already been added to the
-        // elem_defs list of sides
-        std::vector<int>::iterator sit(
-            std::find(side_types.begin(), side_types.end(), side_type));
-        if (sit == side_types.end()) {
-          // not yet added for this polyhedron, so create an element
-          // of this type
+        // check to see if this side type has already been added to the elem_defs list of sides
+        std::vector<int>::iterator sit(std::find(
+            unique_side_types.begin(), unique_side_types.end(), side_type));
+        if (sit == unique_side_types.end()) {
+          // not yet added for this polyhedron, so create a new element of this type push it onto the list
           Element_Definition elem_def(*cell_definitions[side_type]);
-
-          // push the new element on the list
           elem_defs.push_back(elem_def);
+          unique_side_types.push_back(side_type);
         }
-        side_types.push_back(side_type);
       }
 
-      for (unsigned i = 0; i < side_types.size(); ++i) {
-        side_types[i] -= elem_defs.size();
+      // Now create the index into the unique element definitions for each side_type
+      std::vector<int> side_types;
+      for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
+        int side_type(cell_definition->get_side_types(s));
+        std::vector<int>::iterator sit(std::find(
+            unique_side_types.begin(), unique_side_types.end(), side_type));
+        side_types.push_back(std::distance(unique_side_types.begin(), sit));
       }
 
       cell.reset(new rtt_mesh_element::Element_Definition(
