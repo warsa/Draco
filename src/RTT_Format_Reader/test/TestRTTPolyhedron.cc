@@ -62,9 +62,9 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
     }
 
     vector<SP<Element_Definition>> const element_defs(mesh->get_element_defs());
-    for (size_t i = 0; i < element_defs.size(); ++i) {
-      cout << "Element definition for element " << i << endl;
-      element_defs[i]->print(cout);
+    for (size_t j = 0; j < element_defs.size(); ++j) {
+      cout << "Element definition for element " << j << endl;
+      element_defs[j]->print(cout);
     }
   }
 
@@ -104,9 +104,9 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         PASSMSG("Correct dimension.");
       }
 
-      for (size_t i = 0; i < element_defs.size(); ++i) {
-        cout << "Element definition for element " << i << endl;
-        element_defs[i]->print(cout);
+      for (size_t j = 0; j < element_defs.size(); ++j) {
+        cout << "Element definition for element " << j << endl;
+        element_defs[j]->print(cout);
       }
 
       unsigned const ncells =
@@ -131,11 +131,11 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
                   << std::endl;
       }
 
-      for (map<string, set<int>>::const_iterator i = element_sets.begin();
-           i != element_sets.end(); ++i) {
+      for (map<string, set<int>>::const_iterator it = element_sets.begin();
+           it != element_sets.end(); ++it) {
         // See if this is a side or cell flag.
 
-        unsigned const representative_element = *i->second.begin();
+        unsigned const representative_element = *it->second.begin();
 
         Element_Definition::Element_Type const type_index =
             static_cast<Element_Definition::Element_Type>(
@@ -144,16 +144,16 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         SP<Element_Definition const> type(new Element_Definition(type_index));
 
         if (type->get_dimension() == ndim) {
-          std::cout << " Elements with flags " + i->first
+          std::cout << " Elements with flags " + it->first
                     << " are cell elements " << std::endl;
         } else {
           // It has to be a side flag.
           if (type->get_dimension() + 1 != ndim) {
             throw invalid_argument(
-                " Elements with flags " + i->first +
+                " Elements with flags " + it->first +
                 " have the wrong dimension for a side element");
           } else {
-            std::cout << " Elements with flags " + i->first
+            std::cout << " Elements with flags " + it->first
                       << " are side elements" << std::endl;
           }
         }

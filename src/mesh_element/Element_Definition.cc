@@ -40,6 +40,7 @@ Element_Definition::Element_Definition(Element_Type const &type_)
 
   case QUAD_4:
   case QUAD_5:
+  // Note: see Element_Definition.hh for the distinction between 6/6a and 6o elements.
   case QUAD_6:
   case QUAD_6a:
   case QUAD_6o:
