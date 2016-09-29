@@ -109,11 +109,6 @@ Element_Definition::Element_Definition(
   }
   Require(side_type_.size() == number_of_sides_);
   for (unsigned i = 0; i < number_of_sides_; ++i) {
-    std::cout << " side number " << i << " is side type " << side_type_[i]
-              << std::endl;
-    std::cout << "    which is " << elem_defs_[side_type_[i]].get_name()
-              << " element " << std::endl;
-
     Require(static_cast<unsigned>(side_type_[i]) < elem_defs_.size());
   }
   Require(side_nodes_.size() == number_of_sides_);
