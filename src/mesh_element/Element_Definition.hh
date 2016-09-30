@@ -143,7 +143,9 @@ public:
                      *   quadratic-serendipity finite element triangle.*/
     QUAD_4,     /*!< The basic two-D, four-node "quadrilateral" element. */
     QUAD_5,     /*!< A quad with a node in the center of one face. */
-    QUAD_6,     /*!< A quad with nodes in the center of two faces. */
+    QUAD_6,     /*!< A quad with nodes in the center of two ADJOINING faces. This is the default QUAD_6. */
+    QUAD_6a,    /*!< A quad with nodes in the center of two ADJOINING faces. */
+    QUAD_6o,    /*!< A quad with nodes in the center of two OPPOSITE faces. */
     QUAD_7,     /*!< A quad with nodes in the center of three faces. */
     QUAD_8,     /*!< A quad with nodes in the center of all four faces.
                      *   This is standard quadratic-serendipity finite element
