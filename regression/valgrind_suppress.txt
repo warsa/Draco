@@ -129,7 +129,7 @@
    fun:malloc
    fun:df_search
    ...
-   fun:PMPI_INIT
+   fun:PMPI_Init
    ...
 }
 {
