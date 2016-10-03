@@ -14,12 +14,12 @@ project( rng CXX )
 # ---------------------------------------------------------------------------- #
 # default to using C++11 features of Random123.
 set( R123_USE_CXX11 1 )
-# if the current compiler doesn't support some c++11 features, disable 
+# if the current compiler doesn't support some c++11 features, disable
 # Random123's use of these extensions.
 set( required_features "cxx_explicit_conversions;cxx_static_assert;cxx_unrestricted_unions;cxx_long_long_type;cxx_constexpr;cxx_type_traits")
 foreach( feature ${required_features} )
    list( FIND CXX11_FEATURE_LIST ${feature} featurefound )
-   if( ${feature} STREQUAL "-1" )
+   if( ${featurefound} STREQUAL "-1" )
       unset(R123_USE_CXX11)
    endif()
 endforeach()
@@ -30,9 +30,9 @@ if( USE_CUDA OR WIN32 )
    unset(R123_USE_CXX11)
 endif()
 
-# At least one report that Intel/15 doesn't work correctly with Random123 with 
+# At least one report that Intel/15 doesn't work correctly with Random123 with
 # c++11 features active.
-# if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND 
+# if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" AND
     # ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 16.0 )
    # unset(R123_USE_CXX11)
 # endif()
