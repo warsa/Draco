@@ -223,8 +223,17 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
       break;
 
     case 2:
-      mu_axis = 0;
-      eta_axis = 2;
+      switch (geometry) {
+      case rtt_mesh_element::AXISYMMETRIC:
+        mu_axis = 0;
+        eta_axis = 2;
+        break;
+
+      default:
+        mu_axis = 0;
+        eta_axis = 1;
+        break;
+      }
       break;
 
     case 3:
