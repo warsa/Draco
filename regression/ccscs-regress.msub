@@ -124,7 +124,7 @@ bounds_checking)
   fi
   bounds_checking=on
   run "module swap superlu-dist superlu-dist/4.3-bc"
-  run "module swap trilinos trilinos/12.6.1-bc"
+  run "module swap trilinos trilinos/12.8.1-bc"
   run "module swap metis metis/5.1.0-bc"
   run "module swap parmetis parmetis/4.0.3-bc"
   ;;
