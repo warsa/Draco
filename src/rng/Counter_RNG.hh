@@ -5,6 +5,7 @@
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Declaration of class Counter_RNG.
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ *         All rights reserved
  */
 //---------------------------------------------------------------------------//
 
@@ -20,17 +21,17 @@
 #endif
 
 #if defined(__ICC)
-// Suppress Intel's "unrecognized preprocessor directive" warning, triggered
-// by use of #warning in Random123/features/sse.h.
+// Suppress Intel's "unrecognized preprocessor directive" warning, triggered by
+// use of #warning in Random123/features/sse.h.
 #pragma warning disable 11
 #endif
 
 #define GNUC_VERSION                                                           \
   (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #if (GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
-// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and
-// an "unused local typedef" warning, from a pre-C++11 implementation of a
-// static assertion in compilerfeatures.h.
+// Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
+// "unused local typedef" warning, from a pre-C++11 implementation of a static
+// assertion in compilerfeatures.h.
 #if (GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
 #endif
@@ -39,7 +40,17 @@
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wexpansion-to-defined"
+#endif
+
 #include "Random123/threefry.h"
+
+#ifdef __clang__
+// Restore clang diagnostics to previous state.
+#pragma clang diagnostic pop
+#endif
 
 #if (GNUC_VERSION >= 40600)
 // Restore GCC diagnostics to previous state.
@@ -72,15 +83,14 @@ namespace // anonymous
  *
  * Given a pointer to RNG state data, this function generates a 64-bit
  * identifier unique to this generator but not to the specific position of its
- * RNG stream.  In other words, the identifier associated with a given
- * generator will not change as random numbers are generated from it.
- * However, this insensitivity to the specific stream position also means that
- * repeated spawning will eventually produce two generators with the same
- * identifier.
+ * RNG stream.  In other words, the identifier associated with a given generator
+ * will not change as random numbers are generated from it.  However, this
+ * insensitivity to the specific stream position also means that repeated
+ * spawning will eventually produce two generators with the same identifier.
  *
  * This function simply applies the chosen counter-based RNG to a shuffled
- * version of the RNG seed, stream number, and spawn indicator and then
- * returns the lower 64 bits of the result.
+ * version of the RNG seed, stream number, and spawn indicator and then returns
+ * the lower 64 bits of the result.
  */
 static inline uint64_t _get_unique_num(const ctr_type::value_type *const data) {
   CBRNG hash;
@@ -115,8 +125,8 @@ static inline double _ran(ctr_type::value_type *const data) {
   data[0] = ctr[0];
   data[1] = ctr[1];
 
-  // Convert the first 64 bits of the RNG output into a double-precision
-  // value in the open interval (0, 1) and return it.
+  // Convert the first 64 bits of the RNG output into a double-precision value
+  // in the open interval (0, 1) and return it.
   return r123::u01fixedpt<double, ctr_type::value_type>(result[0]);
 }
 
@@ -169,8 +179,8 @@ private:
  * \class Counter_RNG
  * \brief A counter-based random-number generator.
  *
- * Counter_RNG provides an interface to a counter-based random number
- * generator from the Random123 library from D. E. Shaw Research
+ * Counter_RNG provides an interface to a counter-based random number generator
+ * from the Random123 library from D. E. Shaw Research
  * (http://www.deshawresearch.com/resources_random123.html).
  *
  * Counter_RNG_Ref is a friend of Counter_RNG because spawning a new generator
@@ -178,11 +188,11 @@ private:
  * exposed through the public interface of Counter_RNG.
  *
  * Similarly, Rnd_Control is a friend of Counter_RNG because initializing a
- * generator requires access to private data that should not be exposed
- * through the public interface.  Rnd_Control takes no responsibility for
- * instantiating Counter_RNGs itself, and since copying Counter_RNGs is
- * disabled (via a private copy constructor), an Rnd_Control must be able to
- * initialize a generator that was instantiated outside of its control.
+ * generator requires access to private data that should not be exposed through
+ * the public interface.  Rnd_Control takes no responsibility for instantiating
+ * Counter_RNGs itself, and since copying Counter_RNGs is disabled (via a
+ * private copy constructor), an Rnd_Control must be able to initialize a
+ * generator that was instantiated outside of its control.
  */
 //===========================================================================//
 class Counter_RNG {
@@ -193,10 +203,10 @@ public:
   typedef ctr_type::const_iterator const_iterator;
 
   /*! \brief Default constructor.
-     *
-     * This default constructor is invoked when a client wants to create a
-     * Counter_RNG but delegate its initialization to an Rnd_Control object.
-     */
+   *
+   * This default constructor is invoked when a client wants to create a
+   * Counter_RNG but delegate its initialization to an Rnd_Control object.
+   */
   Counter_RNG() {
     Require(sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
   }
@@ -271,22 +281,20 @@ private:
 //---------------------------------------------------------------------------//
 // Implementation
 //---------------------------------------------------------------------------//
-/*! \brief Spawn a new, independent generator from this reference.
- */
+
+//! Spawn a new, independent generator from this reference.
 inline void Counter_RNG_Ref::spawn(Counter_RNG &new_gen) const {
   new_gen._spawn(data.access());
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Is this Counter_RNG_Ref a reference to rng?
- */
+//! Is this Counter_RNG_Ref a reference to rng?
 inline bool Counter_RNG_Ref::is_alias_for(Counter_RNG const &rng) const {
   return rng.begin() == data.access();
 }
 
 //---------------------------------------------------------------------------//
-/*! \brief Initialize internal state from a seed and stream number.
- */
+//! \brief Initialize internal state from a seed and stream number.
 inline void Counter_RNG::initialize(const uint32_t seed,
                                     const uint64_t streamnum) {
   // Low bits of the counter.
@@ -309,14 +317,14 @@ inline void Counter_RNG::initialize(const uint32_t seed,
  * threads, the set of generators used in a calculation must be the same
  * regardless of rank or thread identifier or count.  To provide that level of
  * reproducibility, the SPRNG library of RNGs implemented a binary-tree
- * algorithm for subdividing the set of available generators and creating a
- * new generator from any existing generator without communication.
- * Counter_RNG adopts the same approach.
+ * algorithm for subdividing the set of available generators and creating a new
+ * generator from any existing generator without communication.  Counter_RNG
+ * adopts the same approach.
  *
  * The current Counter_RNG (Threefry2x64) uses 128-bit keys and therefore
  * provides 2^128 possible generators.  Using a 64-bit stream number to
- * subdivide the key space produces 2^64 families of generators, each with
- * 2^64 members.
+ * subdivide the key space produces 2^64 families of generators, each with 2^64
+ * members.
  *
  * Given 2^M possible generators, arranging them in a binary tree produces a
  * tree of depth M.
@@ -336,34 +344,31 @@ inline void Counter_RNG::initialize(const uint32_t seed,
  *                                 2N+1   2N+2
  * \endverbatim
  *
- * If every root generator has a different stream number, the generators
- * spawned from that root will be independent of the generators spawned from
- * any other root.  With 2^64 possible generators per stream number, each root
- * generator can support 63 spawned generations before any repetition might
- * occur.
+ * If every root generator has a different stream number, the generators spawned
+ * from that root will be independent of the generators spawned from any other
+ * root.  With 2^64 possible generators per stream number, each root generator
+ * can support 63 spawned generations before any repetition might occur.
  *
- * In addition to providing a fixed number of guaranteed-independent
- * generations from spawning as described above, this implementation tries to
- * maximize the number of independent generators that can be spawned in a row
- * from a single parent by shifting that parent to an unused portion of the
- * key space when it reaches the bottom of the tree.
+ * In addition to providing a fixed number of guaranteed-independent generations
+ * from spawning as described above, this implementation tries to maximize the
+ * number of independent generators that can be spawned in a row from a single
+ * parent by shifting that parent to an unused portion of the key space when it
+ * reaches the bottom of the tree.
  *
- * When generator N spawns, this implementation creates a new generator at
- * 2N+2 and shifts the parent generator from N to 2N+1.  Spawning repeatedly
- * from the same parent results in a progression down the left side of the
- * tree rooted at N.  When this process runs out of bits (and would lead to
- * overflow, which would lead to generator reuse), the parent and new
- * generators are instead shifted to the first level in the unused subtree
- * below the first spawned child in the previous descent.  This process
- * repeats, each time shifting to subtrees rooted at the first spawned child
- * in the previous descent, until it has iterated through all available
- * subtrees and must wrap back to 0, the original root of the tree.  Starting
- * from node 0, this process provides \f$\sum_{i=1}^{M-1} i = 2016\f$
- * generators for \f$M = 64\f$.
+ * When generator N spawns, this implementation creates a new generator at 2N+2
+ * and shifts the parent generator from N to 2N+1.  Spawning repeatedly from the
+ * same parent results in a progression down the left side of the tree rooted at
+ * N.  When this process runs out of bits (and would lead to overflow, which
+ * would lead to generator reuse), the parent and new generators are instead
+ * shifted to the first level in the unused subtree below the first spawned
+ * child in the previous descent.  This process repeats, each time shifting to
+ * subtrees rooted at the first spawned child in the previous descent, until it
+ * has iterated through all available subtrees and must wrap back to 0, the
+ * original root of the tree.  Starting from node 0, this process provides
+ * \f$\sum_{i=1}^{M-1} i = 2016\f$ generators for \f$M = 64\f$.
  */
 inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
-  // Initialize this generator with the seed and stream number from the
-  // parent.
+  // Initialize this generator with the seed and stream number from the parent.
   uint32_t seed = parent_data[1] >> 32;
   uint64_t streamnum = parent_data[2];
   initialize(seed, streamnum);
@@ -372,8 +377,8 @@ inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
 
   // If the child generator would overflow the key...
   if (2 * parent_data[3] + 2 < parent_data[3]) {
-    // ... look back up the tree for the parent of the first spawned
-    // child; it will be the first even-numbered node...
+    // ... look back up the tree for the parent of the first spawned child; it
+    // will be the first even-numbered node...
     while (next_id % 2)
       next_id = (next_id - 1) / 2;
 
@@ -395,3 +400,7 @@ inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
 } // end namespace rtt_rng
 
 #endif
+
+//---------------------------------------------------------------------------//
+// end Counter_RNG.hh
+//---------------------------------------------------------------------------//
