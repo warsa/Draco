@@ -11,42 +11,6 @@
 # requires parse_arguments()
 include( parse_arguments )
 
-#------------------------------------------------------------------------------#
-# When on MIC Configure a script that helps run tests on the MIC node.
-#------------------------------------------------------------------------------#
-if( HAVE_MIC )
-  if( EXISTS ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in AND
-      NOT EXISTS ${Draco_BINARY_DIR}/config/run_test_on_mic.sh )
-
-    # When configuring Draco, generate a script that will be used to
-    # start tests on the MIC processor.
-
-    # This script sets up Intel MPI to allow code execution on the backend
-    # (mic) portion of the node.
-    set( PATH $ENV{PATH} )
-    set( LD_LIBRARY_PATH $ENV{LD_LIBRARY_PATH} )
-    find_program( MPIVARS_SCRIPT mpivars.sh )
-    configure_file(
-      ${Draco_SOURCE_DIR}/config/run_test_on_mic.sh.in
-      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-      @ONLY )
-    set( DRACO_MIC_TEST_DRIVER
-      ${Draco_BINARY_DIR}/config/run_test_on_mic.sh
-      CACHE FILEPATH
-      "Shell script used to run unit tests on Knights Corner MIC processor.")
-
-  else()
-    # For Jayenne and Capsaicin, locate the run_test_on_mic.sh script
-    if( EXISTS ${DRACO_CONFIG_DIR}/run_test_on_mic.sh )
-      set( DRACO_MIC_TEST_DRIVER
-        ${DRACO_CONFIG_DIR}/run_test_on_mic.sh
-        CACHE FILEPATH
-        "Shell script used to run unit tests on Knights Corner MIC processor.")
-    endif()
-  endif()
-
-endif()
-
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_executable'
 #
