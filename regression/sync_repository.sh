@@ -68,9 +68,16 @@ case ${target} in
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
+  tt-fey*)
+    run "module load user_contrib subversion git"
+    regdir=/usr/projects/jayenne/regress
+    gitroot=$regdir/git.tt
+    VENDOR_DIR=/usr/projects/draco/vendors
+    keychain=keychain-2.7.1
+    ;;
   *)
     # HPC - Moonlight.
-    run "module load user_contrib svn git"
+    run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git
     svnroot=$regdir/svn
@@ -99,6 +106,8 @@ fi
 
 case ${target} in
   ccscs*)
+    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
+
     # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
     # repositories. This location can be parsed by redmine.
 
@@ -107,7 +116,27 @@ case ${target} in
     if test -d $gitroot/Draco.git; then
       run "cd $gitroot/Draco.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/pull/*:refs/pull/*"
+      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
+      cat $TMPFILE
+
+      # The output from the above command may include text of the form:
+      # [new ref] refs/pull/84/head -> refs/pull/84/head <-- new PR
+      # 03392b8..fd3eabc  refs/pull/86/head -> refs/pull/86/head <-- updated PR
+      # Extract a list of PRs that are new and optionally start regression run
+      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
+      for prline in $prs; do
+        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+        logfile=$regdir/logs/ccscs-Debug-coverage-master-pr${pr}.log
+        echo "- Starting regression (coverage) for pr${pr}."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+          -p draco -f pr${pr} &> $logfile &
+        logfile=$regdir/logs/ccscs-Debug-valgrind-master-pr${pr}.log
+        echo "- Starting regression (valgrind) for pr${pr}."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+          -p draco -f pr${pr} &> $logfile &
+      done
       run "git reset --soft"
     else
       run "mkdir -p $gitroot"
@@ -127,10 +156,101 @@ case ${target} in
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-  darwin-fe* | ml-fey*)
-    # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
-    # repositories. This location can be parsed by redmine. For darwin, the
-    # backend can't see gitlab, so keep a copy of the repository local.
+  ml-fey*)
+    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
+
+    # Keep local (ml-fey:/usr/projects/jayenne/regress/git) copies of the github
+    # and gitlab repositories. This location can be parsed by redmine. For
+    # darwin, the backend can't see gitlab, so keep a copy of the repository
+    # local.
+
+    echo " "
+    echo "Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco.git; then
+      run "cd $gitroot/Draco.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
+      cat $TMPFILE
+
+      # Extract a list of PRs that are new and optionally start regression run
+      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
+      for prline in $prs; do
+        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+        logfile=$regdir/logs/ml-Debug-fulldiagnostics-master-pr${pr}.log
+        echo "- Starting regression (fulldiagnostics) for pr${pr}."
+        echo "  Log: $logfile"
+        $regdir/draco/regression-master.sh -b Debug -e fulldiagnostics \
+           -p draco -f pr${pr} &> $logfile &
+      done
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+    fi
+
+    echo " "
+    echo "Copy Jayenne git repository to the local file system..."
+    if test -d $gitroot/jayenne/jayenne.git; then
+      run "cd $gitroot/jayenne/jayenne.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+    fi
+    ;;
+  tt-fey*)
+    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
+
+    # Keep local (tt-fey:/usr/projects/jayenne/regress/git.tt) copies of the github
+    # and gitlab repositories. This location can be parsed by redmine. For
+    # darwin, the backend can't see gitlab, so keep a copy of the repository
+    # local.
+
+    echo " "
+    echo "Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco.git; then
+      run "cd $gitroot/Draco.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
+      cat $TMPFILE
+
+      # Extract a list of PRs that are new and optionally start regression run
+      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
+      for prline in $prs; do
+        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+        logfile=$regdir/logs/tt-Release-master-pr${pr}.log
+        echo "- Starting regression (Release) for pr${pr}."
+        echo "  Log: $logfile"
+        $regdir/draco/regression-master.sh -r -b Release -p draco -f pr${pr} \
+          &> $logfile &
+      done
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+    fi
+
+    echo " "
+    echo "Copy Jayenne git repository to the local file system..."
+    if test -d $gitroot/jayenne/jayenne.git; then
+      run "cd $gitroot/jayenne/jayenne.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+    fi
+    ;;
+  darwin-fe*)
+    # Keep local (darwin-fe:/usr/projects/draco/regress/git) copies of the
+    # github and gitlab repositories. This location can be parsed by
+    # redmine. For darwin, the backend can't see gitlab, so keep a copy of the
+    # repository local.
 
     echo " "
     echo "Copy Draco git repository to the local file system..."
@@ -157,39 +277,39 @@ case ${target} in
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-  *)
-    #
-    # HPC: Mirror the capsaicin svn repository
-    #
-    if ! test -d $svnroot; then
-      echo "*** ERROR ***"
-      echo "*** SVN repository not found ***"
-      exit 1
-      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-      # mkdir -p ${svnroot}; cd ${svnroot}
-      # svnadmin create ${svnroot}/jayenne
-      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-      # cd jayenne/hooks
-      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-      # vi pre-commit; comment out all code and add...
-      #if ! test `whoami` = 'kellyt'; then
-      #echo "This is a read only repository.  The real SVN repository is"
-      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
-      #exit 1
-      #fi
-      #exit 0
-      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-      #    pre-revprop-change
-      # vi pre-revprop-change --> comment out all code.
-      # cd $svnroot
-      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
-      # svnsync sync file:///${svnroot}/jayenne
-    fi
+  # *)
+  #   #
+  #   # HPC: Mirror the capsaicin svn repository
+  #   #
+  #   if ! test -d $svnroot; then
+  #     echo "*** ERROR ***"
+  #     echo "*** SVN repository not found ***"
+  #     exit 1
+  #     # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
+  #     # mkdir -p ${svnroot}; cd ${svnroot}
+  #     # svnadmin create ${svnroot}/jayenne
+  #     # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
+  #     # cd jayenne/hooks
+  #     # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
+  #     # vi pre-commit; comment out all code and add...
+  #     #if ! test `whoami` = 'kellyt'; then
+  #     #echo "This is a read only repository.  The real SVN repository is"
+  #     #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+  #     #exit 1
+  #     #fi
+  #     #exit 0
+  #     # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
+  #     #    pre-revprop-change
+  #     # vi pre-revprop-change --> comment out all code.
+  #     # cd $svnroot
+  #     # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
+  #     # svnsync sync file:///${svnroot}/jayenne
+  #   fi
 
-    echo " "
-    echo "Copy capsaicin svn repository to the local file system..."
-    run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
-    ;;
+  #   echo " "
+  #   echo "Copy capsaicin svn repository to the local file system..."
+  #   run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+  #   ;;
 esac
 
 #------------------------------------------------------------------------------#
