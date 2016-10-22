@@ -116,6 +116,12 @@ coverage)
   CXX=`which g++`
   CC=`which gcc`
   ;;
+belosmods)
+  echo "Use special version of Trilinos (pr539)"
+  run "module swap trilinos trilinos/12.8.1-belosmods"
+  comp=$comp-belosmods
+  buildname_append="-belosmods"
+  ;;
 bounds_checking)
   echo "Bounds checking option selected."
   if ! test "${build_type}" == "Debug"; then
@@ -252,13 +258,17 @@ elif test "${subproj}" == asterisk; then
     script_name=Asterisk_Linux64.cmake
 fi
 
+# Append the username to the build name unless option '-r' is specified.
 if test "${regress_mode}" = "off"; then
+  if [[ ${buildname_append} ]]; then
+    export buildname_append="-${USER}${buildname_append}"
+  else
     export buildname_append="-${USER}"
+ fi
 fi
 
 if test "${regress_mode}" = "off"; then
     export work_dir=${base_dir}/cdash/${subproj}/${dashboard_type}_${comp}/${build_type}
-    export buildname_append="-${USER}"
     export AUTODOCDIR=$work_dir/autodoc
 else
     export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
