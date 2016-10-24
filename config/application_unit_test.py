@@ -8,8 +8,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $
-#------------------------------------------------------------------------------#
 
 import sys
 import os
