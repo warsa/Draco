@@ -563,7 +563,7 @@ macro( set_git_command gitpath )
     # clone was successful.
     # set( CTEST_GIT_UPDATE_CUSTOM "${CTEST_SOURCE_DIRECTORY}/regression/fetch_co.sh;${CTEST_GIT_COMMAND};${featurebranch}")
     if ( "${githost}x" STREQUAL "x" )
-      if( "${CTEST_CHECKOUT_COMMAND}" MATCHES "github" )
+      if( ${gitpath} MATCHES "Draco" )
         set( githost "github")
       else()
         set( githost "gitlab")

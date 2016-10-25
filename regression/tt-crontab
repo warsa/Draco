@@ -1,5 +1,9 @@
 # crontab for tt-fey
 
+
+# Create a svn hotcopy of capsaicin at /usr/projects/jayenne/regress/svn
+*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.tt.log
+
 #------------------------------------------------------------------------------#
 # Regression Options:
 # -a build autodoc
