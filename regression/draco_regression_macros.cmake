@@ -382,7 +382,7 @@ macro( parse_args )
     endif()
   endif()
 
-  if( NOT "$ENV{buildname_append}x" STREQUAL "x" )
+  if( DEFINED ENV{buildname_append} )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
 
