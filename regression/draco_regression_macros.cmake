@@ -382,7 +382,7 @@ macro( parse_args )
     endif()
   endif()
 
-  if( NOT "$ENV{buildname_append}x" STREQUAL "x" )
+  if( DEFINED ENV{buildname_append} )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
 
@@ -747,12 +747,10 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # Assume that draco_work_dir is parallel to our current location, but only
   # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
-  message("work_dir = ${work_dir}")
   string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
     ${dep_pkg}_work_dir ${work_dir} )
-  message("${dep_pkg}_work_dir = ${${dep_pkg}_work_dir}")
 
-  # If this is a coverage/nr build, link to the Debug/Release Draco files:
+  # If this is a special build, link to the normal Debug/Release Draco files:
   if( "${dep_pkg}" MATCHES "draco" )
     # coverage  build -> debug   version of Draco
     # nr        build -> release version of Draco
@@ -760,6 +758,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
     if( "${this_pkg}" MATCHES "jayenne" )
       # If this is jayenne, we might be building a pull request. Replace the PR

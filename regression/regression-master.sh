@@ -41,7 +41,7 @@ print_use()
     echo "         requires one string per project listed in option -p"
     echo "   -p    project names  = { draco, jayenne, capsaicin }"
     echo "                          This is a space delimited list within double quotes."
-    echo "   -e    extra params   = { none, clang, coverage, cuda, fulldiagnostics,"
+    echo "   -e    extra params   = { none, belosmods, clang, coverage, cuda, fulldiagnostics,"
     echo "                            knl, gcc530, gcc610, nr, perfbench, pgi, valgrind}"
     echo " "
     echo "Example:"
@@ -151,7 +151,7 @@ if [[ ${extra_params} ]]; then
    none)
       # if 'none' set to blank
       extra_params=""; epdash="" ;;
-   bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
+   belosmods | bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
       ;;
    gcc610 | nr | perfbench | pgi | valgrind )
       ;;
@@ -223,7 +223,7 @@ ccscs[0-9])
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        bounds_checking | coverage | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
+        belosmods | bounds_checking | coverage | fulldiagnostics | nr | perfbench | valgrind ) # known, continue
         ;;
         gcc530 | clang | gcc610 ) # known, continue
         ;;
