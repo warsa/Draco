@@ -68,15 +68,25 @@ function cleanemacs
 
 function npwd()
 {
-  local regHome=$(echo ${HOME} | sed -e 's/.*\///')
-  #   How many characters of the $PWD should be kept
+  # Optional arguments:
+  #   $1 - number of chars to print.
+  #   $2 - scratch location
+
+  # How many characters of the $PWD should be kept
   local pwdmaxlen=40
-  #   Indicator that there has been directory truncation:
+  if [[ $1 ]]; then pwdmaxlen=$1; fi
+
+  # local regHome=$(echo ${HOME} | sed -e 's/.*\///')
+
+  local scratchdir=/scratch
+  if [[ $2 ]]; then scratchdir=$2; fi
+
+  # Indicator that there has been directory truncation:
   local trunc_symbol="..."
   # substitute ~ for $HOME to shorten the full path
-  newPWD=$(echo ${PWD} | sed -e "s/.*${regHome}/~/")
-  if [ ${#newPWD} -gt $pwdmaxlen ]
-  then
+  newPWD=$(echo ${PWD} | sed -e "s%$HOME%~%")
+  newPWD=$(echo ${newPWD} | sed -e "s%${scratchdir}/${USER}%#%")
+  if [ ${#newPWD} -gt $pwdmaxlen ]; then
     local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
     newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
   fi

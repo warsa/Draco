@@ -35,7 +35,7 @@ macro( setupLAPACKLibrariesUnix )
     endif()
   endforeach()
   if( lapack_FOUND )
-    foreach( config NOCONFIG DEBUG RELEASE )
+    foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
         set( lapack_FOUND TRUE )
@@ -179,6 +179,36 @@ macro( setupLAPACKLibrariesUnix )
         message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
       endif()
 
+  endif()
+
+  # Export BLAS/LAPACK target information to draco-config.cmake
+
+  if( lapack_FOUND )
+      # Choose items for props list via:
+      # include(print_target_properties)
+      # print_targets_properties("blas;lapack")
+      set( props
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED_LOCATION_RELWITHDEBINFO
+        IMPORTED
+        IMPORTED_SONAME_DEBUG
+        IMPORTED_SONAME_RELEASE
+        IMPORTED_SONAME_RELWITHDEBINFO
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        SKIP_BUILD_RPATH
+        IMPORTED_LOCATION )
+      save_vendor_imported_library_to_draco_config( "lapack;blas" "${props}" )
   endif()
 
 endmacro()
@@ -394,9 +424,21 @@ macro( setupGSL )
       # Export GSL target information to draco-config.cmake
       # Choose items for props list via:
       # include(print_target_properties)
-      # echo_targets("GSL::gsl;GSL::gslcblas")
-      set( props "BUILD_WITH_INSTALL_RPATH;GNUtoMS;IMPORTED_CONFIGURATIONS;IMPORTED_IMPLIB;IMPORTED_IMPLIB_DEBUG;IMPORTED_LINK_INTERFACE_LANGUAGES;INTERFACE_LINK_LIBRARIES;IMPORTED_LOCATION_DEBUG;IMPORTED_LOCATION_RELEASE;IMPORTED;INSTALL_RPATH;INSTALL_RPATH_USE_LINK_PATH;INTERFACE_INCLUDE_DIRECTORIES;POSITION_INDEPENDENT_CODE;SKIP_BUILD_RPATH;IMPORTED_LOCATION" )
-
+      # print_targets_properties("GSL::gsl;GSL::gslcblas")
+      set( props
+        GNUtoMS
+        IMPORTED_CONFIGURATIONS
+        IMPORTED_IMPLIB
+        IMPORTED_IMPLIB_DEBUG
+        IMPORTED_LINK_INTERFACE_LANGUAGES
+        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LOCATION_DEBUG
+        IMPORTED_LOCATION_RELEASE
+        IMPORTED
+        INTERFACE_INCLUDE_DIRECTORIES
+        POSITION_INDEPENDENT_CODE
+        SKIP_BUILD_RPATH
+        IMPORTED_LOCATION )
       save_vendor_imported_library_to_draco_config(
         "GSL::gsl;GSL::gslcblas" "${props}" )
     else()
@@ -430,9 +472,8 @@ macro( setupParMETIS )
       # Export METIS target information to draco-config.cmake
       # Choose items for props list via:
       # include(print_target_properties)
-      # echo_targets("METIS::metis")
+      # print_targets_properties("METIS::metis")
       set( props
-        BUILD_WITH_INSTALL_RPATH
         GNUtoMS
         IMPORTED_CONFIGURATIONS
         IMPORTED_IMPLIB
@@ -442,8 +483,6 @@ macro( setupParMETIS )
         IMPORTED_LOCATION_DEBUG
         IMPORTED_LOCATION_RELEASE
         IMPORTED
-        INSTALL_RPATH
-        INSTALL_RPATH_USE_LINK_PATH
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
         SKIP_BUILD_RPATH
@@ -476,9 +515,8 @@ macro( setupParMETIS )
       # Export ParMETIS target information to draco-config.cmake
       # Choose items for props list via:
       # include(print_target_properties)
-      # echo_targets("ParMETIS::parmetis")
+      # print_targets_properties("ParMETIS::parmetis")
       set( props
-        BUILD_WITH_INSTALL_RPATH
         GNUtoMS
         IMPORTED_CONFIGURATIONS
         IMPORTED_IMPLIB
@@ -488,8 +526,6 @@ macro( setupParMETIS )
         IMPORTED_LOCATION_DEBUG
         IMPORTED_LOCATION_RELEASE
         IMPORTED
-        INSTALL_RPATH
-        INSTALL_RPATH_USE_LINK_PATH
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
         SKIP_BUILD_RPATH
@@ -529,9 +565,8 @@ macro( setupSuperLU_DIST )
       # Export SuperLU_DIST target information to draco-config.cmake
       # Choose items for props list via:
       # include(print_target_properties)
-      # echo_targets("SuperLU_DIST::superludist")
+      # print_targets_properties("SuperLU_DIST::superludist")
       set( props
-        BUILD_WITH_INSTALL_RPATH
         GNUtoMS
         IMPORTED_CONFIGURATIONS
         IMPORTED_IMPLIB
@@ -541,8 +576,6 @@ macro( setupSuperLU_DIST )
         IMPORTED_LOCATION_DEBUG
         IMPORTED_LOCATION_RELEASE
         IMPORTED
-        INSTALL_RPATH
-        INSTALL_RPATH_USE_LINK_PATH
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
         SKIP_BUILD_RPATH
