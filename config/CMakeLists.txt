@@ -12,6 +12,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project( config )
 
 file( GLOB CMake_src *.cmake )
+file( GLOB Python_src *.py )
 set( CMake_in
    cmake_uninstall.cmake.in
    doxygen_config.in
@@ -70,7 +71,7 @@ configure_file( draco-config-install.cmake.in
    ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake @ONLY)
 
 # Install scripts and macros to make them available by other projects.
-set( file_list ${CMake_src} ${CMake_in} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
+set( file_list ${CMake_src} ${CMake_in} ${Python_src} ${Draco_BINARY_DIR}/CMakeFiles/draco-config.cmake )
 
 install( FILES ${file_list}  DESTINATION cmake/draco )
 install( FILES ${CMake_AFSD} DESTINATION cmake/draco/CMakeAddFortranSubdirectory )

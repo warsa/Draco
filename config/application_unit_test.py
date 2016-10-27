@@ -14,6 +14,42 @@ import os
 import re
 import subprocess
 
+
+# FIX: add boilerplate example of adding tests
+
+#------------------------------------------------------------------------------#
+## Example from draco/src/diagnostics/test/tDracoInfo.cmake
+#------------------------------------------------------------------------------#
+
+# Use config/ApplicationUnitTest.cmake test registration:
+#
+# include( ApplicationUnitTest )
+# add_app_unit_test(
+#   DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.py
+#   APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+#   LABELS nomemcheck )
+
+# The above will generate a test with data similar to this:
+#
+# add_test(
+#   NAME ${ctestname_base}${argname}
+#   COMMAND ${PYTHON_COMMAND}
+#    ${aut_DRIVER}
+#   -D APP=${aut_APP}
+#   -D ARGVALUE=${argvalue}
+#   -D WORKDIR=${aut_WORKDIR}
+#   -D TESTNAME=${ctestname_base}${argname}
+#   -D DRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
+#   -D DRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+#   -D STDINFILE=${aut_STDINFILE}
+#   -D GOLDFILE=${aut_GOLDFILE}
+#   -D RUN_CMD=${RUN_CMD}
+#   -D numPE=${numPE}
+#   -D PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+#   -D PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+#   ${BUILDENV}
+#   )
+
 ################################################################################
 # function that returns the path of the input string, if found
 def which(program):
@@ -32,19 +68,6 @@ def which(program):
         return exe_file
 
     return None
-################################################################################
-
-################################################################################
-# function to set flags for aprun
-def set_aprun_depth_flags(numPE, mpi_cores_per_cpu):
-  depth = mpi_cores_per_cpu/ numPE
-  remainder = mpi_cores_per_cpu % numPE
-  if (remainder > 0):
-    print("Expecting the requested number of ranks ({0}) to be a factor of the \
-      ranks/node ({1})".format(numPE, mpi_cores_per_cpu))
-    print_final_fail_msg("TEST")
-    sys.exit(1)
-  return "-d {0}".format(depth)
 ################################################################################
 
 ##############################################################################
@@ -114,7 +137,12 @@ class UnitTest:
   re_mpiexec = re.compile("MPIEXEC=([^\s]*)")
   re_mpi_cores_per_cpu = re.compile("MPI_CORES_PER_CPU=([^\s]*)")
   re_draco_info = re.compile("DRACO_INFO=([^\s]*)")
-  re_run_cmd = re.compile("RUN_CMD=([^\s]*)")
+  re_gdiff = re.compile("GDIFF=([^\s]*)")
+  re_pgdiff = re.compile("PGDIFF=([^\s]*)")
+
+  # run command can include spaces, modfiy regular expression for that
+  re_run_cmd = re.compile("RUN_CMD=(.*?)-D")
+
   re_arg_value = re.compile("ARGVALUE=([^\s]*)")
   re_workdir = re.compile("WORKDIR=([^\s]*)")
   re_host_system_processor = re.compile("CMAKE_HOST_SYSTEM_PROCESSOR=([^\s]*)")
@@ -154,10 +182,18 @@ class UnitTest:
       else:
         self.outfile = os.path.basename(self.app)
 
+      # Default filenames for output and error streams, add process IDs
+      # to filenames to avoid errors when multiple processors run jobs
+      self.outfile = "{0}_{1}".format(self.outfile, os.getpid())
       self.project_binary_dir = simple_search(self.re_project_binary_dir, self.full_arg_string)
       self.project_source_dir = simple_search(self.re_project_source_dir, self.full_arg_string)
       self.errfile = "{0}/{1}.err".format(self.project_binary_dir, self.outfile)
       self.outfile = "{0}/{1}.out".format(self.project_binary_dir, self.outfile)
+
+      # these two files are used to check Draco info output and are cleaned up
+      # immediately after it completes
+      self.testout = "testout_{0}".format(os.getpid())
+      self.testerror = "testerror_{0}".format(os.getpid())
 
       if (not os.path.exists(self.app)):
         self.fatal_error("Cannot find {0}".format(self.app))
@@ -193,6 +229,8 @@ class UnitTest:
       self.workdir = simple_search(self.re_workdir, self.full_arg_string)
       self.host_system_processor = simple_search(self.re_host_system_processor, \
         self.full_arg_string)
+      self.gdiff = simple_search(self.re_gdiff, self.full_arg_string)
+      self.pgdiff = simple_search(self.re_pgdiff, self.full_arg_string)
 
       # make dictionary of argument values for simple mapping between
       # cmake commands and python functions
@@ -217,11 +255,6 @@ class UnitTest:
           self.fatal_error("Must set a nonzero number for MPI_CORES_PER_CPU")
         else:
           self.mpi_cores_per_cpu = int(self.mpi_cores_per_cpu)
-
-      # Default filenames for output and error streams, add process IDs
-      # to filenames to avoid errors when multiple processors run jobs
-      self.testout = "testout_{0}".format(os.getpid())
-      self.testerror = "testerror_{0}".format(os.getpid())
 
       # Look for numdiff in $PATH
       self.numdiff_exe = which("numdiff")
@@ -248,33 +281,30 @@ class UnitTest:
       # open temporary files to redirect draco_info
       f_err = open(self.testerror, 'w')
       f_out = open(self.testout, 'w')
-      # set runcmd for capsaicin
-      self.run_cmd = self.run_cmd.replace(" ", ";")
-      run_cmd_capsaicin = self.run_cmd
 
       # run draco --version with correct run command
-      aprun_depth_options = ""
       draco_info_numPE = ""
       if is_set(self.numPE):
         # Use 1 proc to run draco_info
         draco_info_numPE = 1
-        if self.mpiexec == "aprun":
-          # Run with 1 proc, but tell aprun that we need the whole node.
-          aprun_depth_options = set_aprun_depth_flags(1, self.mpi_cores_per_cpu)
 
       if (os.path.exists(self.draco_info)):
-        testres = subprocess.call(["{0} {1} {2} {3} --version".format( \
-          self.run_cmd, draco_info_numPE, aprun_depth_options, self.draco_info)], \
+        testres = subprocess.call(["{0} {1} {2} --version".format( \
+          self.run_cmd, draco_info_numPE, self.draco_info)], \
           stdout=f_out, stderr=f_err, shell=True)
         f_out.close()
         f_err.close()
         print(testres)
         if (testres != 0):
-          print("Unable to run \'{0} {1} {2} {3} --version\'".format(self.run_cmd, \
-            draco_info_numPE, aprun_depth_options, self.draco_info))
+          print("Unable to run \'{0} {1} {2} --version\'".format(self.run_cmd, \
+            draco_info_numPE, self.draco_info))
         else:
           f_out = open(self.testout, 'r')
           print(f_out.readlines())
+
+      # cleanup temporary files
+      os.remove(self.testout)
+      os.remove(self.testerror)
 
       # add numPE to the output file
       safe_arg_value = ""
@@ -283,85 +313,50 @@ class UnitTest:
         self.errfile = self.errfile.replace(".err", "-{0}.err".format(self.numPE))
 
       # clean up arg value
+      '''
       if is_set(self.arg_value):
         safe_arg_value = self.arg_value.replace("[-]","")
         self.outfile = self.outfile.replace(".out", "-{0}.out".format(\
           safe_arg_value))
         self.errfile = self.errfile.replace(".err", "-{0}.err".format(\
           safe_arg_value))
+      '''
 
-      if ( self.mpiexec == "aprun"):
-        # Run with requested number of processors, but tell aprun that we need the
-        # whole node.
-        if (self.numPE):
-          aprun_depth_options = set_aprun_depth_flags(int(self.numPE), \
-            self.mpi_cores_per_cpu)
-
-      # go back to space separated list for run_cmd
+      # print run command
       if is_defined(self.run_cmd):
-        run_cmd_string = self.run_cmd.replace(";", " ")
-        print(">>> Running: {0} {1} {2}".format(run_cmd_string, self.numPE,\
-          aprun_depth_options))
+        print(">>> Running: {0} {1}".format(self.run_cmd, self.numPE))
         print(">>>          {0}".format(self.app))
         if (self.arg_value):
           print(">>>          {0}".format(self.arg_value))
       else:
         print(">>> Running: {0} {1}".format(self.app, self.arg_value))
 
-      # use command line input style for MICs
-      use_cl_input = False
-      if os.path.exists(self.input):
-        if (self.run_cmd == "run_test_on_mic"):
-          arg_value = "{0} {1}".format(arg_value, "< {0}".format(self.input))
-          use_cl_input = True
-        print(">>>          < {0}".format(self.input))
-      print(">>>          > {0}\n".format(self.outfile))
-
       # Run the application capturing all output.
       stdin_file = is_set(self.input)
-      arg_value = self.arg_value.replace(" ", ";")
-      f_out = open(self.testout, 'w')
-      f_err = open(self.testerror, 'w')
+      f_out = open(self.outfile, 'w')
+      f_err = open(self.errfile, 'w')
       if stdin_file:
         f_in = open(self.input, 'r')
 
-
-      # use the subprocess call to set the standard input
-      if (stdin_file and not use_cl_input):
-        testres = subprocess.call(["{0} {1} {2} {3} {4}".format(self.run_cmd, self.numPE, \
-          aprun_depth_options, self.app, self.arg_value)], stdout=f_out, stdin=f_in, \
+      # if test requires standard input, use the subprocess call to set the file
+      if (stdin_file):
+        testres = subprocess.call(["{0} {1} {2} {3}".format(self.run_cmd, \
+          self.numPE, self.app, self.arg_value)], stdout=f_out, stdin=f_in, \
           stderr=f_err, shell=True)
-      # using command line input mode with an stdin file puts the stdin file with
-      # the argvalue string, if not stdin file is given the arg_value will not be
-      # modified
       else:
-        testres = subprocess.call(["{0} {1} {2} {3} {4}".format(self.run_cmd, self.numPE, \
-          aprun_depth_options, self.app, self.arg_value)], stdout=f_out, \
-          stderr=f_err, shell=True)
+        testres = subprocess.call(["{0} {1} {2} {3}".format(self.run_cmd, \
+          self.numPE, self.app, self.arg_value)], stdout=f_out, stderr=f_err, \
+          shell=True)
 
       # close file handles
       f_out.close()
       f_err.close()
       if (stdin_file): f_in.close();
 
-      # go back to space delimited argument list
-      if is_set(arg_value):
-        arg_value = arg_value.replace(";", " ")
-
-      # Now write the cleaned up file.
-      f_clean = open(self.outfile, 'w')
-      f_out = open(self.testout, 'r')
-      re_aprun_remove = re.compile("Application [0-9]* resources: utime")
-      for line in f_out.readlines():
-        if(not re_aprun_remove.search(line)):
-          f_clean.write(line)
-        print(line.strip())
-      f_clean.close()
-      f_out.close()
-
+      # check for non-zero return code
       if (testres):
         # get last line written to stderror
-        f_error = open(self.testerror)
+        f_error = open(self.errfile)
         error_lines = f_error.readlines()
         last_error = error_lines.pop()
         print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
@@ -370,10 +365,6 @@ class UnitTest:
       else:
         print_file(self.outfile)
         self.passmsg("Application ran to completion")
-
-      # cleanup temporary files
-      os.remove(self.testout)
-      os.remove(self.testerror)
 
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
@@ -384,15 +375,12 @@ class UnitTest:
   ##############################################################################
   # check to see if the output file contains a given string
   def output_contains(self, search_string):
-
-    # make regular expression from input string
-    re_search = re.compile(search_string)
-
     # search file for string
-    f_clean = open(self.outfile)
     return_bool = False
-    if (re_search.search(f_clean.read())):
-      return_bool = True
+    with open(self.outfile) as f:
+      for line in f:
+        if (search_string in line):
+          return_bool = True
     return return_bool
   ##############################################################################
 
@@ -400,14 +388,74 @@ class UnitTest:
   # get a value with REGEX, see if it matches reference values
   def output_contains_value(self, search_regex, reference_value):
     # search file for string
-    f_clean = open(self.outfile)
     return_bool = False
-    if (search_regex.search(f_clean.read())):
-      if (search_regex.findall(f_clean.read())[0] == reference_value):
-        return_bool = True
+    with open(self.outfile) as f:
+      for line in f:
+        if (search_regex.search(line)):
+          if (search_regex.findall(line)[0] == reference_value):
+            return_bool = True
     return return_bool
   ##############################################################################
 
+  ##############################################################################
+  # Check output for capsaicin pass/fail criteria
+  def capsaicin_output_check(self, driver="serrano", ignore_error_N=False):
+    error_found = False
+    done_found = False
+    error_str = "error"
+    ERROR_str = "ERROR"
+
+    if (driver == "serrano"):
+      done_str = "serrano done"
+    elif (driver == "anaheim"):
+      done_str = "anaheim completed"
+    elif (driver == "guajillo"):
+      done_str = "guajillo completed on 0"
+
+    # always ignore these errors
+    JFNK_error = "JFNK DONE error"
+    smoothed_error = "Smoothed Aggregation error :"
+
+    # parse output
+    if (not ignore_error_N):
+      print("Parsing {0} output".format(driver))
+      with open(self.outfile) as f:
+        for line in f:
+          if ((error_str in line) or (ERROR_str in line)):
+            if (not (JFNK_error in line) and not (smoothed_error in line)):
+              print("Found error in line: {0}".format(line.strip()))
+              self.failmsg("Anaheim output contains error")
+              error_found = True
+            else:
+              print("Error ignored in line: {0}".format(line.strip()))
+          if (done_str in line):
+            done_found = True
+
+    # parse output while ignoring error(N)
+    elif (ignore_error_N):
+      print("Parsing {0} output and ignoring error(N)".format(driver))
+      re_error_N = re.compile("error[(][0-9]*[)]")
+      with open(self.outfile) as f:
+        for line in f:
+          if (error_str in line or ERROR_str in line):
+            if (not (JFNK_error in line) and (not (smoothed_error in line)
+                and not re_error_N.search(line))):
+              print("Found error in line: {0}".format(line.strip()))
+              self.failmsg("Anaheim output contains error")
+              error_found = True
+            else:
+              print("Error ignored in line: {0}".format(line.strip()))
+          if (done_str in line):
+            done_found = True
+    else:
+      self.failmsg("Input parameters not recognized, file not parsed")
+
+    if (not done_found):
+      self.failmsg("{0} output did not finish".format(driver))
+    if (done_found and not error_found):
+      self.passmsg("\"{0}\" message found in {1} output".format(done_str, driver))
+      self.passmsg("No errors in {0} output".format(driver))
+  ##############################################################################
 
   ##############################################################################
   # print unit test footer and output pass/fail messages
@@ -429,18 +477,16 @@ class UnitTest:
       numdiff_run_cmd = ""
       if is_defined(self.run_cmd):
         numdiff_run_cmd = self.run_cmd
-        numdiff_run_cmd = numdiff_run_cmd.replace(" ", ";")
         # handle run_cmd on Cray environments
         if (self.mpiexec == "aprun" or self.mpiexec == "mpiexec"):
           numdiff_run_cmd = ""
         elif is_set(self.numPE):
-          numdiff_run_cmd = "{0};1".format(numdiff_run_cmd)
-      pretty_run_cmd = numdiff_run_cmd.replace(";", " ")
+          numdiff_run_cmd = "{0} 1".format(numdiff_run_cmd)
 
       # run numdiff command, redirecting stdout and stderr, get a unique
       # filename for the numdiff output and error files
       print("Comparing output to goldfile: ")
-      print("{0} {1} \n {2} {3}".format(pretty_run_cmd, self.numdiff_exe, \
+      print("{0} {1} \n {2} {3}".format(numdiff_run_cmd, self.numdiff_exe, \
         self.outfile, self.gold))
       temp_numdiff_out = "numdiff_out_{0}".format(os.getpid())
       temp_numdiff_err = "numdiff_err_{0}".format(os.getpid())
@@ -493,13 +539,11 @@ class UnitTest:
       diff_run_cmd = ""
       if is_defined(self.run_cmd):
         diff_run_cmd = self.run_cmd
-        diff_run_cmd = diff_run_cmd.replace(" ", ";")
         # handle run_cmd on Cray environments
         if (self.mpiexec == "aprun" or self.mpiexec == "mpiexec"):
           diff_run_cmd = ""
         elif is_set(self.numPE):
-          diff_run_cmd = "{0};1".format(diff_run_cmd)
-      pretty_run_cmd = diff_run_cmd.replace(";", " ")
+          diff_run_cmd = "{0} 1".format(diff_run_cmd)
 
       # Look for diff program in $PATH
       if (diff_name != "numdiff"):
@@ -530,7 +574,7 @@ class UnitTest:
         self.passmsg("two files match.")
       else:
         self.failmsg("two files differ.")
-        print("dif output = ")
+        print("diff output = ")
         print_file(temp_diff_out)
 
       # cleanup temporary files
@@ -539,6 +583,74 @@ class UnitTest:
 
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
+        sys.exc_info()[1]))
+      self.fatal_error("Ending test execution after catching exception")
+  ##############################################################################
+
+  ##############################################################################
+  # call giff or pgdiff command between two files
+  def run_gdiff(self, gdiff_file):
+
+    try:
+      gdiff_exe = self.gdiff
+      if (int(self.numPE) > 1):
+        gdiff_exe = self.pgdiff
+
+      # check to make sure input file exists
+      if (not os.path.exists(gdiff_file)):
+        self.fatal_error("gdiff input file does not exist")
+
+      # check to make sure gdiff path exists
+      if (not os.path.exists(gdiff_exe)):
+        self.fatal_error("gdiff exe does not exist")
+
+      # set numdiff run command
+      diff_run_cmd = ""
+      if is_defined(self.run_cmd):
+        diff_run_cmd = self.run_cmd
+        # handle run_cmd on Cray environments
+        if (self.mpiexec == "aprun" or self.mpiexec == "mpiexec"):
+          diff_run_cmd = ""
+        elif is_set(self.numPE):
+          diff_run_cmd = "{0} {1}".format(diff_run_cmd, self.numPE)
+
+      # run diff command, redirecting stdout and stderr, get a unique
+      # filename for the diff output and error files
+      print("Running gdiff from {0} on {1}".format(gdiff_exe, gdiff_file))
+      temp_diff_out = "diff_out_{0}".format(os.getpid())
+      temp_diff_err = "diff_err_{0}".format(os.getpid())
+      f_out = open(temp_diff_out, 'w')
+      f_err = open(temp_diff_err, 'w')
+      diff_res = subprocess.call(["{0} {1} {2}".format(diff_run_cmd,
+        gdiff_exe, gdiff_file)], shell=True, stdout=f_out, stderr=f_err)
+
+      # close file handles
+      f_out.close()
+      f_err.close()
+
+      # check gdiff output for passes and fails
+      found_fail = False
+      found_pass = False
+      with open(temp_diff_out) as f:
+        for line in f:
+          if ("FAILED" in line):
+            found_fail = True
+          if ("passed" in line):
+            found_pass = True
+
+      if (not found_fail and found_pass):
+        self.passmsg("two files match.")
+      else:
+        self.failmsg("two files differ.")
+        print("diff output = ")
+        print_file(temp_diff_out)
+
+      # cleanup temporary files
+      os.remove(temp_diff_out)
+      os.remove(temp_diff_err)
+
+    except Exception:
+      print("Caught exception in gdiff: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
   ##############################################################################
@@ -588,6 +700,13 @@ class UnitTest:
     arg_regex = re.compile("{0}=([^\s]*)".format(arg_name))
     arg_value = simple_search(arg_regex, self.full_arg_string)
     return ( arg_value.find(check_string) != -1)
+  ##############################################################################
+
+  ##############################################################################
+  # Get argument value from cmake_args dictionary or raise exception
+  # value for check_string
+  def get_arg_value(self, arg_name):
+    return self.cmake_args[arg_name]
   ##############################################################################
 
   ##############################################################################

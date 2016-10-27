@@ -38,7 +38,7 @@ try:
   ##--------------------------------------------------------------------------##
 
   found_copyright = \
-    tDracoInfo.output_contains("Copyright \(C\)")
+    tDracoInfo.output_contains("Copyright (C)")
 
   found_system_type = \
     tDracoInfo.output_contains("System type")
