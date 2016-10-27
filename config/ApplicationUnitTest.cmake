@@ -237,27 +237,56 @@ macro( aut_register_test )
     endif()
   endif(VERBOSE_DEBUG)
 
-  add_test(
-    NAME ${ctestname_base}${argname}
-    COMMAND ${CMAKE_COMMAND}
-    -DAPP=${aut_APP}
-    -DARGVALUE=${argvalue}
-    -DWORKDIR=${aut_WORKDIR}
-    -DTESTNAME=${ctestname_base}${argname}
-    -DDRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
-    -DDRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
-    -DSTDINFILE=${aut_STDINFILE}
-    -DGOLDFILE=${aut_GOLDFILE}
-    -DRUN_CMD=${RUN_CMD}
-    -DnumPE=${numPE}
-    -D MPIEXEC=${MPIEXEC}
-    -DMPI_CORES_PER_CPU=${MPI_CORES_PER_CPU}
-    -DSITENAME=${SITENAME}
-    -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
-    -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
-    ${BUILDENV}
-    -P ${aut_DRIVER}
-    )
+  # Look for python, which is used to drive application unit tests
+  find_program(PYTHON_COMMAND python)
+  if( NOT EXISTS ${PYTHON_COMMAND})
+    message( FATAL_ERROR "Python not found in PATH")
+  endif()
+
+  # Check to see if driver file is python or CMake
+  set(PYTHON_TEST TRUE)
+  string(FIND ${aut_DRIVER} ".py" PYTHON_TEST)
+  if (${PYTHON_TEST} EQUAL -1)
+    set(PYTHON_TEST FALSE)
+  endif ()
+
+  # Set arguments that don't change between python and CMake driver
+  set (SHARED_ARGUMENTS
+      -DAPP=${aut_APP}
+      -DARGVALUE=${argvalue}
+      -DWORKDIR=${aut_WORKDIR}
+      -DTESTNAME=${ctestname_base}${argname}
+      -DDRACO_CONFIG_DIR=${DRACO_CONFIG_DIR}
+      -DDRACO_INFO=$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
+      -DSTDINFILE=${aut_STDINFILE}
+      -DGOLDFILE=${aut_GOLDFILE}
+      -DRUN_CMD=${RUN_CMD}
+      -DnumPE=${numPE}
+      -D MPIEXEC=${MPIEXEC}
+      -DMPI_CORES_PER_CPU=${MPI_CORES_PER_CPU}
+      -DSITENAME=${SITENAME}
+      -DPROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}
+      -DPROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}
+      ${BUILDENV}
+      )
+
+  # Add python version if python driver file is specified
+
+  if (${PYTHON_TEST})
+    add_test(
+      NAME ${ctestname_base}${argname}
+      COMMAND ${PYTHON_COMMAND}
+      ${aut_DRIVER}
+      ${SHARED_ARGUMENTS}
+      )
+  else ()
+    add_test(
+      NAME ${ctestname_base}${argname}
+      COMMAND ${CMAKE_COMMAND}
+      ${SHARED_ARGUMENTS}
+      -P ${aut_DRIVER}
+      )
+  endif()
 
   set_tests_properties( ${ctestname_base}${argname}
     PROPERTIES

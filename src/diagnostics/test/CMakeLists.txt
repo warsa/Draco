@@ -35,7 +35,7 @@ include( ApplicationUnitTest )
 
 # Consider using the label "nomemcheck" to prevent this from running under valgrind.
 add_app_unit_test(
-  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.cmake
+  DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tDracoInfo.py
   APP    $<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>
   TEST_ARGS "none;--version;--brief"
 #  LABELS nomemcheck

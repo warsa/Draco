@@ -362,6 +362,22 @@
    ...
    obj:/*/libpython2.4.so*
 }
+{
+   python_lib/memcheck/leak 
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ...
+}
+{
+   python_lib/memcheck/leak  
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython2.7.so.1.0
+}
+
 #--------------------------------------------------------
 ## CMake suppressions
 {
