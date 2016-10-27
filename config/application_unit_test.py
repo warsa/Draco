@@ -14,9 +14,6 @@ import os
 import re
 import subprocess
 
-
-# FIX: add boilerplate example of adding tests
-
 #------------------------------------------------------------------------------#
 ## Example from draco/src/diagnostics/test/tDracoInfo.cmake
 #------------------------------------------------------------------------------#
@@ -469,8 +466,9 @@ class UnitTest:
   ##############################################################################
 
   ##############################################################################
-  # call numdiff between the gold and output file
-  def aut_numdiff(self):
+  # call numdiff between the gold and output file, capture additional arguments
+  # to numdiff in args
+  def aut_numdiff(self, numdiff_args=""):
 
     try:
       # set numdiff run command
@@ -492,8 +490,9 @@ class UnitTest:
       temp_numdiff_err = "numdiff_err_{0}".format(os.getpid())
       f_out = open( temp_numdiff_out, 'w')
       f_err = open( temp_numdiff_err, 'w')
-      numdiff_res = subprocess.call(["{0} {1} {2} {3}".format(numdiff_run_cmd,
-        self.numdiff_exe, self.outfile, self.gold)], shell=True,
+      numdiff_res = \
+        subprocess.call(["{0} {1} {2} {3} {4}".format(numdiff_run_cmd, \
+        self.numdiff_exe, self.outfile, self.gold, numdiff_args)], shell=True, \
         stdout=f_out, stderr=f_err)
 
       # close file handles
@@ -521,7 +520,7 @@ class UnitTest:
   ##############################################################################
   # call arbitrary diff command between two files
   def diff_two_files(self, cmake_dir_1, sub_path_1, cmake_dir_2, sub_path_2, \
-      diff_name="numdiff"):
+      diff_name="numdiff", diff_args=""):
 
     try:
       if (not self.cmake_args.has_key(cmake_dir_1)) or \
@@ -562,8 +561,8 @@ class UnitTest:
       temp_diff_err = "diff_err_{0}".format(os.getpid())
       f_out = open(temp_diff_out, 'w')
       f_err = open(temp_diff_err, 'w')
-      diff_res = subprocess.call(["{0} {1} {2} {3}".format(diff_run_cmd,
-        diff_exe, path_1, path_2)], shell=True, stdout=f_out, stderr=f_err)
+      diff_res = subprocess.call(["{0} {1} {2} {3} {4}".format(diff_run_cmd,
+        diff_exe, path_1, path_2, diff_args)], shell=True, stdout=f_out, stderr=f_err)
 
       # close file handles
       f_out.close()
