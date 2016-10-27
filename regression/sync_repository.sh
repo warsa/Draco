@@ -35,13 +35,18 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-  if test -f /usr/share/Modules/init/bash; then
-    source /usr/share/Modules/init/bash
+  case ${target} in
+    tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init ;;
+    # ccs-net, darwin, ml
+    *)       module_init_dir=/usr/share/Modules/init ;;
+  esac
+  if test -f ${module_init_dir}/bash; then
+    source ${module_init_dir}/bash
   else
     echo "ERROR: The module command was not found. No modules will be loaded."
   fi
+  modcmd=`declare -f module`
 fi
-modcmd=`declare -f module`
 
 #
 # Environment
@@ -69,6 +74,8 @@ case ${target} in
     keychain=keychain-2.7.1
     ;;
   tt-fey*)
+    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/misc"
+    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/tools"
     run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
@@ -179,8 +186,8 @@ case ${target} in
         logfile=$regdir/logs/ml-Debug-fulldiagnostics-master-pr${pr}.log
         echo "- Starting regression (fulldiagnostics) for pr${pr}."
         echo "  Log: $logfile"
-        $regdir/draco/regression-master.sh -b Debug -e fulldiagnostics \
-           -p draco -f pr${pr} &> $logfile &
+        $regdir/draco/regression/regression-master.sh -r -b Debug \
+          -e fulldiagnostics -p draco -f pr${pr} &> $logfile &
       done
       run "git reset --soft"
     else
@@ -224,8 +231,8 @@ case ${target} in
         logfile=$regdir/logs/tt-Release-master-pr${pr}.log
         echo "- Starting regression (Release) for pr${pr}."
         echo "  Log: $logfile"
-        $regdir/draco/regression-master.sh -r -b Release -p draco -f pr${pr} \
-          &> $logfile &
+        $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
+          -f pr${pr} &> $logfile &
       done
       run "git reset --soft"
     else
