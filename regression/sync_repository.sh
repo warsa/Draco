@@ -186,7 +186,7 @@ case ${target} in
         logfile=$regdir/logs/ml-Debug-fulldiagnostics-master-pr${pr}.log
         echo "- Starting regression (fulldiagnostics) for pr${pr}."
         echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -b Debug \
+        $regdir/draco/regression/regression-master.sh -r -b Debug \
           -e fulldiagnostics -p draco -f pr${pr} &> $logfile &
       done
       run "git reset --soft"
