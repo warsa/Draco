@@ -35,6 +35,7 @@ macro( setupLAPACKLibrariesUnix )
     endif()
   endforeach()
   if( lapack_FOUND )
+    set( lapack_flavor "netlib")
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
@@ -97,6 +98,7 @@ macro( setupLAPACKLibrariesUnix )
       if( BLAS_FOUND )
         set( LAPACK_FOUND TRUE )
         set( lapack_FOUND ON )
+        set( lapack_flavor "mkl")
         add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
@@ -141,6 +143,7 @@ macro( setupLAPACKLibrariesUnix )
       if( BLAS_FOUND )
         set( LAPACK_FOUND TRUE )
         set( lapack_FOUND ON )
+        set( lapack_flavor "openblas")
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
         set_target_properties( blas PROPERTIES
@@ -206,8 +209,10 @@ macro( setupLAPACKLibrariesUnix )
         IMPORTED_SONAME_RELWITHDEBINFO
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
-        SKIP_BUILD_RPATH
         IMPORTED_LOCATION )
+      if( "${lapack_flavor}" STREQUAL "mkl" )
+        save_vendor_imported_library_to_draco_config( "blas::mkl_thread;blas::mkl_core" "${props}" )
+      endif()
       save_vendor_imported_library_to_draco_config( "lapack;blas" "${props}" )
   endif()
 
@@ -437,7 +442,6 @@ macro( setupGSL )
         IMPORTED
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
-        SKIP_BUILD_RPATH
         IMPORTED_LOCATION )
       save_vendor_imported_library_to_draco_config(
         "GSL::gsl;GSL::gslcblas" "${props}" )
@@ -485,7 +489,6 @@ macro( setupParMETIS )
         IMPORTED
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
-        SKIP_BUILD_RPATH
         IMPORTED_LOCATION )
 
       save_vendor_imported_library_to_draco_config( "METIS::metis" "${props}" )
@@ -528,7 +531,6 @@ macro( setupParMETIS )
         IMPORTED
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
-        SKIP_BUILD_RPATH
         IMPORTED_LOCATION )
 
       save_vendor_imported_library_to_draco_config(
@@ -578,7 +580,6 @@ macro( setupSuperLU_DIST )
         IMPORTED
         INTERFACE_INCLUDE_DIRECTORIES
         POSITION_INDEPENDENT_CODE
-        SKIP_BUILD_RPATH
         IMPORTED_LOCATION )
 
       save_vendor_imported_library_to_draco_config( "SuperLU_DIST::superludist" "${props}" )

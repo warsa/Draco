@@ -64,6 +64,9 @@ function cleanemacs
 
 ##---------------------------------------------------------------------------##
 ## Used for formatting PROMPT.
+## $HOME            -> ~
+## ...scratch...    -> #
+## .../projects/... -> @
 ##---------------------------------------------------------------------------##
 
 function npwd()
@@ -78,14 +81,23 @@ function npwd()
 
   # local regHome=$(echo ${HOME} | sed -e 's/.*\///')
 
-  local scratchdir=/scratch
-  if [[ $2 ]]; then scratchdir=$2; fi
+  local scratchdirs=/scratch:/lustre/ttscratch1
+  if [[ $2 ]]; then scratchdirs=$2; fi
 
   # Indicator that there has been directory truncation:
   local trunc_symbol="..."
   # substitute ~ for $HOME to shorten the full path
   newPWD=$(echo ${PWD} | sed -e "s%$HOME%~%")
-  newPWD=$(echo ${newPWD} | sed -e "s%${scratchdir}/${USER}%#%")
+  local oldIFS=$IFS
+  IFS=:
+  for dir in $scratchdirs; do
+    newPWD=$(echo ${newPWD} | sed -e "s%${dir}/${USER}%#%")
+  done
+  IFS=$oldIFS
+
+  local devdirs=/usr/projects/jayenne/devs
+  newPWD=$(echo ${newPWD} | sed -e "s%${devdirs}/${USER}%@%")
+
   if [ ${#newPWD} -gt $pwdmaxlen ]; then
     local pwdoffset=$(( ${#newPWD} - $pwdmaxlen ))
     newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
