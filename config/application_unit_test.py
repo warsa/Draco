@@ -489,7 +489,7 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      for arg in self.numdiff_run_cmd.split():
+      for arg in numdiff_run_cmd.split():
         clean_run_args.append(arg)
       if self.numdiff_exe.strip():
         clean_run_args.append(self.numdiff_exe.strip())
@@ -570,7 +570,7 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      for arg in self.diff_run_cmd.split():
+      for arg in diff_run_cmd.split():
         clean_run_args.append(arg)
       if diff_exe.strip():
         clean_run_args.append(diff_exe.strip())
