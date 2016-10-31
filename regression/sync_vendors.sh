@@ -1,4 +1,11 @@
 #!/bin/bash
+##---------------------------------------------------------------------------##
+## File  : regression/sync_vendors.sh
+## Date  : Tuesday, Oct 25, 2016, 09:07 am
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # Run from ccscs7:
 #   - Mirror ccscs7:/scratch/vendors -> /ccs/codes/radtran/vendors/rhel72

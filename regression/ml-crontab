@@ -1,7 +1,7 @@
 # crontab for ml-fey
 
-# Create a svn hotcopy of capsaicin at /usr/projects/jayenne/regress/svn
-01 22 * * 0-6 /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.log
+# Sync git repositories to local FS and run CI tests
+*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh &> /usr/projects/jayenne/regress/logs/sync_repository.ml.log
 
 # Update the run scripts in the regression directory
 01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh &> /usr/projects/jayenne/regress/logs/update_regression_scripts.log

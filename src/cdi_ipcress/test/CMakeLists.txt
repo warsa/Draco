@@ -58,7 +58,7 @@ add_scalar_tests(
 
 include( ApplicationUnitTest )
 add_app_unit_test(
-  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.cmake
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
   TEST_ARGS "Al_BeCu.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"

@@ -9,9 +9,6 @@ GIT=$1
 githost=$2
 featurebranch=$3
 
-echo "This is fetch_co.log"
-echo "This is fetch_co.log" > fetch_co.log
-
 function log()
 {
   echo "$1"
@@ -23,6 +20,8 @@ function run()
   echo "$1" >> fetch_co.log
   eval $1 >> fetch_co.log
 }
+
+log "This is fetch_co.sh. Args = $1 $2 $3"
 
 if ! test -x $GIT; then
    log "FATAL ERROR: unable to run GIT=$GIT."

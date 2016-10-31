@@ -52,7 +52,7 @@ if( NOT APPLE )
   # set( VERBOSE_DEBUG ON )
   include( ApplicationUnitTest )
   add_app_unit_test(
-    DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.cmake
+    DRIVER ${CMAKE_CURRENT_SOURCE_DIR}/tstEnsight_Translator.py
     APP    $<TARGET_FILE_DIR:Ut_viz_tstEnsight_Translator_exe>/$<TARGET_FILE_NAME:Ut_viz_tstEnsight_Translator_exe>
     BUILDENV "CMAKE_HOST_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}"
     )
