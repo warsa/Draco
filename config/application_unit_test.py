@@ -335,8 +335,8 @@ class UnitTest:
       clean_run_args = []
       for arg in self.run_cmd.split():
         clean_run_args.append(arg)
-      if draco_info_numPE.strip():
-        clean_run_args.append(draco_info_numPE.strip())
+      if self.numPE.strip():
+        clean_run_args.append(self.numPE.strip())
       if self.app.strip():
         clean_run_args.append(self.app.strip())
       for arg in (self.arg_value.split()):
@@ -651,7 +651,10 @@ class UnitTest:
 
       # run diff command, redirecting stdout and stderr, get a unique
       # filename for the diff output and error files
+
+      print(clean_run_args)
       print("Running gdiff from {0} on {1}".format(gdiff_exe, gdiff_file))
+      print("About to run: {0}".format(" ".join(clean_run_args)))
       temp_diff_out = "diff_out_{0}".format(os.getpid())
       temp_diff_err = "diff_err_{0}".format(os.getpid())
       f_out = open(temp_diff_out, 'w')
