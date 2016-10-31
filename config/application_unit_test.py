@@ -101,7 +101,7 @@ def print_file(file_name):
 # for "if(<variable>)" logic
 def is_set(param_string):
   return_bool = False
-  if (param_string != "" and param_string != "not_found"):
+  if ( (param_string != "") and (param_string != "not_found")):
     return_bool = True
   return return_bool
 ################################################################################
@@ -187,11 +187,6 @@ class UnitTest:
       self.errfile = "{0}/{1}.err".format(self.project_binary_dir, self.outfile)
       self.outfile = "{0}/{1}.out".format(self.project_binary_dir, self.outfile)
 
-      # these two files are used to check Draco info output and are cleaned up
-      # immediately after it completes
-      self.testout = "testout_{0}".format(os.getpid())
-      self.testerror = "testerror_{0}".format(os.getpid())
-
       if (not os.path.exists(self.app)):
         self.fatal_error("Cannot find {0}".format(self.app))
       else:
@@ -275,33 +270,33 @@ class UnitTest:
       print("=== {0}".format(self.testname))
       print("=============================================")
 
-      # open temporary files to redirect draco_info
-      f_err = open(self.testerror, 'w')
-      f_out = open(self.testout, 'w')
-
       # run draco --version with correct run command
       draco_info_numPE = ""
       if is_set(self.numPE):
         # Use 1 proc to run draco_info
-        draco_info_numPE = 1
+        draco_info_numPE = "1"
 
       if (os.path.exists(self.draco_info)):
-        testres = subprocess.call(["{0} {1} {2} --version".format( \
-          self.run_cmd, draco_info_numPE, self.draco_info)], \
-          stdout=f_out, stderr=f_err, shell=True)
-        f_out.close()
-        f_err.close()
-        print(testres)
-        if (testres != 0):
-          print("Unable to run \'{0} {1} {2} --version\'".format(self.run_cmd, \
-            draco_info_numPE, self.draco_info))
-        else:
-          f_out = open(self.testout, 'r')
-          print(f_out.readlines())
+        # make a list of clean argument (no spaces, no empty strings)
+        clean_draco_run_args = []
+        if self.run_cmd.strip():
+          clean_draco_run_args.append(self.run_cmd.strip())
+        if draco_info_numPE.strip():
+          clean_draco_run_args.append(draco_info_numPE.strip())
+        if self.draco_info.strip():
+          clean_draco_run_args.append(self.draco_info.strip())
+        clean_draco_run_args.append("--version")
 
-      # cleanup temporary files
-      os.remove(self.testout)
-      os.remove(self.testerror)
+        draco_process = \
+          subprocess.Popen(clean_draco_run_args, stdout=subprocess.PIPE, \
+          stderr=subprocess.STDOUT )
+
+        draco_out, draco_err = draco_process.communicate()
+        if (draco_process.returncode != 0):
+          print("Unable to run \'{0}\'".format(' '.join(clean_draco_run_args)))
+          print(draco_err)
+        else:
+          print(draco_out)
 
       # add numPE to the output file
       safe_arg_value = ""
@@ -335,15 +330,25 @@ class UnitTest:
       if stdin_file:
         f_in = open(self.input, 'r')
 
+      # make a list of clean argument (no spaces, no empty strings)
+      clean_run_args = []
+      if self.run_cmd.strip():
+        clean_run_args.append(self.run_cmd.strip())
+      if draco_info_numPE.strip():
+        clean_run_args.append(draco_info_numPE.strip())
+      if self.app.strip():
+        clean_run_args.append(self.app.strip())
+      for arg in (self.arg_value.split()):
+        if arg.strip():
+          clean_run_args.append(arg.strip())
+
       # if test requires standard input, use the subprocess call to set the file
       if (stdin_file):
-        testres = subprocess.call(["{0} {1} {2} {3}".format(self.run_cmd, \
-          self.numPE, self.app, self.arg_value)], stdout=f_out, stdin=f_in, \
-          stderr=f_err, shell=True)
+        print("About to run \'{0}\'".format(' '.join(clean_run_args)))
+        testres = subprocess.call(clean_run_args, stdout=f_out, stdin=f_in, \
+          stderr=f_err)
       else:
-        testres = subprocess.call(["{0} {1} {2} {3}".format(self.run_cmd, \
-          self.numPE, self.app, self.arg_value)], stdout=f_out, stderr=f_err, \
-          shell=True)
+        testres = subprocess.call(clean_run_args, stdout=f_out, stderr=f_err)
 
       # close file handles
       f_out.close()
@@ -481,19 +486,28 @@ class UnitTest:
         elif is_set(self.numPE):
           numdiff_run_cmd = "{0} 1".format(numdiff_run_cmd)
 
+      # make a list of clean argument (no spaces, no empty strings)
+      clean_run_args = []
+      if numdiff_run_cmd.strip():
+        clean_run_args.append(numdiff_run_cmd.strip())
+      if self.numdiff_exe.strip():
+        clean_run_args.append(self.numdiff_exe.strip())
+      if self.outfile.strip():
+        clean_run_args.append(self.outfile.strip())
+      if self.gold.strip():
+        clean_run_args.append(self.gold.strip())
+      for arg in numdiff_args.split():
+        if arg: clean_run_args.append(arg)
+
       # run numdiff command, redirecting stdout and stderr, get a unique
       # filename for the numdiff output and error files
       print("Comparing output to goldfile: ")
-      print("{0} {1} \n {2} {3}".format(numdiff_run_cmd, self.numdiff_exe, \
-        self.outfile, self.gold))
+      print(" ".join(clean_run_args))
       temp_numdiff_out = "numdiff_out_{0}".format(os.getpid())
       temp_numdiff_err = "numdiff_err_{0}".format(os.getpid())
       f_out = open( temp_numdiff_out, 'w')
       f_err = open( temp_numdiff_err, 'w')
-      numdiff_res = \
-        subprocess.call(["{0} {1} {2} {3} {4}".format(numdiff_run_cmd, \
-        self.numdiff_exe, self.outfile, self.gold, numdiff_args)], shell=True, \
-        stdout=f_out, stderr=f_err)
+      numdiff_res = subprocess.call(clean_run_args, stdout=f_out, stderr=f_err)
 
       # close file handles
       f_out.close()
@@ -553,6 +567,19 @@ class UnitTest:
       else:
         diff_exe = self.numdiff_exe
 
+      # make a list of clean argument (no spaces, no empty strings)
+      clean_run_args = []
+      if diff_run_cmd.strip():
+        clean_run_args.append(diff_run_cmd.strip())
+      if diff_exe.strip():
+        clean_run_args.append(diff_exe.strip())
+      if path_1.strip():
+        clean_run_args.append(path_1.strip())
+      if path_2.strip():
+        clean_run_args.append(path_2.strip())
+      for arg in diff_args.split():
+        if arg: clean_run_args.append(arg)
+
       # run diff command, redirecting stdout and stderr, get a unique
       # filename for the diff output and error files
       print("Comparing output of {0} and {1} with diff command: {2}".format( \
@@ -561,8 +588,7 @@ class UnitTest:
       temp_diff_err = "diff_err_{0}".format(os.getpid())
       f_out = open(temp_diff_out, 'w')
       f_err = open(temp_diff_err, 'w')
-      diff_res = subprocess.call(["{0} {1} {2} {3} {4}".format(diff_run_cmd,
-        diff_exe, path_1, path_2, diff_args)], shell=True, stdout=f_out, stderr=f_err)
+      diff_res = subprocess.call(clean_run_args, stdout=f_out, stderr=f_err)
 
       # close file handles
       f_out.close()
@@ -613,6 +639,15 @@ class UnitTest:
         elif is_set(self.numPE):
           diff_run_cmd = "{0} {1}".format(diff_run_cmd, self.numPE)
 
+      # make a list of clean argument (no spaces, no empty strings)
+      clean_run_args = []
+      if diff_run_cmd.strip():
+        clean_run_args.append(diff_run_cmd.strip())
+      if gdiff_exe.strip():
+        clean_run_args.append(gdiff_exe.strip())
+      if gdiff_file.strip():
+        clean_run_args.append(gdiff_file.strip())
+
       # run diff command, redirecting stdout and stderr, get a unique
       # filename for the diff output and error files
       print("Running gdiff from {0} on {1}".format(gdiff_exe, gdiff_file))
@@ -620,8 +655,7 @@ class UnitTest:
       temp_diff_err = "diff_err_{0}".format(os.getpid())
       f_out = open(temp_diff_out, 'w')
       f_err = open(temp_diff_err, 'w')
-      diff_res = subprocess.call(["{0} {1} {2}".format(diff_run_cmd,
-        gdiff_exe, gdiff_file)], shell=True, stdout=f_out, stderr=f_err)
+      diff_res = subprocess.call(clean_run_args, stdout=f_out, stderr=f_err)
 
       # close file handles
       f_out.close()
