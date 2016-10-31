@@ -29,8 +29,8 @@ fi
 modcmd=`declare -f module`
 #    If not found, look for it in /usr/share/Modules (ML)
 if [[ ! ${modcmd} ]]; then
-   if test -f /usr/share/Modules/init/bash; then
-      source /usr/share/Modules/init/bash
+   if test -f /usr/share/lmod/lmod/init/bash; then
+      source /usr/share/lmod/lmod/init/bash
    else
       echo "ERROR: The module command was not found. No modules will be loaded."
    fi
@@ -47,17 +47,15 @@ else
   # to use his/her own checkout of user_contrib modulefiles.
   if test -d $HOME/modulefiles; then
     export ucmf=$HOME/modulefiles
-    module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`
+    module use --append $ucmf/`/usr/projects/hpcsoft/utilities/bin/sys_name`
   else
     module load user_contrib
   fi
   module load friendly-testing
 
   export dracomodules="intel/16.0.3 openmpi/1.10.3 mkl \
-subversion cmake numdiff git totalview hsi"
-#trilinos/12.8.1 \
-#superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
-
+subversion cmake numdiff git totalview hsi trilinos/12.8.1 \
+superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4"
 
 fi
 
