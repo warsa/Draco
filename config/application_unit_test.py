@@ -279,14 +279,15 @@ class UnitTest:
       if (os.path.exists(self.draco_info)):
         # make a list of clean argument (no spaces, no empty strings)
         clean_draco_run_args = []
-        if self.run_cmd.strip():
-          clean_draco_run_args.append(self.run_cmd.strip())
+        for arg in self.run_cmd.split():
+          clean_draco_run_args.append(arg)
         if draco_info_numPE.strip():
           clean_draco_run_args.append(draco_info_numPE.strip())
         if self.draco_info.strip():
           clean_draco_run_args.append(self.draco_info.strip())
         clean_draco_run_args.append("--version")
 
+        print("About to run \'{0}\'".format(' '.join(clean_draco_run_args)))
         draco_process = \
           subprocess.Popen(clean_draco_run_args, stdout=subprocess.PIPE, \
           stderr=subprocess.STDOUT )
@@ -332,8 +333,8 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      if self.run_cmd.strip():
-        clean_run_args.append(self.run_cmd.strip())
+      for arg in self.run_cmd.split():
+        clean_run_args.append(arg)
       if draco_info_numPE.strip():
         clean_run_args.append(draco_info_numPE.strip())
       if self.app.strip():
@@ -488,8 +489,8 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      if numdiff_run_cmd.strip():
-        clean_run_args.append(numdiff_run_cmd.strip())
+      for arg in self.numdiff_run_cmd.split():
+        clean_run_args.append(arg)
       if self.numdiff_exe.strip():
         clean_run_args.append(self.numdiff_exe.strip())
       if self.outfile.strip():
@@ -569,8 +570,8 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      if diff_run_cmd.strip():
-        clean_run_args.append(diff_run_cmd.strip())
+      for arg in self.diff_run_cmd.split():
+        clean_run_args.append(arg)
       if diff_exe.strip():
         clean_run_args.append(diff_exe.strip())
       if path_1.strip():
@@ -641,8 +642,8 @@ class UnitTest:
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
-      if diff_run_cmd.strip():
-        clean_run_args.append(diff_run_cmd.strip())
+      for arg in diff_run_cmd.split():
+        clean_run_args.append(arg)
       if gdiff_exe.strip():
         clean_run_args.append(gdiff_exe.strip())
       if gdiff_file.strip():
