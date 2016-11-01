@@ -33,21 +33,11 @@ include_directories(
 )
 
 # ---------------------------------------------------------------------------- #
-# Build package library
-# ---------------------------------------------------------------------------- #
-
-add_component_library(
-   TARGET       Lib_fit
-   TARGET_DEPS  Lib_linear
-   LIBRARY_NAME ${PROJECT_NAME}
-   SOURCES      "${sources}" )
-
-# ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_fit EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/fit )
+install( FILES ${headers} ${template_implementations}
+  DESTINATION ${DBSCFGDIR}include/fit )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
