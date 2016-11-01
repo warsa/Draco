@@ -1,0 +1,64 @@
+##-*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## .bashrc_toss3 - my bash configuration file upon bash login
+##---------------------------------------------------------------------------##
+
+if test -n "$verbose"; then
+   echo "In .bashrc_toss3"
+fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS
+##---------------------------------------------------------------------------##
+
+# unlimit stack and core dump sizes.
+ulimit -s unlimited
+
+# Where is the vendor directory
+if [[ ! ${VENDOR_DIR} ]]; then
+   if test -d /usr/projects/draco/vendors; then
+      VENDOR_DIR=/usr/projects/draco/vendors
+      export PATH=$VENDOR_DIR/bin:$PATH
+   fi
+fi
+
+#
+# MODULES
+#
+# 1. Determine if the module command is available
+modcmd=`declare -f module`
+#    If not found, look for it in /usr/share/Modules (ML)
+if [[ ! ${modcmd} ]]; then
+   if test -f /usr/share/lmod/lmod/init/bash; then
+      source /usr/share/lmod/lmod/init/bash
+   else
+      echo "ERROR: The module command was not found. No modules will be loaded."
+   fi
+fi
+modcmd=`declare -f module`
+
+# 2. Use modules found in the draco directory
+
+if [[ ! ${modcmd} ]]; then
+   echo "ERROR: The module command was not found. No modules will be loaded."
+else
+
+  # If modulefiles is located at $HOME, assume that the current developer wants
+  # to use his/her own checkout of user_contrib modulefiles.
+  if test -d $HOME/modulefiles; then
+    export ucmf=$HOME/modulefiles
+    module use --append $ucmf/`/usr/projects/hpcsoft/utilities/bin/sys_name`
+  else
+    module load user_contrib
+  fi
+  module load friendly-testing
+
+  export dracomodules="intel/16.0.3 openmpi/1.10.3 mkl \
+subversion cmake numdiff git totalview hsi trilinos/12.8.1 \
+superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4"
+
+fi
+
+##---------------------------------------------------------------------------##
+## end of .bashrc_toss3
+##---------------------------------------------------------------------------##

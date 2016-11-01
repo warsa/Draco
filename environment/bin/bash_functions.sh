@@ -81,7 +81,7 @@ function npwd()
 
   # local regHome=$(echo ${HOME} | sed -e 's/.*\///')
 
-  local scratchdirs=/scratch:/lustre/ttscratch1
+  local scratchdirs=/scratch:/lustre/ttscratch1:/lustre/scratch[123]/yellow
   if [[ $2 ]]; then scratchdirs=$2; fi
 
   # Indicator that there has been directory truncation:

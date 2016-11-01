@@ -171,8 +171,13 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       ;;
 
     # Mapache | Moonlight | Mustang | Pinto | Wolf | Luna
-    mp* | ml* | mu* | pi* | wf* | lu* )
+    lu* | mp* | ml* | mu* | pi* | wf* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
+      ;;
+
+    # Snow | Fire | Ice
+    sn* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
       ;;
 
     # wtrw and rfta
