@@ -257,7 +257,6 @@ class UnitTest:
 
       # Look for numdiff in $PATH
       self.numdiff_exe = which("numdiff"+self.exe_ext)
-      self.numdiff_exe = which("numdiff")
       if (not self.numdiff_exe):
         self.fatal_error("Numdiff not found in PATH")
       if (debug):
