@@ -27,22 +27,17 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_19_1
+ddir=draco-6_20_0
 pdir=$ddir
-
-# CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=1"
 
 # environment (use draco modules)
 # release for each module set
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
-  c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9])
-    environments="intel15env" ;;
   t[rt]-fey* | t[rt]-login* )
-    environments="intel15env" ;;
+    environments="intel16env" ;;
 esac
-function intel15env()
+function intel16env()
 {
 run "module load user_contrib friendly-testing"
 run "module unload ndi metis parmetis superlu-dist trilinos"
@@ -53,11 +48,9 @@ run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
-run "module unload intel"
-run "module load intel/15.0.5"
 run "module load gsl/2.1"
-run "module load cmake/3.5.2 numdiff"
-run "module load trilinos/12.6.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
+run "module load cmake/3.6.2 numdiff"
+run "module load trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
 run "module load ndi random123 eospac/6.2.4"
 run "module list"
 CC=`which cc`
@@ -101,6 +94,10 @@ cdir=`pwd`
 cd $sdir
 export script_dir=`pwd`
 export draco_script_dir=$script_dir
+
+# CMake options that will be included in the configuration step
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+
 cd $cdir
 source $script_dir/common.sh
 
