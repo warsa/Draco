@@ -258,8 +258,6 @@ macro( parse_args )
   # default compiler name based on platform
   if( WIN32 )
     set( compiler_short_name "cl" )
-#  else()
-#    set( compiler_short_name "gcc" )
   endif()
 
   unset(compiler_version)
@@ -315,7 +313,8 @@ macro( parse_args )
 
   # append the compiler_short_name with the extra_params string (if any) and set
   # some variables based on extra_param's value.
-  if( DEFINED ENV{extra_params} )
+  if( NOT "$ENV{extra_params}x" STREQUAL "x" )
+    message("extra_params = $ENV{extra_params}")
     set( compiler_short_name "${compiler_short_name}-$ENV{extra_params}" )
     if( $ENV{extra_params} MATCHES "cuda" )
       set(USE_CUDA ON)
