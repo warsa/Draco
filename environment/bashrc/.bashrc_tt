@@ -46,8 +46,8 @@ else
 fi
 module load friendly-testing
 
-export dracomodules="metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3 \
-gsl/2.1 cmake/3.6.1 numdiff ndi random123 eospac/6.2.4 \
+export dracomodules="metis parmetis/4.0.3 trilinos/12.8.1 superlu-dist/4.3 \
+gsl/2.1 cmake/3.6.2 numdiff ndi random123 eospac/6.2.4 \
 subversion git craype-hugepages4M"
 
 function dracoenv ()
