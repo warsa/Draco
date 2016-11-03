@@ -314,7 +314,6 @@ macro( parse_args )
   # append the compiler_short_name with the extra_params string (if any) and set
   # some variables based on extra_param's value.
   if( NOT "$ENV{extra_params}x" STREQUAL "x" )
-    message("extra_params = $ENV{extra_params}")
     set( compiler_short_name "${compiler_short_name}-$ENV{extra_params}" )
     if( $ENV{extra_params} MATCHES "cuda" )
       set(USE_CUDA ON)
