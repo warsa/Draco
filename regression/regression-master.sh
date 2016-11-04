@@ -200,9 +200,6 @@ ml-*)
     export machine_name_short=ml
     result=`fn_exists module`
     if ! test $result -eq 0; then
-      # echo 'module function is defined'
-    # else
-      # echo 'module function does not exist. defining a local function ...'
       source /usr/share/Modules/init/bash
     fi
     module purge
@@ -212,6 +209,26 @@ ml-*)
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
         cuda | fulldiagnostics | nr | perfbench | pgi | valgrind ) # known, continue
+        ;;
+        *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+           print_use; exit 1 ;;
+        esac
+    fi
+    ;;
+sn-*)
+    export machine_name_long=Snow
+    export machine_name_short=sn
+    result=`fn_exists module`
+    if ! test $result -eq 0; then
+      source /usr/share/lmod/lmod/init/bash
+    fi
+    module purge
+    export regdir=/usr/projects/jayenne/regress
+    # Argument checks
+    if [[ ${extra_params} ]]; then
+        case $extra_params in
+        none)  extra_params=""; epdash="" ;;
+        fulldiagnostics | nr | perfbench ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
@@ -332,7 +349,7 @@ ifb=0
 
 # More sanity checks
 if ! test -x ${rscriptdir}/${machine_name_short}-job-launch.sh; then
-   echo "FATAL ERROR: I cannot find ${rscriptdir}/draco/regression/${machine_name_short}-job-launch.sh."
+   echo "FATAL ERROR: I cannot find ${rscriptdir}/${machine_name_short}-job-launch.sh."
    exit 1
 fi
 
