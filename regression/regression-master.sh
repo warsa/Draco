@@ -200,9 +200,6 @@ ml-*)
     export machine_name_short=ml
     result=`fn_exists module`
     if ! test $result -eq 0; then
-      # echo 'module function is defined'
-    # else
-      # echo 'module function does not exist. defining a local function ...'
       source /usr/share/Modules/init/bash
     fi
     module purge
@@ -223,9 +220,6 @@ sn-*)
     export machine_name_short=sn
     result=`fn_exists module`
     if ! test $result -eq 0; then
-      # echo 'module function is defined'
-    # else
-      # echo 'module function does not exist. defining a local function ...'
       source /usr/share/lmod/lmod/init/bash
     fi
     module purge

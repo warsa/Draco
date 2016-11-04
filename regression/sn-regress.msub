@@ -41,6 +41,7 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
+run "ulimit -a"
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -75,9 +76,8 @@ esac
 machine=`uname -n`
 echo "==========================================================================="
 echo "Moonlight regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
-run "ulimit -a"
 
 # Modules
 # ----------------------------------------
@@ -105,25 +105,29 @@ run "module load metis"
 run "module load parmetis"
 run "module load ndi"
 run "module load numdiff"
-run "module load svn git"
+run "module load subversion git"
 run "module load random123"
 run "module load eospac/6.2.4"
 run "module load grace"
 comp=`basename $CXX`
 export OMP_NUM_THREADS=8
 
+if test "${comp}" == "icpc"; then
+  comp="intel"
+fi
+
 case $extra_params in
 "")
     # no-op
     ;;
 fulldiagnostics)
-    comp="intel-fulldiagnostics"
+    comp="${comp}-fulldiagnostics"
     ;;
 nr)
-    comp="intel-nr"
+    comp="${comp}-nr"
     ;;
 perfbench)
-    comp="intel-perfbench"
+    comp="${comp}-perfbench"
     ;;
 *)
     echo "FATAL ERROR"
