@@ -26,6 +26,8 @@ DLL_PUBLIC_fit void svdfit(RandomContainer const &x, RandomContainer const &y,
 
 } // end namespace rtt_utils
 
+#include "fit/svdfit.i.hh"
+
 #endif // utils_svdfit_hh
 
 //---------------------------------------------------------------------------//

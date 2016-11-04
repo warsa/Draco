@@ -55,12 +55,12 @@ else
 
   export dracomodules="intel/16.0.3 openmpi/1.10.3 mkl trilinos/12.8.1 \
 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4 \
-subversion cmake/3.6.0 numdiff git totalview emacs grace"
+subversion cmake/3.6.2 numdiff git totalview emacs grace"
 
   # module hsi only available on yellow toss22 and rfta
   target="`uname -n | sed -e s/[.].*//`"
   case ${target} in
-    mp* | ml* | mu* | pi* | wf* )
+    ml* | mu* | pi* | wf* )
       dracomodules="$dracomodules hsi"
   esac
 

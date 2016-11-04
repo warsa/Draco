@@ -12,7 +12,6 @@
 #ifndef fit_svdfit_i_hh
 #define fit_svdfit_i_hh
 
-#include "svdfit.hh"
 #include "linear/svbksb.i.hh"
 #include "linear/svdcmp.i.hh"
 

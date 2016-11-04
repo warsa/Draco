@@ -2,14 +2,10 @@
 # file   config/vendor_libraries.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
-# brief  Setup Vendors
+# brief  Look for any libraries which are required at the top level.
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
-#
-# Look for any libraries which are required at the toplevel.
-#
 
 include( FeatureSummary )
 include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
@@ -28,7 +24,7 @@ macro( setupLAPACKLibrariesUnix )
   message( STATUS "Looking for lapack...")
   set( lapack_FOUND FALSE )
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
-  foreach( version 3.4.1 3.4.2 3.5.0 )
+  foreach( version 3.4.1 3.4.2 3.5.0 3.6.0 3.6.1 )
     if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
       list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
       find_package( lapack CONFIG )
@@ -64,16 +60,15 @@ macro( setupLAPACKLibrariesUnix )
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
 
-  # Above we tried to find lapack-config.cmake at
-  # $LAPACK_LIB_DIR/cmake/lapack.  This is a draco supplied version of
-  # lapack.  If that search failed, then try to find MKL on the local
-  # system.
+  # Above we tried to find lapack-config.cmake at $LAPACK_LIB_DIR/cmake/lapack.
+  # This is a draco supplied version of lapack.  If that search failed, then try
+  # to find MKL on the local system.
 
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
       message( STATUS "Looking for lapack(MKL)...")
-      # CMake uses the 'Intel10_64lp' enum to indicate MKL.
-      # For details see the cmake documentation for FindBLAS.
+      # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
+      # cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
       find_package( BLAS QUIET )
 
@@ -135,8 +130,8 @@ macro( setupLAPACKLibrariesUnix )
 
   if( NOT lapack_FOUND )
       message( STATUS "Looking for lapack(OpenBLAS)...")
-      # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro
-      # For details see the cmake documentation for FindBLAS.
+      # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro. For
+      # details see the cmake documentation for FindBLAS.
       set( BLA_VENDOR "OpenBLAS" )
       find_package( BLAS QUIET )
 
@@ -803,6 +798,9 @@ macro( setupVendorLibraries )
   # General settings
   #
   setVendorVersionDefaults()
+  if( NOT TARGET blas )
+    setupLAPACKLibrariesUnix()
+  endif()
 
   # System specific settings
   if ( UNIX )
@@ -810,7 +808,6 @@ macro( setupVendorLibraries )
     if( NOT MPI_CXX_COMPILER )
       setupMPILibrariesUnix()
     endif()
-    setupLAPACKLibrariesUnix()
     setupVendorLibrariesUnix()
 
   elseif( WIN32 )
@@ -818,7 +815,6 @@ macro( setupVendorLibraries )
     if( NOT MPI_CXX_COMPILER )
       setupMPILibrariesWindows()
     endif()
-    setupLAPACKLibrariesUnix()
     setupVendorLibrariesWindows()
 
   else()

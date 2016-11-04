@@ -30,10 +30,11 @@ endif()
 # 1. Allow M_PI to be found via <cmath>
 set( _USE_MATH_DEFINES 1 )
 
-# Automatically export all symbols.  This will add the 
+# Automatically export all symbols. This will add the
 # WINDOWS_EXPORT_ALL_SYMBOLS=TRUE target property to all libraries.
 # Ref: https://blog.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/
-# set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE CACHE BOOL "export all library symbols." FORCE )
+# set( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE CACHE BOOL "export all library
+# symbols." FORCE )
 
 set( MD_or_MT_debug "${MD_or_MT}d" )
 if( "${DEBUG_RUNTIME_EXT}" STREQUAL "d" )

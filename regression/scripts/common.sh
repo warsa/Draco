@@ -167,10 +167,13 @@ function flavor
 function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
-  toss2_scratchdirs="net/scratch net/scratch1 net/scratch2 net/scratch3 net/scratch4 scratch6 scratch8 scratch9"
-  cray_scratchdirs="lustre/lscratch2 lustre/lscratch3 lustre/lscratch4 lustre/ttscratch1 lustre/scratch3 lustre/scratch4"
+  toss2_yellow_scratchdirs="lustre/scratch2/yellow lustre/scratch3/yellow"
+  toss2_red_scratchdirs="lustre/scratch3 lustre/scratch4"
+  cray_yellow_scratchdirs="lustre/ttscratch"
+  cray_red_scratchdirs="lustre/trscratch1 lustre/trscratch2"
   bgq_scratchdirs="nfs/tmp2"
-  scratchdirs="$toss2_scratchdirs $cray_scratchdirs $bgq_scratchdirs \
+  scratchdirs="$toss2_yellow_scratchdirs $toss2_red_scratchdirs \
+$cray_yellow_scratchdirs $cray_red_scratchdirs $bgq_scratchdirs \
 usr/projects/draco/devs/releases"
   for dir in $scratchdirs; do
     mkdir -p /$dir/$USER &> /dev/null
@@ -187,11 +190,10 @@ function lookupppn()
   local target="`uname -n | sed -e s/[.].*//`"
   local ppn=1
   case ${target} in
-    c[it]-fe[0-9] | c[it]-login[0-9] | c[it]-vizlogin[0-9]) ppn=16 ;;
-    mu* ) ppn=24 ;;
     ml* | pi* | wf* | lu* ) ppn=16 ;;
-    mp* ) ppn=8 ;;
+    mu* ) ppn=24 ;;
     t[rt]-fey* | t[rt]-login*) ppn=32 ;;
+    sn* ) ppn=36 ;;
   esac
   echo $ppn
 }

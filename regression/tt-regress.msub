@@ -86,7 +86,7 @@ esac
 
 echo "==========================================================================="
 echo "Trinitite regression: ${ctestparts} from ${machine}."
-echo "                      ${subproj}-${build_type}${epdash}${extra_params}${featurebranch}"
+echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 if [[ ${partition} ]]; then
   echo " "
@@ -136,6 +136,7 @@ case $extra_params in
 knl)
     run "module swap craype-haswell craype-mic-knl"
     export OMP_NUM_THREADS=17
+    comp="${comp}-knl"
     ;;
 "")
     # revert to intel/14 as the default setup.
@@ -185,13 +186,6 @@ if [[ ! ${dashboard_type} ]]; then
    dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
-    # base_dir=${regdir}/cdash/tt
-
-    # There is a bug with how CI/CT mount NFS files spaces (Gabe
-    # R. has an open ticket for this).  Basically, recursively
-    # deleting a directory with data and imediately recreating that
-    # structure will not work correctly (meta data issue?)  Thus,
-    # build and target directories will be in the scratch directory.
     scratch_dir=/lustre/ttscratch1/${USER}/cdash/tt
     mkdir -p $scratch_dir
     if ! test -d ${scratch_dir}; then
