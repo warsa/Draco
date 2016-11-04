@@ -207,6 +207,36 @@ case ${target} in
       run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
+    # HPC: Mirror the capsaicin svn repository
+    #
+    if ! test -d $svnroot; then
+      echo "*** ERROR ***"
+      echo "*** SVN repository not found ***"
+      exit 1
+      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
+      # mkdir -p ${svnroot}; cd ${svnroot}
+      # svnadmin create ${svnroot}/jayenne
+      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
+      # cd jayenne/hooks
+      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
+      # vi pre-commit; comment out all code and add...
+      #if ! test `whoami` = 'kellyt'; then
+      #echo "This is a read only repository.  The real SVN repository is"
+      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
+      #exit 1
+      #fi
+      #exit 0
+      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
+      #    pre-revprop-change
+      # vi pre-revprop-change --> comment out all code.
+      # cd $svnroot
+      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
+      # svnsync sync file:///${svnroot}/jayenne
+    fi
+
+    echo " "
+    echo "Copy capsaicin svn repository to the local file system..."
+    run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
     ;;
   tt-fey*)
     TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
@@ -284,39 +314,6 @@ case ${target} in
       run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-  # *)
-  #   #
-  #   # HPC: Mirror the capsaicin svn repository
-  #   #
-  #   if ! test -d $svnroot; then
-  #     echo "*** ERROR ***"
-  #     echo "*** SVN repository not found ***"
-  #     exit 1
-  #     # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-  #     # mkdir -p ${svnroot}; cd ${svnroot}
-  #     # svnadmin create ${svnroot}/jayenne
-  #     # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-  #     # cd jayenne/hooks
-  #     # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-  #     # vi pre-commit; comment out all code and add...
-  #     #if ! test `whoami` = 'kellyt'; then
-  #     #echo "This is a read only repository.  The real SVN repository is"
-  #     #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
-  #     #exit 1
-  #     #fi
-  #     #exit 0
-  #     # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-  #     #    pre-revprop-change
-  #     # vi pre-revprop-change --> comment out all code.
-  #     # cd $svnroot
-  #     # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
-  #     # svnsync sync file:///${svnroot}/jayenne
-  #   fi
-
-  #   echo " "
-  #   echo "Copy capsaicin svn repository to the local file system..."
-  #   run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
-  #   ;;
 esac
 
 #------------------------------------------------------------------------------#
