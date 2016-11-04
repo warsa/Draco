@@ -168,7 +168,9 @@ function selectscratchdir
 {
   # TOSS, CLE, BGQ, Darwin:
   toss2_yellow_scratchdirs="lustre/scratch2/yellow lustre/scratch3/yellow"
+  toss2_red_scratchdirs="lustre/scratch3 lustre/scratch4"
   cray_yellow_scratchdirs="lustre/ttscratch"
+  cray_red_scratchdirs="lustre/trscratch1 lustre/trscratch2"
   bgq_scratchdirs="nfs/tmp2"
   scratchdirs="$toss2_yellow_scratchdirs $toss2_red_scratchdirs \
 $cray_yellow_scratchdirs $cray_red_scratchdirs $bgq_scratchdirs \

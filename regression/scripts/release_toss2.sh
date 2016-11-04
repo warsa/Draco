@@ -30,9 +30,6 @@ export package=draco
 ddir=draco-6_20_0
 pdir=$ddir
 
-# CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
-
 # environment (use draco modules)
 # release for each module set
 environments="intel16env"
@@ -73,6 +70,9 @@ export script_dir=`pwd`
 export draco_script_dir=$script_dir
 cd $cdir
 source $draco_script_dir/common.sh
+
+# CMake options that will be included in the configuration step
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
