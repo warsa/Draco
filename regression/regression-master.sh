@@ -18,38 +18,56 @@
 # Enable job control
 set -m
 
+# Host based variables
+export host=`uname -n | sed -e 's/[.].*//g'`
+
 ##---------------------------------------------------------------------------##
 ## Support functions
 ##---------------------------------------------------------------------------##
+ccs_extra_params="belosmods bounds_checking clang coverage fulldiagnostics gcc530 gcc610 nr perfbench valgrind "
+darwin_extra_params="cuda fulldiagnostics nr perfbench valgrind"
+ml_extra_params="cuda fulldiagnostics nr perfbench pgi valgrind"
+sn_extra_params="fulldiagnostics nr perfbench"
+tt_extra_params="fulldiagnostics knl nr perfbench"
+all_extra_params=`echo $ml_extra_params $tt_extra_params $sn_extra_params $ccs_extra_params $darwin_extra_params | xargs -n1 | sort -u | xargs`
+
 print_use()
 {
-    echo " "
-    echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly|Continuous]"
-    echo "       -h -p [\"draco jayenne capsaicin\"] -r"
-    echo "       -f <git branch name> -a"
-    echo "       -e [none|clang|coverage|cuda|fulldiagnostics|gcc530|gcc610|nr|perfbench|pgi|valgrind]"
-    echo " "
-    echo "All arguments are optional,  The first value listed is the default value."
-    echo "   -h    help           prints this message and exits."
-    echo "   -r    regress        nightly regression mode."
-    echo " "
-    echo "   -a    build autodoc"
-    echo "   -b    build-type     = { Debug, Release }"
-    echo "   -d    dashboard type = { Experimental, Nightly, Continuous }"
-    echo "   -f    git feature branch, default=\"develop develop\""
-    echo "         common: 'develop pr42'"
-    echo "         requires one string per project listed in option -p"
-    echo "   -p    project names  = { draco, jayenne, capsaicin }"
-    echo "                          This is a space delimited list within double quotes."
-    echo "   -e    extra params   = { none, belosmods, clang, coverage, cuda, fulldiagnostics,"
-    echo "                            knl, gcc530, gcc610, nr, perfbench, pgi, valgrind}"
-    echo " "
-    echo "Example:"
-    echo "./regression-master.sh -b Release -d Nightly -p \"draco jayenne capsaicin\""
-    echo " "
-    echo "If no arguments are provided, this script will run"
-    echo "   /regression-master.sh -b Debug -d Experimental -p \"draco\" -e none"
-    echo " "
+  case $host in
+    ccscs*) platform_extra_params=ccs_extra_params ;;
+    darwin*) platform_extra_params=darwin_extra_params ;;
+    ml-*) platform_extra_params=ml_extra_params ;;
+    sn-*) platform_extra_params=sn_extra_params ;;
+    tt-*) platform_extra_params=tt_extra_params ;;
+  esac
+  platform_extra_params=`echo $platform_extra_params | sed -e 's/ / | /g'`
+
+  echo " "
+  echo "Usage: ${0##*/} -b [Release|Debug] -d [Experimental|Nightly|Continuous]"
+  echo "       -h -p [\"draco jayenne capsaicin\"] -r"
+  echo "       -f <git branch name> -a"
+  echo "       -e <platform specific options>"
+  echo " "
+  echo "All arguments are optional,  The first value listed is the default value."
+  echo "   -h    help           prints this message and exits."
+  echo "   -r    regress        nightly regression mode."
+  echo " "
+  echo "   -a    build autodoc"
+  echo "   -b    build-type     = { Debug, Release }"
+  echo "   -d    dashboard type = { Experimental, Nightly, Continuous }"
+  echo "   -f    git feature branch, default=\"develop develop\""
+  echo "         common: 'develop pr42'"
+  echo "         requires one string per project listed in option -p"
+  echo "   -p    project names  = { draco, jayenne, capsaicin }"
+  echo "                          This is a space delimited list within double quotes."
+  echo "   -e    extra params   = { none | $platform_extra_params }"
+  echo " "
+  echo "Example:"
+  echo "./regression-master.sh -b Release -d Nightly -p \"draco jayenne capsaicin\""
+  echo " "
+  echo "If no arguments are provided, this script will run"
+  echo "   /regression-master.sh -b Debug -d Experimental -p \"draco\" -e none"
+  echo " "
 }
 
 fn_exists()
@@ -115,7 +133,11 @@ else
   # default: use 'develop' for all git branches.
   featurebranches=''
   for p in $projects; do
-    featurebranches+="develop "
+#    if [[ ${featurebranches} ]]; then
+#      featurebranches+="-develop "
+#    else
+      featurebranches+="develop "
+#    fi
   done
 fi
 
@@ -146,19 +168,19 @@ for proj in ${projects}; do
    esac
 done
 
-if [[ ${extra_params} ]]; then
-   case $extra_params in
-   none)
-      # if 'none' set to blank
-      extra_params=""; epdash="" ;;
-   belosmods | bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
-      ;;
-   gcc610 | nr | perfbench | pgi | valgrind )
-      ;;
-   *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-       print_use; exit 1 ;;
-   esac
-fi
+# if [[ ${extra_params} ]]; then
+#    case $extra_params in
+#    none)
+#       # if 'none' set to blank
+#       extra_params=""; epdash="" ;;
+#    belosmods | bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
+#       ;;
+#    gcc610 | nr | perfbench | pgi | valgrind )
+#       ;;
+#    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
+#        print_use; exit 1 ;;
+#    esac
+# fi
 
 case $regress_mode in
 on) ;;
@@ -171,8 +193,6 @@ esac
 ## Main
 ##---------------------------------------------------------------------------##
 
-# Host based variables
-export host=`uname -n | sed -e 's/[.].*//g'`
 
 case ${host} in
 ml-*)

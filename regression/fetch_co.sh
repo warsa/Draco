@@ -49,6 +49,7 @@ thisbranch=`git rev-parse --abbrev-ref HEAD`
 log "thisbranch = $thisbranch"
 
 if test "$thisbranch" = "pr${featurebranch}"; then
+  run "${GIT} reset --hard origin/develop"
   run "${GIT} pull origin $prdir/${featurebranch}/head"
 else
   run "${GIT} fetch origin ${prdir}/${featurebranch}/head:pr${featurebranch}"
