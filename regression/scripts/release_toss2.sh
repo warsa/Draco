@@ -27,35 +27,32 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_19_0
+ddir=draco-6_20_0
 pdir=$ddir
-
-# CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0"
 
 # environment (use draco modules)
 # release for each module set
-environments="intel15env gcc530env"
-function intel15env()
+environments="intel16env"
+function intel16env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.5.2 svn numdiff"
-  run "module load intel/15.0.5 openmpi/1.6.5"
+  run "module load cmake/3.6.2 git numdiff"
+  run "module load intel/16.0.3 openmpi/1.10.3"
   run "module load random123 eospac/6.2.4 gsl/2.1"
   run "module load mkl metis/5.1.0 ndi"
-  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.6.1"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
   run "module list"
 }
 function gcc530env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
-  run "module load cmake/3.5.2 svn numdiff"
-  run "module load gcc/5.3.0 openmpi/1.6.5"
+  run "module load cmake/3.6.2 git numdiff"
+  run "module load gcc/5.3.0 openmpi/1.10.3"
   run "module load random123 eospac/6.2.4 gsl/2.1"
   run "module load lapack/3.5.0 metis/5.1.0 ndi"
-  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.6.1"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
   run "module list"
 }
 
@@ -73,6 +70,9 @@ export script_dir=`pwd`
 export draco_script_dir=$script_dir
 cd $cdir
 source $draco_script_dir/common.sh
+
+# CMake options that will be included in the configuration step
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions

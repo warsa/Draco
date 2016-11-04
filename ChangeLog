@@ -1,3 +1,266 @@
+2016-11-02  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_20_0. This is a minor Draco release.
+	  https://rtt.lanl.gov/redmine/versions/45
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_12_0,  https://rtt.lanl.gov/redmine/versions/47
+	  - Capsaicin-4_9_0, https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/LU           Intel 16.0.3    OpenMPI-1.10.3
+	  TT/TR              Intel 16.0.3    Cray_MPICH2-7.4.2
+
+	* Summary of changes:
+
+	- 837 files changed, added or removed in 297 commits.
+	- Added support for Trinity/Trinitite, including KNL.
+	- Added support for Snow.
+	- No longer supporting Cielito/Cielo/Mapache.
+	- No longer supporting KNC-MIC architecture.
+	- No longer supporting XLC-12 compilers on Sequoia.
+	- No longer supporting PGI due to poor/lack of C++11 support.
+	- Begin allowing all C++11 features.
+	- Main repository is now hosted at github.com/losalamos/Draco.git
+	- Eliminate “static initialization order" bug.
+	- Adding a Fortran interface and F90 test for Quadrature_Interface.hh.
+
+	* Developer Environment:
+
+	- Begin loading gsl/2.1 and lapack/3.5.0 as part of the stanard
+	  darwin vendor set.
+	- Begin using HPC provided grace on Toss2 machines.
+	- Adding support for a gcc-6.1.0 nightly regression on CCS-LAN
+	  servers.
+	- On CCS machines, ensure that we are loading modulefile
+	  superlu-dist instead of SuperLU_DIST.
+	- Begin using GitHub (stand up formatting, wiki, CI, etc.)
+	- By default add $VENDOR_DIR/bin to the $PATH.
+	- On Darwin, update the regression system to use the new slurm
+	  'contraints' features.
+	- Emacs: Set an autofill column for Draco's python-mode.
+	- Update regression and other misc scripts to work with github
+	  repository (#752)
+	- Update the build system to allow configuration on CrayPE w/o
+	  special options. No longer require
+	  CMakeCache-Cray.txt. Automatically set CXX, CC, FC to Cray
+	  compile wrappers (#658)
+	- Allow regression scripts to run from a user's directory.
+	- Begin defaulting to Intel/16.0.3 and OpenMPI/1.10.3 on ICN
+	  machines.
+	- Regression system will only build the autodoc target if given
+	  option '-a'. Previously, any 'Release' regression on ccscs7
+	  would generate the autodoc target (generating all of the doxygen
+	  related files). This doesn't play nice with regression testing
+	  of pull requests.  This commit introduces a new option for
+	  'regression-master.sh' (-a) that enables the autodoc
+	  target. Without the option, the autodoc target will no longer be
+	  called. refs #768.
+	- Added a simple .vimrc file to conform to style guide.
+	- Adopt clang-format LLVM-style as a style requirement. Reformat
+	  existing code. Provide optional pre-commit-hook to run
+	  clang-format automatically.
+	- Begin using trilinos/12.8.1 and MKL on ICN machines.
+
+	* Build System:
+
+	- Update FindGrace.cmake so that it attempts to find the include
+	  and library directories for Grace if they are not provided in
+	  the user environment as GRACE_INC_DIR and GRACE_LIB_DIR.  In the
+	  new mode, if xmgrace is found in PATH, these two environment
+	  variables are set to include and lib directories that exist
+	  parallel to xmgrace's bin directory.
+	- Provide new unit tests that ensure that discovered metis,
+	  parmetis and superlu-dist libraries are valid (#730).
+	- Begin using Use the CMake target property
+	  INTERPROCEDURAL_OPTIMIZATION (#647).
+	- Do not use compiler flag '-xHost' on Cray machines.
+	- Add support for OpenBLAS to satisfy optional LAPACK
+	  requirement.
+	- Begin using MAPN features on Cray systems. This allows multiple
+	  tests to run simultaneously on a single node (#597).
+	- Provide a new python-based system for ApplicationUnitTest.
+	- Enable the use of C++11 in Random123.
+
+	* cdi_ipcress:
+
+	- Change the python IPCRESS parsing and plotting to be more
+	  library-like so it can be called from non-draco python scripts.
+
+	* c4:
+
+	- Retire accumulatev.hh and replace it with existing global_sum
+	  calls (#784, #799).
+
+	* parser:
+
+	- Add a set of standardized debug options to the parser package.
+	- Eliminate “static initialization order" bug. This issue was
+	  causing binaries created with the Cray compiler to crash before
+	  the code started. The issue and fix is described at
+	  https://isocpp.org/wiki/faq/ctors#static-init-order. (#767)
+
+	* quadrature:
+
+	- Account for "starting directions" in
+	  Ordinate_Set_Mapper. "Starting directions" in the ordinate set
+	  do not have any associated weight, so weights in the ordinate
+	  being mapped into the set should not be distributed into the
+	  starting directions, should they exist.
+	- Adding a Fortran interface and F90 test for
+	  Quadrature_Interface.hh.
+	  . This is in the file quadrature_interfaces.f90
+	  . A new test and subdirectory (ftest) exercises the interface
+	  . This will ensure that any changes to Quadrature_Interface.hh
+	    are immediately incorporated into quadrature_interfaces.f90.
+	- Changing default axis ordering for 2D cartesian. Now mu and eta
+	  are x and y (like in 3D) and xi points in z. For tri cl, square
+	  cl, and product cl quadratures, this change means the polar
+	  angle moves alignment from y to z. Updated tests with the new
+	  ordering
+
+	* RTT_Format_Reader
+
+	- Implementation of polyhedron meshes through RTT mesh format. The
+	  "polyhedron" element types assume an 3D AMR mesh based on a
+	  hexahedron with zero or more of its 6 faces being a "refined"
+	  face. A refined face is one with 4 additional nodes on the
+	  centers of the 4 edges of the face and one more additional node
+	  in the center of the face. This is the (already extant) QUAD_9
+	  element. There is an example mesh that has been added that
+	  exercises this new element type, along with the QUAD_9 and
+	  QUAD_5 elements that the polyhedron element comprises. More work
+	  will be done to support additional types of faces that may
+	  appear in an AMR mesh cell, but this initial implementation and
+	  test is the first step in the sense that the exmaple mesh is a
+	  single cube with one refined face.
+	- Adding QUAD_6 and QUAD_6o mesh elements and a correspoding RTT
+	  format test with a QUAD_6 element. The QUAD_6 (quad6 or quad6a
+	  in RTT format) has two midpoint nodes on adjacent sides of a
+	  quad. The QUAD_6o element as the two midpoint nodes located on
+	  opposite sides.
+
+	* Details for defects and features can be found at
+	  https://rtt.lanl.gov/redmine/isues/#.
+
+	Corrected defects:
+	* Bug #684 Intel1602: tstBlock_Vector_Operator segmentation fault
+	* Bug #724 Refresh github repository with Draco-6_19_0.
+	* Bug #728 Darwin regressions broken
+	* Bug #729 For Toss2 machines, re-release Capsaicin vendors as static libraries
+	* Bug #764 Recent releases omit rpath for MKL
+	* Bug #767 Eliminate “static initialization order" bug
+	* Bug #768 Regression: don't build autodoc when testing PRs.
+	* Bug #791 Allow commits to draco/dracodoc svn repository
+	* Bug #819 cray: reserve correct memory per core (when knl)
+	* Bug #820 Update vendor installs on Luna
+
+	New features:
+	* Feature #544 Investigate Intel/16
+	* Feature #570 Trinitite: Provide support for Craypat
+	* Feature #595 Trinitite cce: Tune compiler flags
+	* Feature #713 Migrate Draco to github
+	* Feature #714 Remove load balance limiter for nightly regressions on HPC
+	* Feature #730 Provide simple checks for Metis, Parmetis, SuperLU vendors
+	* Feature #752 github: Update regressions scripts to pull from github
+	* Feature #753 github: Update push/pull repository scripts
+	* Feature #754 github: Document and demonstrate new workflow
+	* Feature #769 github: finalize transition
+	* Feature #795 Env/Regressions on Darwin/Haswell must be updated to intel/16
+	* Feature #802 Provide static versions of all capsaicin vendors
+	* Feature #803 Investigate replacement of AppUnitTest CMake function
+	* Feature #811 provide trilinos-12.8.1 build with pr539 (belos mods)
+	* Feature #812 update_regression_scripts are failing on ccs machines
+	* Feature #813 ensure bounds-checking regressions are working as expected.
+	* Feature #823 Test 'belosmods' flavor of capsaicin regression on ccscs7
+	* Task #597 Cray: Help ctest reserve the correct number of processors for each unit test
+	* Task #647 CMake: Consider use of INTERPROCEDURAL_OPTIMIZATION target property
+	* Task #667 Demonstrate build and tests on trinity (open science testing)
+	* Task #748 Provide metis%gcc@4.8.2 on ML/LU
+	* Task #766 Release codes on Trinitite and Trinity
+	* Task #809 Provide libquo recipe to spack
+	* Task #810 Spack: update subversion recipe for expat
+	* Task #816 Spack: Cray updates
+	* Task #821 Update cshrc file
+
+	Known Defects:
+	* Bug #428 Qt5.3 fails to render correctly for X11 via PuTTy
+	* Bug #59  cdi_eospac design flaw
+
+	* Statistics: (see draco/regression/metrics_report.sh)
+
+Contributers (updated Release.cc with this ordering).
+------------
+CCS-2 Draco Team: Kelly G. Thompson, James S. Warsa, Kent G. Budge,
+     Jae H. Chang, Alex R. Long, Rob B. Lowrie, Matt A. Cleveland,
+     Massimiliano Rosa, Kendra P. Keady, Andrew T. Till, Ryan T. Wollaeger,
+     and Kris C. Garrett.
+Prior Contributers: Jeff D. Densmore, Allan B. Wollaber,
+     Lori A. Pritchett-Sheats, Katherine J. Wang, Gabriel M. Rockefeller,
+     and Paul W. Talbot.
+Copyright (C) 2016 Los Alamos National Security, LLC. (LA-CC-16-016)
+
+Lines of code
+-------------
+
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C++                             419          12147          22132          50127
+C/C++ Header                    331           6822          21172          16380
+Lisp                             17           2029           2911          13059
+CMake                           118           2092           5376           8821
+Bourne Shell                     26            531           1220           2520
+Python                           11            370            565           1252
+Bourne Again Shell               13            229            454           1238
+CSS                               1            113             37            395
+Fortran 90                        8            113            218            380
+C                                 4             47            114            244
+C Shell                           2             33             28            174
+DOS Batch                         4             56             65            122
+YAML                              2             18            104             83
+HTML                              2              6             47             65
+CUDA                              3             17             61             40
+make                              2             22             14             39
+--------------------------------------------------------------------------------
+SUM:                            963          24645          54518          94939
+--------------------------------------------------------------------------------
+
+Code coverage
+-------------
+
+Directory                             Function Coverage           C/D Coverage
+--------------------------------  ---------------------  ---------------------
+units/                               80 /    80 = 100%      58 /    58 = 100%
+lapack_wrap/                         12 /    12 = 100%       0 /     0
+rng/                                 57 /    57 = 100%      23 /    24 =  95%
+fit/                                  1 /     1 = 100%      15 /    16 =  93%
+ode/                                  5 /     5 = 100%      29 /    32 =  90%
+min/                                  9 /     9 = 100%     137 /   154 =  88%
+RTT_Format_Reader/                  323 /   323 = 100%     373 /   434 =  85%
+linear/                              16 /    16 = 100%     334 /   392 =  85%
+roots/                                8 /     8 = 100%     259 /   312 =  83%
+cdi/                                 46 /    46 = 100%      63 /    76 =  82%
+cdi_ipcress/                        106 /   106 = 100%     188 /   247 =  76%
+viz/                                 32 /    32 = 100%     131 /   174 =  75%
+meshReaders/                         15 /    15 = 100%     127 /   172 =  73%
+diagnostics/                         15 /    15 = 100%      34 /    50 =  68%
+cdi_eospac/                          52 /    52 = 100%      65 /   127 =  51%
+FortranChecks/                        1 /     1 = 100%       7 /    14 =  50%
+timestep/                            62 /    63 =  98%     104 /   178 =  58%
+ds++/                               341 /   347 =  98%     465 /   536 =  86%
+parser/                             283 /   289 =  97%    1143 /  1465 =  78%
+quadrature/                         219 /   225 =  97%     580 /   738 =  78%
+norms/                               25 /    26 =  96%      21 /    34 =  61%
+mesh_element/                        23 /    24 =  95%     154 /   201 =  76%
+c4/                                 160 /   169 =  94%     512 /   562 =  91%
+special_functions/                   30 /    32 =  93%     192 /   216 =  88%
+cdi_analytic/                       146 /   165 =  88%     172 /   224 =  76%
+memory/                               4 /     6 =  66%       0 /     2 =   0%
+--------------------------------  ---------------------  ---------------------
+Total                               2071 /  2124 =  97%    5186 /  6438 =  80%
+
 2016-06-27  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_19_1. This is patch release.

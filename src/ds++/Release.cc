@@ -94,40 +94,34 @@ const std::string release() {
  * he converted the svn repo to git. The remaining numbers are computed by
  * couting LOC added/removed since draco-6_0_0.
  */
+
 const std::string author_list() {
   std::stringstream alist;
 
   mmdevs current_developers;
-  current_developers.insert(fomdev(1074652, "Kelly G. Thompson"));
-  current_developers.insert(fomdev(42310, "Kent G. Budge"));
-  current_developers.insert(fomdev(9000, "Rob B. Lowrie"));
-  current_developers.insert(fomdev(8941, "James S. Warsa"));
-  current_developers.insert(fomdev(3342, "Jae H. Chang"));
-  current_developers.insert(fomdev(194, "Kendra P. Keady"));
-  current_developers.insert(fomdev(190, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(218815, "Kelly G. Thompson"));
+  current_developers.insert(fomdev(6075, "James S. Warsa"));
+  current_developers.insert(fomdev(4382, "Kent G. Budge"));
+  current_developers.insert(fomdev(2985, "Jae H. Chang"));
+  current_developers.insert(fomdev(1766, "Alex R. Long"));
+  current_developers.insert(fomdev(992, "Rob B. Lowrie"));
+  current_developers.insert(fomdev(168, "Matt A. Cleveland"));
+  current_developers.insert(fomdev(118, "Massimiliano Rosa"));
+  current_developers.insert(fomdev(94, "Kendra P. Keady"));
+  current_developers.insert(fomdev(8, "Andrew T. Till"));
+  current_developers.insert(fomdev(5, "Ryan T. Wollaeger"));
+  current_developers.insert(fomdev(5, "Kris C. Garrett"));
 
   mmdevs prior_developers;
-  prior_developers.insert(fomdev(24314, "Gabriel M. Rockefeller"));
-  prior_developers.insert(fomdev(6896, "Allan B. Wollaber"));
-  prior_developers.insert(fomdev(1748, "Katherine J. Wang"));
-  prior_developers.insert(fomdev(472, "Paul W. Talbot"));
-  prior_developers.insert(fomdev(1, "Tom M. Evans"));
-  prior_developers.insert(fomdev(1, "B. Todd Adams"));
-  prior_developers.insert(fomdev(1, "John McGhee"));
-  prior_developers.insert(fomdev(1, "Mike W. Buksas"));
-  prior_developers.insert(fomdev(1, "Randy R. Roberts"));
-  // --- 100 lines ---
-  // prior_developers.insert( fomdev(1,"Seith R. Johnson"));
-  // prior_developers.insert( fomdev(1,"Jeff,unish"));
-  // prior_developers.insert( fomdev(1,"Benjamin,. Bergen"));
-  // prior_developers.insert( fomdev(10574,"pahrens"));
-  // prior_developers.insert( fomdev(90,"Paul Henning"));
-  // prior_developers.insert( fomdev(47,"Paul Batcho"));
-  // prior_developers.insert( fomdev(4597,"Jeff D. Densmore"));
-  // prior_developers.insert( fomdev(30,"Todd Urbatsch"));
-  // prior_developers.insert( fomdev(24,"Scott W. Mosher"));
-  // prior_developers.insert( fomdev(8,"Tim M. Kelley");
-  // prior_developers.insert( fomdev(2,"wawiesel"));
+
+  prior_developers.insert( fomdev(4451,"Jeff D. Densmore"));
+  prior_developers.insert(fomdev(1160, "Allan B. Wollaber"));
+  prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
+  prior_developers.insert(fomdev(774, "Katherine J. Wang"));
+  prior_developers.insert(fomdev(766, "Gabriel M. Rockefeller"));
+  prior_developers.insert(fomdev(470, "Paul W. Talbot"));
+  // < 100 lines
+  // prior_developers.insert(fomdev(44, "Nick Myers"));
 
   size_t const maxlinelen(80);
   std::string line_name("CCS-2 Draco Team: ");
