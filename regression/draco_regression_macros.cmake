@@ -93,7 +93,9 @@ win32$ set work_dir=c:/full/path/to/work_dir
     set( sitename "Moonlight" )
   elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-fe")
      set( sitename "Darwin" )
-  elseif( ${sitename} MATCHES "sn[0-9]+" OR ${sitename} MATCHES "sn-fey" )
+  elseif( ${sitename} MATCHES "sn[0-9]+" OR
+      ${sitename} MATCHES "sn-fey" OR
+      ${sitename} STREQUAL "sn")
      set( sitename "Snow" )
   endif()
   message( "sitename = ${sitename}")
