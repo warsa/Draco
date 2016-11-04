@@ -108,7 +108,7 @@ run "module load numdiff"
 run "module load subversion git"
 run "module load random123"
 run "module load eospac/6.2.4"
-run "module load grace"
+
 comp=`basename $CXX`
 export OMP_NUM_THREADS=8
 
