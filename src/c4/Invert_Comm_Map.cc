@@ -15,36 +15,43 @@
 namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
-/**
- * \brief Specialized version of invert_comm_map for std::vector<int> which
- * avoids data copy operations.
- */
-template <> void
-invert_comm_map<std::vector<int> >(std::vector<int> const &to_values,
-                                   std::vector<int> &from_values) {
+// MPI version of invert_comm_map
+#ifdef C4_MPI
+void invert_comm_map(std::vector<int> const &to_values,
+                     std::vector<int> &from_values)
+{
     const int myproc = rtt_c4::node();
     const int numprocs = rtt_c4::nodes();
-    // flag value to indicate a proc will be writing to this proc.
+
+    // value to indicate a proc will be writing to myproc.
     const int flag = 1;
 
-    // Create the RMA memory window, which is an array that is numprocs long.
-    // Processors that are sending info to this proc will sent their
-    // respective value to flag.
-    MPI_Win win;
+    // The vector that the other procs will set the flag value, if they
+    // are writing to the current proc.
     std::vector<int> proc_flag(numprocs, 0); // initially, all zero
+
+    // Create the RMA memory window of the vector.
+    MPI_Win win;
     MPI_Win_create(&proc_flag[0], numprocs * sizeof(int), sizeof(int),
                    MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
-    // Set the remote flags
+    // Set the local and remote vector values
     MPI_Win_fence(0, win);
     for (int i = 0; i < to_values.size(); ++i)
     {
         Require(to_values[i] >= 0);
         Require(to_values[i] < numprocs);
         if (to_values[i] == myproc)
-            proc_flag[myproc] = 1; // ... and our own flag
+        {
+            // ... set our local value
+            proc_flag[myproc] = 1;
+        }
         else
-            MPI_Put(&flag, 1, MPI_INT, to_values[i], myproc, 1, MPI_INT, win);
+        {
+            // ... set the value on the remote proc
+            MPI_Put(&flag, 1, MPI_INT, to_values[i], myproc, 1,
+                    MPI_INT, win);
+        }
     }
     MPI_Win_fence(0, win);
 
@@ -60,6 +67,28 @@ invert_comm_map<std::vector<int> >(std::vector<int> const &to_values,
     MPI_Win_free(&win);
     return;
 }
+//---------------------------------------------------------------------------//
+// SCALAR version of invert_comm_map
+#elif defined(C4_SCALAR)
+void invert_comm_map(std::vector<int> const &to_values,
+                     std::vector<int> &from_values)
+{
+    Require(to_values.size() <= 1);
+    from_values.clear();
+    if (to_values.size() > 0 && to_values[0] == 0)
+    {
+        from_values.push_back(0);
+    }
+}
+#else
+//---------------------------------------------------------------------------//
+// Default version of invert_comm_map, which throws an error.
+void invert_comm_map(std::vector<int> const &,
+                     std::vector<int> &)
+{
+    Insist(0, "invert_comm_map not implemented for this communication type!");
+}
+#endif // ifdef C4_MPI
 
 } // end namespace rtt_c4
 

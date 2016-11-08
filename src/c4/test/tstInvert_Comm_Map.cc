@@ -59,7 +59,7 @@ void test2(rtt_c4::ParallelUnitTest &ut) {
 //----------------------------------------------------------------------------//
 void test4(rtt_c4::ParallelUnitTest &ut) {
   size_t const node = rtt_c4::node();
-  std::list<int> to_nodes;
+  std::vector<int> to_nodes;
 
   if (node == 0) {
     to_nodes.push_back(1);
@@ -76,22 +76,21 @@ void test4(rtt_c4::ParallelUnitTest &ut) {
     to_nodes.push_back(0);
   }
 
-  std::list<int> from_nodes(0);
+  std::vector<int> from_nodes(0);
 
   invert_comm_map(to_nodes, from_nodes);
 
   if (node == 0) {
     if (from_nodes.size() != 3)
       FAILMSG("Incorrect map size on node 0");
-    for (int i = 1; i <= 3; ++i) {
-      if (from_nodes.front() != i)
+    for (int i = 0; i < 3; ++i) {
+      if (from_nodes[i] != i+1)
         FAILMSG("Incorrent map contents on node 0");
-      from_nodes.pop_front();
     }
   } else {
     if (from_nodes.size() != 1)
       FAILMSG("Incorrect map size.");
-    if (from_nodes.front() != 0)
+    if (from_nodes[0] != 0)
       FAILMSG("Incorrect map contents.");
   }
 
@@ -108,22 +107,19 @@ void test_n_to_n(rtt_c4::ParallelUnitTest &ut) {
 
   const int nodes = rtt_c4::nodes();
 
-  std::list<int> to_nodes;
+  std::vector<int> to_nodes;
   for (int i = 0; i < nodes; ++i)
     to_nodes.push_back(i);
 
-  std::list<int> from_nodes;
+  std::vector<int> from_nodes;
   invert_comm_map(to_nodes, from_nodes);
 
   if (from_nodes.size() != nodes)
       FAILMSG("Incorrect from_nodes size.");
 
   for (int i = 0; i < nodes; ++i) {
-    if (to_nodes.front() != from_nodes.front())
+    if (to_nodes[0] != from_nodes[0])
       FAILMSG("Incorrect data in map.");
-
-    to_nodes.pop_front();
-    from_nodes.pop_front();
   }
 
   if (ut.numFails == 0)
