@@ -23,8 +23,8 @@ void invert_comm_map(std::vector<int> const &to_values,
     const int myproc = rtt_c4::node();
     const int numprocs = rtt_c4::nodes();
 
-    // value to indicate a proc will be writing to myproc.
-    const int flag = 1;
+    // value to indicate a proc will be communicating with myproc.
+    int flag = 1;
 
     // The vector that the other procs will set the flag value, if they
     // are writing to the current proc.
@@ -37,11 +37,11 @@ void invert_comm_map(std::vector<int> const &to_values,
 
     // Set the local and remote vector values
     MPI_Win_fence(0, win);
-    for (int i = 0; i < to_values.size(); ++i)
+    for (auto it = to_values.begin(); it != to_values.end(); ++it)
     {
-        Require(to_values[i] >= 0);
-        Require(to_values[i] < numprocs);
-        if (to_values[i] == myproc)
+        Require(*it >= 0);
+        Require(*it < numprocs);
+        if (*it == myproc)
         {
             // ... set our local value
             proc_flag[myproc] = 1;
@@ -49,8 +49,7 @@ void invert_comm_map(std::vector<int> const &to_values,
         else
         {
             // ... set the value on the remote proc
-            MPI_Put(&flag, 1, MPI_INT, to_values[i], myproc, 1,
-                    MPI_INT, win);
+            MPI_Put(&flag, 1, MPI_INT, *it, myproc, 1, MPI_INT, win);
         }
     }
     MPI_Win_fence(0, win);
