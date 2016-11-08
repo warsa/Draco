@@ -622,15 +622,11 @@ class UnitTest:
       if (not os.path.exists(gdiff_exe)):
         self.fatal_error("gdiff exe does not exist")
 
-      # set run command
+      # set run command, if RUN_CMD was not present, don't use mpirun/aprun
       diff_run_cmd = ""
       if is_defined(self.run_cmd):
         diff_run_cmd = self.run_cmd
-        # handle run_cmd on Cray environments
-        if (self.mpiexec == "aprun" or self.mpiexec == "mpiexec"):
-          diff_run_cmd = ""
-        elif is_set(self.numPE):
-          diff_run_cmd = "{0} {1}".format(diff_run_cmd, self.numPE)
+        diff_run_cmd = "{0} {1}".format(diff_run_cmd, self.numPE)
 
       # make a list of clean argument (no spaces, no empty strings)
       clean_run_args = []
