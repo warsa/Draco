@@ -60,7 +60,7 @@ subversion cmake/3.6.2 numdiff git totalview emacs grace"
   # module hsi only available on yellow toss22 and rfta
   target="`uname -n | sed -e s/[.].*//`"
   case ${target} in
-    ml* | mu* | pi* | wf* )
+    ml* | pi* | wf* )
       dracomodules="$dracomodules hsi"
   esac
 

@@ -39,10 +39,6 @@ case pi-fey*.lanl.gov:
 case pi*.localdomain:
 case wf-fey*.lanl.gov
 case wf*.localdomain:
-case mu-fey*.lanl.gov:
-case mu*.localdomain:
-case mp*.lanl.gov:
-case mp*.localdomain:
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
