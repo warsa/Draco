@@ -34,8 +34,12 @@ void invert_comm_map(std::vector<int> const &to_values,
   MPI_Win_create(&proc_flag[0], numprocs * sizeof(int), sizeof(int),
                  MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
+  // Assertion value for fences.  Currently, we effectively don't set
+  // anything (zero).
+  const int fence_assert = 0;
+
   // Set the local and remote vector values
-  MPI_Win_fence(0, win);
+  MPI_Win_fence(fence_assert, win);
   for (auto it = to_values.begin(); it != to_values.end(); ++it) {
     Require(*it >= 0);
     Require(*it < numprocs);
@@ -47,7 +51,7 @@ void invert_comm_map(std::vector<int> const &to_values,
       MPI_Put(&flag, 1, MPI_INT, *it, myproc, 1, MPI_INT, win);
     }
   }
-  MPI_Win_fence(0, win);
+  MPI_Win_fence(fence_assert, win);
 
   // Back out the from_values from the full flags vector
   from_values.clear();
