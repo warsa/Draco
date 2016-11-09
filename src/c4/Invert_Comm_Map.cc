@@ -1,106 +1,87 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/Invert_Comm_Map.cc
- * \author Mike Buksas
+ * \author Mike Buksas, Rob Lowrie
  * \date   Mon Nov 19 10:09:11 2007
- * \brief  
+ * \brief  Implementation of Invert_Comm_Map
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #include "Invert_Comm_Map.hh"
 #include "ds++/Assert.hh"
-#include <map>
 
 namespace rtt_c4 {
 
-const int SIZE_CHANNEL = 325;
-const int MAP_CHANNEL = 326;
-const int HOST = 0;
+//---------------------------------------------------------------------------//
+// MPI version of invert_comm_map
+#ifdef C4_MPI
+void invert_comm_map(std::vector<int> const &to_values,
+                     std::vector<int> &from_values) {
+  const int myproc = rtt_c4::node();
+  const int numprocs = rtt_c4::nodes();
 
-typedef std::map<int, std::vector<int>> map_type;
+  // value to indicate a proc will be communicating with myproc.
+  int flag = 1;
 
-void icm_master_impl(std::vector<int> const &in, std::vector<int> &out) {
-  int const nodes = rtt_c4::nodes();
+  // The vector that the other procs will set the flag value, if they
+  // are writing to the current proc.
+  std::vector<int> proc_flag(numprocs, 0); // initially, all zero
 
-  // Create a complete map and copy the local map into it.
-  map_type in_maps;
-  in_maps[HOST] = in;
+  // Create the RMA memory window of the vector.
+  MPI_Win win;
+  MPI_Win_create(&proc_flag[0], numprocs * sizeof(int), sizeof(int),
+                 MPI_INFO_NULL, MPI_COMM_WORLD, &win);
 
-  // Receive the map data from all other nodes.
-  for (int node = 1; node < nodes; ++node) {
-    int size = -1;
-    receive(&size, 1, node, SIZE_CHANNEL);
-    Check(size >= 0);
+  // Assertion value for fences.  Currently, we effectively don't set
+  // anything (zero).
+  const int fence_assert = 0;
 
-    if (size > 0) {
-      in_maps[node].resize(size);
-      receive(&(in_maps[node])[0], size, node, MAP_CHANNEL);
-    }
-  }
-
-  // Build an out-going map from the contents of the in-going map.
-  map_type out_maps;
-
-  for (map_type::const_iterator from_node = in_maps.begin();
-       from_node != in_maps.end(); ++from_node) {
-    // Grab the from-node value and a reference to the list of to-nodes.
-    const int from_node_val = from_node->first;
-    const std::vector<int> &to_nodes = from_node->second;
-
-    // For each to-node, add the from-node to it's data.
-    for (std::vector<int>::const_iterator to_node = to_nodes.begin();
-         to_node != to_nodes.end(); ++to_node) {
-
-      Check(*to_node >= 0);
-      Check(*to_node < nodes);
-
-      out_maps[*to_node].push_back(from_node_val);
-    }
-  }
-
-  // Communicate the results for all remote nodes
-  for (int node = 1; node < nodes; ++node) {
-    if (out_maps.count(node) && out_maps[node].size() > 0) {
-      // Send size and data
-      const int size = out_maps[node].size();
-      send(&size, 1, node, SIZE_CHANNEL);
-      send(&(out_maps[node])[0], size, node, MAP_CHANNEL);
+  // Set the local and remote vector values
+  MPI_Win_fence(fence_assert, win);
+  for (auto it = to_values.begin(); it != to_values.end(); ++it) {
+    Require(*it >= 0);
+    Require(*it < numprocs);
+    if (*it == myproc) {
+      // ... set our local value
+      proc_flag[myproc] = 1;
     } else {
-      // Send zero for the size and no data.
-      const int size = 0;
-      send(&size, 1, node, SIZE_CHANNEL);
+      // ... set the value on the remote proc
+      MPI_Put(&flag, 1, MPI_INT, *it, myproc, 1, MPI_INT, win);
     }
   }
+  MPI_Win_fence(fence_assert, win);
 
-  // Copy the results for the host node.
-  std::copy(out_maps[HOST].begin(), out_maps[HOST].end(), back_inserter(out));
-  return;
-}
-
-//----------------------------------------------------------------------------//
-void icm_slave_impl(std::vector<int> const &in, std::vector<int> &out) {
-  // Send size of in map and, if > 0, contents
-  int const size = in.size();
-  send(&size, 1, HOST, SIZE_CHANNEL);
-
-  if (size > 0) {
-    send(&in[0], size, HOST, MAP_CHANNEL);
+  // Back out the from_values from the full flags vector
+  from_values.clear();
+  for (int i = 0; i < numprocs; ++i) {
+    Check(proc_flag[i] == 0 || proc_flag[i] == flag);
+    if (proc_flag[i] == flag)
+      from_values.push_back(i);
   }
 
-  // Receive results from the host.
-  int recv_size = -1;
-  receive(&recv_size, 1, HOST, SIZE_CHANNEL);
-
-  if (recv_size > 0) {
-    out.resize(recv_size);
-    receive(&out[0], recv_size, HOST, MAP_CHANNEL);
-  }
+  MPI_Win_free(&win);
   return;
 }
+//---------------------------------------------------------------------------//
+// SCALAR version of invert_comm_map
+#elif defined(C4_SCALAR)
+void invert_comm_map(std::vector<int> const &to_values,
+                     std::vector<int> &from_values) {
+  Require(to_values.size() <= 1);
+  from_values.clear();
+  if (to_values.size() > 0 && to_values[0] == 0) {
+    from_values.push_back(0);
+  }
+}
+#else
+//---------------------------------------------------------------------------//
+// Default version of invert_comm_map, which throws an error.
+void invert_comm_map(std::vector<int> const &, std::vector<int> &) {
+  Insist(0, "invert_comm_map not implemented for this communication type!");
+}
+#endif // ifdef C4_MPI
 
 } // end namespace rtt_c4
 
