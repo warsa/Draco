@@ -118,7 +118,7 @@ void test_n_to_n(rtt_c4::ParallelUnitTest &ut) {
     FAILMSG("Incorrect from_nodes size.");
 
   for (int i = 0; i < nodes; ++i) {
-    if (to_nodes[0] != from_nodes[0])
+    if (to_nodes[i] != from_nodes[i])
       FAILMSG("Incorrect data in map.");
   }
 
