@@ -32,8 +32,8 @@ namespace rtt_c4 {
  * from" node values, then the result \a from_values contains the "send to"
  * node values.
  */
-void invert_comm_map(std::vector<int> const &to_values,
-                     std::vector<int> &from_values);
+DLL_PUBLIC_c4 void invert_comm_map (std::vector<int> const &to_values,
+                                    std::vector<int> &from_values);
 
 } // end namespace rtt_c4
 
