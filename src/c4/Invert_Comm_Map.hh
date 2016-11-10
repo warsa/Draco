@@ -21,19 +21,19 @@ namespace rtt_c4 {
 /**
  * \brief Invert the contents of a one-to-many mapping between nodes.
  *
- * \param to_values A vector of node numbers that this node communicates
- *        with.
- * \param from_values On output, the vector of node numbers that correspond
- *        to \a to_values.
+ * \param[in]  to_values A vector of node numbers that this node communicates
+ *             with.
+ * \param[out] from_values On output, the vector of node numbers that correspond
+ *             to \a to_values.
  *
  * So if the argument \a to_values contains "send to" node values, then the
  * result \a from_values contains the "receive from" node values.  But this
- * routine can also be used as the argument \a to_values contains "receive
- * from" node values, then the result \a from_values contains the "send to"
- * node values.
+ * routine can also be used as the argument \a to_values contains "receive from"
+ * node values, then the result \a from_values contains the "send to" node
+ * values.
  */
-DLL_PUBLIC_c4 void invert_comm_map (std::vector<int> const &to_values,
-                                    std::vector<int> &from_values);
+DLL_PUBLIC_c4 void invert_comm_map(std::vector<int> const &to_values,
+                                   std::vector<int> &from_values);
 
 } // end namespace rtt_c4
 
