@@ -21,7 +21,7 @@ namespace rtt_c4 {
 typedef std::map<int, size_t> Invert_Comm_Map_t;
 
 //---------------------------------------------------------------------------//
-/**
+/*
  * \brief Inverts a communication map.
  *
  * \param to_map On input, a map from processor number to the size of
