@@ -150,8 +150,10 @@ win32$ set work_dir=c:/full/path/to/work_dir
       /usr/projects/draco/vendors
       c:/vendors
       )
-   set( AUTODOCDIR "${VENDOR_DIR}/../autodoc" )
-   get_filename_component( AUTODOCDIR "${AUTODOCDIR}" ABSOLUTE )
+   if( NOT "$ENV{AUTODOCDIR}x" STREQUAL "x" )
+     set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
+     get_filename_component( AUTODOCDIR "${AUTODOCDIR}" ABSOLUTE )
+   endif()
 
    set( VERBOSE ON )
    set( CTEST_OUTPUT_ON_FAILURE ON )
