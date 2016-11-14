@@ -48,10 +48,30 @@ fi
 thisbranch=`git rev-parse --abbrev-ref HEAD`
 log "thisbranch = $thisbranch"
 
+# If the branch already exists in the regression source directory, remove it and
+# fetch it again.
 if test "$thisbranch" = "pr${featurebranch}"; then
-  run "${GIT} reset --hard origin/develop"
-  run "${GIT} pull origin $prdir/${featurebranch}/head"
-else
-  run "${GIT} fetch origin ${prdir}/${featurebranch}/head:pr${featurebranch}"
-  run "${GIT} checkout pr${featurebranch}"
+  # run "${GIT} reset --hard origin/develop"
+  run "${GIT} checkout develop"
+  run "${GIT} branch -D pr${featurebranch}"
+  # run "${GIT} pull origin $prdir/${featurebranch}/head"
 fi
+run "${GIT} fetch origin ${prdir}/${featurebranch}/head:pr${featurebranch}"
+run "${GIT} checkout pr${featurebranch}"
+
+# Another option is to edit .git/config:
+# [core]
+#         repositoryformatversion = 0
+#         filemode = true
+#         bare = false
+#         logallrefupdates = true
+# [remote "origin"]
+#         url = git@github.com:losalamos/Draco.git
+#         fetch = +refs/heads/*:refs/remotes/origin/*
+#         fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
+# [branch "develop"]
+#         remote = origin
+#         merge = refs/heads/develop
+# so that 'git fetch origin' fetches all PRs and 'git checkout pr/999' will be a
+# tracking branch. The problem with this approach is that all PRs are downloaded
+# and this can take time.

@@ -21,13 +21,13 @@ namespace rtt_c4 {
 typedef std::map<int, size_t> Invert_Comm_Map_t;
 
 //---------------------------------------------------------------------------//
-/*
- * \brief Inverts a communication map.
+/**
+ * \brief Invert the contents of a one-to-many mapping between nodes.
  *
- * \param to_map On input, a map from processor number to the size of
+ * \param[in] to_map On input, a map from processor number to the size of
  *        information to be sent to (or received from) that processor
  *        by the current processor.
- * \param from_map On output, a map from processor number to the size of
+ * \param[out] from_map On output, a map from processor number to the size of
  *        information to be received from (or sent to) that processor by
  *        the current processor.  On input, ignored and deleted.
  *

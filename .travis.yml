@@ -1,69 +1,63 @@
 language: cpp
 sudo: required
+dist: trusty
 
 # Notes:
 # $HOME -> /home/travis
 # code checked out to (this is $PWD for the script) -> /home/travis/build/losalamos/Draco
 # travis will not install numdiff -> use ./.travis-install-dependencies.sh.
 
+env:
+  global:
+    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
+    - CC=gcc-5
+    - CCACHE_CPP2=yes
+    - CMAKE=$HOME/cmake-3.6.2-Linux-x86_64/bin/cmake
+    - CTEST=$HOME/cmake-3.6.2-Linux-x86_64/bin/ctest
+    - CXX=g++-5
+    - FC=gfortran-5
+    - LAPACK_LIB_DIR=/usr/lib
+    - OMP_NUM_THREADS=4
+    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
+    - VENDOR_DIR=${HOME}
+    - topdir=/home/travis/build/losalamos/Draco
+    - COVERAGE=ON
+  matrix:
+    - STYLE=ON
+    - WERROR=ON
+
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.8
     packages:
       - ccache
       - libgsl0-dev
-      - libopenmpi-dev
-      - openmpi-bin
       - gcc-5
       - g++-5
       - gfortran-5
       - liblapack-dev
-      - clang-format-3.8
-
-env:
-  global:
-    - topdir=/home/travis/build/losalamos/Draco
-    - CCACHE_CPP2=yes
-    - GVER=5
-    - CMAKE_VERSION=3.6.2-Linux-x86_64
-    - CMAKE=$HOME/cmake-${CMAKE_VERSION}/bin/cmake
-    - CTEST=$HOME/cmake-${CMAKE_VERSION}/bin/ctest
-    - RANDOM123_VER=1.09
-    - RANDOM123_INC_DIR=$HOME/Random123-${RANDOM123_VER}/include
-    - LAPACK_LIB_DIR=/usr/lib
-    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
-    - J=2
-    - OMP_NUM_THREADS=4
-    - CLANG_FORMAT_VER=3.8
-    - VENDOR_DIR=${HOME}
-  matrix:
-    - STYLE=ON
-    - WERROR=ON
-    - COVERAGE=ON
 
 before_install:
- - if [[ ${GVER} ]]; then export CC=gcc-${GVER}; export CXX=g++-${GVER}; export FC=gfortran-${GVER}; fi
- - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+  - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
+  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install: ./.travis-install-dependencies.sh
 
 before_script:
- - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
- - if [[ ${COVERAGE}  ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi
-# - cd $topdir && echo $CMAKE && $CMAKE --version && which numdiff && printenv
+  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} --coverage\"; done; fi
 
 script:
     # -Wl,--no-as-needed is a workaround for bugs.debian.org/457284 .
   - if [[ ${STYLE} ]]; then regression/check_style.sh -t; else mkdir -p build && cd build &&
     ${CMAKE} -DCMAKE_EXE_LINKER_FLAGS="-Wl,--no-as-needed" .. &&
-    make -j${J} VERBOSE=1 &&
-    ${CTEST} -j ${J} -E \(c4_tstOMP_2\) &&
+    make -j 2 VERBOSE=1 &&
+    ${CTEST} -j 2 -E \(c4_tstOMP_2\) &&
     make install DESTDIR="${HOME}" && cd - ; fi
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GVER}; fi
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-5; fi
 
 cache:
   - ccache
@@ -81,7 +75,6 @@ git:
 # CC=gcc-5
 # CCACHE_CPP2=yes
 # CI=true
-# CLANG_FORMAT_VER=3.8
 # CMAKE=/home/travis/cmake-3.5.2-Linux-x86_64/bin/cmake
 # CMAKE_VERSION=3.5.2-Linux-x86_64
 # COMPOSER_NO_INTERACTION=1
@@ -94,12 +87,10 @@ git:
 # GEM_PATH=/home/travis/.rvm/gems/ruby-2.2.5:/home/travis/.rvm/gems/ruby-2.2.5@global
 # GIT_ASKPASS=echo
 # GOROOT=/home/travis/.gimme/versions/go1.4.2.linux.amd64
-# GVER=5
 # HAS_ANTARES_THREE_LITTLE_FRONZIES_BADGE=true
 # HAS_JOSH_K_SEAL_OF_APPROVAL=true
 # HOME=/home/travis
 # IRBRC=/home/travis/.rvm/rubies/ruby-2.2.5/.irbrc
-# J=2
 # JAVA_HOME=/usr/lib/jvm/java-7-oracle
 # JRUBY_OPTS=--client -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -Xcext.enabled=false -J-Xss2m -Xcompile.invokedynamic=false
 # LANG=en_US.UTF-8
@@ -127,7 +118,6 @@ git:
 # RACK_ENV=test
 # RAILS_ENV=test
 # RANDOM123_INC_DIR=/home/travis/Random123-1.09/include
-# RANDOM123_VER=1.09
 # RUBY_VERSION=ruby-2.2.5
 # SHELL=/bin/bash
 # SHLVL=2

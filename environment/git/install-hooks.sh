@@ -3,6 +3,9 @@
 # Install git pre-commit hooks. The root directory of the target local git
 # repository is expected as a parameter.
 
+# Example:
+# .../draco/environment/git $HOME/ccs-codes/jayenne
+
 # This file is part of a set of unofficial pre-commit hooks available
 # at github.
 # Link:    https://github.com/githubbrowser/Pre-commit-hooks
@@ -17,7 +20,14 @@ HOOKS="pre-commit pre-commit-clang-format"
 # There should be no need to change anything below this line.
 
 export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
+
+if [[ $1 ]]; then
+  if [[ -d $1/.git ]]; then
+    export dotgitdir="$( cd "$1/.git" && pwd )"
+  else
+    export dotgitdir="$( cd "$rscriptdir/../../.git" && pwd )"
+  fi
+fi
 
 . "$(dirname -- "$0")/canonicalize_filename.sh"
 
