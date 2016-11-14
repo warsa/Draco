@@ -176,7 +176,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       ;;
 
     # Snow | Fire | Ice
-    sn* )
+    sn* | fi* | ic* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
       ;;
 
