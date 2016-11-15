@@ -26,7 +26,7 @@ export host=`uname -n | sed -e 's/[.].*//g'`
 ##---------------------------------------------------------------------------##
 ccs_extra_params="belosmods bounds_checking clang coverage fulldiagnostics gcc530 gcc610 nr perfbench valgrind "
 darwin_extra_params="cuda fulldiagnostics nr perfbench valgrind"
-ml_extra_params="cuda fulldiagnostics nr perfbench pgi valgrind"
+ml_extra_params="fulldiagnostics nr perfbench pgi valgrind"
 sn_extra_params="fulldiagnostics nr perfbench"
 tt_extra_params="fulldiagnostics knl nr perfbench"
 all_extra_params=`echo $ml_extra_params $tt_extra_params $sn_extra_params $ccs_extra_params $darwin_extra_params | xargs -n1 | sort -u | xargs`
@@ -208,7 +208,7 @@ ml-*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        cuda | fulldiagnostics | nr | perfbench | pgi | valgrind ) # known, continue
+        fulldiagnostics | nr | perfbench | pgi | valgrind ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
