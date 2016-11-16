@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_0
+ddir=draco-6_20_1
 pdir=$ddir
 
 # environment (use draco modules)

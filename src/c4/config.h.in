@@ -66,6 +66,13 @@
 #endif
 #endif
 
+/* Ensure that Sequoia mpi.h uses 'const' in function signatures. This is
+ * required to meet the MPI-2.2 standars.
+ *
+ * \todo Consider checking the value of $LLNL_MPI_DEFAULT_TO_V1R2M0.
+ */
+#cmakedefine MPICH2_CONST @MPICH2_CONST@
+
 #endif /* rtt_c4_config_h */
 
 /*---------------------------------------------------------------------------*/

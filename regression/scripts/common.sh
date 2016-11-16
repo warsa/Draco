@@ -36,7 +36,7 @@ function establish_permissions
     install_permissions="g+rwX,o-rwX"
   else
     install_group="draco"
-    install_permissions="g+rwX,o=g-w"
+    install_permissions="g+rwX,o-rwX"
   fi
   build_group="$USER"
   build_permissions="g+rwX,o-rwX"
@@ -304,6 +304,8 @@ function install_versions
   echo
   run "module list"
   run "printenv"
+  echo "---"
+  echo "Environment size = `printenv | wc -c`"
 
   echo
   echo

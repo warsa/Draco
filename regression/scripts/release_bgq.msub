@@ -33,6 +33,22 @@ if test $verbose == 1; then
   echo
 fi
 
+# Sequoia limits the environment size to 8192, so clean up to keep the
+# environment below this limit.
+unset LS_COLORS
+unset MANPATH
+unset NLSPATH
+unset EXINIT
+unset CLASSPATH
+unset QTDIR
+unset QTLIB
+unset QTINC
+unset DRACO_AUTO_CLANG_FORMAT
+unset EDITOR
+unset SSH_ASKPASS
+unset CVS_RSH
+unset CEI_HOME
+
 # dry_run=1
 install_versions
 

@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_0
+ddir=draco-6_20_1
 pdir=$ddir
 
 # environment (use draco modules)
@@ -189,8 +189,10 @@ for env in $environments; do
 
     # Run the tests on the back-end.
     export steps="test"
-    cmd="msub -V $access_queue -l walltime=08:00:00 -l nodes=2:ppn=${ppn} -j oe \
--o $source_prefix/logs/release-$buildflavor-$version-t.log $draco_script_dir/release_cray.msub"
+    cmd="msub -V $access_queue -l walltime=08:00:00 \
+-l nodes=2:haswell:ppn=${ppn} -j oe \
+-o $source_prefix/logs/release-$buildflavor-$version-t.log \
+$draco_script_dir/release_cray.msub"
     echo -e "\nTest $package for $buildflavor-$version."
     echo "$cmd"
     jobid=`eval ${cmd}`
