@@ -45,7 +45,7 @@ function gcc484()
   export VENDOR_DIR=/usr/gapps/jayenne/vendors
   export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
   export OMP_NUM_THREADS=4
-  use gcc484
+  use gcc484 python-2.7.3
   use cmake361 gsl numdiff random123
   use
 }

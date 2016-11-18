@@ -28,6 +28,20 @@ OPENMPI_VER=1.10.3
 
 if [[ ${STYLE} ]]; then
 
+  # Ensure the 'develop' branch is available.  In some cases (merge a branch
+  # that lives at github.com/losalamos), the develop branch is missing in the
+  # travis checkout. Since we only test files that are modified when comapred to
+  # the 'develop' branch, the develop branch must be available locally.
+  dev_branch_found=`git branch -a | grep -c develop`
+  if [[ ! $dev_branch_found ]]; then
+    # Register the develop branch in draco/.git/config
+    git config --local remote.origin.fetch +refs/heads/develop:refs/remotes/origin/develop
+    # Download the meta-data for the 'develop' branch
+    git fetch
+    # Create a local tracking branch
+    git branch -t develop origin/develop
+  fi
+
   # clang-format and git-clang-format
   echo " "
   echo "Clang-format"

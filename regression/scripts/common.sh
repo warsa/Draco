@@ -191,8 +191,7 @@ function lookupppn()
   local ppn=1
   case ${target} in
     ml* | pi* | wf* | lu* ) ppn=16 ;;
-    mu* ) ppn=24 ;;
-    t[rt]-fey* | t[rt]-login*) ppn=32 ;;
+    t[rt]-fe* | t[rt]-login*) ppn=32 ;;
     sn* ) ppn=36 ;;
   esac
   echo $ppn
