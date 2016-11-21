@@ -24,6 +24,14 @@ NUMDIFF_VER=5.8.1
 CLANG_FORMAT_VER=3.9
 OPENMPI_VER=1.10.3
 
+# Return integer > 0 if 'develop' branch is found.
+function find_dev_branch
+{
+  set -f
+  git branch -a | grep -c develop
+  set +f
+}
+
 # printenv
 
 if [[ ${STYLE} ]]; then
@@ -32,14 +40,15 @@ if [[ ${STYLE} ]]; then
   # that lives at github.com/losalamos), the develop branch is missing in the
   # travis checkout. Since we only test files that are modified when comapred to
   # the 'develop' branch, the develop branch must be available locally.
-  dev_branch_found=`git branch -a | grep -c develop`
-  if [[ ! $dev_branch_found ]]; then
+  num_dev_branches_found=`find_dev_branch`
+  if [[ $num_dev_branches_found == 0 ]]; then
+    echo "no develop branches found."
     # Register the develop branch in draco/.git/config
-    git config --local remote.origin.fetch +refs/heads/develop:refs/remotes/origin/develop
+    run "git config --local remote.origin.fetch +refs/heads/develop:refs/remotes/origin/develop"
     # Download the meta-data for the 'develop' branch
-    git fetch
+    run "git fetch"
     # Create a local tracking branch
-    git branch -t develop origin/develop
+    run "git branch -t develop origin/develop"
   fi
 
   # clang-format and git-clang-format
