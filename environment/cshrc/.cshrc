@@ -103,6 +103,7 @@ case seqlac*:
     use gcc484
     use numdiff
     use random123
+    use gsl
 
     # LLNL dotkits
     use cmake361

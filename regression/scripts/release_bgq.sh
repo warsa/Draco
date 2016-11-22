@@ -34,22 +34,19 @@ set +u
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_18_0
+ddir=draco-6_20_1
 pdir=$ddir
-
-# CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DDRACO_LIBRARY_TYPE=STATIC"
 
 # environment (use draco modules)
 # release for each module set
-environments="gcc484 xlc12"
+environments="gcc484"
 function gcc484()
 {
   export VENDOR_DIR=/usr/gapps/jayenne/vendors
   export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
   export OMP_NUM_THREADS=4
-  use gcc484
-  use cmake340 gsl numdiff random123
+  use gcc484 python-2.7.3
+  use cmake361 gsl numdiff random123
   use
 }
 function xlc12()
@@ -77,6 +74,9 @@ export draco_script_dir=$script_dir
 cd $cdir
 source $draco_script_dir/common.sh
 
+# CMake options that will be included in the configuration step
+export CONFIG_BASE="-DDRACO_LIBRARY_TYPE=STATIC -DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
 establish_permissions
@@ -85,6 +85,22 @@ export source_prefix="/usr/gapps/jayenne/$pdir"
 scratchdir=`selectscratchdir`
 build_pe=`npes_build`
 test_pe=`npes_test`
+
+# Sequoia limits the environment size to 8192, so clean up to keep the
+# environment below this limit.
+unset LS_COLORS
+unset MANPATH
+unset NLSPATH
+unset EXINIT
+unset CLASSPATH
+unset QTDIR
+unset QTLIB
+unset QTINC
+unset DRACO_AUTO_CLANG_FORMAT
+unset EDITOR
+unset SSH_ASKPASS
+unset CVS_RSH
+unset CEI_HOME
 
 # =============================================================================
 # Build types:
