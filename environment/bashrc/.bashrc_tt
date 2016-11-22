@@ -23,7 +23,7 @@ fi
 
 # If LESS is set, is should include '-R' so that git diff's color
 # displays correctly.
-if test -n "${LESS}"; then
+if [[ -n "${LESS}" ]]; then
   if test `echo $LESS | grep -c R` = 0; then
     export LESS="${LESS} -R"
   fi
@@ -47,12 +47,13 @@ fi
 module load friendly-testing
 
 export dracomodules="metis parmetis/4.0.3 trilinos/12.8.1 superlu-dist/4.3 \
-gsl/2.1 cmake/3.6.2 numdiff ndi random123 eospac/6.2.4 \
-subversion git craype-hugepages4M"
+gsl/2.1 cmake/3.6.2 numdiff ndi random123 eospac/6.2.4 subversion git \
+craype-hugepages4M"
 
 function dracoenv ()
 {
-  module unload gcc/6.1.0 cray-libsci
+  module unload gcc/6.1.0 cray-libsci intel
+  module load intel/17.0.1
   for m in $dracomodules; do
     module load $m
   done
@@ -72,6 +73,7 @@ function rmdracoenv ()
       module unload ${mods[$i]}
     #fi
   done
+  module unload intel
   module unload PrgEnv-intel
   module load PrgEnv-intel
 }
