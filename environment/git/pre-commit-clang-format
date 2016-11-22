@@ -163,9 +163,14 @@ fi
 # print the diffs and reject the commit.
 if test $auto_apply = true; then
   git apply "$patch"
-  printf "Files in this commit were updated to comply with the clang-format rules.\n"
+  printf "\nFiles in this commit were updated to comply with the clang-format rules.\n"
+  printf "You must check and test these changes and then stage these updates to\n"
+  printf "be part of your current change set and retry the commit.\n\n"
+  git status
+#  printf "The following changes were applied:\n\n"
+#  cat "$patch"
   rm -f "$patch"
-  exit 0
+  exit 1
 fi
 
 # a patch has been created, notify the user and exit
