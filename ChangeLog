@@ -1,3 +1,28 @@
+2016-11-16  Kelly (KT) Thompson  <kgt@lanl.gov>
+
+	* Release draco-6_20_1. This is a patch release.
+	  https://rtt.lanl.gov/redmine/versions/49
+
+	* This release was required by Jayenne and Capsaicin.  It is
+	  linked to:
+	  - Jayenne-7_12_0,  https://rtt.lanl.gov/redmine/versions/47
+	  - Capsaicin-4_9_0, https://rtt.lanl.gov/redmine/projects/capsaicin
+
+	* Platforms:
+	  PI/ML/LU           Intel 16.0.3    OpenMPI-1.10.3
+	  SN/FI/IC           Intel 16.0.3    OpenMPI-1.10.3
+	  TT/TR              Intel 16.0.3    Cray_MPICH2-7.4.2
+	  SQ                 GCC 5.3.0       MPICH2-1.5.0
+
+	* Summary of changes:
+	- 33 files changed, added or removed in 32 commits.
+	- Provide initial support for snow/fire/ice. #826
+	- Initial commit of Invert_Comm_Map, using RMA.
+	- Discontinue support/regressions for GPU kernels on Moonlight.
+	- Provide regressions for Trinitite/KNL. #824
+	- No longer generate a library for package 'fit'
+	- Move defaults to cmake/3.6.2 and trilinos/12.8.1 (tt only).
+
 2016-11-02  Kelly (KT) Thompson  <kgt@lanl.gov>
 
 	* Release draco-6_20_0. This is a minor Draco release.

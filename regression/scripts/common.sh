@@ -36,7 +36,7 @@ function establish_permissions
     install_permissions="g+rwX,o-rwX"
   else
     install_group="draco"
-    install_permissions="g+rwX,o=g-w"
+    install_permissions="g+rwX,o-rwX"
   fi
   build_group="$USER"
   build_permissions="g+rwX,o-rwX"
@@ -169,7 +169,7 @@ function selectscratchdir
   # TOSS, CLE, BGQ, Darwin:
   toss2_yellow_scratchdirs="lustre/scratch2/yellow lustre/scratch3/yellow"
   toss2_red_scratchdirs="lustre/scratch3 lustre/scratch4"
-  cray_yellow_scratchdirs="lustre/ttscratch"
+  cray_yellow_scratchdirs="lustre/ttscratch1"
   cray_red_scratchdirs="lustre/trscratch1 lustre/trscratch2"
   bgq_scratchdirs="nfs/tmp2"
   scratchdirs="$toss2_yellow_scratchdirs $toss2_red_scratchdirs \
@@ -191,8 +191,7 @@ function lookupppn()
   local ppn=1
   case ${target} in
     ml* | pi* | wf* | lu* ) ppn=16 ;;
-    mu* ) ppn=24 ;;
-    t[rt]-fey* | t[rt]-login*) ppn=32 ;;
+    t[rt]-fe* | t[rt]-login*) ppn=32 ;;
     sn* ) ppn=36 ;;
   esac
   echo $ppn
@@ -304,6 +303,8 @@ function install_versions
   echo
   run "module list"
   run "printenv"
+  echo "---"
+  echo "Environment size = `printenv | wc -c`"
 
   echo
   echo

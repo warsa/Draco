@@ -27,18 +27,29 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_0
+ddir=draco-6_20_1
 pdir=$ddir
 
 # environment (use draco modules)
 # release for each module set
-environments="intel16env"
+environments="intel17env"
 function intel16env()
 {
   run "module purge"
   run "module load friendly-testing user_contrib"
   run "module load cmake/3.6.2 git numdiff"
   run "module load intel/16.0.3 openmpi/1.10.3"
+  run "module load random123 eospac/6.2.4 gsl/2.1"
+  run "module load mkl metis/5.1.0 ndi"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
+  run "module list"
+}
+function intel17env()
+{
+  run "module purge"
+  run "module load friendly-testing user_contrib"
+  run "module load cmake/3.6.2 git numdiff"
+  run "module load intel/17.0.1 openmpi/1.10.3"
   run "module load random123 eospac/6.2.4 gsl/2.1"
   run "module load mkl metis/5.1.0 ndi"
   run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
