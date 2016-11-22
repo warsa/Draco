@@ -109,12 +109,14 @@ case seqlac*:
     setenv DK_NODE ${DK_NODE}:${VENDOR_DIR}/Modules/sq
 
     # Draco dotkits
-    use xlc12 # use gcc472
+    # use xlc12
+    use gcc484
     use numdiff
     use random123
+    use gsl
 
     # LLNL dotkits
-    use cmake331
+    use cmake361
     use erase=del
     use alia1++
 

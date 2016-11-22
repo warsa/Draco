@@ -312,6 +312,15 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
   set( MPIEXEC_NUMPROC_FLAG "-n" CACHE
     STRING "flag used to specify number of processes." FORCE)
 
+  # [2016-11-17 KT] Ensure that the MPI headers in mpi.h use function signatures
+  # from the MPI-2.2 standard that include 'const' parameters for MPI_put. The
+  # MPI headers found on Sequoia claim to be MPI-2.2 compliant. However, this
+  # CPP macro has been altered to be empty and this violates the v. 2.2
+  # standard. For compatibility with the CCS-2 codebase, manually set this CPP
+  # macro back to 'const'.  This definition will appear in c4/config.h.
+  set( MPICH2_CONST "const" "Sequoia MPICH2-1.5 compile option.")
+  mark_as_advanced( MPICH2_CONST )
+
 endmacro()
 
 #------------------------------------------------------------------------------#

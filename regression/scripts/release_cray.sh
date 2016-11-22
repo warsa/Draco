@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_0
+ddir=draco-6_20_1
 pdir=$ddir
 
 # environment (use draco modules)
@@ -35,7 +35,7 @@ pdir=$ddir
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   t[rt]-fe* | t[rt]-login* )
-    environments="intel16env" ;;
+    environments="intel17env" ;;
 esac
 function intel16env()
 {
@@ -60,6 +60,29 @@ export CRAYPE_LINK_TYPE=dynamic
 export OMP_NUM_THREADS=16
 }
 
+function intel17env()
+{
+run "module load user_contrib friendly-testing"
+run "module unload ndi metis parmetis superlu-dist trilinos"
+run "module unload lapack gsl intel"
+run "module unload cmake numdiff"
+run "module unload intel gcc"
+run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
+run "module unload papi perftools"
+run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview intel"
+run "module load intel/17.0.1"
+run "module load gsl/2.1"
+run "module load cmake/3.6.2 numdiff"
+run "module load trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
+run "module load ndi random123 eospac/6.2.4"
+run "module list"
+CC=`which cc`
+CXX=`which CC`
+FC=`which ftn`
+export CRAYPE_LINK_TYPE=dynamic
+export OMP_NUM_THREADS=16
+}
 # function intel14env()
 # {
 # run "module load friendly-testing user_contrib"
@@ -189,8 +212,10 @@ for env in $environments; do
 
     # Run the tests on the back-end.
     export steps="test"
-    cmd="msub -V $access_queue -l walltime=08:00:00 -l nodes=2:ppn=${ppn} -j oe \
--o $source_prefix/logs/release-$buildflavor-$version-t.log $draco_script_dir/release_cray.msub"
+    cmd="msub -V $access_queue -l walltime=08:00:00 \
+-l nodes=2:haswell:ppn=${ppn} -j oe \
+-o $source_prefix/logs/release-$buildflavor-$version-t.log \
+$draco_script_dir/release_cray.msub"
     echo -e "\nTest $package for $buildflavor-$version."
     echo "$cmd"
     jobid=`eval ${cmd}`
