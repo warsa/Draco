@@ -118,6 +118,8 @@ run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 # Load new environment
 run "module load PrgEnv-intel"
+run "module unload intel"
+run "module load intel/17.0.1"
 run "module unload cray-libsci gcc/6.1.0"
 run "module load craype-hugepages4M"
 run "module load cmake/3.6.2 numdiff subversion git"
@@ -139,7 +141,7 @@ knl)
     comp="${comp}-knl"
     ;;
 "")
-    # revert to intel/14 as the default setup.
+    # no-op
     ;;
 *)
     echo "FATAL ERROR"

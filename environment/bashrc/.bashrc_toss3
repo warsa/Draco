@@ -53,11 +53,14 @@ else
   fi
   module load friendly-testing
 
-  export dracomodules="intel/16.0.3 openmpi/1.10.3 mkl \
+  export dracomodules="intel/17.0.1 openmpi/1.10.3 mkl \
 subversion cmake numdiff git totalview trilinos/12.8.1 \
 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3 ndi random123 eospac/6.2.4"
 
 fi
+
+# Do not escape $ for bash completion
+shopt -s direxpand
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_toss3

@@ -41,27 +41,15 @@ case wf-fey*.lanl.gov
 case wf*.localdomain:
 case ml-fey*.lanl.gov:
 case ml*.localdomain:
-    setenv VENDOR_DIR /usr/projects/draco/vendors
-    module load friendly-testing user_contrib
-    module load intel/16.0.3 openmpi/1.10.3 mkl
-    module load git subversion emacs grace
-    module load cmake/3.6.0 numdiff random123 eospac/6.2.4
-    module load trilinos/12.8.1 superlu-dist/4.3
-    module load parmetis/4.0.3 metis/5.1.0 ndi totalview
-    alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
-    breaksw
-
 case lu*.lanl.gov:
 case lu*.localdomain:
     setenv VENDOR_DIR /usr/projects/draco/vendors
-    module use $VENDOR_DIR/Modules/tu-fe
     module load friendly-testing user_contrib
-    module unload intel openmpi
-    module load intel/15.0.3 openmpi
-    module load git svn emacs
-    module load cmake/3.5.2 numdiff lapack/3.5.0 random123 eospac/6.2.4
-    module load trilinos/12.6.1 superlu-dist/4.3
-    module load parmetis/4.0.3 ndi metis/5.1.0
+    module load intel/17.0.1 openmpi/1.10.3 mkl
+    module load git subversion emacs grace
+    module load cmake/3.6.2 numdiff random123 eospac/6.2.4
+    module load trilinos/12.8.1 superlu-dist/4.3
+    module load parmetis/4.0.3 metis/5.1.0 ndi totalview
     alias  topsn '/usr/projects/data/bin/latest/moonlight/topsn'
     breaksw
 
@@ -87,11 +75,13 @@ case tr*:
 
     # load the Intel programming env, but then unloda libsci and totalview
     module load PrgEnv-intel # this loads xt-libsci and intel/XXX
+    module unload intel
+    module load intel/17.0.1
     module unload cray-libsci gcc/6.1.0
 
     # draco modules start here.
-    module load metis parmetis/4.0.3 trilinos/12.6.1 superlu-dist/4.3
-    module load gsl/2.1 cmake/3.6.1 numdiff ndi random123 eospac/6.2.4
+    module load metis parmetis/4.0.3 trilinos/12.8.1 superlu-dist/4.3
+    module load gsl/2.1 cmake/3.6.2 numdiff ndi random123 eospac/6.2.4
     module load subversion git
 
     setenv OMP_NUM_THREADS 16
