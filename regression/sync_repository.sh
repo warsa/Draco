@@ -72,6 +72,7 @@ case ${target} in
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
+    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -139,37 +140,37 @@ fi
 # Store some output into a local file to simplify parsing.
 TMPFILE_DRACO=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
 
-    echo " "
-    echo "Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
+echo " "
+echo "Copy Draco git repository to the local file system..."
+if test -d $gitroot/Draco.git; then
+  run "cd $gitroot/Draco.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO
   cat $TMPFILE_DRACO
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
-    fi
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot"
+  run "cd $gitroot"
+  run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+fi
 
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
 
 # Store some output into a local file to simplify parsing.
 TMPFILE_JAYENNE=$(mktemp /var/tmp/jayenne_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
-    echo " "
-    echo "Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne.git; then
-      run "cd $gitroot/jayenne.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
+echo " "
+echo "Copy Jayenne git repository to the local file system..."
+if test -d $gitroot/jayenne.git; then
+  run "cd $gitroot/jayenne.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_JAYENNE
   cat $TMPFILE_JAYENNE
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot; cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
-    fi
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot; cd $gitroot"
+  run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+fi
 case ${target} in
   ccscs7*)
     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
@@ -189,7 +190,7 @@ case ${target} in
       run "git reset --soft"
     fi
     ;;
-  ml-fey*)
+  ml-fey* | darwin-fe* )
     # CAPSAICIN: svn-sync the repository to the local file system.
     if ! test -d $svnroot; then
       echo "*** ERROR ***"
@@ -243,7 +244,7 @@ for prline in $draco_prs; do
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
     ccscs*)
       # Coverage (Debug) & Valgrind (Debug)
-        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
       echo "- Starting regression (coverage) for pr${pr}."
       echo "  Log: $logfile"
@@ -275,10 +276,10 @@ for prline in $draco_prs; do
     tt-fey*)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/tt-draco-Release-master-pr${pr}.log
-        echo "- Starting regression (Release) for pr${pr}."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
-          -f pr${pr} &> $logfile &
+      echo "- Starting regression (Release) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
+        -f pr${pr} &> $logfile &
       ;;
 
     # Darwin ----------------------------------------
@@ -286,7 +287,8 @@ for prline in $draco_prs; do
       # No CI
       ;;
   esac
-      done
+done
+
 # Jayenne CI ------------------------------------------------------------
 jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
 ipr=0 # count the number of PRs processed. Only the first needs to build draco.
@@ -318,7 +320,7 @@ for prline in $jayenne_prs; do
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
         -p "${projects}" -f "${featurebranches}" &> $logfile &
-    ;;
+      ;;
 
     # Moonlight: Fulldiagnostics (Debug)
     ml-fey*)
@@ -341,14 +343,14 @@ for prline in $jayenne_prs; do
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release \
-        -p "${projects}" -f "${featurebrances}" &> $logfile &
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
       ;;
 
     # Darwin ----------------------------------------
     darwin-fe*)
       # No CI
       ;;
-esac
+  esac
 done
 
 #------------------------------------------------------------------------------#
