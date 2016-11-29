@@ -11,7 +11,9 @@
 #include "ds++/Assert.hh"
 #include "ds++/StackTrace.hh"
 #include "ds++/fpe_trap.hh"
+#include <cfenv>
 #include <cmath>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -83,10 +85,11 @@ void run_test(int /*argc*/, char *argv[], std::ofstream &fout) {
   case 0:
     // Should not throw a IEEE floating point exception.
     fcout(string("- Case zero: this operation should not throw a SIGFPE.") +
-          " The result should be 2...\n", fout);
+              " The result should be 2...\n",
+          fout);
     result = 1.0 + zero + sqrt(-neg);
     msg << "  result = " << result << endl;
-    fcout( msg.str(), fout );
+    fcout(msg.str(), fout);
     break;
   case 1:
     fcout("- Case one: trying a div_by_zero operation...\n", fout);
@@ -95,6 +98,7 @@ void run_test(int /*argc*/, char *argv[], std::ofstream &fout) {
     fcout(msg.str(), fout);
     break;
   case 2:
+    // http://en.cppreference.com/w/cpp/numeric/math/sqrt
     fcout("- Case two: trying to evaluate sqrt(-1.0)...\n", fout);
     result = std::sqrt(neg); // should fail here
     msg << "  result = " << result;
@@ -129,19 +133,18 @@ int main(int argc, char *argv[]) {
     run_test(argc, argv, fout);
   } catch (exception &err) {
     if (rtt_dsxx::fpe_trap().enable()) {
-      // keyword 'signal' shows up as a failure when processed by
-      // test_filter.py.  To avoid this, we do not print the err.what() message.
       cout << "While running " << argv[0] << ", "
-           << "a SIGFPE was successfully caught.\n\t" << endl;
+           << "a SIGFPE was successfully caught.\n\t"
+           << "what = " << err.what() << endl;
       return 0;
     } else {
       cout << "ERROR: While running " << argv[0] << ", "
-           << "An exception was caught when it was not expected.\n\t" << endl;
+           << "An exception was caught when it was not expected.\n\t"
+           << "what = " << err.what() << endl;
     }
   } catch (...) {
     cout << "ERROR: While testing " << argv[0] << ", "
          << "An unknown exception was thrown." << endl;
-    // close the file
     fout.close();
     return 1;
   }

@@ -39,6 +39,7 @@ try:
   print("\nChecking the generated output files...\n")
   case_number = tFpeTrap.get_arg_value( 'ARGVALUE' )
 
+  # ---------------------------------------------------------------------------- #
   # Case 0: attempts to calculate 1.0 + zero + sqrt(-1*-1)
   #         should not throw IEEE exception.
   if case_number == '0':
@@ -49,6 +50,7 @@ try:
       else:
           tFpeTrap.failmsg("Failed to find expected result (2).")
 
+  # ---------------------------------------------------------------------------- #
   # Case 1: attempts to divide by zero
   elif case_number == '1':
 
@@ -66,6 +68,7 @@ try:
       else:
           tFpeTrap.failmsg("Failed catch SIGFPE (Floating point divide by zero)")
 
+  # ---------------------------------------------------------------------------- #
   # Case 2: attempts to evaluate sqrt(-1.0)
   elif case_number == '2':
 
@@ -76,13 +79,26 @@ try:
       else:
           tFpeTrap.failmsg("Case 2 did not try the sqrt(-1.0) case")
 
+      # As of 2016-11-29:
+      # - GCC throws the FE_INVALID IEEE signal (stderr file)
+      # - Intel 17 throws a C++ exception (stdout file)
+      #
+      # Look for FE_INVALID first, if that isn't found, allow the test to pass
+      # if the C++ exception is detected.
+
       # Signaling error: SIGFPE (Invalid floating point operation)
       string_found = tFpeTrap.error_contains("Invalid floating point operation")
       if( string_found ):
           tFpeTrap.passmsg("Caught SIGFPE (Invalid floating point operation)")
       else:
+        # 2nd chance: also look in the stdout file.
+        string_found = tFpeTrap.output_contains("Invalid floating point operation")
+        if( string_found ):
+          tFpeTrap.passmsg("Caught SIGFPE (Invalid floating point operation)")
+        else:
           tFpeTrap.failmsg("Failed catch SIGFPE (Invalid floating point operation)")
 
+  # ---------------------------------------------------------------------------- #
   # Case 3: An overflow condition is generated.
   elif case_number == '3':
 
@@ -101,9 +117,6 @@ try:
           tFpeTrap.failmsg("Failed catch SIGFPE (Floating point overflow)")
 
   print(" ")
-
-  # # Diff the output vs a gold file.
-  # tFpeTrap.aut_numdiff()
 
   ##---------------------------------------------------------------------------##
   ## Final report

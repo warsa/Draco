@@ -363,26 +363,28 @@ class UnitTest:
       f_err.close()
       if (stdin_file): f_in.close();
 
-      # check for non-zero return code
-      if( continue_on_error):
-        if (testres):
+      # Test the return code. Normally, if the return code is non-zero print an
+      # error message and return control to ctest (don't run the remaining
+      # checks). If continue_on_error=True, print a message and continue running
+      # checks.
+      if (testres):
+        # we have a non-zero return code.
+        if(continue_on_error):
           print("Non-zero return code detected, but continue_on_error=True.")
         else:
-          print_file(self.outfile)
-          self.passmsg("Application ran to completion")
-
-      else:
-        if (testres):
           # get last line written to stderror
           f_error = open(self.errfile)
           error_lines = f_error.readlines()
           last_error = error_lines.pop()
+          # print the last recorded error and stop running futher checks.
           print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
           self.fatal_error("See {0} for full details.".format(self.outfile))
           f_error.close()
-        else:
-          print_file(self.outfile)
-          self.passmsg("Application ran to completion")
+      else:
+        # The return code was zero. Record this success and continue running the
+        # checks.
+        print_file(self.outfile)
+        self.passmsg("Application ran to completion")
 
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
