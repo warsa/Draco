@@ -32,11 +32,15 @@ IFS=$'\r\n' GLOBIGNORE='*' command eval 'user_list=($(cat $author_list_file))'
 #------------------------------------------------------------------------------#
 # http://stackoverflow.com/questions/1265040/how-to-count-total-lines-changed-by-a-specific-author-in-a-git-repository
 
+# Ingore some files used in Jayenne:
+# ignorespec=":(exclude)*/output.in" ":(exclude)*/*.bench"
+
 # count loc for each author and report.
 author_loc=`mktemp`
 for name in "${user_list[@]}"; do
 
-  numlines=`git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; sum += $1 + $2 } END { printf "%s:\n", loc }'`
+  # sort by net lines added (lines added - lines removed)
+  numlines=`git log --author="$name" --pretty=tformat: --numstat -- . ":(exclude)clubimc" ":(exclude)wedgehog" ":(exclude)milagro" ":(exclude)*/output.in" ":(exclude)*/*.bench" | awk '{ add += $1; subs += $2; loc += $1 - $2; sum += $1 + $2 } END { printf "%s:\n", loc}'`
   echo "$numlines$name"
 
 done | sort -rn > $author_loc

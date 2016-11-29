@@ -110,7 +110,7 @@ for repo in $repos; do
 
     # Ensure the new files have group rwX permissions.
     run "chgrp -R draco $repo.tar"
-    run "chmod -R g+rwX,o=g-w  $repo.tar"
+    run "chmod -R g+rwX,o-rwX  $repo.tar"
 
     # Transfer the file via transfer.lanl.gov
     run "scp $repo.tar red@transfer.lanl.gov:"

@@ -37,6 +37,8 @@ modcmd=`declare -f module`
 if [[ ! ${modcmd} ]]; then
   case ${target} in
     tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init ;;
+    # snow (Toss3)
+    sn-fey*) module_init_dir=/usr/share/lmod/lmod/init ;;
     # ccs-net, darwin, ml
     *)       module_init_dir=/usr/share/Modules/init ;;
   esac
@@ -70,6 +72,22 @@ case ${target} in
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
+    svnroot=$regdir/svn
+    VENDOR_DIR=/usr/projects/draco/vendors
+    keychain=keychain-2.7.1
+    ;;
+  ml-fey*)
+    run "module load user_contrib subversion git"
+    regdir=/usr/projects/jayenne/regress
+    gitroot=$regdir/git
+    svnroot=$regdir/svn
+    VENDOR_DIR=/usr/projects/draco/vendors
+    keychain=keychain-2.7.1
+    ;;
+  sn-fey*)
+    run "module load user_contrib subversion git"
+    regdir=/usr/projects/jayenne/regress
+    gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -79,15 +97,6 @@ case ${target} in
     run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
-    VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.7.1
-    ;;
-  *)
-    # HPC - Moonlight.
-    run "module load user_contrib subversion git"
-    regdir=/usr/projects/jayenne/regress
-    gitroot=$regdir/git
-    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -109,106 +118,80 @@ fi
 
 # ---------------------------------------------------------------------------- #
 # Create copies of SVN and GIT repositories on the local file system
+#
+# Locations:
+# - ccs-net servers:
+#   /ccs/codes/radtran/git
+# - HPC (moonlight, snow, trinitite, etc.)
+#   /usr/projects/draco/jayenne/regress/[git|svn]
+#
+# Keep local copies of the github, gitlab and svn repositories. This local
+# filesystem location is needed for our regression system on some systems where
+# the back-end worker nodes can't see the outside world. Additionally, the
+# output produced by downloading the repository to the local filesystem can be
+# parsed so that CI regressions can be started. On the CCS-NET, the local copy
+# is also visible to Redmine so changes in the repository will show up in the
+# datase (GUI repository, wiki/ticket references to commits).
 # ---------------------------------------------------------------------------- #
 
+# DRACO: For all machines running this scirpt, copy all of the git repositories
+# to the local file system.
+
+# Store some output into a local file to simplify parsing.
+TMPFILE_DRACO=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+
+echo " "
+echo "Copy Draco git repository to the local file system..."
+if test -d $gitroot/Draco.git; then
+  run "cd $gitroot/Draco.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO
+  cat $TMPFILE_DRACO
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot"
+  run "cd $gitroot"
+  run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+fi
+
+# JAYENNE: For all machines running this scirpt, copy all of the git repositories
+# to the local file system.
+
+# Store some output into a local file to simplify parsing.
+TMPFILE_JAYENNE=$(mktemp /var/tmp/jayenne_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+echo " "
+echo "Copy Jayenne git repository to the local file system..."
+if test -d $gitroot/jayenne.git; then
+  run "cd $gitroot/jayenne.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_JAYENNE
+  cat $TMPFILE_JAYENNE
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot; cd $gitroot"
+  run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
+fi
 case ${target} in
-  ccscs*)
-    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
-
-    # Keep local (ccscs7:/ccs/codes/radtran/git) copies of the github and gitlab
-    # repositories. This location can be parsed by redmine.
-
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
     echo " "
-    echo "Copy Draco git repository to the local file system..."
+    echo "(Redmine) Copy Draco git repository to the local file system..."
     if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco.git"
+      run "cd $gitroot/Draco-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
-      cat $TMPFILE
-
-      # The output from the above command may include text of the form:
-      # [new ref] refs/pull/84/head -> refs/pull/84/head <-- new PR
-      # 03392b8..fd3eabc  refs/pull/86/head -> refs/pull/86/head <-- updated PR
-      # Extract a list of PRs that are new and optionally start regression run
-      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
-      for prline in $prs; do
-        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-        logfile=$regdir/logs/ccscs-Debug-coverage-master-pr${pr}.log
-        echo "- Starting regression (coverage) for pr${pr}."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
-          -p draco -f pr${pr} &> $logfile &
-        logfile=$regdir/logs/ccscs-Debug-valgrind-master-pr${pr}.log
-        echo "- Starting regression (valgrind) for pr${pr}."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
-          -p draco -f pr${pr} &> $logfile &
-      done
       run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
     fi
-
     echo " "
-    echo "Copy Jayenne git repository to the local file system..."
+    echo "(Redmine) Copy Jayenne git repository to the local file system..."
     if test -d $gitroot/jayenne.git; then
-      run "cd $gitroot/jayenne.git"
+      run "cd $gitroot/jayenne-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
       run "git reset --soft"
-    else
-      run "mkdir -p $gitroot; cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
     fi
     ;;
-  ml-fey*)
-    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
-
-    # Keep local (ml-fey:/usr/projects/jayenne/regress/git) copies of the github
-    # and gitlab repositories. This location can be parsed by redmine. For
-    # darwin, the backend can't see gitlab, so keep a copy of the repository
-    # local.
-
-    echo " "
-    echo "Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
-      cat $TMPFILE
-
-      # Extract a list of PRs that are new and optionally start regression run
-      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
-      for prline in $prs; do
-        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-        logfile=$regdir/logs/ml-Debug-fulldiagnostics-master-pr${pr}.log
-        echo "- Starting regression (fulldiagnostics) for pr${pr}."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug \
-          -e fulldiagnostics -p draco -f pr${pr} &> $logfile &
-      done
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
-    fi
-
-    echo " "
-    echo "Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne/jayenne.git; then
-      run "cd $gitroot/jayenne/jayenne.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
-    fi
-    # HPC: Mirror the capsaicin svn repository
-    #
+  ml-fey* | darwin-fe* )
+    # CAPSAICIN: svn-sync the repository to the local file system.
     if ! test -d $svnroot; then
       echo "*** ERROR ***"
       echo "*** SVN repository not found ***"
@@ -238,83 +221,137 @@ case ${target} in
     echo "Copy capsaicin svn repository to the local file system..."
     run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
     ;;
-  tt-fey*)
-    TMPFILE=$(mktemp /var/tmp/repo_sync.XXXXXXXXXX) || { echo "failed to create temp file"; exit 1; }
-
-    # Keep local (tt-fey:/usr/projects/jayenne/regress/git.tt) copies of the github
-    # and gitlab repositories. This location can be parsed by redmine. For
-    # darwin, the backend can't see gitlab, so keep a copy of the repository
-    # local.
-
-    echo " "
-    echo "Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE
-      cat $TMPFILE
-
-      # Extract a list of PRs that are new and optionally start regression run
-      prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE | awk '{print $NF}'`
-      for prline in $prs; do
-        pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-        logfile=$regdir/logs/tt-Release-master-pr${pr}.log
-        echo "- Starting regression (Release) for pr${pr}."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
-          -f pr${pr} &> $logfile &
-      done
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
-    fi
-
-    echo " "
-    echo "Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne/jayenne.git; then
-      run "cd $gitroot/jayenne/jayenne.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
-    fi
-    ;;
-  darwin-fe*)
-    # Keep local (darwin-fe:/usr/projects/draco/regress/git) copies of the
-    # github and gitlab repositories. This location can be parsed by
-    # redmine. For darwin, the backend can't see gitlab, so keep a copy of the
-    # repository local.
-
-    echo " "
-    echo "Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/pull/*:refs/pull/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
-    fi
-
-    echo " "
-    echo "Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne/jayenne.git; then
-      run "cd $gitroot/jayenne/jayenne.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot/jayenne; cd $gitroot/jayenne"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
-    fi
-    ;;
 esac
+
+#------------------------------------------------------------------------------#
+# Continuous Integration Hooks:
+#
+# Extract a list of PRs that are new and optionally start regression run by
+# parsing the output of 'git fetch' from above.
+#
+# The output from the above command may include text of the form:
+#   [new ref]        refs/pull/84/head -> refs/pull/84/head <-- new PR
+#   03392b8..fd3eabc refs/pull/86/head -> refs/pull/86/head <-- updated PR
+#                    Extract a list of PRs that are new and optionally start
+#                    regression run
+# ------------------------------------------------------------------------------#
+
+# Draco CI ------------------------------------------------------------
+draco_prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE_DRACO | awk '{print $NF}'`
+for prline in $draco_prs; do
+  case ${target} in
+
+    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
+    ccscs*)
+      # Coverage (Debug) & Valgrind (Debug)
+      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+      logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
+      echo "- Starting regression (coverage) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+        -p draco -f pr${pr} &> $logfile &
+      logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-pr${pr}.log
+      echo "- Starting regression (valgrind) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+        -p draco -f pr${pr} &> $logfile &
+      ;;
+
+    # Moonlight: Fulldiagnostics (Debug)
+    ml-fey*)
+      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+      logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-pr${pr}.log
+      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -e fulldiagnostics -p draco -f pr${pr} &> $logfile &
+      ;;
+
+    # Snow ----------------------------------------
+    sn-fe*)
+      # No CI
+      ;;
+
+    # Trinitite: Release
+    tt-fey*)
+      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+      logfile=$regdir/logs/tt-draco-Release-master-pr${pr}.log
+      echo "- Starting regression (Release) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
+        -f pr${pr} &> $logfile &
+      ;;
+
+    # Darwin ----------------------------------------
+    darwin-fe*)
+      # No CI
+      ;;
+  esac
+done
+
+# Jayenne CI ------------------------------------------------------------
+jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
+ipr=0 # count the number of PRs processed. Only the first needs to build draco.
+for prline in $jayenne_prs; do
+
+  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+
+  if [[ $ipr == 0 ]]; then
+    projects="draco jayenne"
+    featurebranches="develop pr${pr}"
+  else
+    projects="jayenne"
+    featurebranches="pr${pr}"
+  fi
+  ((ipr++))
+
+  case ${target} in
+
+    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
+    ccscs*)
+      logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-pr${pr}.log
+      echo "- Starting regression (coverage) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+
+      logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-pr${pr}.log
+      echo "- Starting regression (valgrind) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Moonlight: Fulldiagnostics (Debug)
+    ml-fey*)
+      logfile=$regdir/logs/ml-jayenne-Debug-fulldiagnostics-master-pr${pr}.log
+      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -e fulldiagnostics -p "${projects}" -f "${featurebranches}" \
+        &> $logfile &
+      ;;
+
+    # Snow ----------------------------------------
+    sn-fe*)
+      # No CI
+      ;;
+
+    # Trinitite: Release
+    tt-fey*)
+      logfile=$regdir/logs/tt-jayenne-Release-master-pr${pr}.log
+      echo "- Starting regression (Release) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Release \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Darwin ----------------------------------------
+    darwin-fe*)
+      # No CI
+      ;;
+  esac
+done
 
 #------------------------------------------------------------------------------#
 # End sync_repository.sh
