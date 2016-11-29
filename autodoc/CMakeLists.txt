@@ -6,11 +6,8 @@
 # note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 
 # Doxygen
-
 find_package( Doxygen QUIET )
 
 if( DOXYGEN_FOUND )
@@ -132,7 +129,7 @@ if( DOXYGEN_FOUND )
   # Copy image files
   #
   # list of source files
-  file( GLOB DOXYGEN_IMAGE_SOURCE_FILES *.jpg *.png html/*.jpg)
+  file( GLOB DOXYGEN_IMAGE_SOURCE_FILES *.jpg *.png html/*.jpg html/*.png)
   # placeholder for final copy of images.
   set( DOXYGEN_IMAGE_FILES "")
   # build a list of images with full path

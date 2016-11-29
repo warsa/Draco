@@ -21,9 +21,9 @@ $extrastylesheet
 
 <table border=0, cellpadding=2 cellspacing=2 width="50%" align="right"><tr>
 <td align="left">
-  <a href="http://rtt.lanl.gov/redmine"> Redmine </a>
+  <a href="https://rtt.lanl.gov/redmine"> Redmine </a>
   &nbsp; | &nbsp;
-  <a href="http://rtt.lanl.gov/cdash"> CDash </a>
+  <a href="https://rtt.lanl.gov/cdash"> CDash </a>
 </td>
 <td align="right">
   <a href="../../autodoc/draco/index.html"> Draco Autodoc Home </a>
