@@ -203,7 +203,7 @@ class UnitTest:
       self.numpasses = 0
       self.numfails = 0
 
-      debug = True
+      debug = False
       if (debug):
         print("Running with the following parameters")
         print("   APP       = {0}".format(self.app))
@@ -270,7 +270,7 @@ class UnitTest:
 
   ##############################################################################
   # Run the application and capture the output.
-  def aut_runTests(self):
+  def aut_runTests(self, continue_on_error=False ):
 
     try:
       print("\n=============================================")
@@ -364,22 +364,42 @@ class UnitTest:
       if (stdin_file): f_in.close();
 
       # check for non-zero return code
-      if (testres):
-        # get last line written to stderror
-        f_error = open(self.errfile)
-        error_lines = f_error.readlines()
-        last_error = error_lines.pop()
-        print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
-        self.fatal_error("See {0} for full details.".format(self.outfile))
-        f_error.close()
+      if( continue_on_error):
+        if (testres):
+          print("Non-zero return code detected, but continue_on_error=True.")
+        else:
+          print_file(self.outfile)
+          self.passmsg("Application ran to completion")
+
       else:
-        print_file(self.outfile)
-        self.passmsg("Application ran to completion")
+        if (testres):
+          # get last line written to stderror
+          f_error = open(self.errfile)
+          error_lines = f_error.readlines()
+          last_error = error_lines.pop()
+          print("Test FAILED:\n last message written to stderr: \'{0}".format(last_error))
+          self.fatal_error("See {0} for full details.".format(self.outfile))
+          f_error.close()
+        else:
+          print_file(self.outfile)
+          self.passmsg("Application ran to completion")
 
     except Exception:
       print("Caught exception: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
+  ##############################################################################
+
+  ##############################################################################
+  # check to see if the error file contains a given string
+  def error_contains(self, search_string):
+    # search file for string
+    return_bool = False
+    with open(self.errfile) as f:
+      for line in f:
+        if (search_string in line):
+          return_bool = True
+    return return_bool
   ##############################################################################
 
   ##############################################################################
