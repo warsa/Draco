@@ -80,7 +80,7 @@ class IpcressDataTable;
 //===========================================================================//
 
 class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
-  : public rtt_cdi::OdfmgOpacity {
+    : public rtt_cdi::OdfmgOpacity {
 
   // DATA
 
@@ -175,7 +175,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    */
   void loadGroupsAndBands(size_t const numBands);
 
-  public:
+public:
   // ------------ //
   // Constructors //
   // ------------ //
@@ -252,10 +252,10 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    */
   template <class TemperatureIterator, class DensityIterator,
             class OpacityIterator>
-    OpacityIterator
-    getOpacity(TemperatureIterator temperatureFirst,
-               TemperatureIterator temperatureLast, DensityIterator densityFirst,
-               DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  OpacityIterator
+  getOpacity(TemperatureIterator temperatureFirst,
+             TemperatureIterator temperatureLast, DensityIterator densityFirst,
+             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
@@ -279,10 +279,10 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    *     and the single density value.
    */
   template <class TemperatureIterator, class OpacityIterator>
-    OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
-                               TemperatureIterator temperatureLast,
-                               double targetDensity,
-                               OpacityIterator opacityFirst) const;
+  OpacityIterator getOpacity(TemperatureIterator temperatureFirst,
+                             TemperatureIterator temperatureLast,
+                             double targetDensity,
+                             OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that utilizes STL-like iterators.  This accessor
@@ -305,9 +305,9 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    *     the single temperature value.
    */
   template <class DensityIterator, class OpacityIterator>
-    OpacityIterator
-    getOpacity(double targetTemperature, DensityIterator densityFirst,
-               DensityIterator densityLast, OpacityIterator opacityFirst) const;
+  OpacityIterator
+  getOpacity(double targetTemperature, DensityIterator densityFirst,
+             DensityIterator densityLast, OpacityIterator opacityFirst) const;
 
   /*!
    * \brief Opacity accessor that returns a 2-D vector of opacities ( groups *
@@ -334,8 +334,8 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    * \return A vector of vectors of opacities.
    */
   std::vector<std::vector<std::vector<double>>>
-    getOpacity(std::vector<double> const &targetTemperature,
-               double targetDensity) const;
+  getOpacity(std::vector<double> const &targetTemperature,
+             double targetDensity) const;
 
   /*!
    * \brief Opacity accessor that returns a vector of 2-D vectors of opacities
@@ -349,8 +349,8 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
    * \return A vector of vectors of opacities.
    */
   std::vector<std::vector<std::vector<double>>>
-    getOpacity(double targetTemperature,
-               const std::vector<double> &targetDensity) const;
+  getOpacity(double targetTemperature,
+             const std::vector<double> &targetDensity) const;
 
   //! Query whether the data is in tables or functional form.
   bool data_in_tabular_form() const { return true; };
@@ -481,9 +481,9 @@ class DLL_PUBLIC_cdi_ipcress IpcressOdfmgOpacity
 template <class TemperatureIterator, class DensityIterator,
           class OpacityIterator>
 OpacityIterator IpcressOdfmgOpacity::getOpacity(
-  TemperatureIterator tempIter, TemperatureIterator tempLast,
-  DensityIterator densIter, DensityIterator Remember(densLast),
-  OpacityIterator opIter) const {
+    TemperatureIterator tempIter, TemperatureIterator tempLast,
+    DensityIterator densIter, DensityIterator Remember(densLast),
+    OpacityIterator opIter) const {
   // assert that the two input iterators have compatible sizes.
   Require(std::distance(tempIter, tempLast) ==
           std::distance(densIter, densLast));
