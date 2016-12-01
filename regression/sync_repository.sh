@@ -59,7 +59,6 @@ source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 run "umask 0002"
-svnhostmachine=ccscs7
 
 case ${target} in
   ccscs*)
@@ -72,7 +71,6 @@ case ${target} in
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
-    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -80,7 +78,6 @@ case ${target} in
     run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git
-    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -117,13 +114,13 @@ else
 fi
 
 # ---------------------------------------------------------------------------- #
-# Create copies of SVN and GIT repositories on the local file system
+# Create copies of GIT repositories on the local file system
 #
 # Locations:
 # - ccs-net servers:
 #   /ccs/codes/radtran/git
 # - HPC (moonlight, snow, trinitite, etc.)
-#   /usr/projects/draco/jayenne/regress/[git|svn]
+#   /usr/projects/draco/jayenne/regress/git
 #
 # Keep local copies of the github, gitlab and svn repositories. This local
 # filesystem location is needed for our regression system on some systems where
@@ -190,36 +187,44 @@ case ${target} in
       run "git reset --soft"
     fi
     ;;
-  ml-fey* | darwin-fe* )
-    # CAPSAICIN: svn-sync the repository to the local file system.
-    if ! test -d $svnroot; then
-      echo "*** ERROR ***"
-      echo "*** SVN repository not found ***"
-      exit 1
-      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-      # mkdir -p ${svnroot}; cd ${svnroot}
-      # svnadmin create ${svnroot}/jayenne
-      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-      # cd jayenne/hooks
-      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-      # vi pre-commit; comment out all code and add...
-      #if ! test `whoami` = 'kellyt'; then
-      #echo "This is a read only repository.  The real SVN repository is"
-      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
-      #exit 1
-      #fi
-      #exit 0
-      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-      #    pre-revprop-change
-      # vi pre-revprop-change --> comment out all code.
-      # cd $svnroot
-      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
-      # svnsync sync file:///${svnroot}/jayenne
-    fi
+esac
 
+
+# CAPSAICIN: For all machines running this scirpt, copy all of the git repositories
+# to the local file system.
+
+# Store some output into a local file to simplify parsing.
+TMPFILE_CAPSAICIN=$(mktemp /var/tmp/capsaicin_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+echo " "
+echo "Copy Capsaicin git repository to the local file system..."
+if test -d $gitroot/capsaicin.git; then
+  run "cd $gitroot/capsaicin.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_CAPSAICIN
+  cat $TMPFILE_CAPSAICIN
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot; cd $gitroot"
+  run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin.git"
+fi
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
     echo " "
-    echo "Copy capsaicin svn repository to the local file system..."
-    run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+    echo "(Redmine) Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco.git; then
+      run "cd $gitroot/Draco-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    fi
+    echo " "
+    echo "(Redmine) Copy Capsaicin git repository to the local file system..."
+    if test -d $gitroot/capsaicin.git; then
+      run "cd $gitroot/capsaicin-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    fi
     ;;
 esac
 
@@ -340,6 +345,70 @@ for prline in $jayenne_prs; do
     # Trinitite: Release
     tt-fey*)
       logfile=$regdir/logs/tt-jayenne-Release-master-pr${pr}.log
+      echo "- Starting regression (Release) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Release \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Darwin ----------------------------------------
+    darwin-fe*)
+      # No CI
+      ;;
+  esac
+done
+
+# Capsaicin CI ------------------------------------------------------------
+capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
+ipr=0 # count the number of PRs processed. Only the first needs to build draco.
+for prline in $capsaicin_prs; do
+
+  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+
+  if [[ $ipr == 0 ]]; then
+    projects="draco capsaicin"
+    featurebranches="develop pr${pr}"
+  else
+    projects="capsaicin"
+    featurebranches="pr${pr}"
+  fi
+  ((ipr++))
+
+  case ${target} in
+
+    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
+    ccscs*)
+      logfile=$regdir/logs/ccscs-capsaicin-Debug-coverage-master-pr${pr}.log
+      echo "- Starting regression (coverage) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+
+      logfile=$regdir/logs/ccscs-capsaicin-Debug-valgrind-master-pr${pr}.log
+      echo "- Starting regression (valgrind) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Moonlight: Fulldiagnostics (Debug)
+    ml-fey*)
+      logfile=$regdir/logs/ml-capsaicin-Debug-fulldiagnostics-master-pr${pr}.log
+      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -e fulldiagnostics -p "${projects}" -f "${featurebranches}" \
+        &> $logfile &
+      ;;
+
+    # Snow ----------------------------------------
+    sn-fe*)
+      # No CI
+      ;;
+
+    # Trinitite: Release
+    tt-fey*)
+      logfile=$regdir/logs/tt-capsaicin-Release-master-pr${pr}.log
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release \
