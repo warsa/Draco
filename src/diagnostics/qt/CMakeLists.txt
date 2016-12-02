@@ -80,13 +80,8 @@ add_component_executable(
 # copy_dll_link_libraries_to_build_dir( Exe_draco_info_gui )
 if (WIN32)
   file( GLOB qtdlls ${QTDIR}/bin/*.dll )
-  foreach( qtdll ${qtdlls} )
-    add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll}
-                               $<TARGET_FILE_DIR:Exe_draco_info_gui> )
-  endforeach()
-
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdlls} $<TARGET_FILE_DIR:Exe_draco_info_gui> )
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info_gui>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_diagnostics> $<TARGET_FILE_DIR:Exe_draco_info_gui> )
