@@ -290,19 +290,92 @@ for prline in $draco_prs; do
 done
 
 # Jayenne CI ------------------------------------------------------------
+
+# Only build draco-develop once per day (used for testing jayenne PRs).
+eval "$(date +'today=%F now=%s')"
+midnight=$(date -d "$today 0" +%s)
+# seconds_since_midnight="$((now - midnight))"
+draco_last_built=$(date +%s -r $regdir/logs/last-draco-develop.log)
+# seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
+
 jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
 ipr=0 # count the number of PRs processed. Only the first needs to build draco.
 for prline in $jayenne_prs; do
 
   pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
 
-  if [[ $ipr == 0 ]]; then
-    projects="draco jayenne"
-    featurebranches="develop pr${pr}"
-  else
-    projects="jayenne"
-    featurebranches="pr${pr}"
+  # ----------------------------------------
+  # Build draco-develop once per day for each case.
+  #
+  # If we haven't built draco today, build it with this PR, otherwise link to
+  # the existing draco build.  Additionally, if two PRs are started at the same
+  # time, only build draco for the 1st one.
+  if [[ $midnight -gt $draco_last_built ]] && [[ $ipr == 0 ]]; then
+    projects="draco"
+    featurebranches="develop"
+    date &> $regdir/logs/last-draco-develop.log
+
+    case ${target} in
+
+      # CCS-NET: Coverage (Debug) & Valgrind (Debug)
+      ccscs*)
+        logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-develop.log
+        echo "- Starting regression (coverage) for develop."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+          -p "${projects}" &> $logfile &
+
+        logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-develop.log
+        echo "- Starting regression (valgrind) for develop."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+          -p "${projects}" &> $logfile
+        # Do not put the above command into the background! It must finish
+        # before jayenne is started.
+        ;;
+
+      # Moonlight: Fulldiagnostics (Debug)
+      ml-fey*)
+        logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-develop.log
+        echo "- Starting regression (fulldiagnostics) for develop."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Debug \
+          -e fulldiagnostics -p draco &> $logfile
+        # Do not put the above command into the background! It must finish
+        # before jayenne is started.
+        ;;
+
+      # Snow ----------------------------------------
+      sn-fe*)
+        # No CI
+        ;;
+
+      # Trinitite: Release
+      tt-fey*)
+        logfile=$regdir/logs/tt-draco-Release-master-develop.log
+        echo "- Starting regression (Release) for develop."
+        echo "  Log: $logfile"
+        $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
+          &> $logfile
+        # Do not put the above command into the background! It must finish
+        # before jayenne is started.
+        ;;
+
+      # Darwin ----------------------------------------
+      darwin-fe*)
+        # No CI
+        ;;
+    esac
   fi
+
+  # ----------------------------------------
+  # Build Jayenne PRs against draco-develop
+  #
+  # All of these can be put into the backround when they run since they are
+  # completely independent.
+  projects="jayenne"
+  featurebranches="pr${pr}"
   ((ipr++))
 
   case ${target} in
