@@ -334,6 +334,11 @@ for prline in $jayenne_prs $capsaicin_prs; do
   # the existing draco build.  Additionally, if two PRs are started at the same
   # time, only build draco for the 1st one.
   if [[ $midnight -gt $draco_last_built ]] && [[ $ipr == 0 ]]; then
+
+    echo " "
+    echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."
+    echo " "
+
     projects="draco"
     featurebranches="develop"
 
@@ -345,13 +350,13 @@ for prline in $jayenne_prs $capsaicin_prs; do
 
       # CCS-NET: Coverage (Debug) & Valgrind (Debug)
       ccscs*)
-        logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-develop.log
+        logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-develop.log
         echo "- Starting regression (coverage) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
           -p "${projects}" &> $logfile &
 
-        logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-develop.log
+        logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-develop.log
         echo "- Starting regression (valgrind) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
