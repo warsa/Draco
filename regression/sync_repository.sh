@@ -150,6 +150,24 @@ else
   run "cd $gitroot"
   run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
 fi
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
+    echo " "
+    echo "(Redmine) Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco-redmine.git; then
+      run "cd $gitroot/Draco-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco-redmine.git"
+    fi
+    ;;
+esac
+
 
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
@@ -173,22 +191,18 @@ case ${target} in
     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
     # PRs since this seems to confuse Redmine.
     echo " "
-    echo "(Redmine) Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-    fi
-    echo " "
     echo "(Redmine) Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne.git; then
+    if test -d $gitroot/jayenne-redmine.git; then
       run "cd $gitroot/jayenne-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
       run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
     fi
     ;;
 esac
-
 
 # CAPSAICIN: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
@@ -212,18 +226,15 @@ case ${target} in
     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
     # PRs since this seems to confuse Redmine.
     echo " "
-    echo "(Redmine) Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-    fi
-    echo " "
     echo "(Redmine) Copy Capsaicin git repository to the local file system..."
-    if test -d $gitroot/capsaicin.git; then
+    if test -d $gitroot/capsaicin-redmine.git; then
       run "cd $gitroot/capsaicin-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
       run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
     fi
     ;;
 esac
