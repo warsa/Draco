@@ -305,21 +305,27 @@ for prline in $draco_prs; do
   esac
 done
 
-# Jayenne CI ------------------------------------------------------------
-
-# Only build draco-develop once per day (used for testing jayenne PRs).
+# Prepare for Jayenne and Capsaicin Prs --------------------------------------
+# Do we need to build draco? Only build draco-develop once per day.
 eval "$(date +'today=%F now=%s')"
 midnight=$(date -d "$today 0" +%s)
-# seconds_since_midnight="$((now - midnight))"
-draco_last_built=$(date +%s -r $regdir/logs/last-draco-develop.log)
-# seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
+case ${target} in
+  ccscs*) draco_tag_file=$regdir/logs/last-draco-develop-ccscs.log ;;
+  ml-fe*) draco_tag_file=$regdir/logs/last-draco-develop-ml.log ;;
+  sn-fe*) draco_tag_file=$regdir/logs/last-draco-develop-sn.log ;;
+  tt-fe*) draco_tag_file=$regdir/logs/last-draco-develop-tt.log ;;
+  darwin-fe*) draco_tag_file=$regdir/logs/last-draco-develop-darwin.log ;;
+esac
+draco_last_built=$(date +%s -r $draco_tag_file)
 
+# Get the list of new Jayenne and Capsaicin Prs
 jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
-ipr=0 # count the number of PRs processed. Only the first needs to build draco.
-for prline in $jayenne_prs; do
+capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
 
-  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
+ipr=0 # count the number of PRs processed. Only the first needs to build draco.
+for prline in $jayenne_prs $capsaicin_prs; do
+
+#  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $draco_tag_file)`
 
   # ----------------------------------------
   # Build draco-develop once per day for each case.
@@ -330,7 +336,10 @@ for prline in $jayenne_prs; do
   if [[ $midnight -gt $draco_last_built ]] && [[ $ipr == 0 ]]; then
     projects="draco"
     featurebranches="develop"
-    date &> $regdir/logs/last-draco-develop.log
+
+    # Reset the modified date on the file used to determine when draco was last
+    # built.
+    date &> $draco_tag_file
 
     case ${target} in
 
@@ -384,15 +393,21 @@ for prline in $jayenne_prs; do
         ;;
     esac
   fi
+  ((ipr++))
+done
+
+# Jayenne CI ------------------------------------------------------------
+
+projects="jayenne"
+for prline in $jayenne_prs; do
 
   # ----------------------------------------
   # Build Jayenne PRs against draco-develop
   #
   # All of these can be put into the backround when they run since they are
   # completely independent.
-  projects="jayenne"
+  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
   featurebranches="pr${pr}"
-  ((ipr++))
 
   case ${target} in
 
@@ -443,20 +458,17 @@ for prline in $jayenne_prs; do
 done
 
 # Capsaicin CI ------------------------------------------------------------
-capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
-ipr=0 # count the number of PRs processed. Only the first needs to build draco.
+
+projects="capsaicin"
 for prline in $capsaicin_prs; do
 
+  # ----------------------------------------
+  # Build Capsaicin PRs against draco-develop
+  #
+  # All of these can be put into the backround when they run since they are
+  # completely independent.
   pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-
-  if [[ $ipr == 0 ]]; then
-    projects="draco capsaicin"
-    featurebranches="develop pr${pr}"
-  else
-    projects="capsaicin"
-    featurebranches="pr${pr}"
-  fi
-  ((ipr++))
+  featurebranches="pr${pr}"
 
   case ${target} in
 
