@@ -168,20 +168,6 @@ for proj in ${projects}; do
    esac
 done
 
-# if [[ ${extra_params} ]]; then
-#    case $extra_params in
-#    none)
-#       # if 'none' set to blank
-#       extra_params=""; epdash="" ;;
-#    belosmods | bounds_checking | clang | coverage | cuda | fulldiagnostics | knl | gcc530 )
-#       ;;
-#    gcc610 | nr | perfbench | pgi | valgrind )
-#       ;;
-#    *)  echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
-#        print_use; exit 1 ;;
-#    esac
-# fi
-
 case $regress_mode in
 on) ;;
 off) userlogdir="/${USER}" ;;
