@@ -141,7 +141,7 @@ void Timer::printline(std::ostream &out, unsigned const p,
 
   // Width of first column (intervals) should be set by client before
   // calling this function.
-  out << num_intervals << setw(w) << sum_user_cpu() << setw(w)
+  out << setw(w) << num_intervals << setw(w) << sum_user_cpu() << setw(w)
       << sum_system_cpu() << setw(w) << sum_wall_clock();
 
 #ifdef HAVE_PAPI

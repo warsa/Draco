@@ -224,6 +224,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
     function dracoenv ()
     {
       for m in $dracomodules; do
+        echo $m
         module load $m
       done
     }
