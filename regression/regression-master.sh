@@ -369,14 +369,15 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
 fi
 
 # Only Draco is on github, other projects still use svn.
-unset featurebranch
-unset fb
-unset ifb
-unset prdash
-unset USE_GITHUB
+#unset featurebranch
+#unset fb
+#unset ifb
+#unset prdash
+#unset USE_GITHUB
 
 export subproj=capsaicin
 if test `echo $projects | grep -c $subproj` -gt 0; then
+  export featurebranch=${fb[$ifb]}
   cmd="${rscriptdir}/${machine_name_short}-job-launch.sh"
   # Wait for draco regressions to finish
   case $extra_params in
@@ -387,11 +388,12 @@ if test `echo $projects | grep -c $subproj` -gt 0; then
   *)
      cmd+=" ${draco_jobid}" ;;
   esac
-  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}-joblaunch.log"
+  cmd+=" &> ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-joblaunch.log"
   echo "${subproj}: $cmd"
   eval "${cmd} &"
   sleep 1
   capsaicin_jobid=`jobs -p | sort -gr | head -n 1`
+  ((ifb++))
 fi
 
 # Wait for all parallel jobs to finish
