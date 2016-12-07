@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 project( cdi_ipcress_test CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -60,7 +58,11 @@ include( ApplicationUnitTest )
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
-  TEST_ARGS "Al_BeCu.ipcress"
+  TEST_ARGS "${CMAKE_CURRENT_SOURCE_DIR}/Al_BeCu.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
   GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
   )
+
+#------------------------------------------------------------------------------#
+# end CMakeLists.txt
+#------------------------------------------------------------------------------#

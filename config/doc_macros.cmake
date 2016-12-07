@@ -7,11 +7,6 @@
 # note   Copyright (C) 2016 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
-
-# requires parse_arguments()
-include( parse_arguments )
 
 # setup latex environment
 find_package(LATEX)
@@ -35,7 +30,7 @@ find_package(LATEX)
 macro( add_latex_doc )
 
    # These become variables of the form ${addscalartests_SOURCES}, etc.
-   parse_arguments(
+   cmake_parse_arguments(
       # prefix
       ald
       # list names
@@ -147,7 +142,7 @@ endmacro()
 macro( add_pdflatex_doc )
 
    # These become variables of the form ${addscalartests_SOURCES}, etc.
-   parse_arguments(
+   cmake_parse_arguments(
       # prefix
       ald
       # list names
