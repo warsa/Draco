@@ -39,6 +39,15 @@ void debug_options_test(UnitTest &ut) {
     unsigned j = parse_debug_options(mask_tokens, i);
     ut.check(j == 0, "write/read mask check");
   }
+  bool did = true;
+  try {
+    string out = "!";
+    String_Token_Stream tokens(out);
+    parse_debug_options(tokens);
+  } catch (Syntax_Error &) {
+    did = false;
+  }
+  ut.check(!did, "catches syntax error for trailing '!'");
 }
 
 //---------------------------------------------------------------------------//
