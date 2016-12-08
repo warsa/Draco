@@ -79,7 +79,7 @@ add_component_executable(
 if (WIN32)
   file( GLOB qtdlls ${QTDIR}/bin/*.dll )
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${qtdlls}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdlls}
             $<TARGET_FILE_DIR:Exe_draco_info_gui>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx>
             $<TARGET_FILE_DIR:Exe_draco_info_gui>
