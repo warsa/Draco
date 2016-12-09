@@ -12,13 +12,12 @@ find_package( Doxygen QUIET )
 
 if( DOXYGEN_FOUND )
 
-   # if AUTODOCDIR is set in environment (or make command line),
-   # create a CMake variable with this value.
+   # if AUTODOCDIR is set in environment (or make command line), create a CMake
+   # variable with this value.
    if( NOT "$ENV{AUTODOCDIR}x" STREQUAL "x" )
       set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
    endif()
-   # if AUTODOCDIR is set, use it, otherwise, default to
-   # CMAKE_INSTALL_PREFIX.
+   # if AUTODOCDIR is set, use it, otherwise, default to CMAKE_INSTALL_PREFIX.
    if( "${AUTODOCDIR}x" STREQUAL "x" )
       set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc )
    else()
@@ -135,12 +134,12 @@ if( DOXYGEN_FOUND )
   # build a list of images with full path
   # copy the files from source to binary directory.
   foreach( file ${DOXYGEN_IMAGE_SOURCE_FILES} )
-    get_filename_component(tmp ${file} NAME)
+    get_filename_component(filename_nopath ${file} NAME)
     set( DOXYGEN_IMAGE_FILES
-      "${DOXYGEN_IMAGE_FILES} ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${tmp}")
+      "${DOXYGEN_IMAGE_FILES} ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${filename_nopath}")
     configure_file(
       "${file}"
-      "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${tmp}"
+      "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${filename_nopath}"
       COPYONLY
       )
   endforeach( file ${DOXYGEN_IMAGE_SOURCE_FILES} )

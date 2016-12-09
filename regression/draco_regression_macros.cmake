@@ -753,16 +753,10 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
-    if( "${this_pkg}" MATCHES "jayenne" )
+    if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
       string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
-        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    endif()
-
-    if( "${this_pkg}" MATCHES "capsaicin" )
-      # Probably building capsaicin, append '-develop' when looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)/" "\\1_\\2-develop/"
         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
   endif()
