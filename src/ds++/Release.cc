@@ -114,7 +114,7 @@ const std::string author_list() {
 
   mmdevs prior_developers;
 
-  prior_developers.insert( fomdev(4451,"Jeff D. Densmore"));
+  prior_developers.insert(fomdev(4451, "Jeff D. Densmore"));
   prior_developers.insert(fomdev(1160, "Allan B. Wollaber"));
   prior_developers.insert(fomdev(995, "Lori A. Pritchett-Sheats"));
   prior_developers.insert(fomdev(774, "Katherine J. Wang"));
@@ -122,6 +122,9 @@ const std::string author_list() {
   prior_developers.insert(fomdev(470, "Paul W. Talbot"));
   // < 100 lines
   // prior_developers.insert(fomdev(44, "Nick Myers"));
+
+  // Tom Evans, Todd Adams, John McGhee, Mike Buksas, Randy Roberts, Seth
+  // Johnson, Jeff Furnish, Paul Henning
 
   size_t const maxlinelen(80);
   std::string line_name("CCS-2 Draco Team: ");

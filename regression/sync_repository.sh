@@ -59,7 +59,6 @@ source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 run "umask 0002"
-svnhostmachine=ccscs7
 
 case ${target} in
   ccscs*)
@@ -72,7 +71,6 @@ case ${target} in
   darwin-fe* | cn[0-9]*)
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
-    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -80,7 +78,6 @@ case ${target} in
     run "module load user_contrib subversion git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git
-    svnroot=$regdir/svn
     VENDOR_DIR=/usr/projects/draco/vendors
     keychain=keychain-2.7.1
     ;;
@@ -117,13 +114,13 @@ else
 fi
 
 # ---------------------------------------------------------------------------- #
-# Create copies of SVN and GIT repositories on the local file system
+# Create copies of GIT repositories on the local file system
 #
 # Locations:
 # - ccs-net servers:
 #   /ccs/codes/radtran/git
 # - HPC (moonlight, snow, trinitite, etc.)
-#   /usr/projects/draco/jayenne/regress/[git|svn]
+#   /usr/projects/draco/jayenne/regress/git
 #
 # Keep local copies of the github, gitlab and svn repositories. This local
 # filesystem location is needed for our regression system on some systems where
@@ -153,6 +150,24 @@ else
   run "cd $gitroot"
   run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
 fi
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
+    echo " "
+    echo "(Redmine) Copy Draco git repository to the local file system..."
+    if test -d $gitroot/Draco-redmine.git; then
+      run "cd $gitroot/Draco-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@github.com:losalamos/Draco.git Draco-redmine.git"
+    fi
+    ;;
+esac
+
 
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
@@ -176,50 +191,51 @@ case ${target} in
     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
     # PRs since this seems to confuse Redmine.
     echo " "
-    echo "(Redmine) Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco.git; then
-      run "cd $gitroot/Draco-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-    fi
-    echo " "
     echo "(Redmine) Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne.git; then
+    if test -d $gitroot/jayenne-redmine.git; then
       run "cd $gitroot/jayenne-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
       run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
     fi
     ;;
-  ml-fey* | darwin-fe* )
-    # CAPSAICIN: svn-sync the repository to the local file system.
-    if ! test -d $svnroot; then
-      echo "*** ERROR ***"
-      echo "*** SVN repository not found ***"
-      exit 1
-      # http://journal.paul.querna.org/articles/2006/09/14/using-svnsync/
-      # mkdir -p ${svnroot}; cd ${svnroot}
-      # svnadmin create ${svnroot}/jayenne
-      # chgrp -R draco jayenne; chmod -R g+rwX,o=g-w jayenne
-      # cd jayenne/hooks
-      # cp pre-commit.tmpl pre-commit; chmod 775 pre-commit
-      # vi pre-commit; comment out all code and add...
-      #if ! test `whoami` = 'kellyt'; then
-      #echo "This is a read only repository.  The real SVN repository is"
-      #echo "at svn+ssh://ccscs8/ccs/codes/radtran/svn/draco."
-      #exit 1
-      #fi
-      #exit 0
-      # cp pre-revprop-change.tmpl pre-revprop-change; chmod 775 \
-      #    pre-revprop-change
-      # vi pre-revprop-change --> comment out all code.
-      # cd $svnroot
-      # svnsync init file:///${svnroot}/jayenne svn+ssh://ccscs8/ccs/codes/radtran/svn/jayenne
-      # svnsync sync file:///${svnroot}/jayenne
-    fi
+esac
 
+# CAPSAICIN: For all machines running this scirpt, copy all of the git repositories
+# to the local file system.
+
+# Store some output into a local file to simplify parsing.
+TMPFILE_CAPSAICIN=$(mktemp /var/tmp/capsaicin_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+echo " "
+echo "Copy Capsaicin git repository to the local file system..."
+if test -d $gitroot/capsaicin.git; then
+  run "cd $gitroot/capsaicin.git"
+  run "git fetch origin +refs/heads/*:refs/heads/*"
+  run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_CAPSAICIN
+  cat $TMPFILE_CAPSAICIN
+  run "git reset --soft"
+else
+  run "mkdir -p $gitroot; cd $gitroot"
+  run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin.git"
+fi
+case ${target} in
+  ccscs7*)
+    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+    # PRs since this seems to confuse Redmine.
     echo " "
-    echo "Copy capsaicin svn repository to the local file system..."
-    run "svnsync --non-interactive sync file:///${svnroot}/capsaicin"
+    echo "(Redmine) Copy Capsaicin git repository to the local file system..."
+    if test -d $gitroot/capsaicin-redmine.git; then
+      run "cd $gitroot/capsaicin-redmine.git"
+      run "git fetch origin +refs/heads/*:refs/heads/*"
+      run "git reset --soft"
+    else
+      run "mkdir -p $gitroot"
+      run "cd $gitroot"
+      run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+    fi
     ;;
 esac
 
@@ -289,21 +305,27 @@ for prline in $draco_prs; do
   esac
 done
 
-# Jayenne CI ------------------------------------------------------------
-
-# Only build draco-develop once per day (used for testing jayenne PRs).
+# Prepare for Jayenne and Capsaicin Prs --------------------------------------
+# Do we need to build draco? Only build draco-develop once per day.
 eval "$(date +'today=%F now=%s')"
 midnight=$(date -d "$today 0" +%s)
-# seconds_since_midnight="$((now - midnight))"
-draco_last_built=$(date +%s -r $regdir/logs/last-draco-develop.log)
-# seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
+case ${target} in
+  ccscs*) draco_tag_file=$regdir/logs/last-draco-develop-ccscs.log ;;
+  ml-fe*) draco_tag_file=$regdir/logs/last-draco-develop-ml.log ;;
+  sn-fe*) draco_tag_file=$regdir/logs/last-draco-develop-sn.log ;;
+  tt-fe*) draco_tag_file=$regdir/logs/last-draco-develop-tt.log ;;
+  darwin-fe*) draco_tag_file=$regdir/logs/last-draco-develop-darwin.log ;;
+esac
+draco_last_built=$(date +%s -r $draco_tag_file)
 
+# Get the list of new Jayenne and Capsaicin Prs
 jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
-ipr=0 # count the number of PRs processed. Only the first needs to build draco.
-for prline in $jayenne_prs; do
+capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
 
-  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $regdir/logs/last-draco-develop.log)`
+ipr=0 # count the number of PRs processed. Only the first needs to build draco.
+for prline in $jayenne_prs $capsaicin_prs; do
+
+#  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $draco_tag_file)`
 
   # ----------------------------------------
   # Build draco-develop once per day for each case.
@@ -312,21 +334,29 @@ for prline in $jayenne_prs; do
   # the existing draco build.  Additionally, if two PRs are started at the same
   # time, only build draco for the 1st one.
   if [[ $midnight -gt $draco_last_built ]] && [[ $ipr == 0 ]]; then
+
+    echo " "
+    echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."
+    echo " "
+
     projects="draco"
     featurebranches="develop"
-    date &> $regdir/logs/last-draco-develop.log
+
+    # Reset the modified date on the file used to determine when draco was last
+    # built.
+    date &> $draco_tag_file
 
     case ${target} in
 
       # CCS-NET: Coverage (Debug) & Valgrind (Debug)
       ccscs*)
-        logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-develop.log
+        logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-develop.log
         echo "- Starting regression (coverage) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
           -p "${projects}" &> $logfile &
 
-        logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-develop.log
+        logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-develop.log
         echo "- Starting regression (valgrind) for develop."
         echo "  Log: $logfile"
         $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
@@ -368,15 +398,21 @@ for prline in $jayenne_prs; do
         ;;
     esac
   fi
+  ((ipr++))
+done
+
+# Jayenne CI ------------------------------------------------------------
+
+projects="jayenne"
+for prline in $jayenne_prs; do
 
   # ----------------------------------------
   # Build Jayenne PRs against draco-develop
   #
   # All of these can be put into the backround when they run since they are
   # completely independent.
-  projects="jayenne"
+  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
   featurebranches="pr${pr}"
-  ((ipr++))
 
   case ${target} in
 
@@ -413,6 +449,67 @@ for prline in $jayenne_prs; do
     # Trinitite: Release
     tt-fey*)
       logfile=$regdir/logs/tt-jayenne-Release-master-pr${pr}.log
+      echo "- Starting regression (Release) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Release \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Darwin ----------------------------------------
+    darwin-fe*)
+      # No CI
+      ;;
+  esac
+done
+
+# Capsaicin CI ------------------------------------------------------------
+
+projects="capsaicin"
+for prline in $capsaicin_prs; do
+
+  # ----------------------------------------
+  # Build Capsaicin PRs against draco-develop
+  #
+  # All of these can be put into the backround when they run since they are
+  # completely independent.
+  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
+  featurebranches="pr${pr}"
+
+  case ${target} in
+
+    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
+    ccscs*)
+      logfile=$regdir/logs/ccscs-capsaicin-Debug-coverage-master-pr${pr}.log
+      echo "- Starting regression (coverage) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+
+      logfile=$regdir/logs/ccscs-capsaicin-Debug-valgrind-master-pr${pr}.log
+      echo "- Starting regression (valgrind) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
+        -p "${projects}" -f "${featurebranches}" &> $logfile &
+      ;;
+
+    # Moonlight: Fulldiagnostics (Debug)
+    ml-fey*)
+      logfile=$regdir/logs/ml-capsaicin-Debug-fulldiagnostics-master-pr${pr}.log
+      echo "- Starting regression (fulldiagnostics) for pr${pr}."
+      echo "  Log: $logfile"
+      $regdir/draco/regression/regression-master.sh -r -b Debug \
+        -e fulldiagnostics -p "${projects}" -f "${featurebranches}" \
+        &> $logfile &
+      ;;
+
+    # Snow ----------------------------------------
+    sn-fe*)
+      # No CI
+      ;;
+
+    # Trinitite: Release
+    tt-fey*)
+      logfile=$regdir/logs/tt-capsaicin-Release-master-pr${pr}.log
       echo "- Starting regression (Release) for pr${pr}."
       echo "  Log: $logfile"
       $regdir/draco/regression/regression-master.sh -r -b Release \

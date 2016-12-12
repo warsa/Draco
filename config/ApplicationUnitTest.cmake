@@ -56,8 +56,6 @@
 
 #------------------------------------------------------------------------------#
 
-include( parse_arguments )
-
 set( VERBOSE_DEBUG OFF )
 
 function(JOIN VALUES GLUE OUTPUT)
@@ -311,17 +309,15 @@ macro( aut_register_test )
 endmacro()
 
 #------------------------------------------------------------------------------#
-
+# See documentation at the top of this file.
 macro( add_app_unit_test )
 
-  # These become variables of the form ${addscalartests_SOURCES}, etc.
-  parse_arguments(
-    # prefix
+  # These become variables of the form ${aut_APP}, etc.
+  cmake_parse_arguments(
     aut
-    # list names
-    "APP;BUILDENV;DRIVER;FAIL_REGEX;GOLDFILE;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;STDINFILE;TEST_ARGS;WORKDIR"
-    # option names
     "NONE"
+    "APP;DRIVER;GOLDFILE;STDINFILE;WORKDIR"
+    "BUILDENV;FAIL_REGEX;LABELS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;TEST_ARGS"
     ${ARGV}
     )
 
@@ -408,6 +404,7 @@ macro( add_app_unit_test )
           if( ${argvalue} STREQUAL "none" )
             set( argvalue "_${numPE}" )
           else()
+            get_filename_component( argvalue "${argvalue}" NAME )
             string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
             string( REGEX REPLACE "[ +.]" "_" safe_argvalue ${safe_argvalue} )
             set( argname "_${numPE}_${safe_argvalue}" )
@@ -424,6 +421,7 @@ macro( add_app_unit_test )
         if( ${argvalue} STREQUAL "none" )
           set( argvalue "" )
         else()
+          get_filename_component( argvalue "${argvalue}" NAME )
           string( REGEX REPLACE "[-]" "" safe_argvalue ${argvalue} )
           string( REGEX REPLACE "[ +.]" "_" safe_argvalue ${safe_argvalue} )
           set( argname "_${safe_argvalue}" )

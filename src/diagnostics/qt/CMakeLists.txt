@@ -6,23 +6,21 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required( VERSION 3.0.0 )
 project( diagnostics_qt CXX )
 
-##---------------------------------------------------------------------------##
+# ---------------------------------------------------------------------------- #
 # Special options for Qt applications
-##---------------------------------------------------------------------------##
+# ---------------------------------------------------------------------------- #
 
 # Find generated files in the corresponding build directories:
-# 1. <file>.ui files generate ui_<file>.h headers in the build
-#    directory via the qt5_wrap_ui macro.
-# 2. <file>.qrc files generate qrc_<file>.cpp in the build directory
-#    via the qt5_add_resources macro.
+# 1. <file>.ui files generate ui_<file>.h headers in the build directory via the
+#    qt5_wrap_ui macro.
+# 2. <file>.qrc files generate qrc_<file>.cpp in the build directory via the
+#    qt5_add_resources macro.
 
-# Instruct CMake to run moc automatically when needed (only for
-# subdirectories that need Qt)
+# Instruct CMake to run moc automatically when needed (only for subdirectories
+# that need Qt)
 set(CMAKE_AUTOMOC ON)
 
 # ---------------------------------------------------------------------------- #
@@ -60,13 +58,13 @@ include_directories(
    ${MPI_CXX_INCLUDE_PATH}
    )
 
-# ----------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------- #
 # Build package library
-# ----------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------- #
 
-# List Qt5::Widgets as a dependencies but not a VENDOR_LIB to prevent
-# DBS from listing this library as a DRACO_TPL_LIBRARY.  It is not
-# intended for export into other projects.
+# List Qt5::Widgets as a dependencies but not a VENDOR_LIB to prevent DBS from
+# listing this library as a DRACO_TPL_LIBRARY.  It is not intended for export
+# into other projects.
 add_component_executable(
   TARGET      Exe_draco_info_gui
   TARGET_DEPS "Lib_diagnostics;Qt5::Widgets"
@@ -80,14 +78,18 @@ add_component_executable(
 # copy_dll_link_libraries_to_build_dir( Exe_draco_info_gui )
 if (WIN32)
   file( GLOB qtdlls ${QTDIR}/bin/*.dll )
-  foreach( qtdll ${qtdlls} )
-    add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdll}
-                               $<TARGET_FILE_DIR:Exe_draco_info_gui> )
-  endforeach()
-
   add_custom_command( TARGET Exe_draco_info_gui POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx> $<TARGET_FILE_DIR:Exe_draco_info_gui>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4> $<TARGET_FILE_DIR:Exe_draco_info_gui>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_diagnostics> $<TARGET_FILE_DIR:Exe_draco_info_gui> )
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${qtdlls}
+            $<TARGET_FILE_DIR:Exe_draco_info_gui>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_dsxx>
+            $<TARGET_FILE_DIR:Exe_draco_info_gui>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Lib_c4>
+            $<TARGET_FILE_DIR:Exe_draco_info_gui>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:Lib_diagnostics>
+            $<TARGET_FILE_DIR:Exe_draco_info_gui> )
 endif()
+
+# ---------------------------------------------------------------------------- #
+# end diagnostics/qt/CMakeLists.txt
+# ---------------------------------------------------------------------------- #

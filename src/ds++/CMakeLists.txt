@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( dsxx CXX )
 
@@ -99,10 +97,6 @@ add_component_library(
    SOURCES      "${sources}"
    )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
-
-# This should turn on C++11 options for Lib_dsxx, but CMake doesn't
-# know how to do this for Intel as of cmake/3.2.
-# target_compile_features( Lib_dsxx PUBLIC cxx_auto_type )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions

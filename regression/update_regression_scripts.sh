@@ -25,10 +25,6 @@ case ${target} in
     VENDOR_DIR=/usr/projects/draco/vendors
     # personal copy of ssh-agent.
     export PATH=$HOME/bin:$PATH
-    if test -d /projects/opt/centos7/subversion/1.9.2/bin; then
-      export PATH=/projects/opt/centos7/subversion/1.9.2/bin:$PATH
-    fi
-    SVN=`which svn`
     export http_proxy=http://proxyout.lanl.gov:8080;
     export https_proxy=$http_proxy;
     export HTTP_PROXY=$http_proxy;
@@ -43,18 +39,13 @@ case ${target} in
     if ! [[ $MODULESHOME ]]; then
        source /usr/share/Modules/init/bash
     fi
-    run "module load user_contrib subversion"
-    SVN=`which svn`
     ;;
   ml-*)
     REGDIR=/usr/projects/jayenne/regress
     keychain=keychain-2.7.1
     VENDOR_DIR=/usr/projects/draco/vendors
-    SVN=/usr/projects/hpcsoft/toss2/common/subversion/1.9.1/bin/svn
     ;;
   *)
-    # module load user_contrib subversion
-    SVN=/scratch/vendors/subversion-1.9.3/bin/svn
     REGDIR=/scratch/regress
     ;;
 esac
@@ -106,11 +97,10 @@ fi
 # Capsaicin
 echo " "
 echo "Updating $REGDIR/capsaicin..."
-if test -d ${REGDIR}/capsaicin/scripts; then
-run "cd ${REGDIR}/capsaicin/scripts; ${SVN} update"
+if test -d ${REGDIR}/capsaicin; then
+  run "cd ${REGDIR}/capsaicin; git pull"
 else
-  run "mkdir -p ${REGDIR}/capsaicin; cd ${REGDIR}/capsaicin"
-  run "${SVN} co svn+ssh://ccscs7.lanl.gov/ccs/codes/radtran/svn/capsaicin/trunk/scripts"
+  run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:capsaicin/capsaicin.git"
 fi
 
 ##---------------------------------------------------------------------------##
