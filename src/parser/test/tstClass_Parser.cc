@@ -161,6 +161,28 @@ void tstClass_Parser(UnitTest &ut) {
   ut.check(dummy, "parsed the indolent class object", true);
   ut.check(dummy->Get_Insouciance() == -3.3,
            "parsed the indolent insouciance correctly");
+
+  // Test that missing end is caught.
+
+  text = "insouciance = 3.3\n";
+  String_Token_Stream etokens(text);
+
+  bool good = false;
+  try {
+    SP<DummyClass> dummy = parse_class<DummyClass>(etokens);
+  } catch (Syntax_Error &) {
+    good = true;
+  }
+  ut.check(good, "catches missing end");
+
+  tokens.rewind();
+  good = false;
+  try {
+    SP<DummyClass> dummy = parse_class<DummyClass>(etokens, true);
+  } catch (Syntax_Error &) {
+    good = true;
+  }
+  ut.check(good, "indolent catches missing end");
 }
 
 //---------------------------------------------------------------------------------------//
