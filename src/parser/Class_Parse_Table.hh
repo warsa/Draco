@@ -143,26 +143,23 @@ parse_class_from_table(Token_Stream &tokens) {
   // Parse the class keyword block and check for completeness
   Token const terminator = parse_table.parse_table().parse(tokens);
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
+  SP<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
   // A class keyword block is expected to end with an END or (if
   // allow_exit is true) an EXIT.
   {
     parse_table.check_completeness(tokens);
 
-    SP<Return_Class> Result;
     if (tokens.error_count() == old_error_count) {
       // No fresh errors in the class keyword block.  Create the object.
       Result = parse_table.create_object();
     }
     // else there were errors in the keyword block. Don't try to
     // create a class object.  Return the null pointer.
-
-    return Result;
   } else {
     tokens.report_syntax_error("missing 'end'?");
-    return SP<Return_Class>();
-    // never reached; to eliminate spurious warning.
   }
+  return Result;
 }
 
 //---------------------------------------------------------------------------------------//
@@ -197,26 +194,24 @@ SP<typename Class_Parse_Table::Return_Class> parse_class_from_table(
   // Parse the class keyword block and check for completeness
   Token const terminator = parse_table.parse_table().parse(tokens);
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
+  SP<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
   // A class keyword block is expected to end with an END or (if
   // allow_exit is true) an EXIT.
   {
     parse_table.check_completeness(tokens);
 
-    SP<Return_Class> Result;
     if (tokens.error_count() == old_error_count) {
       // No fresh errors in the class keyword block.  Create the object.
       Result = parse_table.create_object();
     }
     // else there were errors in the keyword block. Don't try to
     // create a class object.  Return the null pointer.
-
-    return Result;
   } else {
     tokens.report_syntax_error("missing 'end'?");
-    return SP<Return_Class>();
-    // never reached; to eliminate spurious warning.
   }
+
+  return Result;
 }
 
 } // end namespace rtt_parser
