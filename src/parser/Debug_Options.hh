@@ -34,7 +34,8 @@ enum Debug_Options {
 
 //---------------------------------------------------------------------------------------//
 //! Parse debug options in uniform way
-DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &);
+DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &,
+                                               unsigned parent_mask = 0);
 
 //---------------------------------------------------------------------------------------//
 //! Write debug options in a manner that can be parsed
