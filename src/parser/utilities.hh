@@ -97,6 +97,23 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  */
 template <typename Class> rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
 
+//----------------------------------------------------------------------------//
+/*! Template for parse function that produces a class object.
+ *
+ * This function resembles the previous one, but takes a second argument supply a context
+ * that may alter the parser behavior..
+ *
+ * \param tokens Token stream from which to parse the user input.
+ *
+ * \param context Context for the parse.
+ *
+ * \return A pointer to an object matching the user specification, or NULL if
+ * the specification is not valid.
+ */
+
+template <typename Class, typename Context>
+rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens, Context const &context);
+
 } // rtt_parser
 
 #endif
