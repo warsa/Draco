@@ -160,7 +160,7 @@ done
 run "cd ${work_dir}"
 if test ${draco_git_ready} = 1; then unpack_repo_git "Draco.git"; fi
 if test ${jayenne_ready} = 1; then unpack_repo_git "jayenne.git"; fi
-if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin.git"; fi
+if test ${capsaicin_ready} = 1; then unpack_repo_git "capsaicin.git"; fi
 
 # Update permisssions as needed
 run "cd ${work_dir}/.."
