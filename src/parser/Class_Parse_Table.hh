@@ -174,10 +174,9 @@ parse_class_from_table(Token_Stream &tokens) {
  * the specification is not valid.
  */
 
-template <class Class_Parse_Table>
-SP<typename Class_Parse_Table::Return_Class> parse_class_from_table(
-    Token_Stream &tokens,
-    typename Class_Parse_Table::Context_Type const &context) {
+template <typename Class_Parse_Table, typename Context>
+SP<typename Class_Parse_Table::Return_Class>
+parse_class_from_table(Token_Stream &tokens, Context const &context) {
   using rtt_parser::Token;
   using rtt_parser::END;
   using rtt_parser::EXIT;

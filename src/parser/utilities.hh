@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   parser/utilities.hh
  * \author Kent G. Budge
@@ -9,7 +9,7 @@
  * This file declares functions that parse certain common constructs in a
  * uniform way.
  */
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 #ifndef parser_utilities_hh
 #define parser_utilities_hh
@@ -74,7 +74,7 @@ DLL_PUBLIC_parser SP<Expression>
 parse_temperature(Token_Stream &, unsigned number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &);
 
-//----------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
  * The parse_class template function is intended for general use as a common
@@ -97,7 +97,7 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  */
 template <typename Class> rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
 
-//----------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*! Template for parse function that produces a class object.
  *
  * This function resembles the previous one, but takes a second argument supply a context
@@ -111,18 +111,14 @@ template <typename Class> rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
  * the specification is not valid.
  */
 
-template <typename Class> class Class_Parse_Table;
-
-template <typename Class>
-rtt_dsxx::SP<Class>
-parse_class(Token_Stream &tokens,
-            typename Class_Parse_Table<Class>::Context_Type const &context);
+template <typename Class, typename Context>
+rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens, Context const &context);
 
 } // rtt_parser
 
 #endif
 // parser_utilities_hh
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of utilities.hh
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

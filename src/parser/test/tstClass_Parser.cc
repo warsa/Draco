@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   parser/test/tstClass_Parser.cc
  * \author Kent Budge
@@ -6,9 +6,9 @@
  * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // $Id$
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -20,7 +20,7 @@ using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_parser;
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 class DummyClass {
 public:
   DummyClass(double const insouciance) : insouciance(insouciance) {}
@@ -32,13 +32,12 @@ private:
 };
 
 namespace rtt_parser {
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <> class Class_Parse_Table<DummyClass> {
 public:
   // TYPEDEFS
 
   typedef DummyClass Return_Class;
-  typedef bool Context_Type;
 
   // MANAGEMENT
 
@@ -73,17 +72,17 @@ private:
   static bool parse_table_is_initialized_;
 };
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 Class_Parse_Table<DummyClass> *Class_Parse_Table<DummyClass>::current_;
 Parse_Table Class_Parse_Table<DummyClass>::parse_table_;
 bool Class_Parse_Table<DummyClass>::parse_table_is_initialized_ = false;
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <> SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 template <>
 SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
                                        bool const &is_indolent) {
@@ -91,7 +90,7 @@ SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
                                                                is_indolent);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
                                                        int) {
   tokens.check_semantics(current_->parsed_insouciance < 0.0,
@@ -108,7 +107,7 @@ void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
   }
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const is_indolent)
     : parsed_insouciance(-1.0) // sentinel value
 {
@@ -128,13 +127,13 @@ Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const is_indolent)
   current_ = this;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
   tokens.check_semantics(is_indolent || parsed_insouciance >= 0,
                          "insouciance was not specified");
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 SP<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
   SP<DummyClass> Result = SP<DummyClass>(new DummyClass(parsed_insouciance));
   return Result;
@@ -142,9 +141,9 @@ SP<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
 
 } // namespace rtt_parser
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // TESTS
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 void tstClass_Parser(UnitTest &ut) {
   string text = "insouciance = 3.3\nend\n";
@@ -185,7 +184,7 @@ void tstClass_Parser(UnitTest &ut) {
   ut.check(good, "indolent catches missing end");
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
@@ -195,6 +194,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of tstClass_Parser.cc
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
