@@ -163,7 +163,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco-redmine.git"
+      run "git clone --mirror git@github.com:losalamos/Draco.git Draco-redmine.git"
+      run "chmod -R g+rwX Draco-redmine.git"
     fi
     ;;
 esac
@@ -199,7 +200,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+      run "git clone --mirror git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+      run "chmod -R g+rwX jayenne-redmine.git"
     fi
     ;;
 esac
@@ -234,7 +236,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+      run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+      run "chmod -R g+rwX capsaicin-redmine.git"
     fi
     ;;
 esac
