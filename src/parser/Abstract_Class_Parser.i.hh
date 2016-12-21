@@ -42,7 +42,7 @@ public:
   }
   vector<char *> data;
 };
-extern c_string_vector abstract_class_parser_keys;
+DLL_PUBLIC_parser extern c_string_vector abstract_class_parser_keys;
 
 //===========================================================================//
 /*
