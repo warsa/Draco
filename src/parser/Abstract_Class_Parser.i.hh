@@ -35,7 +35,7 @@ operator()(Token_Stream &tokens) const {
  * Helper class defining a table of raw strings created by strdup that will be properly
  * deallocated using free on program termination.
  */
-class DLL_PUBLIC_parser c_string_vector {
+class c_string_vector {
 public:
   ~c_string_vector();
   c_string_vector(void) : data(0) { /* empty */
