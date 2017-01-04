@@ -37,7 +37,7 @@ function find_dev_branch
 if [[ ${STYLE} ]]; then
 
   # Ensure the 'develop' branch is available.  In some cases (merge a branch
-  # that lives at github.com/losalamos), the develop branch is missing in the
+  # that lives at github.com/lanl), the develop branch is missing in the
   # travis checkout. Since we only test files that are modified when comapred to
   # the 'develop' branch, the develop branch must be available locally.
   num_dev_branches_found=`find_dev_branch`

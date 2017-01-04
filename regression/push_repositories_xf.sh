@@ -61,7 +61,7 @@ for repo in $repos; do
   #  run "git pull"
   #  run "cd .."
   #else
-  #  run "git clone https://github.com/losalamos/Draco.git draco.git"
+  #  run "git clone https://github.com/lanl/Draco.git draco.git"
   #fi
 
   if test -d $gitdir/$repo; then

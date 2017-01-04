@@ -13,7 +13,7 @@
 #    location. The repository must be mirrored because the ctest regression
 #    system must be run from the HPC backend (via msub) where access to
 #    ccscs7:/ccs/codes/radtran/svn is not available.
-# 2. It also mirrors git@github.com/losalamos/Draco.git and
+# 2. It also mirrors git@github.com/lanl/Draco.git and
 #    git@gitlab.lanl.gov/jayenne/jayenne.git to these locations:
 #    - ccscs7:/ccs/codes/radtran/git
 #    - darwin-fe:/usr/projects/draco/regress/git
