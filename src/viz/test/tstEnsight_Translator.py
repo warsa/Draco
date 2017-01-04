@@ -55,7 +55,7 @@ try:
   if tEnsight_Translator.is_little_endian():
     if any(platform.win32_ver()):
       diff_prog="fc"
-    else: 
+    else:
       diff_prog="diff"
     print("\nSystem is little endian, diffing binary files\n")
     for var in vars:
@@ -63,13 +63,13 @@ try:
       tEnsight_Translator.diff_two_files( "PROJECT_BINARY_DIR", \
         "testproblem_binary_ensight/{0}/data.0001".format(var), \
         "PROJECT_SOURCE_DIR", "bench/{0}.bin.0001".format(var), \
-        diff_name="{0}".format(diff_prog))
+        diff_name=diff_prog)
 
       # part_testproblem_binary_ensight directory
       tEnsight_Translator.diff_two_files("PROJECT_BINARY_DIR", \
         "part_testproblem_binary_ensight/{0}/data.0001".format(var), \
         "PROJECT_SOURCE_DIR", "bench/{0}.bin.0001".format(var), \
-        diff_name="{0}".format(diff_prog))
+        diff_name=diff_prog)
 
   ##--------------------------------------------------------------------------##
   ## Final report
