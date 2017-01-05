@@ -721,11 +721,20 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
         "-q --tool=memcheck --leak-check=full --trace-children=yes --gen-suppressions=all ${valgrind_suppress_option}" )
     endif()
     message(" CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}")
-    message( "ctest_memcheck( SCHEDULE_RANDOM ON
-                EXCLUDE_LABEL nomemcheck )")
-    ctest_memcheck(
-      SCHEDULE_RANDOM ON
-      EXCLUDE_LABEL "nomemcheck")
+
+    set( ctest_memcheck_options "SCHEDULE_RANDOM ON" )
+    string( APPEND ctest_memcheck_options " PARALLEL_LEVEL ${num_test_procs}" )
+    string( APPEND ctest_memcheck_options " EXCLUDE_LABEL nomemcheck ")
+
+    # if we are running on a machine that openly shares resources, use the
+    # TEST_LOAD feature to limit the number of cores used while testing. For
+    # machines that run schedulers, the whole allocation is available so there is
+    # no need to limit the load.
+    if( "${CTEST_SITE}" MATCHES "ccscs" )
+      string( APPEND ctest_memcheck_options " TEST_LOAD ${max_system_load}" )
+    endif()
+    message( "ctest_memcheck( ${ctest_memcheck_options} )" )
+    ctest_memcheck( ${ctest_memcheck_options} )
   endif()
 endmacro(process_cc_or_da)
 
