@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -724,16 +724,17 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
 
     set( ctest_memcheck_options "SCHEDULE_RANDOM ON" )
     string( APPEND ctest_memcheck_options " PARALLEL_LEVEL ${num_test_procs}" )
-    string( APPEND ctest_memcheck_options " EXCLUDE_LABEL nomemcheck ")
+    string( APPEND ctest_memcheck_options " EXCLUDE_LABEL nomemcheck")
 
     # if we are running on a machine that openly shares resources, use the
     # TEST_LOAD feature to limit the number of cores used while testing. For
-    # machines that run schedulers, the whole allocation is available so there is
-    # no need to limit the load.
+    # machines that run schedulers, the whole allocation is available so there
+    # is no need to limit the load.
     if( "${CTEST_SITE}" MATCHES "ccscs" )
       string( APPEND ctest_memcheck_options " TEST_LOAD ${max_system_load}" )
     endif()
     message( "ctest_memcheck( ${ctest_memcheck_options} )" )
+    separate_arguments( ctest_memcheck_options )
     ctest_memcheck( ${ctest_memcheck_options} )
   endif()
 endmacro(process_cc_or_da)
