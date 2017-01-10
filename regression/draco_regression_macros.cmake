@@ -759,8 +759,8 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
