@@ -596,10 +596,14 @@ class UnitTest:
         clean_run_args.append(arg)
       if diff_exe.strip():
         clean_run_args.append(diff_exe.strip())
+        # If we are using fc on win32, assume that we want to compare binary 
+        # files.
+        if (diff_name == "fc"):
+          clean_run_args.append("/b")
       if path_1.strip():
-        clean_run_args.append(path_1.strip())
+        clean_run_args.append(os.path.abspath(path_1.strip()))
       if path_2.strip():
-        clean_run_args.append(path_2.strip())
+        clean_run_args.append(os.path.abspath(path_2.strip()))
       for arg in diff_args.split():
         if arg: clean_run_args.append(arg)
 

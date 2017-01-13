@@ -3,25 +3,21 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
-# note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 
 # Doxygen
-
 find_package( Doxygen QUIET )
 
 if( DOXYGEN_FOUND )
 
-   # if AUTODOCDIR is set in environment (or make command line),
-   # create a CMake variable with this value.
+   # if AUTODOCDIR is set in environment (or make command line), create a CMake
+   # variable with this value.
    if( NOT "$ENV{AUTODOCDIR}x" STREQUAL "x" )
       set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
    endif()
-   # if AUTODOCDIR is set, use it, otherwise, default to
-   # CMAKE_INSTALL_PREFIX.
+   # if AUTODOCDIR is set, use it, otherwise, default to CMAKE_INSTALL_PREFIX.
    if( "${AUTODOCDIR}x" STREQUAL "x" )
       set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc )
    else()
@@ -97,6 +93,7 @@ if( DOXYGEN_FOUND )
             -Ddoxygen_latex_output=${DOXYGEN_HTML_OUTPUT}/../latex
             -Dhtmlheader=${htmlheader}
             -Dhtmlfooter=${htmlfooter}
+            -Dproject_logo=dragon.jpg
             -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
     DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
     # DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
@@ -132,18 +129,18 @@ if( DOXYGEN_FOUND )
   # Copy image files
   #
   # list of source files
-  file( GLOB DOXYGEN_IMAGE_SOURCE_FILES *.jpg *.png html/*.jpg)
+  file( GLOB DOXYGEN_IMAGE_SOURCE_FILES *.jpg *.png html/*.jpg html/*.png)
   # placeholder for final copy of images.
   set( DOXYGEN_IMAGE_FILES "")
   # build a list of images with full path
   # copy the files from source to binary directory.
   foreach( file ${DOXYGEN_IMAGE_SOURCE_FILES} )
-    get_filename_component(tmp ${file} NAME)
+    get_filename_component(filename_nopath ${file} NAME)
     set( DOXYGEN_IMAGE_FILES
-      "${DOXYGEN_IMAGE_FILES} ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${tmp}")
+      "${DOXYGEN_IMAGE_FILES} ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${filename_nopath}")
     configure_file(
       "${file}"
-      "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${tmp}"
+      "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/${filename_nopath}"
       COPYONLY
       )
   endforeach( file ${DOXYGEN_IMAGE_SOURCE_FILES} )

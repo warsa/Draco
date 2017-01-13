@@ -18,7 +18,6 @@ fn_exists()
     echo $res
     return $res
 }
-
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -121,6 +120,10 @@ function flavor
       IFS=$OLDIFS
       # pick the first compiler in the list
       compilerflavor=`echo $compilermodules | sed -e 's/ *//'`
+      # append target if KNL
+      if test `echo $CRAY_CPU_TARGET | grep -c knl` == 1; then
+        compilerflavor+='-knl'
+      fi
       ;;
     darwin*)
       if test -z $MPIARCH; then
@@ -191,8 +194,19 @@ function lookupppn()
   local ppn=1
   case ${target} in
     ml* | pi* | wf* | lu* ) ppn=16 ;;
-    t[rt]-fe* | t[rt]-login*) ppn=32 ;;
-    sn* ) ppn=36 ;;
+    t[rt]-fe* | t[rt]-login*)
+      if [[ $TARGET ]]; then
+        if $TARGET == 'haswell'; then
+          ppn=32
+        elif $TARGET == 'knl'; then
+          ppn=68
+        fi
+      else
+        echo "ERROR: Exected TARGET to be set in the environment."
+        exit 1
+      fi
+      ;;
+    fi* | ic* | sn* ) ppn=36 ;;
   esac
   echo $ppn
 }
@@ -231,11 +245,6 @@ function npes_test
   elif test -f /proc/cpuinfo; then
     np=`cat /proc/cpuinfo | grep -c processor`
   fi
-  # For Cray systems limit the test count to 4.
-  # local os=`osName`
-  # case $os in
-  #   cle*) np=4 ;;
-  # esac
   echo $np
 }
 
@@ -336,6 +345,7 @@ function install_versions
   fi
   # source_dir="$source_prefix/source/$package"
   build_dir="$build_prefix/$version/${package:0:1}"
+
 
   # Purge any existing files before running cmake to configure the build directory.
   if test $config_step == 1; then

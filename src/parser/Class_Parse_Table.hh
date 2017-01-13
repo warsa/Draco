@@ -3,7 +3,7 @@
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
  * \brief  Define template function parse_class
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * utilities.hh declares a function template for parsers for class objects,
@@ -143,26 +143,74 @@ parse_class_from_table(Token_Stream &tokens) {
   // Parse the class keyword block and check for completeness
   Token const terminator = parse_table.parse_table().parse(tokens);
   bool allow_exit = parse_table.allow_exit(); // improve code coverage
+  SP<Return_Class> Result;
   if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
   // A class keyword block is expected to end with an END or (if
   // allow_exit is true) an EXIT.
   {
     parse_table.check_completeness(tokens);
 
-    SP<Return_Class> Result;
     if (tokens.error_count() == old_error_count) {
       // No fresh errors in the class keyword block.  Create the object.
       Result = parse_table.create_object();
     }
     // else there were errors in the keyword block. Don't try to
     // create a class object.  Return the null pointer.
-
-    return Result;
   } else {
     tokens.report_syntax_error("missing 'end'?");
-    return SP<Return_Class>();
-    // never reached; to eliminate spurious warning.
   }
+  return Result;
+}
+
+//---------------------------------------------------------------------------------------//
+/*! Template for helper function that produces a class object.
+ *
+ * \param tokens Token stream from which to parse the user input.
+ *
+ * \param context A context object that controls the behavior of the parser. This is passed
+ * to the constructor for the Class_Parse_Table.
+ *
+ * \return A pointer to an object matching the user specification, or NULL if
+ * the specification is not valid.
+ */
+
+template <typename Class_Parse_Table, typename Context>
+SP<typename Class_Parse_Table::Return_Class>
+parse_class_from_table(Token_Stream &tokens, Context const &context) {
+  using rtt_parser::Token;
+  using rtt_parser::END;
+  using rtt_parser::EXIT;
+
+  typedef typename Class_Parse_Table::Return_Class Return_Class;
+
+  // Construct the parse object as described above.
+  Class_Parse_Table parse_table(context);
+
+  // Save the old error count, so we can distinguish fresh errors within
+  // this class keyword block from previous errors.
+  unsigned const old_error_count = tokens.error_count();
+
+  // Parse the class keyword block and check for completeness
+  Token const terminator = parse_table.parse_table().parse(tokens);
+  bool allow_exit = parse_table.allow_exit(); // improve code coverage
+  SP<Return_Class> Result;
+  if (terminator.type() == END || (allow_exit && terminator.type() == EXIT))
+  // A class keyword block is expected to end with an END or (if
+  // allow_exit is true) an EXIT.
+  {
+    parse_table.check_completeness(tokens);
+
+    if (tokens.error_count() == old_error_count) {
+      // No fresh errors in the class keyword block.  Create the object.
+      Result = parse_table.create_object();
+    }
+    // else there were errors in the keyword block. Don't try to
+    // create a class object.  Return the null pointer.
+  } else {
+    tokens.report_syntax_error("missing 'end'?");
+  }
+
+  return Result;
 }
 
 } // end namespace rtt_parser

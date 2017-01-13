@@ -130,7 +130,7 @@ unpack_repo_git() {
 #------------------------------------------------------------------------------#
 # working directory
 start_dir=`pwd`
-work_dir=/usr/projects/draco/svn
+work_dir=/usr/projects/draco/git
 if test -d $work_dir; then
    run "cd $work_dir"
 else
@@ -151,21 +151,21 @@ jayenne_ready=0
 draco_git_ready=0
 
 for item in $possible_items_to_pull; do
-   if test ${item} = "capsaicin.hotcopy.tar"; then capsaicin_ready=1; fi
-   if test ${item} = "Draco.git.tar";         then draco_git_ready=1; fi
-   if test ${item} = "jayenne.git.tar";       then jayenne_ready=1; fi
+   if test ${item} = "capsaicin.git.tar"; then capsaicin_ready=1; fi
+   if test ${item} = "Draco.git.tar";     then draco_git_ready=1; fi
+   if test ${item} = "jayenne.git.tar";   then jayenne_ready=1;   fi
 done
 
 # If found, pull the files
-if test ${capsaicin_ready} = 1; then unpack_repo "capsaicin"; fi
-run "cd ${work_dir}/../git"
+run "cd ${work_dir}"
 if test ${draco_git_ready} = 1; then unpack_repo_git "Draco.git"; fi
 if test ${jayenne_ready} = 1; then unpack_repo_git "jayenne.git"; fi
+if test ${capsaicin_ready} = 1; then unpack_repo_git "capsaicin.git"; fi
 
 # Update permisssions as needed
 run "cd ${work_dir}/.."
-run "chgrp -R draco svn git"
-run "chmod -R g+rwX,o-rwX svn git"
+run "chgrp -R draco git"
+run "chmod -R g+rwX,o-rwX git"
 
 # Modules
 # ----------------------------------------

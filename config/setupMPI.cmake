@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -187,8 +187,13 @@ macro( setupOpenMPI )
     set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
-    # Flag provided by Sam Gutierrez (2015-04-08),
-    set( MPIEXEC_POSTFLAGS "-mca hwloc_base_binding_policy none ${runasroot}" CACHE
+    # (2015-04-08) Flags provided by Sam Gutierrez:
+    # "-mca hwloc_base_binding_policy none"
+
+    # (2016-12-14) Replace the above with a new set of flags that are used by
+    # MCATK and EAP code projects. These options appear to work correctly for
+    # running concurrent unit tests on a node.
+    set( MPIEXEC_POSTFLAGS "-mca btl self,vader -bind-to none ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   endif()
 

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Establish flags for Windows - MSVC
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -107,12 +107,14 @@ endif()
 # Extra runtime libraries...
 #
 
-find_library( Lib_win_winsock
-  NAMES wsock32;winsock32;ws2_32
-  HINTS
-  "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Lib"
-  "C:/Windows/SysWOW64"
-  )
+find_library( Lib_win_winsock NAMES wsock32;winsock32;ws2_32 )
+if( EXISTS "${Lib_win_winsock}" AND CMAKE_CL_64 )
+  string(REPLACE "um/x86" "um/x64" Lib_win64_winsock "${Lib_win_winsock}" )
+  if( EXISTS "${Lib_win64_winsock}" )
+    set( Lib_win_winsock "${Lib_win64_winsock}")
+  endif()
+endif()
+
 if( ${Lib_win_winsock} MATCHES "NOTFOUND" )
   message( FATAL_ERROR "Could not find library winsock32 or ws2_32!" )
 endif()

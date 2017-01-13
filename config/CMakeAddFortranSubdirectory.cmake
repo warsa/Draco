@@ -64,7 +64,6 @@
 set(_CAFS_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 include(CheckLanguage)
 include(ExternalProject)
-include(CMakeParseArguments)
 
 ###--------------------------------------------------------------------------------####
 function(_setup_cafs_config_and_build source_dir build_dir)

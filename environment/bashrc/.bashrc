@@ -1,7 +1,13 @@
 #!/bin/bash
 ##-*- Mode: bash -*-
 ##---------------------------------------------------------------------------##
-## .bashrc - my bash configuration file upon bash shell startup
+## File  : environment/bashrc/.bashrc
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##
+##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
 ## Instructions (customization)

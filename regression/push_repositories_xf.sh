@@ -7,6 +7,12 @@
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
+# Locate the directory that this script is located in:
+scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# import some bash functions
+source $scriptdir/scripts/common.sh
+
 # Q: How do I create a keytab that works with transfer 2.0
 # A: See
 #    https://rtt.lanl.gov/redmine/projects/draco/wiki/Kelly_Thompson#Generating-keytab-file-that-works-with-transfer-20
@@ -23,58 +29,13 @@ if test $user = "kellyt"; then
     kinit -l 1h -kt $HOME/.ssh/xfkeytab transfer/${USER}push@lanl.gov
 fi
 
-# Helpful functions:
-die () { echo "FATAL ERROR: $1"; exit 1;}
-
-run () {
-   echo $1
-   if ! test $dry_run; then
-      eval $1
-   fi
-}
-
 # Sanity check
 if test `klist -l | grep -c $user` = 0; then
     die "You must have an active kerberos ticket to run this script."
 fi
 
-# Working directory
-if test -d /ccs/codes/radtran/svn; then
-  run "cd /ccs/codes/radtran/svn"
-else
-  die "SVN root directory not found. Expected to find /ccs/codes/radtran/svn."
-fi
-
-# Repositories to push
-repos="capsaicin"
-
-#
-for repo in $repos; do
-   # Remove old hotcopy files/directories.
-   if test -f ${repo}.hotcopy.tar; then
-      run "rm -f ${repo}.hotcopy.tar"
-   fi
-   if test -d ${repo}.hotcopy; then
-      run "rm -rf ${repo}.hotcopy"
-   fi
-   # Generate a repo hotcopy
-   run "svnadmin hotcopy $repo ${repo}.hotcopy"
-
-   # Tar it up and push via mercury.
-   run "tar -cvf ${repo}.hotcopy.tar ${repo}.hotcopy"
-
-   # Transfer the file via transfer.lanl.gov
-   run "scp ${repo}.hotcopy.tar red@transfer.lanl.gov:"
-
-   # Ensure the new files have group rwX permissions.
-   run "chgrp -R draco ${repo}.hotcopy.tar ${repo}.hotcopy"
-   run "chmod -R g+rwX,o=g-w ${repo}.hotcopy.tar ${repo}.hotcopy"
-
-done
-
 #------------------------------------------------------------------------------#
-# Also clone the github repository and push it along with the svn
-# repositories.
+# Clone the github and gitlab repositories and push them to the red.
 
 gitdir=/ccs/codes/radtran/git
 
@@ -84,7 +45,7 @@ else
   die "GIT root directory not found. Expected to find $gitdir."
 fi
 
-repos="Draco.git jayenne.git"
+repos="Draco.git jayenne.git capsaicin.git"
 
 for repo in $repos; do
 

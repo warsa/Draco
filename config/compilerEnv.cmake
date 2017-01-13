@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   config/compilerEnv.cmake
 # brief  Default CMake build parameters
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -40,9 +40,7 @@ endif()
 # ------------------------------------------------------------------------------
 site_name( SITENAME )
 string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
-if( ${SITENAME} MATCHES "c[it]" )
-  set( SITENAME "Cielito" )
-elseif( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
+if( ${SITENAME} MATCHES "ml" OR ${SITENAME} MATCHES "lu" )
   set( SITENAME "Moonlight" )
 elseif( ${SITENAME} MATCHES "tt") #" -login[0-9]+" OR ${SITENAME} MATCHES "tt-fey[0-9]+" )
   set( SITENAME "Trinitite" )
@@ -94,8 +92,6 @@ macro(dbsSetupCompilers)
   # we use it. This value is used in component_macros.cmake when properties
   # are assigned to individual targets. Current status:
   #
-  # - Cielito/Cielo: Intel with IPO (-ipo flag and linking with xiar) causes
-  #   parser/tstutilities to fail.
   # - Moonlight/Luna: Intel with IPO (-ipo flag) causes
   #   wedgehog_components/tstCensus_Manger_DD_2 to fail.
   # In component_macros.cmake, this target property will be set:
@@ -180,9 +176,12 @@ macro(dbsSetupCxx)
       include( unix-intel )
     elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
       include( unix-crayCC )
+    elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+      include( unix-g++ )
     else()
       message( FATAL_ERROR "I think the C++ compiler is a Cray compiler "
-        "wrapper, but I don't know what compiler is wrapped." )
+        "wrapper, but I don't know what compiler is wrapped."
+        "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
     endif()
   elseif( ${my_cxx_compiler} MATCHES "cl" )
     include( windows-cl )
@@ -298,8 +297,12 @@ macro(dbsSetupFortran)
       include( unix-ifort )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
       include( unix-crayftn )
+    elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
+      include( unix-gfortran )
     else()
-      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper, but I don't know what compiler is wrapped." )
+      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper,"
+        "but I don't know what compiler is wrapped."
+        "CMAKE_Fortran_COMPILER_ID = ${CMAKE_Fortran_COMPILER_ID}")
     endif()
     elseif( ${my_fc_compiler} MATCHES "ifort" )
       include( unix-ifort )
@@ -325,8 +328,9 @@ macro(dbsSetupFortran)
     find_program( CAFS_Fortran_COMPILER
       NAMES ${CAFS_Fortran_COMPILER} $ENV{CAFS_Fortran_COMPILER} gfortran
       PATHS
-      c:/MinGW/bin
-      "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
+        c:/MinGW/bin
+        c:/msys64/usr/bin
+        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MinGW;InstallLocation]/bin" )
 
     if( EXISTS ${CAFS_Fortran_COMPILER} )
       set( HAVE_Fortran ON )

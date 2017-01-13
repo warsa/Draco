@@ -4,12 +4,9 @@
 # date   2010 Dec 1
 # brief  Provide extra macros to simplify CMakeLists.txt for component
 #        directories.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-
-# requires parse_arguments()
-include( parse_arguments )
 
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_executable'
@@ -55,13 +52,11 @@ include( parse_arguments )
 macro( add_component_executable )
 
   # These become variables of the form ${ace_NAME}, etc.
-  parse_arguments(
-    # prefix
+  cmake_parse_arguments(
     ace
-    # list names
-    "PREFIX;TARGET;EXE_NAME;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
-    # option names
     "NOEXPORT;NOCOMMANDWINDOW"
+    "PREFIX;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
+    "SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
 
@@ -268,17 +263,15 @@ endmacro()
 # Note: you must use quotes around ${list_of_sources} to preserve the list.
 #------------------------------------------------------------------------------
 macro( add_component_library )
-  #target_name outputname sources
+  # target_name outputname sources
   # optional argument: libraryPrefix
 
   # These become variables of the form ${acl_NAME}, etc.
-  parse_arguments(
-    # prefix
+  cmake_parse_arguments(
     acl
-    # list names
-    "PREFIX;TARGET;LIBRARY_NAME;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
-    # option names
     "NOEXPORT"
+    "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
+    "SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
 
@@ -337,9 +330,8 @@ macro( add_component_library )
   # Find target file name and location
   get_target_property( impname ${acl_TARGET} OUTPUT_NAME )
 
-  # the above command returns the location in the build tree.  We
-  # need to convert this to the install location.
-  # get_filename_component( imploc ${imploc} NAME )
+  # the above command returns the location in the build tree.  We need to 
+  # convert this to the install location.
   if( ${DRACO_SHARED_LIBS} )
     set( imploc "${CMAKE_INSTALL_PREFIX}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${impname}${CMAKE_SHARED_LIBRARY_SUFFIX}" )
   else()
@@ -347,7 +339,7 @@ macro( add_component_library )
   endif()
 
   set( ilil "")
-  if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND  "${acl_VENDOR_LIBS}x" STREQUAL "x")
+  if( "${acl_TARGET_DEPS}x" STREQUAL "x" AND "${acl_VENDOR_LIBS}x" STREQUAL "x")
     # do nothing
   elseif( "${acl_TARGET_DEPS}x" STREQUAL "x" )
     set( ilil "${acl_VENDOR_LIBS}" )
@@ -718,13 +710,11 @@ endfunction()
 macro( add_scalar_tests test_sources )
 
   # These become variables of the form ${addscalartests_SOURCES}, etc.
-  parse_arguments(
-    # prefix
+  cmake_parse_arguments(
     addscalartest
-    # list names
-    "SOURCES;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;LABEL"
-    # option names
     "APPLICATION_UNIT_TEST;LINK_WITH_FORTRAN;NONE"
+    "LABEL"
+    "DEPS;FAIL_REGEX;PASS_REGEX;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV}
     )
 
@@ -890,13 +880,11 @@ endmacro(add_scalar_tests)
 #----------------------------------------------------------------------#
 macro( add_parallel_tests )
 
-  parse_arguments(
-    # prefix
+  cmake_parse_arguments(
     addparalleltest
-    # list names
-    "SOURCES;PE_LIST;DEPS;TEST_ARGS;PASS_REGEX;FAIL_REGEX;RESOURCE_LOCK;RUN_AFTER;MPIFLAGS;LABEL"
-    # option names
     "MPI_PLUS_OMP;LINK_WITH_FORTRAN"
+    "LABEL"
+    "DEPS;FAIL_REGEX;MPIFLAGS;PASS_REGEX;PE_LIST;RESOURCE_LOCK;RUN_AFTER;SOURCES;TEST_ARGS"
     ${ARGV}
     )
 
@@ -1046,13 +1034,11 @@ endmacro()
 #----------------------------------------------------------------------#
 macro( provide_aux_files )
 
-  parse_arguments(
-    # prefix
+  cmake_parse_arguments(
     auxfiles
-    # list names
-    "FILES;SRC_EXT;DEST_EXT;FOLDER"
-    # option names
     "NONE"
+    "SRC_EXT;DEST_EXT;FOLDER"
+    "FILES"
     ${ARGV}
     )
 

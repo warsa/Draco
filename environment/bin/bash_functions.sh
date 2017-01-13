@@ -1,12 +1,17 @@
-## -*- Mode: sh -*-----------------------------------------------------------##
-##
-## file  : bash_functions.sh
+## -*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## File  : environment/bin/bash_functions.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 ##
 ## Summary: Misc bash functions useful during development of code.
 ##
 ## 1. Use GNU tools instead of vendor tools when possible
-## 2. Create some alias commands to provide hints when invalid
-##    commands are issued.
+## 2. Create some alias commands to provide hints when invalid commands are
+##    issued.
 ##
 ## Functions
 ## ---------
@@ -68,6 +73,9 @@ function cleanemacs
 ## ...scratch...    -> #
 ## .../projects/... -> @
 ##---------------------------------------------------------------------------##
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
 
 function npwd()
 {

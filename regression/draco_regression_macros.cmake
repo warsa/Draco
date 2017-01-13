@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -721,11 +721,21 @@ covdir -o ${CTEST_BINARY_DIRECTORY}/covdir.log")
         "-q --tool=memcheck --leak-check=full --trace-children=yes --gen-suppressions=all ${valgrind_suppress_option}" )
     endif()
     message(" CTEST_MEMORYCHECK_COMMAND_OPTIONS = ${CTEST_MEMORYCHECK_COMMAND_OPTIONS}")
-    message( "ctest_memcheck( SCHEDULE_RANDOM ON
-                EXCLUDE_LABEL nomemcheck )")
-    ctest_memcheck(
-      SCHEDULE_RANDOM ON
-      EXCLUDE_LABEL "nomemcheck")
+
+    set( ctest_memcheck_options "SCHEDULE_RANDOM ON" )
+    string( APPEND ctest_memcheck_options " PARALLEL_LEVEL ${num_test_procs}" )
+    string( APPEND ctest_memcheck_options " EXCLUDE_LABEL nomemcheck")
+
+    # if we are running on a machine that openly shares resources, use the
+    # TEST_LOAD feature to limit the number of cores used while testing. For
+    # machines that run schedulers, the whole allocation is available so there
+    # is no need to limit the load.
+    if( "${CTEST_SITE}" MATCHES "ccscs" )
+      string( APPEND ctest_memcheck_options " TEST_LOAD ${max_system_load}" )
+    endif()
+    message( "ctest_memcheck( ${ctest_memcheck_options} )" )
+    separate_arguments( ctest_memcheck_options )
+    ctest_memcheck( ${ctest_memcheck_options} )
   endif()
 endmacro(process_cc_or_da)
 
@@ -749,20 +759,15 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # nr        build -> release version of Draco
     # perfbench build -> release version of Draco
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "icpc" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
-    if( "${this_pkg}" MATCHES "jayenne" )
+    if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
       string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
-        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    endif()
-
-    if( "${this_pkg}" MATCHES "capsaicin" )
-      # Probably building capsaicin, append '-develop' when looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)/" "\\1_\\2-develop/"
         ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
   endif()

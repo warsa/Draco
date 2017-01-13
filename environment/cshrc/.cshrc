@@ -1,4 +1,11 @@
 #!/bin/csh
+##---------------------------------------------------------------------------##
+## File  : environment/cshrc/.cshrc
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
 
 # Use: In ~/.cshrc add the following code:
 #
@@ -43,8 +50,12 @@ case ml-fey*.lanl.gov:
 case ml*.localdomain:
 case lu*.lanl.gov:
 case lu*.localdomain:
+case sn*:
+case fi*:
+case ic*:
     setenv VENDOR_DIR /usr/projects/draco/vendors
     module load friendly-testing user_contrib
+    module load clang-format
     module load intel/17.0.1 openmpi/1.10.3 mkl
     module load git subversion emacs grace
     module load cmake/3.6.2 numdiff random123 eospac/6.2.4
@@ -72,6 +83,7 @@ case tr*:
     module unload PrgEnv-intel PrgEnv-pgi
     module unload cmake numdiff svn gsl
     module unload papi perftools
+    module load clang-format
 
     # load the Intel programming env, but then unloda libsci and totalview
     module load PrgEnv-intel # this loads xt-libsci and intel/XXX

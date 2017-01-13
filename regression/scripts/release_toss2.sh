@@ -32,7 +32,7 @@ pdir=$ddir
 
 # environment (use draco modules)
 # release for each module set
-environments="intel17env"
+environments="intel17env gcc530env"
 function intel16env()
 {
   run "module purge"

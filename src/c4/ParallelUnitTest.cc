@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Implementation file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ParallelUnitTest.hh"
@@ -60,14 +57,26 @@ ParallelUnitTest::ParallelUnitTest(int &argc, char **&argv,
 
   // Register and process command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
-  long_options['v'] = "version";
   std::map<char, std::string> help_strings;
+  long_options['v'] = "version";
   help_strings['v'] = "print version information and exit.";
+  long_options['p'] = "pause";
+  help_strings['p'] = "pause program at MPI init to allow debugger to attach";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
   int c(0);
   while ((c = program_options()) != -1) {
     switch (c) {
+    case 'p': // --pause
+      char chtmp;
+      if (rtt_c4::node() == 0) {
+        std::cout << "Program paused to allow debugger to attach.\n"
+                  << "Enter any single char to continue...";
+        std::cin >> chtmp;
+      }
+      rtt_c4::global_barrier();
+      break;
+
     case 'v': // --version
       finalize();
       throw rtt_dsxx::assertion(string("Success"));

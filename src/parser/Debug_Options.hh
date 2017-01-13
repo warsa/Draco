@@ -3,7 +3,7 @@
  * \file   parser/Debug_Options.hh
  * \author Kent Grimmett Budge
  * \brief
- * \note   Copyright (C) 2014-2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2014-2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 /*---------------------------------------------------------------------------------------*/
@@ -34,7 +34,8 @@ enum Debug_Options {
 
 //---------------------------------------------------------------------------------------//
 //! Parse debug options in uniform way
-DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &);
+DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &,
+                                               unsigned parent_mask = 0);
 
 //---------------------------------------------------------------------------------------//
 //! Write debug options in a manner that can be parsed
