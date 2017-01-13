@@ -174,27 +174,22 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.4 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to
-  # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
-  # tests (and not MPI+OpenMP tests).
+  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
+  # MPIEXEC_POSTFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
   if( "$ENV{GITLAB_CI}" STREQUAL "true" )
     set(runasroot "--allow-run-as-root")
   endif()
 
-  # This flag also shows up in
-  # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
+  # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
+  # regress_funcs.py.
   if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
     set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
-    # (2015-04-08) Flags provided by Sam Gutierrez:
-    # "-mca hwloc_base_binding_policy none"
-
-    # (2016-12-14) Replace the above with a new set of flags that are used by
-    # MCATK and EAP code projects. These options appear to work correctly for
-    # running concurrent unit tests on a node.
-    set( MPIEXEC_POSTFLAGS "-mca btl self,vader -bind-to none ${runasroot}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+    # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
+    # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
+    set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
+      "extra mpirun flags (list)." FORCE)
   endif()
 
   # Find cores/cpu, cpu/node, hyperthreading
