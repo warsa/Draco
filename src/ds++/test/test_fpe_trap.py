@@ -4,7 +4,7 @@
 # date   Monday, Nov 28, 2016, 16:40 pm
 # brief  This is a Python script that is used to test the fpe_trap features in
 #        ds++.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys
@@ -45,45 +45,17 @@ try:
   #         should not throw IEEE exception.
   if case_number == '0':
 
-<<<<<<< HEAD
       string_found = tFpeTrap.output_contains("result = 2")
       if( string_found ):
           tFpeTrap.passmsg("Found expected result (2).")
       else:
           tFpeTrap.failmsg("Failed to find expected result (2).")
-=======
-    string_found = tFpeTrap.output_contains("result = 2")
-    if( string_found ):
-      tFpeTrap.passmsg("Found expected result (2).")
-    else:
-      tFpeTrap.failmsg("Failed to find expected result (2).")
->>>>>>> 6dd976d30092ce58addaaaf82a86fe422802890b
+
 
   # ---------------------------------------------------------------------------- #
   # Case 1: attempts to divide by zero
   elif case_number == '1':
 
-
-<<<<<<< HEAD
-      # Check the test type
-      string_found = tFpeTrap.output_contains("trying a div_by_zero operation")
-      if( string_found ):
-          tFpeTrap.passmsg("Case 1 -> division by zero test")
-      else:
-          tFpeTrap.failmsg("Case 1 did not try the division by zero test")
-
-      if any(platform.win32_ver()):
-          # Signaling error: A SIGFPE was detected!
-          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
-      else:
-          # Signaling error: SIGFPE (Floating point divide by zero)
-          string_found = tFpeTrap.error_contains("Floating point divide by zero")
-
-      if( string_found ):
-          tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
-      else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Floating point divide by zero)")
-=======
     # Check the test type
     string_found = tFpeTrap.output_contains("trying a div_by_zero operation")
     if( string_found ):
@@ -96,7 +68,7 @@ try:
       string_found = tFpeTrap.output_contains("A SIGFPE was detected!")
     else:
       # Signaling error: SIGFPE (Floating point divide by zero)
-      string_found = tFpeTrap.error_contains("Floating point divide by zero")
+      string_found = tFpeTrap.output_contains("Floating point divide by zero")
 
     if( string_found ):
       tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
@@ -112,39 +84,11 @@ try:
       with open(tFpeTrap.errfile) as f:
         for line in f:
           print "%s" % line
->>>>>>> 6dd976d30092ce58addaaaf82a86fe422802890b
 
   # ---------------------------------------------------------------------------- #
   # Case 2: attempts to evaluate sqrt(-1.0)
   elif case_number == '2':
 
-<<<<<<< HEAD
-      # Check the test type
-      string_found = tFpeTrap.output_contains("trying to evaluate sqrt")
-      if( string_found ):
-          tFpeTrap.passmsg("Case 2 -> sqrt(-1.0) test case")
-      else:
-          tFpeTrap.failmsg("Case 2 did not try the sqrt(-1.0) case")
-
-      # As of 2016-11-29:
-      # - GCC throws the FE_INVALID IEEE signal (stderr file)
-      # - Intel 17 throws a C++ exception (stdout file)
-      #
-      # Look for FE_INVALID first, if that isn't found, allow the test to pass
-      # if the C++ exception is detected.
-
-      # Signaling error: SIGFPE (Invalid floating point operation)
-      string_found = tFpeTrap.error_contains("Invalid floating point operation")
-      if( string_found ):
-          tFpeTrap.passmsg("Caught SIGFPE (Invalid floating point operation)")
-      else:
-        # 2nd chance: also look in the stdout file.
-        string_found = tFpeTrap.output_contains("Invalid floating point operation")
-        if( string_found ):
-          tFpeTrap.passmsg("Caught SIGFPE (Invalid floating point operation)")
-        else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Invalid floating point operation)")
-=======
     # Check the test type
     string_found = tFpeTrap.output_contains("trying to evaluate sqrt")
     if( string_found ):
@@ -180,32 +124,11 @@ try:
         with open(tFpeTrap.errfile) as f:
           for line in f:
             print "%s" % line
->>>>>>> 6dd976d30092ce58addaaaf82a86fe422802890b
 
   # ---------------------------------------------------------------------------- #
   # Case 3: An overflow condition is generated.
   elif case_number == '3':
 
-<<<<<<< HEAD
-      # Check the test type
-      string_found = tFpeTrap.output_contains("trying to cause an overflow condition")
-      if( string_found ):
-          tFpeTrap.passmsg("Case 3 -> overflow condition test")
-      else:
-          tFpeTrap.failmsg("Case 3 did not try the overflow condition test")
-
-      if any(platform.win32_ver()):
-          # Signaling error: A SIGFPE was detected!
-          string_found = tFpeTrap.output_contains("A SIGFPE was detected!")          
-      else:
-          # Signaling error: SIGFPE (Floating point divide by zero)
-          string_found = tFpeTrap.error_contains("Floating point divide by zero")
-
-      if( string_found ):
-          tFpeTrap.passmsg("Caught SIGFPE (Floating point overflow)")
-      else:
-          tFpeTrap.failmsg("Failed catch SIGFPE (Floating point overflow)")
-=======
     # Check the test type
     string_found = tFpeTrap.output_contains("trying to cause an overflow condition")
     if( string_found ):
@@ -237,7 +160,6 @@ try:
       with open(tFpeTrap.errfile) as f:
         for line in f:
           print "%s" % line
->>>>>>> 6dd976d30092ce58addaaaf82a86fe422802890b
 
   print(" ")
 
