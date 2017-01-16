@@ -148,7 +148,7 @@ if test -d $gitroot/Draco.git; then
 else
   run "mkdir -p $gitroot"
   run "cd $gitroot"
-  run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+  run "git clone --bare git@github.com:lanl/Draco.git Draco.git"
 fi
 case ${target} in
   ccscs7*)
@@ -163,7 +163,7 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --mirror git@github.com:losalamos/Draco.git Draco-redmine.git"
+      run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
       run "chmod -R g+rwX Draco-redmine.git"
     fi
     ;;
