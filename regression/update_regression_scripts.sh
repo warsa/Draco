@@ -72,7 +72,7 @@ fi
 if test -d ${REGDIR}/draco; then
   run "cd ${REGDIR}/draco; git pull"
 else
-  run "cd ${REGDIR}; git clone https://github.com/losalamos/Draco.git draco"
+  run "cd ${REGDIR}; git clone https://github.com/lanl/Draco.git draco"
 fi
 # Deal with proxy stuff on darwin
 case ${target} in
