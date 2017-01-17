@@ -73,7 +73,13 @@ try:
     if( string_found ):
       tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
     else:
-      tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point divide by zero)")
+      # 2nd chance: try the error stream
+      string_found = tFpeTrap.error_contains("Floating point divide by zero")
+      if( string_found):
+        tFpeTrap.passmsg("Caught SIGFPE (Floating point divide by zero)")
+      else:
+        tFpeTrap.failmsg("Failed to catch SIGFPE (Floating point divide by zero)")
+
 
       print "Standard out:"
       with open(tFpeTrap.outfile) as f:

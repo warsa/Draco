@@ -41,7 +41,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_DEBUG
     "-g -O0 -inline-level=0 -ftrapuv -check=uninit -fp-model precise -fp-speculation safe -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE
-    "-O3 -fp-speculation fast -fp-model fast -pthread -DNDEBUG" )
+    "-O3 -fp-speculation fast -fp-model precise -pthread -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL
     "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO
