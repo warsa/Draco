@@ -69,7 +69,7 @@ else
   echo " "
   echo "Random123"
   cd $HOME
-  run "wget https://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz"
+  run "wget http://www.deshawresearch.com/downloads/download_random123.cgi/Random123-${RANDOM123_VER}.tar.gz"
   run "tar -xvf Random123-${RANDOM123_VER}.tar.gz"
   echo "Please set RANDOM123_INC_DIR=$HOME/Random123-${RANDOM123_VER}/include"
   run "ls $HOME/Random123-${RANDOM123_VER}/include"
