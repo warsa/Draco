@@ -207,7 +207,7 @@ public:
   template <class T>
   void check_semantics(std::shared_ptr<T> const &ptr,
                        char const *const message) {
-    check_semantics(message != nullptr, message);
+    check_semantics(ptr != nullptr, message);
   }
 
   // ACCESSORS
