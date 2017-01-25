@@ -15,6 +15,7 @@
 
 #include "Token.hh"
 #include <deque>
+#include <memory>
 
 namespace rtt_parser {
 //-------------------------------------------------------------------------//
@@ -200,6 +201,13 @@ public:
      */
   void check_semantics(bool const condition, char const *const message) {
     if (!condition)
+      report_semantic_error(message);
+  }
+
+  template <class T>
+  void check_semantics(std::shared_ptr<T> const &ptr,
+                       char const *const message) {
+    if (!ptr)
       report_semantic_error(message);
   }
 
