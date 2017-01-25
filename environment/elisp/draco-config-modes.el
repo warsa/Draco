@@ -3,6 +3,8 @@
 ;;
 ;; Copyright (C) 2016 Los Alamos National Security, LLC
 ;;
+;; $Id$
+;;
 ;; Configure a variety of packages, upon request of user.
 ;;
 ;; Must load the draco-setup.el package from XEmacs startup files
@@ -283,8 +285,8 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-add-style
 	 "draco" '
 	 (
-          ; Tab indent == 2 spaces
-	  (c-basic-offset . 2)
+          ; Tab indent == 4 spaces
+	  (c-basic-offset . 4)
           ; Snap #s to the first column
 	  (c-electric-pound-behavior . 'alignleft)
           ; Regexp to find the starting brace of a block
@@ -341,8 +343,8 @@ parameters on creation of buffers managed by cc-mode.el for Nix's personal codin
 	(c-set-style "draco")
 	(local-set-key "\C-m" 'newline-and-indent)
 	(set-fill-column draco-code-comment-width)
-        (require 'fill-column-indicator)
-        (fci-mode)
+        ;;(require 'fill-column-indicator)
+        ;;(fci-mode)
 	(local-set-key [(f5)] 'draco-cc-divider)
 	(local-set-key [(f6)] 'draco-insert-comment-divider)
 	(local-set-key [(meta f5)] 'draco-insert-function-doc)
