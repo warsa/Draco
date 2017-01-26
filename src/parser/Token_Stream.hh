@@ -204,12 +204,6 @@ public:
       report_semantic_error(message);
   }
 
-  template <class T>
-  void check_semantics(std::shared_ptr<T> const &ptr,
-                       char const *const message) {
-    check_semantics(ptr != nullptr, message);
-  }
-
   // ACCESSORS
 
   //! Return the number of errors reported to the stream since it was last

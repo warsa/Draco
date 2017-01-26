@@ -12,15 +12,11 @@
 #ifndef RTT_ds_SP_HH
 #define RTT_ds_SP_HH
 
-#include "Assert.hh"
 #include <memory>
-#include <typeinfo>
 
 namespace rtt_dsxx {
 
 template <class T> using SP = std::shared_ptr<T>;
-
-using std::dynamic_pointer_cast;
 
 } // end namespace rtt_dsxx
 

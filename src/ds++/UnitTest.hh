@@ -109,11 +109,6 @@ public:
   DLL_PUBLIC_dsxx bool passes(std::string const &passmsg);
   DLL_PUBLIC_dsxx bool check(bool, std::string const &checkmsg,
                              bool fatal = false);
-  template <class T>
-  bool check(std::shared_ptr<T> const &ptr, std::string const &checkmsg,
-             bool fatal = false) {
-    return check(static_cast<bool>(ptr), checkmsg, fatal);
-  }
   //! This pure virtual function must be provided by the inherited class.
   //It should provide output concerning the status of UnitTest.
   void status(void) const {
