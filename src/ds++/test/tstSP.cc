@@ -334,29 +334,6 @@ void type_T_test(rtt_dsxx::UnitTest &ut) {
       if (!(rspbaz != spbar))
         ITFAILS;
 
-      if (spfoo != f)
-        ITFAILS;
-      if (spbar != b)
-        ITFAILS;
-      if (spbaz != bz)
-        ITFAILS;
-
-      if (spbar == dynamic_cast<Bar *>(f))
-        ITFAILS;
-
-      if (f != spfoo)
-        ITFAILS;
-      if (b != spbar)
-        ITFAILS;
-      if (bz != spbaz)
-        ITFAILS;
-
-      if (f == spfoo) {
-        PASSMSG("Overloaded equality operators ok.");
-      } else {
-        FAILMSG("Overloaded equality operators failed.");
-      }
-
       if (ut.numFails == 0)
         PASSMSG("Equality/Inequality operations ok.");
     }
@@ -978,20 +955,7 @@ void fail_modes_test(rtt_dsxx::UnitTest &ut) {
   if (spfoo)
     ITFAILS;
 
-  // try to reference a function
-  bool caught = false;
   if (ut.dbcOn() && !ut.dbcNothrow()) {
-    try {
-      spfoo->f();
-    } catch (rtt_dsxx::assertion & /* assertion */) {
-      caught = true;
-      ostringstream m;
-      m << "Good, caught null access on member function " << endl;
-      PASSMSG(m.str());
-    }
-    if (!caught)
-      FAILMSG("Failed to catch illegal access exception.");
-
     // try assigning a derived NULL to a base; the spfoo base pointer is
     // still a foo in the case
     spfoo = spbar;

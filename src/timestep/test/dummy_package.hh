@@ -15,6 +15,7 @@
 #define __timestep_test_dummy_package_hh__
 
 #include "ds++/SP.hh"
+#include "ds++/config.h"
 #include <vector>
 
 // FORWARD REFERENCES
