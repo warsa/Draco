@@ -17,6 +17,7 @@
 #include "path.hh"
 #include <list>
 #include <map>
+#include <memory>
 #include <vector>
 
 namespace rtt_dsxx {

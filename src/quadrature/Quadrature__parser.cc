@@ -110,7 +110,8 @@ Class_Parse_Table<Quadrature>::Class_Parse_Table() {
 
 //---------------------------------------------------------------------------------------//
 void Class_Parse_Table<Quadrature>::check_completeness(Token_Stream &tokens) {
-  tokens.check_semantics(parsed_quadrature_, "no quadrature specified");
+  tokens.check_semantics(parsed_quadrature_ != nullptr,
+                         "no quadrature specified");
 }
 
 //---------------------------------------------------------------------------------------//
