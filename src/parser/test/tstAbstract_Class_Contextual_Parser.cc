@@ -387,7 +387,7 @@ void test(UnitTest &ut) {
   cout << parent->name() << endl;
 
   ut.check(tokens.error_count() == 0, "parsed without error");
-  ut.check(parent, "created parent", true);
+  ut.check(parent != nullptr, "created parent", true);
   ut.check(parent->name() == "son", "parent is son");
   ut.check(parent->magic() == 42, "context");
 }

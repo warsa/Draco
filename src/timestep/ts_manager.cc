@@ -25,8 +25,7 @@ namespace rtt_timestep {
 
 ts_manager::ts_manager(void)
     : dt_new(ts_advisor::ts_small()), time(0.0), dt(ts_advisor::ts_small()),
-      cycle(9999), controlling_advisor("Not Set"),
-      advisors(rtt_dsxx::SP<ts_advisor>())
+      cycle(9999), controlling_advisor("Not Set")
 
 {
   Ensure(invariant_satisfied());

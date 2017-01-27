@@ -30,7 +30,7 @@ using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
-using rtt_dsxx::dynamic_pointer_cast;
+using std::dynamic_pointer_cast;
 
 //---------------------------------------------------------------------------//
 // TESTS
