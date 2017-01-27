@@ -13,7 +13,7 @@
 #    location. The repository must be mirrored because the ctest regression
 #    system must be run from the HPC backend (via msub) where access to
 #    ccscs7:/ccs/codes/radtran/svn is not available.
-# 2. It also mirrors git@github.com/losalamos/Draco.git and
+# 2. It also mirrors git@github.com/lanl/Draco.git and
 #    git@gitlab.lanl.gov/jayenne/jayenne.git to these locations:
 #    - ccscs7:/ccs/codes/radtran/git
 #    - darwin-fe:/usr/projects/draco/regress/git
@@ -148,7 +148,7 @@ if test -d $gitroot/Draco.git; then
 else
   run "mkdir -p $gitroot"
   run "cd $gitroot"
-  run "git clone --bare git@github.com:losalamos/Draco.git Draco.git"
+  run "git clone --bare git@github.com:lanl/Draco.git Draco.git"
 fi
 case ${target} in
   ccscs7*)
@@ -163,7 +163,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@github.com:losalamos/Draco.git Draco-redmine.git"
+      run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
+      run "chmod -R g+rwX Draco-redmine.git"
     fi
     ;;
 esac
@@ -199,7 +200,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+      run "git clone --mirror git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+      run "chmod -R g+rwX jayenne-redmine.git"
     fi
     ;;
 esac
@@ -234,7 +236,8 @@ case ${target} in
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
-      run "git clone --bare git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+      run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+      run "chmod -R g+rwX capsaicin-redmine.git"
     fi
     ;;
 esac
