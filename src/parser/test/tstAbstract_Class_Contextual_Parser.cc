@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Tue Nov  9 14:34:11 2010
  * \brief  Test the Abstract_Class_Contextual_Parser template
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -387,7 +387,7 @@ void test(UnitTest &ut) {
   cout << parent->name() << endl;
 
   ut.check(tokens.error_count() == 0, "parsed without error");
-  ut.check(parent, "created parent", true);
+  ut.check(parent != nullptr, "created parent", true);
   ut.check(parent->name() == "son", "parent is son");
   ut.check(parent->magic() == 42, "context");
 }

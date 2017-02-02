@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2016 Sep 22
 # brief  Setup MPI Vendors
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
@@ -26,9 +26,7 @@
 # DRACO_C4                   MPI|SCALAR
 # C4_SCALAR                  BOOL
 # C4_MPI                     BOOL
-#
 #------------------------------------------------------------------------------#
-
 include( FeatureSummary )
 
 ##---------------------------------------------------------------------------##
@@ -174,27 +172,22 @@ macro( setupOpenMPI )
     message( FATAL_ERROR "OpenMPI version < 1.4 found." )
   endif()
 
-  # Setting mpi_paffinity_alone to 0 allows parallel ctest to
-  # work correctly.  MPIEXEC_POSTFLAGS only affects MPI-only
-  # tests (and not MPI+OpenMP tests).
+  # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
+  # MPIEXEC_POSTFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
   if( "$ENV{GITLAB_CI}" STREQUAL "true" )
     set(runasroot "--allow-run-as-root")
   endif()
 
-  # This flag also shows up in
-  # jayenne/pkg_tools/run_milagro_test.py and regress_funcs.py.
+  # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
+  # regress_funcs.py.
   if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
     set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
-    # (2015-04-08) Flags provided by Sam Gutierrez:
-    # "-mca hwloc_base_binding_policy none"
-
-    # (2016-12-14) Replace the above with a new set of flags that are used by
-    # MCATK and EAP code projects. These options appear to work correctly for
-    # running concurrent unit tests on a node.
-    set( MPIEXEC_POSTFLAGS "-mca btl self,vader -bind-to none ${runasroot}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+    # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
+    # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
+    set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
+      "extra mpirun flags (list)." FORCE)
   endif()
 
   # Find cores/cpu, cpu/node, hyperthreading
@@ -267,32 +260,36 @@ macro( setupCrayMPI )
     endif()
   endif()
 
-  # According to email from Mike McKay (2013/04/18), we might
-  # need to set the the mpirun command to something like:
-  #
-  # setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}
-  # aprun ... -d ${MPI_CORES_PER_CPU} -n [0-9]+
-
   query_topology()
 
+  # -b        Bypass transfer of application executable to the compute node.
+  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
+  # -q        Quiet
+  # -m 1400m  Reserve 1.4 GB of RAM per PE. Trinitite/Trinity has 4GB/core for
+  #           haswells, 1.4GB/core for KNL
+  # -F shared enabled shared mode to allow multiple applications to run on a
+  #           single node.
+  set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+
   # Extra flags for OpenMP + MPI
-  # -m 1400m reserves 1.4 GB per core when running with MAPN.
-  # Trinitite/Trinity has 4GB/node for haswells
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_POSTFLAGS "-q -b -m 1400m -d $ENV{OMP_NUM_THREADS}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+    # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
+    # -n #  number of processes
+    # -N #  number of processes per node
+    # -S #  number of processes per numa node
+    # -d #  cpus-per-pe
+    # -T    sync-output
+    # -cc depth PEs are constrained to CPUs with a distance of depth between
+    #       them so each PE's threads can be constrained to the CPUs closest to
+    #       the PE's CPU.
+    set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
+      CACHE STRING "extra mpirun flags (list)." FORCE)
   else()
     message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          all OMP tests will be disabled." )
   endif()
-
-  # -b        Bypass transfer of application executable to the compute node.
-  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
-  # -q        Quiet
-  # -m 1400m     Reserve 1.4 GB of RAM per PE.
-  set( MPIEXEC_POSTFLAGS "-q -b -m 1400m" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
 
 endmacro()
 
