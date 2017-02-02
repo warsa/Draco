@@ -386,50 +386,45 @@ void CellDef::redefineCellDef(
         old_node = n;
     }
     node_map[old_node] = new_node;
-  }
-  else if (name == "hexahedron")
-  {
-      // Arbitrarily assign the first quad and the associated nodes in the
-      // old and the new cell definitions to be the same. This assumption is
-      // necessary because the cell definitions do not assume a specific
-      // orientation relative to any coordinate system. The transformed cell
-      // may be rotated about it's coordinate system relative to the input
-      // cell definition.
-      int quad = 0;
-      vector_int new_node_count(nnodes, 0);
-      vector_int old_node_count(nnodes, 0);
-      for (size_t n = 0; n < ordered_sides[quad].size(); n++)
-      {
-          int new_node = new_ordered_sides[quad][n];
-          int old_node = ordered_sides[quad][n];
-          node_map[old_node] = new_node;
-          for (size_t s = 0; s < nsides; s++) {
-              if (std::count(new_ordered_sides[s].begin(), new_ordered_sides[s].end(),
-                             new_node) > 0)
-                  for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
-                      ++new_node_count[new_ordered_sides[s][c]];
-              
-              if (std::count(ordered_sides[s].begin(), ordered_sides[s].end(),
-                             old_node) > 0)
-                  for (size_t c = 0; c < ordered_sides[s].size(); c++)
-                      ++old_node_count[ordered_sides[s][c]];
-          }
-          // The node located diagonally across the hexahedron relative to
-          // the first node will have a count of zero from the previous loop.
-          for (size_t c = 0; c < nnodes; c++) {
-              if (new_node_count[c] == 0)
-                  new_node = c;
-              if (old_node_count[c] == 0)
-                  old_node = c;
-          }
-          node_map[old_node] = new_node;
-          std::fill(new_node_count.begin(), new_node_count.end(), 0);
-          std::fill(old_node_count.begin(), old_node_count.end(), 0);
+  } else if (name == "hexahedron") {
+    // Arbitrarily assign the first quad and the associated nodes in the
+    // old and the new cell definitions to be the same. This assumption is
+    // necessary because the cell definitions do not assume a specific
+    // orientation relative to any coordinate system. The transformed cell
+    // may be rotated about it's coordinate system relative to the input
+    // cell definition.
+    int quad = 0;
+    vector_int new_node_count(nnodes, 0);
+    vector_int old_node_count(nnodes, 0);
+    for (size_t n = 0; n < ordered_sides[quad].size(); n++) {
+      int new_node = new_ordered_sides[quad][n];
+      int old_node = ordered_sides[quad][n];
+      node_map[old_node] = new_node;
+      for (size_t s = 0; s < nsides; s++) {
+        if (std::count(new_ordered_sides[s].begin(), new_ordered_sides[s].end(),
+                       new_node) > 0)
+          for (size_t c = 0; c < new_ordered_sides[s].size(); c++)
+            ++new_node_count[new_ordered_sides[s][c]];
+
+        if (std::count(ordered_sides[s].begin(), ordered_sides[s].end(),
+                       old_node) > 0)
+          for (size_t c = 0; c < ordered_sides[s].size(); c++)
+            ++old_node_count[ordered_sides[s][c]];
       }
-  }
-  else
-  {
-      if (ndim == 2) // POLYGON
+      // The node located diagonally across the hexahedron relative to
+      // the first node will have a count of zero from the previous loop.
+      for (size_t c = 0; c < nnodes; c++) {
+        if (new_node_count[c] == 0)
+          new_node = c;
+        if (old_node_count[c] == 0)
+          old_node = c;
+      }
+      node_map[old_node] = new_node;
+      std::fill(new_node_count.begin(), new_node_count.end(), 0);
+      std::fill(old_node_count.begin(), old_node_count.end(), 0);
+    }
+  } else {
+    if (ndim == 2) // POLYGON
     {
       // Arbitrarily assign the first node in the old and the new cell
       // definitions to be the same. This assumption is necessary because
