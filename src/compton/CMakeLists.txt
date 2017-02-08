@@ -51,6 +51,7 @@ include_directories(
 
 add_component_library(
    TARGET       Lib_compton
+   TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME compton
    SOURCES      "${sources}"
    VENDOR_LIST "NWA"

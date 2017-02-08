@@ -19,6 +19,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <stdexcept>
 
 namespace rtt_compton_test {
 
@@ -30,23 +31,21 @@ using rtt_dsxx::soft_equiv;
 //---------------------------------------------------------------------------//
 
 //!  Tests the Eospac constructor and access routines.
-void compton_file_test(/*rtt_dsxx::UnitTest &ut*/) {
+void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
   std::cout << "\nTest of C++ code calling NWA routines\n" << std::endl;
 
-  //ITFAILS;
+  ITFAILS;
 }
 }
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  //rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
-  //try {
-  // >>> UNIT TESTS
-  rtt_compton_test::compton_file_test();
-  // rtt_compton_test::cdi_eospac_except_test(ut);
-  // rtt_compton_test::cdi_eospac_tpack(ut);
-  //}
-  //UT_EPILOG(ut);
+  rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
+  try {
+    // >>> UNIT TESTS
+    rtt_compton_test::compton_file_test(ut);
+  }
+  UT_EPILOG(ut);
 }
