@@ -35,30 +35,8 @@ pdir=$ddir
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   t[rt]-fe* | t[rt]-login* )
-    environments="intel17env" ;;
+    environments="intel17env intel17env-knl" ;;
 esac
-function intel16env()
-{
-run "module load user_contrib friendly-testing"
-run "module unload ndi metis parmetis superlu-dist trilinos"
-run "module unload lapack gsl intel"
-run "module unload cmake numdiff"
-run "module unload intel gcc"
-run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
-run "module unload papi perftools"
-run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module load gsl/2.1"
-run "module load cmake/3.6.2 numdiff"
-run "module load trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
-run "module load ndi random123 eospac/6.2.4"
-run "module list"
-CC=`which cc`
-CXX=`which CC`
-FC=`which ftn`
-export CRAYPE_LINK_TYPE=dynamic
-export OMP_NUM_THREADS=16
-}
 
 function intel17env()
 {
@@ -71,7 +49,33 @@ run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview intel"
-run "module load intel/17.0.1"
+run "module load intel/17.0.1 craype-hugepages4M"
+run "module load gsl/2.1"
+run "module load cmake/3.7.1 numdiff"
+run "module load trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
+run "module load ndi random123 eospac/6.2.4"
+run "module list"
+CC=`which cc`
+CXX=`which CC`
+FC=`which ftn`
+export CRAYPE_LINK_TYPE=dynamic
+export OMP_NUM_THREADS=16
+export TARGET=haswell
+}
+
+function intel17env-knl()
+{
+run "module load user_contrib friendly-testing"
+run "module unload ndi metis parmetis superlu-dist trilinos"
+run "module unload lapack gsl intel"
+run "module unload cmake numdiff"
+run "module unload intel gcc"
+run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
+run "module unload papi perftools"
+run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview intel"
+run "module load intel/17.0.1 craype-hugepages4M"
+run "module swap craype-haswell craype-mic-knl"
 run "module load gsl/2.1"
 run "module load cmake/3.6.2 numdiff"
 run "module load trilinos/12.8.1 superlu-dist/4.3 metis/5.1.0 parmetis/4.0.3"
@@ -82,28 +86,8 @@ CXX=`which CC`
 FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
 export OMP_NUM_THREADS=16
+export TARGET=knl
 }
-# function intel14env()
-# {
-# run "module load friendly-testing user_contrib"
-# run "module unload ndi ParMetis SuperLU_DIST trilinos"
-# run "module unload lapack gsl intel"
-# run "module unload cmake numdiff svn"
-# run "module unload PrgEnv-intel PrgEnv-pgi"
-# run "module unload papi perftools"
-# run "module load PrgEnv-intel"
-# run "module unload xt-libsci xt-totalview"
-# run "module swap intel intel/14.0.4.211"
-# run "module load gsl/1.15"
-# run "module load cmake/3.3.2 numdiff svn"
-# run "module load trilinos SuperLU_DIST"
-# run "module load ParMetis ndi random123 eospac/6.2.4"
-# run "module list"
-# CC=`which cc`
-# CXX=`which CC`
-# FC=`which ftn`
-# export OMP_NUM_THREADS=8
-# }
 
 # ============================================================================
 # ====== Normally, you do not edit anything below this line ==================
@@ -213,7 +197,7 @@ for env in $environments; do
     # Run the tests on the back-end.
     export steps="test"
     cmd="msub -V $access_queue -l walltime=08:00:00 \
--l nodes=2:haswell:ppn=${ppn} -j oe \
+-l nodes=2:${TARGET}:ppn=${ppn} -j oe \
 -o $source_prefix/logs/release-$buildflavor-$version-t.log \
 $draco_script_dir/release_cray.msub"
     echo -e "\nTest $package for $buildflavor-$version."

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
 # brief  Instructions for building Doxygen documentation
-# note   Copyright (C) 2010-2016 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2017 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -93,6 +93,7 @@ if( DOXYGEN_FOUND )
             -Ddoxygen_latex_output=${DOXYGEN_HTML_OUTPUT}/../latex
             -Dhtmlheader=${htmlheader}
             -Dhtmlfooter=${htmlfooter}
+            -Dproject_logo=dragon.jpg
             -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
     DEPENDS ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
     # DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"

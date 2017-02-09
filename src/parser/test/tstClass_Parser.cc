@@ -3,7 +3,7 @@
  * \file   parser/test/tstClass_Parser.cc
  * \author Kent Budge
  * \date   Mon Aug 28 07:36:50 2006
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -23,9 +23,7 @@ using namespace rtt_parser;
 //---------------------------------------------------------------------------//
 class DummyClass {
 public:
-  DummyClass(double const insouciance) : insouciance(insouciance) {
-    Require(insouciance >= 0.0);
-  }
+  DummyClass(double const insouciance) : insouciance(insouciance) {}
 
   double Get_Insouciance() const { return insouciance; }
 
@@ -43,7 +41,7 @@ public:
 
   // MANAGEMENT
 
-  Class_Parse_Table();
+  Class_Parse_Table(bool is_indolent = false);
 
   // SERVICES
 
@@ -59,6 +57,8 @@ protected:
   // DATA
 
   double parsed_insouciance;
+
+  bool is_indolent;
 
 private:
   // IMPLEMENTATION
@@ -83,20 +83,32 @@ template <> SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
 }
 
 //---------------------------------------------------------------------------//
+template <>
+SP<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
+                                       bool const &is_indolent) {
+  return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens,
+                                                               is_indolent);
+}
+
+//---------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::parse_insouciance_(Token_Stream &tokens,
                                                        int) {
-  if (current_->parsed_insouciance >= 0.0) {
-    tokens.report_semantic_error("duplicate specification of insouciance");
-  }
+  tokens.check_semantics(current_->parsed_insouciance < 0.0,
+                         "duplicate specification of insouciance");
+
   current_->parsed_insouciance = parse_real(tokens);
   if (current_->parsed_insouciance < 0) {
     tokens.report_semantic_error("insouciance must be nonnegative");
     current_->parsed_insouciance = 1;
   }
+
+  if (current_->is_indolent) {
+    current_->parsed_insouciance = -current_->parsed_insouciance;
+  }
 }
 
 //---------------------------------------------------------------------------//
-Class_Parse_Table<DummyClass>::Class_Parse_Table()
+Class_Parse_Table<DummyClass>::Class_Parse_Table(bool const is_indolent)
     : parsed_insouciance(-1.0) // sentinel value
 {
   if (!parse_table_is_initialized_) {
@@ -109,14 +121,16 @@ Class_Parse_Table<DummyClass>::Class_Parse_Table()
 
     parse_table_is_initialized_ = true;
   }
+
+  this->is_indolent = is_indolent;
+
   current_ = this;
 }
 
 //---------------------------------------------------------------------------//
 void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
-  if (parsed_insouciance < 0) {
-    tokens.report_semantic_error("insouciance was not specified");
-  }
+  tokens.check_semantics(is_indolent || parsed_insouciance >= 0,
+                         "insouciance was not specified");
 }
 
 //---------------------------------------------------------------------------//
@@ -137,18 +151,37 @@ void tstClass_Parser(UnitTest &ut) {
 
   SP<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
-  if (dummy != SP<DummyClass>()) {
-    ut.passes("parsed the class object");
+  ut.check(dummy != nullptr, "parsed the class object", true);
+  ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
 
-    if (dummy->Get_Insouciance() == 3.3) {
-      ut.passes("parsed the insouciance correctly");
-    } else {
-      ut.failure("did NOT parse the insouciance correctly");
-    }
-  } else {
-    cout << tokens.messages() << endl;
-    ut.failure("did NOT parse the class object");
+  tokens.rewind();
+  dummy = parse_class<DummyClass>(tokens, true);
+
+  ut.check(dummy != nullptr, "parsed the indolent class object", true);
+  ut.check(dummy->Get_Insouciance() == -3.3,
+           "parsed the indolent insouciance correctly");
+
+  // Test that missing end is caught.
+
+  text = "insouciance = 3.3\n";
+  String_Token_Stream etokens(text);
+
+  bool good = false;
+  try {
+    SP<DummyClass> dummy = parse_class<DummyClass>(etokens);
+  } catch (Syntax_Error &) {
+    good = true;
   }
+  ut.check(good, "catches missing end");
+
+  tokens.rewind();
+  good = false;
+  try {
+    SP<DummyClass> dummy = parse_class<DummyClass>(etokens, true);
+  } catch (Syntax_Error &) {
+    good = true;
+  }
+  ut.check(good, "indolent catches missing end");
 }
 
 //---------------------------------------------------------------------------//

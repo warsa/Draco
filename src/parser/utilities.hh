@@ -3,7 +3,7 @@
  * \file   parser/utilities.hh
  * \author Kent G. Budge
  * \brief  Declarations of a number of useful parsing utilities.
- * \note   Copyright (C) 2016 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This file declares functions that parse certain common constructs in a
@@ -96,6 +96,23 @@ parse_temperature(Token_Stream &, unsigned number_of_variables,
  * the specification is not valid.
  */
 template <typename Class> rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens);
+
+//----------------------------------------------------------------------------//
+/*! Template for parse function that produces a class object.
+ *
+ * This function resembles the previous one, but takes a second argument supply a context
+ * that may alter the parser behavior..
+ *
+ * \param tokens Token stream from which to parse the user input.
+ *
+ * \param context Context for the parse.
+ *
+ * \return A pointer to an object matching the user specification, or NULL if
+ * the specification is not valid.
+ */
+
+template <typename Class, typename Context>
+rtt_dsxx::SP<Class> parse_class(Token_Stream &tokens, Context const &context);
 
 } // rtt_parser
 
