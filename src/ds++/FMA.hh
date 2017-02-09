@@ -24,6 +24,7 @@
 #define rtt_dsxx_FMA_hh
 
 #include "ds++/config.h"
+#include <cmath>
 
 //---------------------------------------------------------------------------//
 // HAVE_HARDWARE_FMA is set by config/platform_checks.cmake.
