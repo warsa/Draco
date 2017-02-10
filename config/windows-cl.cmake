@@ -49,8 +49,9 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
-  # /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
-  set( CMAKE_C_FLAGS "/W2 /Gy /DWIN32 /D_WINDOWS /MP${numproc} /wd4251" )
+  # /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have
+  # dll-interface to be used by clients of class 'type2'
+  set( CMAKE_C_FLAGS "/W2 /Gy /Gm /fp:precise /arch:AVX2 /DWIN32 /D_WINDOWS /MP${numproc} /wd4251" )
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /DDEBUG /D_DEBUG" ) # /Ob0
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
@@ -71,10 +72,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   # Suppress some MSVC warnings about "unsafe" pointer use.
   if(MSVC_VERSION GREATER 1399)
-    set( CMAKE_C_FLAGS
-      "${CMAKE_C_FLAGS} /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
-    set( CMAKE_CXX_FLAGS
-      "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
+    string( APPEND CMAKE_C_FLAGS
+      " /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
+    string( APPEND CMAKE_CXX_FLAGS
+      "$ /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
     #set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
     #set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
   endif()
