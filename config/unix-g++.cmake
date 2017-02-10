@@ -79,7 +79,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
      # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
    #endif()
    set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
-   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
+   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -flto -DNDEBUG" )
 # -ffast-math -mtune=native -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
    set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
