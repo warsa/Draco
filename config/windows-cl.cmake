@@ -61,12 +61,13 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if(MSVC_VERSION GREATER 1399)
     string( APPEND CMAKE_C_FLAGS
       " /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
-    #set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
+    #string( APPEND CMAKE_C_FLAGS_DEBUG
+    #        "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
   endif()
 
   # If building static libraries, inlcude debugging information in the library.
   if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-    set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /Z7"   )
+    string( APPEND CMAKE_C_FLAGS_DEBUG " /Z7"   )
   endif()
 
   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa" )
