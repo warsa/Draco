@@ -57,28 +57,24 @@ if( NOT CXX_FLAGS_INITIALIZED )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
   set( CMAKE_C_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Zi /DDEBUG" )
 
+  # Suppress some MSVC warnings about "unsafe" pointer use.
+  if(MSVC_VERSION GREATER 1399)
+    string( APPEND CMAKE_C_FLAGS
+      " /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
+    #string( APPEND CMAKE_C_FLAGS_DEBUG
+    #        "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
+  endif()
+
+  # If building static libraries, inlcude debugging information in the library.
+  if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
+    string( APPEND CMAKE_C_FLAGS_DEBUG " /Z7"   )
+  endif()
+
   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} /EHa" )
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" )
   set( CMAKE_CXX_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "/${MD_or_MT} /O2 /Zi /DDEBUG" )
-
-  # If building static libraries, inlcude debugging information in the
-  # library.
-  if( ${DRACO_LIBRARY_TYPE} MATCHES "STATIC" )
-    set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /Z7"   )
-    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7" )
-  endif()
-
-  # Suppress some MSVC warnings about "unsafe" pointer use.
-  if(MSVC_VERSION GREATER 1399)
-    string( APPEND CMAKE_C_FLAGS
-      " /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
-    string( APPEND CMAKE_CXX_FLAGS
-      "$ /D_CRT_SECURE_NO_DEPRECATE /D_SCL_SECURE_NO_DEPRECATE /D_SECURE_SCL=0" )
-    #set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
-    #set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_HAS_ITERATOR_DEBUGGING=0" )
-  endif()
 
 endif()
 
