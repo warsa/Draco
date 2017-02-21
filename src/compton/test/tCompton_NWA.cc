@@ -127,11 +127,12 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   std::shared_ptr<rtt_compton::Compton_NWA> compton_test;
 
   // make a small fake group structure to pass in:
-  std::vector<double> test_groups(4, 0.0);
+  std::vector<double> test_groups(5, 0.0);
   test_groups[0] = 20.0;
   test_groups[1] = 30.0;
   test_groups[2] = 40.0;
   test_groups[3] = 50.0;
+  test_groups[4] = 60.0;
 
   // set the number of angular points to retrieve (legendre or otherwise)
   size_t nxi = 3;
@@ -161,6 +162,8 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(grp_bds[2], test_groups[2]))
     ITFAILS;
   if (!soft_equiv(grp_bds[3], test_groups[3]))
+    ITFAILS;
+  if (!soft_equiv(grp_bds[4], test_groups[4]))
     ITFAILS;
 
   if (!soft_equiv(compton_test->get_min_etemp(), 0.0)) {
