@@ -54,8 +54,10 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // Check some of the data in the NWA-opened file:
   std::vector<double> grp_bds = compton_test->get_group_bounds();
+  std::vector<double> etemp_evals = compton_test->get_etemp_pts();
 
   Ensure(grp_bds.size() == 2);
+  Ensure(etemp_evals.size() == 7);
 
   if (!soft_equiv(grp_bds[0], 3.91389000e-02)) {
     std::cout << "Lower group bound read incorrectly!" << std::endl;
@@ -63,6 +65,15 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
   if (!soft_equiv(grp_bds[1], 5.87084000e-02)) {
     std::cout << "Upper group bound read incorrectly!" << std::endl;
+    ITFAILS;
+  }
+
+  if (!soft_equiv(etemp_evals[0], 1.76377944e-05)) {
+    std::cout << "Etemp eval read incorrectly!" << std::endl;
+    ITFAILS;
+  }
+  if (!soft_equiv(etemp_evals[6], 6.75507064e-04)) {
+    std::cout << "Etemp eval read incorrectly!" << std::endl;
     ITFAILS;
   }
 
@@ -98,6 +109,10 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  // get the number of xi evals in the library (we know it should be 4)
+  if (compton_test->get_num_xi() != 4)
     ITFAILS;
 
   if (ut.numFails == 0) {
