@@ -151,13 +151,13 @@ void tstClass_Parser(UnitTest &ut) {
 
   SP<DummyClass> dummy = parse_class<DummyClass>(tokens);
 
-  ut.check(dummy, "parsed the class object", true);
+  ut.check(dummy != nullptr, "parsed the class object", true);
   ut.check(dummy->Get_Insouciance() == 3.3, "parsed the insouciance correctly");
 
   tokens.rewind();
   dummy = parse_class<DummyClass>(tokens, true);
 
-  ut.check(dummy, "parsed the indolent class object", true);
+  ut.check(dummy != nullptr, "parsed the indolent class object", true);
   ut.check(dummy->Get_Insouciance() == -3.3,
            "parsed the indolent insouciance correctly");
 

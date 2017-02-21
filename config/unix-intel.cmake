@@ -101,6 +101,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" CACHE
 if( NOT CRAY_PE )
  include(CheckCCompilerFlag)
  check_c_compiler_flag(-xHost HAS_XHOST)
+ toggle_compiler_flag( HAS_XHOST "-xHost" "C;CXX" "")
 #else()
  # -craype-verbose
 endif()
