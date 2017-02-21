@@ -15,17 +15,19 @@
 #define __compton_Compton_NWA_hh__
 
 // C++ standard library dependencies
-#include "etemp_interp.hh"
-#include "multigroup_compton_data.hh"
 #include <iostream>
 #include <memory>
 #include <vector>
+// headers provided in compton NWA include directory
+#include "etemp_interp.hh"
+#include "multigroup_compton_data.hh"
 
 namespace rtt_compton {
 
 class Compton_NWA {
 
 private:
+  //! Shared pointer to an electron interpolation object:
   std::shared_ptr<etemp_interp> ei;
 
 public:
@@ -48,10 +50,13 @@ public:
   //! Retrieve max electron temperature for the given library:
   double get_max_etemp() { return ei->get_max_etemp(); }
 
+  //! Retrieve number of groups in the given multigroup structure:
   size_t get_num_groups() { return ei->get_Cdata()->get_n_grps(); }
+
+  //! Retrieve number of angular moments/evaluation points in the lib data:
   size_t get_num_xi() { return ei->get_Cdata()->get_n_xi_pts(); }
 
-  //! Retrieve electron temperature eval points (largely for diagnostic use)
+  //! Retrieve electron temperature eval points (diagnostic use)
   std::vector<double> get_etemp_pts() { return ei->get_etemp_pts(); }
 };
 }
