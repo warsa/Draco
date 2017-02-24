@@ -351,6 +351,12 @@ int main(int argc, char *argv[]) {
     tstVersion(ut, argv[0]);
 
     tstPaths(ut, argv[0]);
+
+    // Silenced version
+    ScalarUnitTest ssut(argc, argv, release, messages, false);
+    messages.str("");
+    ssut.check(true, "this test must pass");
+    ut.check(messages.str().size() == 0, "verbose==false is silent");
   }
 
   catch (rtt_dsxx::assertion &err) {
