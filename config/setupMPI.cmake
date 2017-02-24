@@ -488,32 +488,36 @@ macro( setupCrayMPI )
     endif()
   endif()
 
-  # According to email from Mike McKay (2013/04/18), we might
-  # need to set the the mpirun command to something like:
-  #
-  # setenv OMP_NUM_THREADS ${MPI_CORES_PER_CPU}
-  # aprun ... -d ${MPI_CORES_PER_CPU} -n [0-9]+
-
   query_topology()
 
+  # -b        Bypass transfer of application executable to the compute node.
+  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
+  # -q        Quiet
+  # -m 1400m  Reserve 1.4 GB of RAM per PE. Trinitite/Trinity has 4GB/core for
+  #           haswells, 1.4GB/core for KNL
+  # -F shared enabled shared mode to allow multiple applications to run on a
+  #           single node.
+  set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
+    # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
+    # -n #  number of processes
+    # -N #  number of processes per node
+    # -S #  number of processes per numa node
+    # -d #  cpus-per-pe
+    # -T    sync-output
+    # -cc depth PEs are constrained to CPUs with a distance of depth between
+    #       them so each PE's threads can be constrained to the CPUs closest to
+    #       the PE's CPU.
+    set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
+      CACHE STRING "extra mpirun flags (list)." FORCE)
   # Extra flags for OpenMP + MPI
-  # -m 1400m reserves 1.4 GB per core when running with MAPN.
-  # Trinitite/Trinity has 4GB/node for haswells
   if( DEFINED ENV{OMP_NUM_THREADS} )
-    set( MPIEXEC_OMP_POSTFLAGS "-q -b -m 1400m -d $ENV{OMP_NUM_THREADS}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
+
   else()
     message( STATUS "
 WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
          all OMP tests will be disabled." )
   endif()
-
-  # -b        Bypass transfer of application executable to the compute node.
-  # -cc none  Do not bind threads to a CPU within the assigned NUMA node.
-  # -q        Quiet
-  # -m 1400m     Reserve 1.4 GB of RAM per PE.
-  set( MPIEXEC_POSTFLAGS "-q -b -m 1400m" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
 
 endmacro()
 
