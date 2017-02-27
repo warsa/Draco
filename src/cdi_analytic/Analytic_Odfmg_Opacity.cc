@@ -5,9 +5,7 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Analytic_Odfmg_Opacity class member definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Analytic_Odfmg_Opacity.hh"
@@ -53,7 +51,7 @@ Analytic_Odfmg_Opacity::Analytic_Odfmg_Opacity(const sf_double &groups,
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor.
- * 
+ *
  * This constructor rebuilds and Analytic_Odfmg_Opacity from a
  * vector<char> that was created by a call to pack().  It can only rebuild
  * Analytic_Model types that have been registered in the

@@ -5,16 +5,11 @@
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  Pseudo_Line_Analytic_Odfmg_Opacity class member definitions.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include <fstream>
-
 #include "Pseudo_Line_Analytic_Odfmg_Opacity.hh"
-
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "cdi/CDI.hh"
 #include "ds++/DracoMath.hh"
@@ -71,7 +66,8 @@ void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(
 //---------------------------------------------------------------------------//
 Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
     const sf_double &groups, const sf_double &bands,
-    rtt_cdi::Reaction reaction_in, SP<Expression const> const &continuum,
+    rtt_cdi::Reaction reaction_in,
+    std::shared_ptr<Expression const> const &continuum,
     int number_of_lines, double line_peak, double line_width,
     int number_of_edges, double edge_ratio, double Tref, double Tpow,
     double emin, double emax, Averaging averaging, unsigned qpoints,
@@ -125,7 +121,7 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
 // OPACITY INTERFACE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
- * \brief Return the group opacities given a scalar temperature and density. 
+ * \brief Return the group opacities given a scalar temperature and density.
  *
  * Given a scalar temperature and density, return the group opacities
  * (vector<double>) for the reaction type specified by the constructor.  The

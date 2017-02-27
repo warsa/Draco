@@ -5,17 +5,13 @@
  * \date   Tue Oct  9 15:50:53 2001
  * \brief  GrayOpacity and Multigroup opacity test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "DummyGrayOpacity.hh"
 #include "DummyMultigroupOpacity.hh"
 #include "DummyOdfmgOpacity.hh"
 #include "ds++/Release.hh"
-#include "ds++/SP.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
@@ -25,7 +21,6 @@ using namespace std;
 using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
 using rtt_cdi::OdfmgOpacity;
-using rtt_dsxx::SP;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -34,13 +29,13 @@ using rtt_dsxx::soft_equiv;
 
 void simple_tests(rtt_dsxx::UnitTest &ut) {
   // make SPs to gray and multigroup opacities
-  SP<GrayOpacity> gray;
-  SP<MultigroupOpacity> mg;
-  SP<OdfmgOpacity> odfmg;
+  std::shared_ptr<GrayOpacity> gray;
+  std::shared_ptr<MultigroupOpacity> mg;
+  std::shared_ptr<OdfmgOpacity> odfmg;
 
   // Assign and check gray opacity
-  SP<rtt_cdi_test::DummyGrayOpacity> gray_total;
-  SP<rtt_cdi_test::DummyGrayOpacity> gray_abs;
+  std::shared_ptr<rtt_cdi_test::DummyGrayOpacity> gray_total;
+  std::shared_ptr<rtt_cdi_test::DummyGrayOpacity> gray_abs;
   gray_total.reset(new rtt_cdi_test::DummyGrayOpacity());
   gray_abs.reset(new rtt_cdi_test::DummyGrayOpacity(rtt_cdi::ABSORPTION));
 
@@ -86,8 +81,8 @@ void simple_tests(rtt_dsxx::UnitTest &ut) {
   }
 
   // Assign and check multigroup opacity
-  SP<rtt_cdi_test::DummyMultigroupOpacity> mg_total;
-  SP<rtt_cdi_test::DummyMultigroupOpacity> mg_abs;
+  std::shared_ptr<rtt_cdi_test::DummyMultigroupOpacity> mg_total;
+  std::shared_ptr<rtt_cdi_test::DummyMultigroupOpacity> mg_abs;
   mg_total.reset(new rtt_cdi_test::DummyMultigroupOpacity());
   mg_abs.reset(new rtt_cdi_test::DummyMultigroupOpacity(rtt_cdi::ABSORPTION));
 
@@ -153,8 +148,8 @@ void simple_tests(rtt_dsxx::UnitTest &ut) {
   }
 
   // Assign and check odfmg opacity
-  SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_total;
-  SP<rtt_cdi_test::DummyOdfmgOpacity> odfmg_abs;
+  std::shared_ptr<rtt_cdi_test::DummyOdfmgOpacity> odfmg_total;
+  std::shared_ptr<rtt_cdi_test::DummyOdfmgOpacity> odfmg_abs;
   odfmg_total.reset(new rtt_cdi_test::DummyOdfmgOpacity());
   odfmg_abs.reset(new rtt_cdi_test::DummyOdfmgOpacity(rtt_cdi::ABSORPTION));
 
@@ -228,7 +223,7 @@ void gray_opacity_test(rtt_dsxx::UnitTest &ut) {
   // Create a GrayOpacity object. //
   // ---------------------------- //
 
-  SP<GrayOpacity> spDGO;
+  std::shared_ptr<GrayOpacity> spDGO;
 
   if ((spDGO.reset(new rtt_cdi_test::DummyGrayOpacity())), spDGO)
     PASSMSG("SP to new GrayOpacity object created.");
@@ -318,7 +313,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   // Create a Dummy Multigroup Opacity object. //
   // ----------------------------------------- //
 
-  SP<MultigroupOpacity> spDmgO;
+  std::shared_ptr<MultigroupOpacity> spDmgO;
 
   if ((spDmgO.reset(new rtt_cdi_test::DummyMultigroupOpacity())), spDmgO) {
     ostringstream message;
@@ -435,7 +430,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   // functionality. Of course this functionality is not available through
   // CDI.
 
-  SP<rtt_cdi_test::DummyMultigroupOpacity> spDumMgOp;
+  std::shared_ptr<rtt_cdi_test::DummyMultigroupOpacity> spDumMgOp;
   if ((spDumMgOp.reset(new rtt_cdi_test::DummyMultigroupOpacity())),
       spDumMgOp) {
     ostringstream message;
@@ -490,7 +485,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   // Create a Dummy Odfmg Opacity object. //
   // ----------------------------------------- //
 
-  SP<OdfmgOpacity> spDumOdfmgOpacity;
+  std::shared_ptr<OdfmgOpacity> spDumOdfmgOpacity;
 
   if ((spDumOdfmgOpacity.reset(new rtt_cdi_test::DummyOdfmgOpacity())),
       spDumOdfmgOpacity) {
@@ -638,7 +633,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   // functionality. Of course this functionality is not available through
   // CDI.
 
-  SP<rtt_cdi_test::DummyOdfmgOpacity> spDumMgOp;
+  std::shared_ptr<rtt_cdi_test::DummyOdfmgOpacity> spDumMgOp;
   if ((spDumMgOp.reset(new rtt_cdi_test::DummyOdfmgOpacity())), spDumMgOp) {
     ostringstream message;
     message << "SP to new DummyOdfmgOpacity object created.";

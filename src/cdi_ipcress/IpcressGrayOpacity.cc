@@ -5,19 +5,14 @@
  * \date   Mon Jan 22 14:11:10 2001
  * \brief  IpcressGrayOpacity templated class implementation file.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "IpcressGrayOpacity.hh"
-#include "IpcressFile.hh"      // we have smart pointers to
-                               // IpcressFile objects.
-#include "IpcressDataTable.hh" // we have a smart pointer to a
-                               // IpcressDataTable object.
-#include "ds++/Assert.hh"      // we make use of Require()
+#include "IpcressFile.hh"
+#include "IpcressDataTable.hh"
+#include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
-#include "ds++/SP.hh"
 
 namespace rtt_cdi_ipcress {
 
@@ -28,11 +23,11 @@ namespace rtt_cdi_ipcress {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Constructor for IpcressGrayOpacity object.
- * 
+ *
  * See IpcressGrayOpacity.hh for details.
  */
 IpcressGrayOpacity::IpcressGrayOpacity(
-    rtt_dsxx::SP<IpcressFile const> const &spIpcressFile, size_t in_materialID,
+    std::shared_ptr<IpcressFile const> const &spIpcressFile, size_t in_materialID,
     rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction)
     : ipcressFilename(spIpcressFile->getDataFilename()),
       materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
@@ -59,7 +54,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Unpacking constructor for IpcressGrayOpacity object.
- * 
+ *
  * See IpcressGrayOpacity.hh for details.
  */
 IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
@@ -117,7 +112,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
   Ensure(unpacker.get_ptr() == &packed[0] + packed.size());
 
   // build a new IpcressFile
-  rtt_dsxx::SP<IpcressFile> spIpcressFile;
+  std::shared_ptr<IpcressFile> spIpcressFile;
   spIpcressFile.reset(new IpcressFile(ipcressFilename));
   Check(spIpcressFile);
 
@@ -147,7 +142,7 @@ IpcressGrayOpacity::IpcressGrayOpacity(std::vector<char> const &packed)
 //---------------------------------------------------------------------------//
 /*!
  * \brief Opacity accessor that returns a single opacity (or a
- *     vector of opacities for the multigroup EnergyPolicy) that 
+ *     vector of opacities for the multigroup EnergyPolicy) that
  *     corresponds to the provided temperature and density.
  */
 double IpcressGrayOpacity::getOpacity(double targetTemperature,
