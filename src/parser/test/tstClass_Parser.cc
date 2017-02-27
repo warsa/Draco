@@ -75,15 +75,15 @@ Parse_Table Class_Parse_Table<DummyClass>::parse_table_;
 bool Class_Parse_Table<DummyClass>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
-template <> std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream
-                                                                &tokens) {
+template <>
+std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens);
 }
 
 //---------------------------------------------------------------------------//
 template <>
 std::shared_ptr<DummyClass> parse_class<DummyClass>(Token_Stream &tokens,
-                                       bool const &is_indolent) {
+                                                    bool const &is_indolent) {
   return parse_class_from_table<Class_Parse_Table<DummyClass>>(tokens,
                                                                is_indolent);
 }
@@ -133,8 +133,8 @@ void Class_Parse_Table<DummyClass>::check_completeness(Token_Stream &tokens) {
 
 //---------------------------------------------------------------------------//
 std::shared_ptr<DummyClass> Class_Parse_Table<DummyClass>::create_object() {
-  std::shared_ptr<DummyClass> Result = std::shared_ptr<DummyClass>(
-    new DummyClass(parsed_insouciance));
+  std::shared_ptr<DummyClass> Result =
+      std::shared_ptr<DummyClass>(new DummyClass(parsed_insouciance));
   return Result;
 }
 

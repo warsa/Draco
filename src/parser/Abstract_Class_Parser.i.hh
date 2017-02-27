@@ -15,10 +15,9 @@
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 Contextual_Parse_Functor<Abstract_Class, Context, get_context>::
-Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
-                           Token_Stream &,
-                           Context const &))
-  : f_(parse_function) {}
+    Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
+        Token_Stream &, Context const &))
+    : f_(parse_function) {}
 
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
@@ -102,11 +101,10 @@ void Abstract_Class_Parser<
  */
 template <typename Class, Parse_Table &get_parse_table(),
           std::shared_ptr<Class> &get_parsed_object(), typename Parse_Function>
-void Abstract_Class_Parser<
-    Class, get_parse_table, get_parsed_object,
-    Parse_Function>::register_child(string const &keyword,
-                                    std::shared_ptr<Class> parse_function(
-                                      Token_Stream &)) {
+void Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
+                           Parse_Function>::
+    register_child(string const &keyword,
+                   std::shared_ptr<Class> parse_function(Token_Stream &)) {
   using namespace rtt_parser;
 
   char *cptr = new char[keyword.size() + 1];

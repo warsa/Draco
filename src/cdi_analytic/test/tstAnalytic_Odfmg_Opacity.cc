@@ -510,7 +510,7 @@ void pseudo_line_opacity_test(UnitTest &ut) {
 
   // continuum
   std::shared_ptr<Expression const> const continuum(
-    new Constant_Expression(1, 1.0));
+      new Constant_Expression(1, 1.0));
 
   Pseudo_Line_Analytic_Odfmg_Opacity model(groups, bands, rtt_cdi::ABSORPTION,
                                            continuum,

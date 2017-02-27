@@ -8,9 +8,9 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include <sstream>
 
 using rtt_RTT_Format_Reader::RTT_Mesh_Reader;
@@ -57,7 +57,8 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       FAILMSG("Unexpected dimension.");
     }
 
-    vector<shared_ptr<Element_Definition>> const element_defs(mesh->get_element_defs());
+    vector<shared_ptr<Element_Definition>> const element_defs(
+        mesh->get_element_defs());
     for (size_t j = 0; j < element_defs.size(); ++j) {
       cout << "Element definition for element " << j << endl;
       element_defs[j]->print(cout);
@@ -139,7 +140,8 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
             static_cast<Element_Definition::Element_Type>(
                 element_types[representative_element]);
 
-        shared_ptr<Element_Definition const> type(new Element_Definition(type_index));
+        shared_ptr<Element_Definition const> type(
+            new Element_Definition(type_index));
 
         if (type->get_dimension() == ndim) {
           std::cout << " Elements with flags " + it->first

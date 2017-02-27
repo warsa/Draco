@@ -75,10 +75,9 @@ private:
 
 public:
   Pseudo_Line_Base(std::shared_ptr<Expression const> const &cont,
-                   int number_of_lines,
-                   double line_peak, double line_width, int number_of_edges,
-                   double edge_ratio, double Tref, double Tpow, double emin,
-                   double emax, unsigned seed);
+                   int number_of_lines, double line_peak, double line_width,
+                   int number_of_edges, double edge_ratio, double Tref,
+                   double Tpow, double emin, double emax, unsigned seed);
 
   Pseudo_Line_Base(string const &cont_file, int number_of_lines,
                    double line_peak, double line_width, int number_of_edges,

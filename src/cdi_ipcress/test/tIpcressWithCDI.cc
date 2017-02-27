@@ -89,9 +89,10 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
         spGFAnalytic, matid, rtt_cdi::ROSSELAND, rtt_cdi::ABSORPTION));
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
-    message << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
-            << "Al_BeCu.ipcress data." << endl
-            << "\t" << excpt.what();
+    message
+        << "Failed to create shared_ptr to new IpcressGrayOpacity object for "
+        << "Al_BeCu.ipcress data." << endl
+        << "\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;

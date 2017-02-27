@@ -33,7 +33,7 @@ namespace rtt_meshReaders {
 //===========================================================================//
 
 class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
-  : public rtt_meshReaders::Mesh_Reader {
+    : public rtt_meshReaders::Mesh_Reader {
 
   // NESTED CLASSES AND TYPEDEFS
 
@@ -59,7 +59,7 @@ class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
 
   std::map<std::string, std::set<int>> node_sets;
 
-  public:
+public:
   // CREATORS
 
   explicit Hex_Mesh_Reader(std::string filename);
@@ -107,14 +107,14 @@ class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
   std::map<std::string, std::set<int>> get_element_sets() const;
 
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-    get_element_types() const;
+  get_element_types() const;
 
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-    get_unique_element_types() const;
+  get_unique_element_types() const;
 
   size_t get_dims_ndim() const { return ndim; };
 
-  private:
+private:
   bool check_dims() const;
 
   // IMPLEMENTATION

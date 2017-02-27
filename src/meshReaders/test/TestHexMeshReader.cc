@@ -46,8 +46,8 @@ void runTest(UnitTest &ut) {
   }
 
   rtt_meshReaders_test::check_mesh(ut, mesh_1D, "slab");
-  vector<std::shared_ptr<Element_Definition>> element_defs
-    = mesh_1D.get_element_defs();
+  vector<std::shared_ptr<Element_Definition>> element_defs =
+      mesh_1D.get_element_defs();
   if (element_defs.size() > 0)
     FAILMSG("element defs is NOT empty for slab");
 

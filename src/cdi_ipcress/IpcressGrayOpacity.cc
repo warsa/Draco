@@ -9,8 +9,8 @@
 //---------------------------------------------------------------------------//
 
 #include "IpcressGrayOpacity.hh"
-#include "IpcressFile.hh"
 #include "IpcressDataTable.hh"
+#include "IpcressFile.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Packing_Utils.hh"
 
@@ -27,8 +27,9 @@ namespace rtt_cdi_ipcress {
  * See IpcressGrayOpacity.hh for details.
  */
 IpcressGrayOpacity::IpcressGrayOpacity(
-    std::shared_ptr<IpcressFile const> const &spIpcressFile, size_t in_materialID,
-    rtt_cdi::Model in_opacityModel, rtt_cdi::Reaction in_opacityReaction)
+    std::shared_ptr<IpcressFile const> const &spIpcressFile,
+    size_t in_materialID, rtt_cdi::Model in_opacityModel,
+    rtt_cdi::Reaction in_opacityReaction)
     : ipcressFilename(spIpcressFile->getDataFilename()),
       materialID(in_materialID), fieldNames(), opacityModel(in_opacityModel),
       opacityReaction(in_opacityReaction), energyPolicyDescriptor("gray"),

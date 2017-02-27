@@ -170,9 +170,10 @@ public:
    * \param opacityReaction The type of reaction rate that the current data set
    *     represents.
    */
-  IpcressMultigroupOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
-                           size_t materialID, rtt_cdi::Model opacityModel,
-                           rtt_cdi::Reaction opacityReaction);
+  IpcressMultigroupOpacity(
+      std::shared_ptr<IpcressFile const> const &spIpcressFile,
+      size_t materialID, rtt_cdi::Model opacityModel,
+      rtt_cdi::Reaction opacityReaction);
 
   /*!
    * \brief Unpacking constructor.

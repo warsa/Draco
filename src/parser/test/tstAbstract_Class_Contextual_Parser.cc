@@ -88,9 +88,9 @@ public:
 
   Parse_Table const &parse_table() const { return parse_table_; }
 
-  static void register_model(string const &keyword,
-                             std::shared_ptr<Parent> parse_function(
-                               Token_Stream &, int const &)) {
+  static void register_model(
+      string const &keyword,
+      std::shared_ptr<Parent> parse_function(Token_Stream &, int const &)) {
     Abstract_Class_Parser<Parent, get_parse_table_, get_parsed_object_,
                           Contextual_Parse_Functor<Parent, int, get_context_>>::
         register_child(keyword,
@@ -133,8 +133,8 @@ Parse_Table Class_Parse_Table<Parent>::parse_table_;
 /*
  * Specialization of the parse_class template function for T=Parent
  */
-template <> std::shared_ptr<Parent> parse_class(Token_Stream &tokens,
-                                                int const &context) {
+template <>
+std::shared_ptr<Parent> parse_class(Token_Stream &tokens, int const &context) {
   return parse_class_from_table<Class_Parse_Table<Parent>>(tokens, context);
 }
 
@@ -253,8 +253,9 @@ Parse_Table Class_Parse_Table<Son>::parse_table_;
 bool Class_Parse_Table<Son>::parse_table_is_initialized_ = false;
 
 //---------------------------------------------------------------------------//
-template <> std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
-                                                  int const &context) {
+template <>
+std::shared_ptr<Son> parse_class<Son>(Token_Stream &tokens,
+                                      int const &context) {
   return parse_class_from_table<Class_Parse_Table<Son>>(tokens, context);
 }
 
@@ -351,8 +352,8 @@ Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
 //---------------------------------------------------------------------------//
-template <> std::shared_ptr<Daughter> parse_class<Daughter>(
-  Token_Stream &tokens) {
+template <>
+std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 

@@ -8,7 +8,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <fstream>
 #include "Pseudo_Line_Analytic_Odfmg_Opacity.hh"
 #include "Pseudo_Line_Analytic_MultigroupOpacity.hh"
 #include "cdi/CDI.hh"
@@ -17,6 +16,7 @@
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
 #include "units/PhysicalConstantsSI.hh"
+#include <fstream>
 
 namespace rtt_cdi_analytic {
 using namespace std;
@@ -67,11 +67,10 @@ void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(
 Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
     const sf_double &groups, const sf_double &bands,
     rtt_cdi::Reaction reaction_in,
-    std::shared_ptr<Expression const> const &continuum,
-    int number_of_lines, double line_peak, double line_width,
-    int number_of_edges, double edge_ratio, double Tref, double Tpow,
-    double emin, double emax, Averaging averaging, unsigned qpoints,
-    unsigned seed)
+    std::shared_ptr<Expression const> const &continuum, int number_of_lines,
+    double line_peak, double line_width, int number_of_edges, double edge_ratio,
+    double Tref, double Tpow, double emin, double emax, Averaging averaging,
+    unsigned qpoints, unsigned seed)
     : Analytic_Odfmg_Opacity(groups, bands, reaction_in),
       Pseudo_Line_Base(continuum, number_of_lines, line_peak, line_width,
                        number_of_edges, edge_ratio, Tref, Tpow, emin, emax,

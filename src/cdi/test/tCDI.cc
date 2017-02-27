@@ -1258,7 +1258,7 @@ void test_odfmgopacity_collapse(rtt_dsxx::UnitTest &ut) {
   // either Planckian or Rosseland weight functions:
 
   std::shared_ptr<const OdfmgOpacity> op(
-    new DummyOdfmgOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
+      new DummyOdfmgOpacity(rtt_cdi::ABSORPTION, rtt_cdi::PLANCK));
 
   // bounds = { 0.05, 0.5, 5, 50 }
   std::vector<double> const bounds(op->getGroupBoundaries());

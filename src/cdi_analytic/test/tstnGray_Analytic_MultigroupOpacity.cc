@@ -13,8 +13,8 @@
 #include "cdi_analytic/nGray_Analytic_MultigroupOpacity.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 using namespace std;
 

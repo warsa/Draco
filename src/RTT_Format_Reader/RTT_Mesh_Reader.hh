@@ -52,7 +52,8 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
 
 private:
   std::shared_ptr<RTT_Format_Reader> rttMesh;
-  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>> element_defs;
+  std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
+      element_defs;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type> element_types;
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
       unique_element_types;

@@ -9,10 +9,10 @@
  *         reserved. */
 //---------------------------------------------------------------------------//
 
-#include <numeric>
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
 #include "ds++/to_string.hh"
+#include <numeric>
 
 namespace rtt_quadrature {
 using namespace std;

@@ -36,8 +36,8 @@ template <typename Abstract_Class, typename Context,
           Context const &get_context()>
 class Contextual_Parse_Functor {
 public:
-  Contextual_Parse_Functor(std::shared_ptr<Abstract_Class>
-                           parse_function(Token_Stream &, Context const &));
+  Contextual_Parse_Functor(std::shared_ptr<Abstract_Class> parse_function(
+      Token_Stream &, Context const &));
 
   std::shared_ptr<Abstract_Class> operator()(Token_Stream &) const;
 
@@ -88,11 +88,10 @@ private:
  */
 //===========================================================================//
 template <typename Abstract_Class, Parse_Table &get_parse_table(),
-  std::shared_ptr<Abstract_Class> &get_parsed_object(),
-  typename Parse_Function =
-  pointer_to_unary_function<Token_Stream &,
-  std::shared_ptr<Abstract_Class>>>
-  class Abstract_Class_Parser {
+          std::shared_ptr<Abstract_Class> &get_parsed_object(),
+          typename Parse_Function = pointer_to_unary_function<
+              Token_Stream &, std::shared_ptr<Abstract_Class>>>
+class Abstract_Class_Parser {
 public:
   // TYPES
 
@@ -103,9 +102,9 @@ public:
                              Parse_Function parse_function);
 
   //! Register children of the abstract class
-  static void register_child(string const &keyword,
-                             std::shared_ptr<Abstract_Class>
-                             parse_function(Token_Stream &));
+  static void register_child(
+      string const &keyword,
+      std::shared_ptr<Abstract_Class> parse_function(Token_Stream &));
 
   //! Check the class invariants
   static bool check_static_class_invariants();

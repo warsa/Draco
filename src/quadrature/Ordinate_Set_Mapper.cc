@@ -9,11 +9,11 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "Ordinate_Set_Mapper.hh"
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
-#include "Ordinate_Set_Mapper.hh"
 
 namespace {
 using namespace std;

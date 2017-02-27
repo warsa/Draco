@@ -8,16 +8,16 @@
  *         reserved.  */
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include "Product_Chebyshev_Legendre.hh"
 #include "parser/utilities.hh"
+#include <iostream>
 
 namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> Product_Chebyshev_Legendre::parse(
-  Token_Stream &tokens) {
+std::shared_ptr<Quadrature>
+Product_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   // Takes two numbers, first the number of Gauss-Legendre points, which is the
   // SN order
   Token token = tokens.shift();

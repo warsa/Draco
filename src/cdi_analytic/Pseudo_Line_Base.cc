@@ -7,7 +7,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <fstream>
 #include "Pseudo_Line_Base.hh"
 #include "c4/C4_Functions.hh"
 #include "cdi/CDI.hh"
@@ -15,6 +14,7 @@
 #include "ds++/Packing_Utils.hh"
 #include "ode/quad.hh"
 #include "ode/rkqs.hh"
+#include <fstream>
 
 namespace rtt_cdi_analytic {
 using namespace std;
@@ -84,11 +84,9 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
 
 //---------------------------------------------------------------------------//
 Pseudo_Line_Base::Pseudo_Line_Base(
-  std::shared_ptr<Expression const> const &continuum,
-  int number_of_lines, double line_peak,
-  double line_width, int number_of_edges,
-  double edge_ratio, double Tref, double Tpow,
-  double emin, double emax, unsigned seed)
+    std::shared_ptr<Expression const> const &continuum, int number_of_lines,
+    double line_peak, double line_width, int number_of_edges, double edge_ratio,
+    double Tref, double Tpow, double emin, double emax, unsigned seed)
     : continuum_(continuum), continuum_table_(std::vector<double>()),
       emax_(-1.0), nu0_(-1), // as fast flag
       C_(-1.0), Bn_(-1.0), Bd_(-1.0), R_(-1.0), seed_(seed),

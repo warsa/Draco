@@ -99,34 +99,27 @@ public:
                                     bool include_extra_directions) const;
 
   std::shared_ptr<Ordinate_Set> create_ordinate_set(
-    unsigned dimension, Geometry,
-    double norm, unsigned mu_axis,
-    unsigned eta_axis,
-    bool include_starting_directions,
-    bool include_extra_directions,
-    Ordinate_Set::Ordering ordering) const;
+      unsigned dimension, Geometry, double norm, unsigned mu_axis,
+      unsigned eta_axis, bool include_starting_directions,
+      bool include_extra_directions, Ordinate_Set::Ordering ordering) const;
 
-  std::shared_ptr<Ordinate_Set> create_ordinate_set(
-    unsigned dimension, Geometry,
-    double norm,
-    bool include_starting_directions,
-    bool include_extra_directions,
-    Ordinate_Set::Ordering ordering) const;
+  std::shared_ptr<Ordinate_Set>
+  create_ordinate_set(unsigned dimension, Geometry, double norm,
+                      bool include_starting_directions,
+                      bool include_extra_directions,
+                      Ordinate_Set::Ordering ordering) const;
 
-  std::shared_ptr<Ordinate_Space> create_ordinate_space(
-    unsigned dimension, Geometry,
-    int moment_expansion_order,
-    bool include_extra_directions,
-    Ordinate_Set::Ordering ordering,
-    QIM qim) const;
+  std::shared_ptr<Ordinate_Space>
+  create_ordinate_space(unsigned dimension, Geometry,
+                        int moment_expansion_order,
+                        bool include_extra_directions,
+                        Ordinate_Set::Ordering ordering, QIM qim) const;
 
-  std::shared_ptr<Ordinate_Space> create_ordinate_space(
-    unsigned dimension, Geometry,
-    unsigned moment_expansion_order,
-    unsigned mu_axis, unsigned eta_axis,
-    bool include_extra_directions,
-    Ordinate_Set::Ordering ordering,
-    QIM qim) const;
+  std::shared_ptr<Ordinate_Space>
+  create_ordinate_space(unsigned dimension, Geometry,
+                        unsigned moment_expansion_order, unsigned mu_axis,
+                        unsigned eta_axis, bool include_extra_directions,
+                        Ordinate_Set::Ordering ordering, QIM qim) const;
 
 protected:
   // IMPLEMENTATION

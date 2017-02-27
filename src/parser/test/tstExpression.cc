@@ -8,9 +8,9 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "ds++/ScalarUnitTest.hh"
 #include "ds++/DracoMath.hh"
 #include "ds++/Release.hh"
+#include "ds++/ScalarUnitTest.hh"
 #include "parser/Expression.hh"
 #include "parser/String_Token_Stream.hh"
 
@@ -44,8 +44,8 @@ void tstExpression(UnitTest &ut) {
   vars[2] = "z";
   vars[3] = "t";
 
-  std::shared_ptr<Expression const> expression = Expression::parse(
-    4, variable_map, tokens);
+  std::shared_ptr<Expression const> expression =
+      Expression::parse(4, variable_map, tokens);
 
   if (tokens.error_count() == 0 && tokens.lookahead().type() == EXIT) {
     PASSMSG("expression successfully parsed");
@@ -252,8 +252,8 @@ void tstExpression(UnitTest &ut) {
   {
     tokens = String_Token_Stream("log(1.0) + cos(2.0) + exp(3.0) + sin(4.0)");
 
-    std::shared_ptr<Expression> expression = Expression::parse(4, variable_map,
-                                                               tokens);
+    std::shared_ptr<Expression> expression =
+        Expression::parse(4, variable_map, tokens);
 
     if (expression->is_constant(0))
       PASSMSG("expression successfully const tested");
@@ -271,8 +271,8 @@ void tstExpression(UnitTest &ut) {
     tokens = String_Token_Stream(
         "(log(1.0) + cos(2.0) + exp(3.0) + sin(4.0))/(m*s)");
 
-    std::shared_ptr<Expression> expression = Expression::parse(4, variable_map,
-                                                               tokens);
+    std::shared_ptr<Expression> expression =
+        Expression::parse(4, variable_map, tokens);
 
     if (expression->is_constant(0))
       PASSMSG("expression successfully const tested");

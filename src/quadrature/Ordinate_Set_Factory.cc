@@ -9,19 +9,19 @@
  *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
+#include "Ordinate_Set_Factory.hh"
 #include "Gauss_Legendre.hh"
 #include "Level_Symmetric.hh"
 #include "Lobatto.hh"
-#include "Ordinate_Set_Factory.hh"
 #include "Product_Chebyshev_Legendre.hh"
 #include "Quadrature.hh"
 #include "Quadrature_Interface.hh"
 #include "Square_Chebyshev_Legendre.hh"
 #include "Tri_Chebyshev_Legendre.hh"
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
 
 namespace rtt_quadrature {
 

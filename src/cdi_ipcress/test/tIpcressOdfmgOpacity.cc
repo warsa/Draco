@@ -9,11 +9,11 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "cdi_ipcress_test.hh"
+#include "cdi/OpacityCommon.hh"
 #include "cdi_ipcress/IpcressFile.hh"
 #include "cdi_ipcress/IpcressMultigroupOpacity.hh"
 #include "cdi_ipcress/IpcressOdfmgOpacity.hh"
-#include "cdi_ipcress_test.hh"
-#include "cdi/OpacityCommon.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cstdio>
@@ -246,7 +246,7 @@ int main(int argc, char *argv[]) {
   itPassed = false;
   try {
     std::shared_ptr<IpcressMultigroupOpacity> opacity(
-      new IpcressMultigroupOpacity(packed));
+        new IpcressMultigroupOpacity(packed));
   } catch (rtt_dsxx::assertion const &err) {
     itPassed = true;
     ostringstream message;

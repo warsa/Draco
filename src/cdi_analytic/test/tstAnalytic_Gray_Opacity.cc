@@ -163,7 +163,8 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   // lets make two models
   shared_ptr<Analytic_Opacity_Model> amodel(
       new Polynomial_Analytic_Opacity_Model(0.0, 100.0, -3.0, 0.0));
-  shared_ptr<Analytic_Opacity_Model> smodel(new Constant_Analytic_Opacity_Model(1.0));
+  shared_ptr<Analytic_Opacity_Model> smodel(
+      new Constant_Analytic_Opacity_Model(1.0));
 
   if (!soft_equiv(amodel->calculate_opacity(2.0, 3.0, 4.0),
                   100.0 / (2.0 * 2.0 * 2.0)))

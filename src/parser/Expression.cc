@@ -24,8 +24,7 @@ typedef map<string, pair<unsigned, Unit>> Variable_Map;
 class And_Expression : public Expression {
 public:
   And_Expression(pE const &e1, pE const &e2)
-      : Expression(e1->number_of_variables(), dimensionless),
-        e1_(e1), e2_(e2) {
+      : Expression(e1->number_of_variables(), dimensionless), e1_(e1), e2_(e2) {
     Require(e1);
     Require(e2);
     Require(e1->number_of_variables() == e2->number_of_variables());
@@ -1178,18 +1177,17 @@ double Expression::operator()(vector<double> const &x) const {
  * grammatically ill-formed.
  */
 
-std::shared_ptr<Expression> Expression::parse(
-  unsigned const number_of_variables,
-  Variable_Map const &variable_map,
-  Token_Stream &tokens) {
+std::shared_ptr<Expression>
+Expression::parse(unsigned const number_of_variables,
+                  Variable_Map const &variable_map, Token_Stream &tokens) {
   // No index in the variable map can be greater than or equal to the number
   // of variables.
 
   // The top expression is the or expression, which we anticipate will be useful
   // for piecewise functions.
 
-  std::shared_ptr<Expression> Result = parse_or(number_of_variables,
-                                                variable_map, tokens);
+  std::shared_ptr<Expression> Result =
+      parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
     Result.reset(new Or_Expression(
@@ -1222,19 +1220,18 @@ std::shared_ptr<Expression> Expression::parse(
  * \return Pointer to the Expression. If null, the expression was empty or
  * grammatically ill-formed.
  */
-std::shared_ptr<Expression> Expression::parse(unsigned const number_of_variables,
-                                 Variable_Map const &variable_map,
-                                 Unit const &expected_units,
-                                 string const &expected_units_text,
-                                 Token_Stream &tokens) {
+std::shared_ptr<Expression>
+Expression::parse(unsigned const number_of_variables,
+                  Variable_Map const &variable_map, Unit const &expected_units,
+                  string const &expected_units_text, Token_Stream &tokens) {
   // No index in the variable map can be greater than or equal to the number of
   // variables.
 
   // The top expression is the or expression, which we anticipate will be useful
   // for piecewise functions.
 
-  std::shared_ptr<Expression> Result = parse_or(number_of_variables,
-                                                variable_map, tokens);
+  std::shared_ptr<Expression> Result =
+      parse_or(number_of_variables, variable_map, tokens);
   while (tokens.lookahead().text() == "|") {
     tokens.shift();
     Result.reset(new Or_Expression(

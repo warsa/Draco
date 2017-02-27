@@ -13,8 +13,8 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <sstream>
 #include <memory>
+#include <sstream>
 
 using namespace std;
 

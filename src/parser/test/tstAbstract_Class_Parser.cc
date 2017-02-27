@@ -65,9 +65,9 @@ public:
 
   // STATICS
 
-  static void register_model(string const &keyword,
-                             std::shared_ptr<Parent> parse_function(
-                               Token_Stream &)) {
+  static void
+  register_model(string const &keyword,
+                 std::shared_ptr<Parent> parse_function(Token_Stream &)) {
     Abstract_Class_Parser<Parent, get_parse_table_,
                           get_parsed_object_>::register_child(keyword,
                                                               parse_function);
@@ -272,8 +272,8 @@ Parse_Table Class_Parse_Table<Daughter>::parse_table_;
 bool Class_Parse_Table<Daughter>::parse_table_is_initialized_;
 
 //---------------------------------------------------------------------------//
-template <> std::shared_ptr<Daughter> parse_class<Daughter>(
-  Token_Stream &tokens) {
+template <>
+std::shared_ptr<Daughter> parse_class<Daughter>(Token_Stream &tokens) {
   return parse_class_from_table<Class_Parse_Table<Daughter>>(tokens);
 }
 
@@ -297,7 +297,8 @@ const unsigned number_of_top_keywords = sizeof(top_keywords) / sizeof(Keyword);
 Parse_Table top_parse_table(top_keywords, number_of_top_keywords);
 
 std::shared_ptr<Parent> parse_son(Token_Stream &tokens) {
-  return parse_class<Son>(tokens); }
+  return parse_class<Son>(tokens);
+}
 
 std::shared_ptr<Parent> parse_daughter(Token_Stream &tokens) {
   return parse_class<Daughter>(tokens);

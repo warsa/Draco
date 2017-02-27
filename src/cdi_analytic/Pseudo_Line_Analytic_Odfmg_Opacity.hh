@@ -43,11 +43,10 @@ public:
   Pseudo_Line_Analytic_Odfmg_Opacity(
       const sf_double &groups, const sf_double &bands,
       rtt_cdi::Reaction reaction_in,
-      std::shared_ptr<Expression const> const &cont,
-      int number_of_lines, double line_peak, double line_width,
-      int number_of_edges, double edge_ratio, double Tref, double Tpow,
-      double emin, double emax, Averaging averaging, unsigned qpoints,
-      unsigned seed);
+      std::shared_ptr<Expression const> const &cont, int number_of_lines,
+      double line_peak, double line_width, int number_of_edges,
+      double edge_ratio, double Tref, double Tpow, double emin, double emax,
+      Averaging averaging, unsigned qpoints, unsigned seed);
 
   // Constructor.
   Pseudo_Line_Analytic_Odfmg_Opacity(

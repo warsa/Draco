@@ -15,8 +15,8 @@ namespace rtt_quadrature {
 using namespace rtt_parser;
 
 //---------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> Tri_Chebyshev_Legendre::parse(
-  Token_Stream &tokens) {
+std::shared_ptr<Quadrature>
+Tri_Chebyshev_Legendre::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "order", "expected an order");
 

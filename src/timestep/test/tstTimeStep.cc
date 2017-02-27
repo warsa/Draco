@@ -6,15 +6,15 @@
 //---------------------------------------------------------------------------//
 
 #include "dummy_package.hh"
+#include "c4/ParallelUnitTest.hh"
+#include "c4/global.hh"
+#include "ds++/Release.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include "timestep/field_ts_advisor.hh"
 #include "timestep/fixed_ts_advisor.hh"
 #include "timestep/ratio_ts_advisor.hh"
 #include "timestep/target_ts_advisor.hh"
 #include "timestep/ts_manager.hh"
-#include "c4/ParallelUnitTest.hh"
-#include "c4/global.hh"
-#include "ds++/Release.hh"
-#include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
 // forward declaration

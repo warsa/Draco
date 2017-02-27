@@ -13,8 +13,8 @@
 
 #include "mesh_element/Element_Definition.hh"
 #include <map>
-#include <set>
 #include <memory>
+#include <set>
 
 namespace rtt_meshReaders {
 
@@ -36,7 +36,7 @@ class DLL_PUBLIC_meshReaders Mesh_Reader {
 
   // DATA
 
-  public:
+public:
   // CREATORS
 
   //Defaulted: Mesh_Reader();
@@ -83,13 +83,13 @@ class DLL_PUBLIC_meshReaders Mesh_Reader {
    * \brief Returns the type of all the elements in the mesh.
    */
   virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-    get_element_types() const = 0;
+  get_element_types() const = 0;
 
   /*!
    * \brief Returns the unique element types that are defined in the mesh.
    */
   virtual std::vector<rtt_mesh_element::Element_Definition::Element_Type>
-    get_unique_element_types() const = 0;
+  get_unique_element_types() const = 0;
 
   /*!
    * \brief Returns node sub-sets.
@@ -122,7 +122,7 @@ class DLL_PUBLIC_meshReaders Mesh_Reader {
   virtual std::string get_title() const = 0;
 
   virtual std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>
-    get_element_defs() const {
+  get_element_defs() const {
     return std::vector<std::shared_ptr<rtt_mesh_element::Element_Definition>>();
   };
 
@@ -131,7 +131,7 @@ class DLL_PUBLIC_meshReaders Mesh_Reader {
 
   virtual size_t get_dims_ndim() const = 0;
 
-  private:
+private:
   // IMPLEMENTATION
 };
 

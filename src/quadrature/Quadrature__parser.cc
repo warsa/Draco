@@ -56,8 +56,8 @@ std::shared_ptr<Quadrature> parse_double_gauss(Token_Stream &tokens) {
 }
 
 //---------------------------------------------------------------------------//
-std::shared_ptr<Quadrature> parse_general_octant_quadrature(
-  Token_Stream &tokens) {
+std::shared_ptr<Quadrature>
+parse_general_octant_quadrature(Token_Stream &tokens) {
   return General_Octant_Quadrature::parse(tokens);
 }
 
@@ -134,8 +134,8 @@ Class_Parse_Table<Quadrature>::get_parsed_object() {
  */
 /* static */
 void Class_Parse_Table<Quadrature>::register_quadrature(
-    string const &keyword, std::shared_ptr<Quadrature>
-    parse_function(Token_Stream &)) {
+    string const &keyword,
+    std::shared_ptr<Quadrature> parse_function(Token_Stream &)) {
   Abstract_Class_Parser<Quadrature, get_parse_table,
                         get_parsed_object>::register_child(keyword,
                                                            parse_function);

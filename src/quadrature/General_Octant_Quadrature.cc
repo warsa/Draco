@@ -8,14 +8,14 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
 #include "General_Octant_Quadrature.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/to_string.hh"
 #include "units/PhysicalConstants.hh"
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
 
 namespace rtt_quadrature {
 using namespace rtt_dsxx;

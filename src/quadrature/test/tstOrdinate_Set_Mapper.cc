@@ -8,14 +8,14 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <algorithm>
-#include <numeric>
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-#include "quadrature/Ordinate_Set_Mapper.hh"
 #include "quadrature/Gauss_Legendre.hh"
 #include "quadrature/Level_Symmetric.hh"
+#include "quadrature/Ordinate_Set_Mapper.hh"
 #include "quadrature/Product_Chebyshev_Legendre.hh"
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 using namespace rtt_dsxx;

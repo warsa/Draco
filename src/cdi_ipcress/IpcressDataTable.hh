@@ -103,7 +103,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
   //! The opacity data table.
   std::vector<double> mutable logOpacities;
 
-  public:
+public:
   // CREATORS
 
   /*!
@@ -183,7 +183,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
   double interpOpac(double const T, double const rho,
                     size_t const group = 0) const;
 
-  private:
+private:
   /*!
    * \brief This function sets both "ipcressDataTypeKey" and
    *     "dataDescriptor" based on the values given for
@@ -200,7 +200,7 @@ class DLL_PUBLIC_cdi_ipcress IpcressDataTable {
 
   //! Search "keys" for "key".  If found return true, otherwise return false.
   template <typename T>
-    bool key_available(const T &key, const std::vector<T> &keys) const;
+  bool key_available(const T &key, const std::vector<T> &keys) const;
 };
 
 } // end namespace

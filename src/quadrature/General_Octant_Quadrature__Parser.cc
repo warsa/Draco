@@ -23,8 +23,8 @@ using namespace rtt_parser;
  *
  * \param tokens Token stream from which to parse the specification.
  */
-std::shared_ptr<Quadrature> General_Octant_Quadrature::parse(
-  Token_Stream &tokens) {
+std::shared_ptr<Quadrature>
+General_Octant_Quadrature::parse(Token_Stream &tokens) {
   Token token = tokens.shift();
   tokens.check_syntax(token.text() == "sn order", "expected sn order");
 

@@ -7,12 +7,12 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <iomanip>
-#include <iostream>
-#include <numeric>
 #include "quadrature_test.hh"
 #include "parser/String_Token_Stream.hh"
 #include "parser/utilities.hh"
+#include <iomanip>
+#include <iostream>
+#include <numeric>
 
 namespace rtt_quadrature {
 using namespace std;
@@ -388,9 +388,9 @@ void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
   // Build an angle operator
 
   std::shared_ptr<Ordinate_Space> ordinate_space =
-    quadrature.create_ordinate_space(
-      dimension, geometry, expansion_order, mu_axis, eta_axis,
-      add_extra_directions, ordering, qim);
+      quadrature.create_ordinate_space(dimension, geometry, expansion_order,
+                                       mu_axis, eta_axis, add_extra_directions,
+                                       ordering, qim);
 
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
@@ -545,7 +545,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
   string text = quadrature.as_text("\n");
   String_Token_Stream tokens(text);
   std::shared_ptr<Quadrature> parsed_quadrature =
-    parse_class<Quadrature>(tokens);
+      parse_class<Quadrature>(tokens);
 
   if (tokens.error_count()) {
     ut.failure("Textification and parse did NOT succeed");

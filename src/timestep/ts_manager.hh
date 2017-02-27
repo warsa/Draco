@@ -36,7 +36,7 @@ class DLL_PUBLIC_timestep ts_manager {
 
   // DATA
 
-  private:
+private:
   //! the recommendation for the next time-step (time)
   double dt_new;
   //! problem time at the end of current cycle  (time)
@@ -52,7 +52,7 @@ class DLL_PUBLIC_timestep ts_manager {
 
   // CREATORS
 
-  public:
+public:
   //! Creates a timestep manager
   ts_manager();
 

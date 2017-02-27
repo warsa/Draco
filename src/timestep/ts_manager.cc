@@ -43,8 +43,8 @@ void ts_manager::add_advisor(const std::shared_ptr<ts_advisor> &new_advisor) {
   }
 }
 
-void ts_manager::remove_advisor(const std::shared_ptr<ts_advisor>
-                                &advisor_to_remove) {
+void ts_manager::remove_advisor(
+    const std::shared_ptr<ts_advisor> &advisor_to_remove) {
   for (list<std::shared_ptr<ts_advisor>>::iterator py = advisors.begin();
        py != advisors.end(); py++) {
     if ((**py).get_name() == (*advisor_to_remove).get_name()) {

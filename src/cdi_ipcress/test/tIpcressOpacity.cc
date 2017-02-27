@@ -50,8 +50,8 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
     }
 
     // If we make it here then spIF was successfully instantiated.
-    PASSMSG( string("shared_ptr to new IpcressFile object created for ") +
-             string("Al_BeCu.ipcress data.") );
+    PASSMSG(string("shared_ptr to new IpcressFile object created for ") +
+            string("Al_BeCu.ipcress data."));
 
     // Test the IpcressFile object.
     if (spIF->getDataFilename() == op_data_file) {
@@ -338,8 +338,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // If we get here then the object was successfully instantiated.
-  PASSMSG( string("shared_ptr to new Opacity object created for ") +
-           string("analyticOpacities.ipcress."));
+  PASSMSG(string("shared_ptr to new Opacity object created for ") +
+          string("analyticOpacities.ipcress."));
 
   // ----------------- //
   // Gray Opacity Test //
@@ -378,8 +378,8 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // If we get here then the object was successfully instantiated.
-  PASSMSG( string("shared_ptr to new Opacity object created for ") +
-           string ("analyticOpacities.ipcress."));
+  PASSMSG(string("shared_ptr to new Opacity object created for ") +
+          string("analyticOpacities.ipcress."));
 
   // Set up the new test problem.
 
@@ -753,8 +753,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressGrayOpacity object "
             << "fpr \n\t analyticOpacityies.ipcress data (shared_ptr not "
-            << "templated on cdi/GrayOpacity).\n\t"
-            << error.what();
+            << "templated on cdi/GrayOpacity).\n\t" << error.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -933,8 +932,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   }
 
   // If we get here then the object was successfully instantiated.
-  PASSMSG( string("shared_ptr to new Opacity object created for ") +
-           string("analyticOpacities.ipcress."));
+  PASSMSG(string("shared_ptr to new Opacity object created for ") +
+          string("analyticOpacities.ipcress."));
 
   // Here is the reference solution
   int ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;

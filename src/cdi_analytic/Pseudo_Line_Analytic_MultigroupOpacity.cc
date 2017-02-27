@@ -96,10 +96,11 @@ double PLRW_Functor::operator()(double x) {
 //---------------------------------------------------------------------------//
 Pseudo_Line_Analytic_MultigroupOpacity::Pseudo_Line_Analytic_MultigroupOpacity(
     sf_double const &group_bounds, rtt_cdi::Reaction const reaction,
-    std::shared_ptr<Expression const> const &continuum, unsigned number_of_lines,
-    double line_peak, double line_width, unsigned number_of_edges,
-    double edge_ratio, double Tref, double Tpow, double emin, double emax,
-    Averaging const averaging, unsigned const qpoints, unsigned seed)
+    std::shared_ptr<Expression const> const &continuum,
+    unsigned number_of_lines, double line_peak, double line_width,
+    unsigned number_of_edges, double edge_ratio, double Tref, double Tpow,
+    double emin, double emax, Averaging const averaging, unsigned const qpoints,
+    unsigned seed)
     : Analytic_MultigroupOpacity(group_bounds, reaction),
       Pseudo_Line_Base(continuum, number_of_lines, line_peak, line_width,
                        number_of_edges, edge_ratio, Tref, Tpow, emin, emax,
