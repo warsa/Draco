@@ -17,6 +17,7 @@
 #include <cmath>
 #include <cstdlib> // defines atoi
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -73,7 +74,7 @@ void query_eospac() {
     }
 
     // Generate EOS Table
-    rtt_dsxx::SP<rtt_cdi_eospac::Eospac const> spEospac(
+    std::shared_ptr<rtt_cdi_eospac::Eospac const> spEospac(
         new rtt_cdi_eospac::Eospac(SesameTab));
 
     // Parameters

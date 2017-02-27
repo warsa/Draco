@@ -265,7 +265,7 @@ void check_CDI(rtt_dsxx::UnitTest &ut, CDI const &cdi) {
 //---------------------------------------------------------------------------//
 
 void test_CDI(rtt_dsxx::UnitTest &ut) {
-  // make SPs to opacity and EoS objects
+  // make shared_ptrs to opacity and EoS objects
   std::shared_ptr<const GrayOpacity> gray_planck_abs;
   std::shared_ptr<const GrayOpacity> gray_iso_scatter;
   std::shared_ptr<const MultigroupOpacity> mg_planck_abs;

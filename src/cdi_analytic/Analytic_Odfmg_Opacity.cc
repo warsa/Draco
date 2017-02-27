@@ -32,8 +32,8 @@ namespace rtt_cdi_analytic {
  * \param groups vector containing the group boundaries in keV from lowest to
  * highest
  *
- * \param models vector containing SPs to Analytic_Model derived types for
- * each group, the size should be groups.size() - 1
+ * \param models vector containing shared_ptrs to Analytic_Model derived types
+ * for each group, the size should be groups.size() - 1
  *
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
  *

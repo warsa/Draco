@@ -1061,13 +1061,13 @@ void CDI::reset() {
     Check(odfmgOpacities[i].size() == constants::num_Reactions);
 
     for (size_t j = 0; j < constants::num_Reactions; j++) {
-      // reassign the GrayOpacity SP to a null SP
+      // reassign the GrayOpacity shared_ptr to a null shared_ptr
       grayOpacities[i][j] = SP_GrayOpacity();
 
-      // reassign the MultigroupOpacity SP to a null SP
+      // reassign the MultigroupOpacity shared_ptr to a null shared_ptr
       multigroupOpacities[i][j] = SP_MultigroupOpacity();
 
-      // reassign the OdfmgOpacity SP to a null SP
+      // reassign the OdfmgOpacity shared_ptr to a null shared_ptr
       odfmgOpacities[i][j] = SP_OdfmgOpacity();
 
       // check it
@@ -1084,7 +1084,7 @@ void CDI::reset() {
   opacityCdfBandBoundaries.clear();
   Check(opacityCdfBandBoundaries.empty());
 
-  // reset the EoS SP
+  // reset the EoS shared_ptr
   spEoS = SP_EoS();
   Check(!spEoS);
 }

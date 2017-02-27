@@ -109,7 +109,7 @@ void insist(std::string const &cond, std::string const &msg,
  *
  * Having a (non-inlined) version that takes pointers prevents the compiler from
  * having to construct std::strings from the pointers each time.  This is
- * particularly important for things like rtt_dsxx::SP::operator->, that (a)
+ * particularly important for things like std::shared_pt::operator->, that (a)
  * have an insist in them, (b) don't need complicated strings and (c) are called
  * frequently.
  */
@@ -142,7 +142,7 @@ void check_insist(bool const cond, char const *const condstr,
  *
  * Having a (non-inlined) version that takes pointers prevents the compiler from
  * having to construct std::strings from the pointers each time.  This is
- * particularly important for things like rtt_dsxx::SP::operator->, that (a)
+ * particularly important for things like std::shared_ptr::operator->, that (a)
  * have an insist in them, (b) don't need complicated strings and (c) are called
  * frequently.
  */

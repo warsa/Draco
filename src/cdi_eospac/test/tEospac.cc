@@ -111,9 +111,9 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
       new rtt_cdi_eospac::Eospac(AlSt.Ue_DT(Al3717).Zfc_DT(Al23714)));
 
   if (spEospac) {
-    PASSMSG("SP to new Eospac object created.");
+    PASSMSG("shared_ptr to new Eospac object created.");
   } else {
-    FAILMSG("Unable to create SP to new Eospac object.");
+    FAILMSG("Unable to create shared_ptr to new Eospac object.");
 
     // if construction fails, there is no reason to continue testing...
     return;
@@ -141,9 +141,9 @@ void cdi_eospac_test(rtt_dsxx::UnitTest &ut) {
   //             ).Uic_DT( Al3717 ).Ktc_DT( Al23714 ) );
 
   //     if ( spEospacAlt )
-  //         PASSMSG("SP to new Eospac object created (Alternate ctor).");
+  //         PASSMSG("shared_ptr to new Eospac object created (Alternate ctor).");
   //     else
-  //         FAILMSG("Unable to create SP to new Eospac object (Alternate ctor).");
+  //         FAILMSG("Unable to create shared_ptr to new Eospac object (Alternate ctor).");
   // }
 
   // --------------------------- //

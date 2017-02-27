@@ -354,11 +354,11 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   try {
     eosdata.eos();
   } catch (const rtt_dsxx::assertion &ass) {
-    PASSMSG("Good, caught an unreferenced EoS SP!");
+    PASSMSG("Good, caught an unreferenced EoS shared_ptr!");
     caught = true;
   }
   if (!caught)
-    FAILMSG("Failed to catch an unreferenced SP<EoS>!");
+    FAILMSG("Failed to catch an unreferenced shared_ptr<EoS>!");
 
   // now assign the analytic eos to CDI directly
   eosdata.setEoS(analytic_eos);
