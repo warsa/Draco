@@ -2,14 +2,11 @@
 /*!
  * \file   compton/Compton_NWA.hh
  * \author Kendra Keady
- * \date   Mon Apr  2 14:14:29 2001
- * \brief  Header file for compton NWA interface -- linked against library
+ * \date   Mon Feb 27 2017
+ * \brief  Header file for compton NWA interface
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-//---------------------------------------------------------------------------//
-// $Id$
-//---------------------------------------------------------------------------//
 
 #ifndef __compton_Compton_NWA_hh__
 #define __compton_Compton_NWA_hh__

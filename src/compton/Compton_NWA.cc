@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   compton/Compton_NWA.hh
+ * \file   compton/Compton_NWA.cc
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton NWA interface
