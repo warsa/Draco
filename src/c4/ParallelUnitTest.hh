@@ -76,7 +76,8 @@ public:
   //! Default constructor.
   DLL_PUBLIC_c4 ParallelUnitTest(int &argc, char **&argv,
                                  string_fp_void release_,
-                                 std::ostream &out_ = std::cout);
+                                 std::ostream &out_ = std::cout,
+                                 bool verbose_ = true);
 
   //!  The copy constructor is disabled.
   ParallelUnitTest(ParallelUnitTest const &rhs);
