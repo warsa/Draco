@@ -5,8 +5,8 @@
  * \date   Mon Feb 27 2017
  * \brief  Header file for compton NWA interface
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #ifndef __compton_Compton_NWA_hh__
 #define __compton_Compton_NWA_hh__
@@ -63,13 +63,15 @@ private:
   std::shared_ptr<etemp_interp> ei;
 
 public:
-  //! Constructor for an existing library
-  Compton_NWA(const std::string &);
+  //! Constructor for an existing multigroup library
+  explicit Compton_NWA(const std::string &filehandle);
 
-  Compton_NWA(const std::string &, const std::vector<double> &, const size_t);
+  //! Constructor to build a multigroup library from an existing pointwise file
+  Compton_NWA(const std::string &file, const std::vector<double> &group_bounds,
+              const size_t n_xi);
 
   //! Interpolation of all data to a certain electron temperature:
-  std::vector<std::vector<std::vector<double>>> interpolate(const double);
+  std::vector<std::vector<std::vector<double>>> interpolate(const double etemp);
 
   //! Retrieve group structure for the given library:
   std::vector<double> get_group_bounds() {

@@ -5,8 +5,8 @@
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton NWA interface
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 // headers provided in draco:
 #include "Compton_NWA.hh"
@@ -35,18 +35,14 @@ namespace rtt_compton {
  */
 Compton_NWA::Compton_NWA(const std::string &filehandle) {
 
-  // Make a compton file object
+  // Check input validity
+  Require(std::ifstream(filehandle).good());
+
+  // Make a compton file object to read the multigroup data
   compton_file Cfile(false);
 
-  // read the (existing multigroup) library into a compton data container
-  std::shared_ptr<multigroup_compton_data> Cdata =
-      Cfile.read_mg_csk_data(filehandle);
-
-  // be sure the Cdata pointer is non-null:
-  Ensure(Cdata);
-
   // initialize the electron temperature interpolator with the mg compton data
-  ei.reset(new etemp_interp(Cdata));
+  ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
 
   // Make sure the SP exists...
   Ensure(ei);
@@ -67,38 +63,32 @@ Compton_NWA::Compton_NWA(const std::string &filehandle) {
 Compton_NWA::Compton_NWA(const std::string &filehandle,
                          const std::vector<double> &grp_bds, const size_t nxi) {
 
-  // make a group_data struct to pass to the lib builder:
-  multigroup::Group_data grp_data;
-  grp_data.group_bounds = grp_bds;
-  grp_data.lib_file = filehandle;
-  grp_data.n_leg = nxi;
+  // Check input validity
+  Require(std::ifstream(filehandle).good());
+  Require(grp_bds.size() > 0);
 
-  // This is totally arbitrary, because I'm just assuming the user wants
-  // Planck-weighting...
-  grp_data.wt_func = multigroup::Weighting_function::PLANCK;
-
-  // TODO: How do we actually want to handle the weighting function?
-  // Allow the user to pass it in? Make some intelligent decision at runtime?
   std::cout << "*********************************************************\n"
             << "WARNING! Building a multigroup library from scratch might\n"
             << " take a LOOOOOOONG time! (Don't say I didn't warn you.)  \n"
             << "*********************************************************\n"
             << std::endl;
 
-  // Make an mg lib builder, based on the group structure and pointwise lib:
-  multigroup_lib_builder MG_builder(grp_data);
+  // make a group_data struct to pass to the lib builder:
+  // TODO: How do we actually want to handle the weighting function?
+  // Allow the user to pass it in? Make some intelligent decision at runtime?
+  multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
+                                     multigroup::Weighting_function::PLANCK,
+                                     filehandle, nxi, grp_bds};
+
+  // Transfer ownership of the grp_data struct directly to MG_builder, since
+  // it's a temporary which exists only for this purpose
+  multigroup_lib_builder MG_builder(std::move(grp_data));
 
   // build the library:
   MG_builder.build_library();
 
-  // package the data into a compton_data pointer:
-  std::shared_ptr<multigroup_compton_data> Cdata = MG_builder.package_data();
-
-  // Make sure the SP exists...
-  Ensure(Cdata);
-
   // initialize the electron temperature interpolator with the mg compton data
-  ei.reset(new etemp_interp(Cdata));
+  ei.reset(new etemp_interp(MG_builder.package_data()));
 
   // Make sure the SP exists...
   Ensure(ei);
@@ -126,13 +116,7 @@ Compton_NWA::interpolate(const double etemp) {
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
-  // return value
-  std::vector<std::vector<std::vector<double>>> interped_data;
-
   // call the appropriate routine in the electron interp object
-  // (defined in Compton_NWA lib)
-  interped_data = ei->interpolate_etemp(etemp);
-
-  return interped_data;
+  return ei->interpolate_etemp(etemp);
 }
 }
