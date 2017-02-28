@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*----------------------------------------------//
 /*!
  * \file   quadrature/Quadrature__parser.cc
  * \author Kelly Thompson
@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "Quadrature__parser.hh"
+
 #include "Double_Gauss.hh"
 #include "Gauss_Legendre.hh"
 #include "General_Octant_Quadrature.hh"
@@ -73,7 +74,7 @@ namespace rtt_parser {
 Class_Parse_Table<Quadrature> *Class_Parse_Table<Quadrature>::current_;
 Parse_Table Class_Parse_Table<Quadrature>::parse_table_(NULL, 0,
                                                         Parse_Table::ONCE);
-std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::parsed_quadrature_;
+std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::child_;
 
 //---------------------------------------------------------------------------//
 Class_Parse_Table<Quadrature>::Class_Parse_Table() {
@@ -100,30 +101,28 @@ Class_Parse_Table<Quadrature>::Class_Parse_Table() {
     first_time = false;
   }
 
-  parsed_quadrature_.reset();
-
   current_ = this;
 }
 
 //---------------------------------------------------------------------------//
 void Class_Parse_Table<Quadrature>::check_completeness(Token_Stream &tokens) {
-  tokens.check_semantics(parsed_quadrature_ != nullptr,
-                         "no quadrature specified");
+  tokens.check_semantics(child_ != nullptr, "no quadrature specified");
 }
 
 //---------------------------------------------------------------------------//
 std::shared_ptr<Quadrature> Class_Parse_Table<Quadrature>::create_object() {
-  return parsed_quadrature_;
+  return child_;
 }
 
 //---------------------------------------------------------------------------//
 std::shared_ptr<Quadrature> &
 Class_Parse_Table<Quadrature>::get_parsed_object() {
-  return parsed_quadrature_;
+  return child_;
 }
 
 //---------------------------------------------------------------------------//
 /*!
+ *
  * This function allows local developers to add new transport models to
  * Capsaicin, by adding their names to the set of transport models recognized by
  * the \c Transport_Model parser.

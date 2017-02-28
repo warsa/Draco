@@ -933,6 +933,7 @@ void tstutilities(UnitTest &ut) {
     else
       FAILMSG("did NOT parse bare expression to SI correctly");
     bare_expression.rewind();
+    free_internal_unit_system();
   }
   return;
 }

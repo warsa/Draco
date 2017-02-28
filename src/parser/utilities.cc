@@ -64,6 +64,15 @@ void set_internal_unit_system(rtt_units::UnitSystem const &units) {
   internal_unit_system = new rtt_units::UnitSystem(units);
 }
 
+//---------------------------------------------------------------------------------------//
+// For tracking down memory leaks, it is useful to be able to free any static data.
+
+void free_internal_unit_system() {
+  if (internal_unit_system != nullptr)
+    delete internal_unit_system;
+  internal_unit_system = nullptr;
+}
+
 //---------------------------------------------------------------------------//
 /*! Set whether unit expressions are mandatory.
  *

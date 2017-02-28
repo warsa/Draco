@@ -31,6 +31,8 @@ public:
 
   Class_Parse_Table();
 
+  virtual ~Class_Parse_Table() { child_.reset(); }
+
   // SERVICES
 
   Parse_Table const &parse_table() const { return parse_table_; }
@@ -56,7 +58,7 @@ private:
 
   static Class_Parse_Table *current_;
   static Parse_Table parse_table_;
-  static std::shared_ptr<Quadrature> parsed_quadrature_;
+  static std::shared_ptr<Quadrature> child_;
 };
 
 } // end namespace rtt_quadrature

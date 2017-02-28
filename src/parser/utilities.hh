@@ -58,6 +58,7 @@ set_internal_unit_system(rtt_units::UnitSystem const &units);
 DLL_PUBLIC_parser void set_unit_expressions_are_required(bool);
 DLL_PUBLIC_parser rtt_units::UnitSystem const &get_internal_unit_system();
 DLL_PUBLIC_parser bool unit_expressions_are_required();
+DLL_PUBLIC_parser void free_internal_unit_system();
 
 //! parser a real number followed by a unit expression.
 DLL_PUBLIC_parser double parse_quantity(Token_Stream &tokens, Unit const &unit,
