@@ -1,16 +1,16 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   src/compton/CMakeLists.txt
-# brief  Instructions for building cdi_eospac Makefiles.
-# note   Copyright (C) 2016 Los Alamos National Security, LLC.
+# author Kendra Keady
+# date   2017 February 28
+# brief  Instructions for building compton Makefiles.
+# note   Copyright (C) 2017 Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
-# $Id: CMakeLists.txt 6732 2012-09-05 22:28:18Z kellyt $
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( compton CXX )
 
 ##---------------------------------------------------------------------------##
-# Requires EOSPAC
+# Requires NWA
 ##---------------------------------------------------------------------------##
 find_package( NWA QUIET )
 set_package_properties( NWA PROPERTIES
@@ -38,8 +38,8 @@ endif()
 
 include_directories(
    ${PROJECT_SOURCE_DIR}      # component headers
-   ${PROJECT_BINARY_DIR}      # cdi_eospac/config.h
-   ${PROJECT_SOURCE_DIR}/..   # ds++ and cdi header files
+   ${PROJECT_BINARY_DIR}      # compton/config.h
+   ${PROJECT_SOURCE_DIR}/..   # ds++ and compton header files
    ${dsxx_BINARY_DIR}         # ds++/config.h
    ${ode_BINARY_DIR}          # ode/config.h
    ${NWA_INCLUDE_DIR}
