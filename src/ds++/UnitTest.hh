@@ -71,7 +71,7 @@ public:
 
   //! Default constructors.
   DLL_PUBLIC_dsxx UnitTest(int &argc, char **&argv, string_fp_void release_,
-                           std::ostream &out_ = std::cout);
+                           std::ostream &out_ = std::cout, bool verbose = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs);
@@ -227,6 +227,9 @@ protected:
   bool m_dbcCheck;
   bool m_dbcEnsure;
   bool m_dbcNothrow;
+
+  /* Report successful tests? */
+  bool verbose;
 };
 
 } // end namespace rtt_dsxx
