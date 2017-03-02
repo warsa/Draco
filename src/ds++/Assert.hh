@@ -119,7 +119,7 @@ namespace rtt_dsxx {
 //===========================================================================//
 
 class DLL_PUBLIC_dsxx assertion : public std::logic_error {
-  public:
+public:
   /*!
    * \brief Default constructor for ds++/assertion class.
    *
@@ -132,7 +132,7 @@ class DLL_PUBLIC_dsxx assertion : public std::logic_error {
    * \param msg The error message saved with the exception.
    */
   explicit assertion(std::string const &msg)
-    : std::logic_error(msg) { /* empty */
+      : std::logic_error(msg) { /* empty */
   }
 
   /*!
@@ -151,7 +151,7 @@ class DLL_PUBLIC_dsxx assertion : public std::logic_error {
    * \sa \ref Draco_DBC, --with-dbc[=level], Require, Ensure, Check, Insist
    */
   assertion(std::string const &cond, std::string const &file, int const line)
-    : std::logic_error(build_message(cond, file, line)) { /* empty */
+      : std::logic_error(build_message(cond, file, line)) { /* empty */
   }
 
   /*! \brief Destructor for ds++/assertion class.
