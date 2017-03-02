@@ -196,9 +196,14 @@ static double polylog_series_minus_one_planck(double const x,
 static double Planck2Rosseland(double const freq, double const exp_freq) {
   Check(rtt_dsxx::soft_equiv(exp_freq, std::exp(-freq)));
 
-  double const freq_4 = freq * freq * freq * freq;
+  double const freq_3 = freq * freq * freq;
 
-  double const factor = NORM_FACTOR * freq_4 / std::expm1(freq);
+  double factor;
+
+  if (freq > 1.0e-5)
+    factor = NORM_FACTOR * (freq_3 * freq) / std::expm1(freq);
+  else
+    factor = NORM_FACTOR * freq_3 / (1 + 0.5 * freq);
 
   return factor;
 }
