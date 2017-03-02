@@ -80,9 +80,8 @@ Compton_NWA::Compton_NWA(const std::string &filehandle,
                                      multigroup::Weighting_function::PLANCK,
                                      filehandle, nxi, grp_bds};
 
-  // Transfer ownership of the grp_data struct directly to MG_builder, since
-  // it's a temporary which exists only for this purpose
-  multigroup_lib_builder MG_builder(std::move(grp_data));
+  // Construct a multigroup library builder:
+  multigroup_lib_builder MG_builder(grp_data);
 
   // build the library:
   MG_builder.build_library();
