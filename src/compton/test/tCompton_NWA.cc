@@ -110,6 +110,90 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
+void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
+  // Start the test.
+
+  std::cout << "\n------------------------------------------" << std::endl;
+  std::cout << "   Test Draco code calling NWA routines -- const" << std::endl;
+  std::cout << "------------------------------------------" << std::endl;
+
+  // open a small mg opacity file:
+  const std::string filename = "mg_ascii.compton";
+  std::cout << "Attempting to construct a const Compton_NWA object...\n"
+            << std::endl;
+  std::shared_ptr<const rtt_compton::Compton_NWA> compton_test;
+
+  try {
+    compton_test.reset(new const rtt_compton::Compton_NWA(filename));
+  } catch (int asrt) {
+    FAILMSG("Failed to construct a Compton_NWA object!");
+    // if construction fails, there is no reason to continue testing...
+    return;
+  }
+  std::cout << "\n(...Success!)" << std::endl;
+
+  // Check some of the data in the NWA-opened file:
+  const std::vector<double> grp_bds = compton_test->get_group_bounds();
+  const std::vector<double> etemp_evals = compton_test->get_etemp_pts();
+
+  Ensure(grp_bds.size() == 2);
+  Ensure(etemp_evals.size() == 7);
+
+  if (!soft_equiv(grp_bds[0], 3.91389000e-02))
+    FAILMSG("Lower group bound read incorrectly!");
+  if (!soft_equiv(grp_bds[1], 5.87084000e-02))
+    FAILMSG("Upper group bound read incorrectly!");
+
+  if (!soft_equiv(etemp_evals[0], 1.76377944e-05))
+    FAILMSG("Etemp eval read incorrectly!");
+  if (!soft_equiv(etemp_evals[6], 6.75507064e-04))
+    FAILMSG("Etemp eval read incorrectly!");
+
+  if (!soft_equiv(compton_test->get_min_etemp(), 1e-6))
+    FAILMSG("Min etemp read incorrectly!");
+  if (!soft_equiv(compton_test->get_max_etemp(), 7e-4))
+    FAILMSG("Max etemp read incorrectly!");
+
+  if (ut.numFails == 0) {
+    std::cout << "\nCorrectly read group bounds and electron temps!"
+              << std::endl;
+  }
+
+  // try "interpolating" at one of the exact eval points in the test library,
+  // and check the result:
+  const double test_etemp = 4.87227167e-04;
+  std::vector<std::vector<std::vector<double>>> interp_data =
+      compton_test->interpolate(test_etemp);
+
+  // Check the size of the returned data:
+  Ensure(interp_data.size() == 1);
+  Ensure(interp_data[0].size() == 1);
+  Ensure(interp_data[0][0].size() == 4);
+
+  // Check that the data is actually correct:
+  if (!soft_equiv(interp_data[0][0][0], 4.45668383e+00))
+    ITFAILS;
+  if (!soft_equiv(interp_data[0][0][1], 3.17337784e-01))
+    ITFAILS;
+  if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
+    ITFAILS;
+  if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  // get the number of xi evals in the library (we know it should be 4)
+  if (compton_test->get_num_xi() != 4)
+    ITFAILS;
+
+  if (ut.numFails == 0)
+    std::cout << "\nCorrectly read multigroup data points!" << std::endl;
+
+  if (ut.numFails == 0) {
+    PASSMSG("Successfully linked Draco against NWA (const version).");
+  } else {
+    FAILMSG("Did not successfully link Draco against NWA (const version).");
+  }
+}
+
 //!  Tests the Compton_NWA mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
@@ -205,6 +289,7 @@ int main(int argc, char *argv[]) {
   try {
     // >>> UNIT TESTS
     rtt_compton_test::compton_file_test(ut);
+    rtt_compton_test::const_compton_file_test(ut);
     rtt_compton_test::compton_build_test(ut);
     rtt_compton_test::compton_fail_test(ut);
   }
