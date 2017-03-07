@@ -197,9 +197,9 @@ static double Planck2Rosseland(double const freq, double const exp_freq) {
   double factor;
 
   if (freq > 1.0e-5)
-    factor = NORM_FACTOR * exp_freq * (freq_3 * freq) / (1 - exp_freq);
+    factor = NORM_FACTOR * (freq_3 * freq) / std::expm1(freq);
   else
-    factor = NORM_FACTOR * freq_3 / (1 - 0.5 * freq);
+    factor = NORM_FACTOR * freq_3 * (1 - 0.5 * freq);
 
   return factor;
 }
