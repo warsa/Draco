@@ -3,7 +3,7 @@
  * \file   compton/Compton.hh
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
- * \brief  Header file for compton NWA interface
+ * \brief  Header file for compton CSK_generator interface
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-// headers provided in compton NWA include directory
+// headers provided in compton CSK_generator include directory
 #include "etemp_interp.hh"
 #include "multigroup_compton_data.hh"
 
@@ -25,27 +25,28 @@ namespace rtt_compton {
  * \class Compton
  *
  * \brief Provides access to relativistic Compton scattering angle and
- * multigroup frequency distributions from the NWA project.
+ * multigroup frequency distributions from the CSK_generator project.
  *
  * This interface class allows the client to:
- * 1) access (interpolate) data from existing multigroup NWA libraries
- * 2) build new multigroup libraries from existing NWA pointwise libraries
+ * 1) access (interpolate) data from existing multigroup CSK_generator libraries
+ * 2) build new multigroup libraries from existing CSK_generator pointwise
+      libraries
  * 3) obtain auxiliary information for existing multigroup libraries
  *    (electron temperature bounds, frequency group structures, etc)
  *
- * This class is designed to be used with the NWA library and headers. If this
- * are not found at the CMake configure step, the lib_compton portion of draco
- * will not be build
+ * This class is designed to be used with the CSK_generator library and headers.
+ * If this is not found at the CMake configure step, the lib_compton portion of
+ * draco will not be built.
  *
  * <b>User's environment</b>
  *
- * Cmake searches for the NWA library/include headers during the configuration
- * step. The script that does this is located at:
+ * Cmake searches for the CSK_generator library/include headers during the
+ * configuration step. The script that does this is located at:
  *
- * /draco/config/findNWA.cmake
+ * /draco/config/findCompton.cmake
  *
- * TODO: The NWA libs can be built with or without openMP. We need to decide
- * which will be released (or if both will exist on a system), and ensure
+ * TODO: The CSK_generator libs can be built with or without openMP. We need to
+ * decide which will be released (or if both will exist on a system), and ensure
  * draco links to the correct one based on the preproc macro OPENMP_FOUND.
  */
 

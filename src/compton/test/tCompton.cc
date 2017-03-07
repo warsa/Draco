@@ -30,9 +30,11 @@ using rtt_dsxx::soft_equiv;
 void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n------------------------------------------" << std::endl;
-  std::cout << "   Test Draco code calling NWA routines" << std::endl;
-  std::cout << "------------------------------------------" << std::endl;
+  std::cout << "\n---------------------------------------------------------"
+            << std::endl;
+  std::cout << "   Test Draco code calling CSK_generator routines" << std::endl;
+  std::cout << "---------------------------------------------------------"
+            << std::endl;
 
   // open a small mg opacity file:
   const std::string filename = "mg_ascii.compton";
@@ -48,7 +50,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
   std::cout << "\n(...Success!)" << std::endl;
 
-  // Check some of the data in the NWA-opened file:
+  // Check some of the data in the CSK_generator-opened file:
   const std::vector<double> grp_bds = compton_test->get_group_bounds();
   const std::vector<double> etemp_evals = compton_test->get_etemp_pts();
 
@@ -104,18 +106,21 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
     std::cout << "\nCorrectly read multigroup data points!" << std::endl;
 
   if (ut.numFails == 0) {
-    PASSMSG("Successfully linked Draco against NWA.");
+    PASSMSG("Successfully linked Draco against CSK_generator.");
   } else {
-    FAILMSG("Did not successfully link Draco against NWA.");
+    FAILMSG("Did not successfully link Draco against CSK_generator.");
   }
 }
 
 void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n------------------------------------------" << std::endl;
-  std::cout << "   Test Draco code calling NWA routines -- const" << std::endl;
-  std::cout << "------------------------------------------" << std::endl;
+  std::cout << "\n---------------------------------------------------------"
+            << std::endl;
+  std::cout << " Test Draco code calling CSK_generator routines -- const "
+            << std::endl;
+  std::cout << "---------------------------------------------------------"
+            << std::endl;
 
   // open a small mg opacity file:
   const std::string filename = "mg_ascii.compton";
@@ -132,7 +137,7 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
   std::cout << "\n(...Success!)" << std::endl;
 
-  // Check some of the data in the NWA-opened file:
+  // Check some of the data in the CSK_generator-opened file:
   const std::vector<double> grp_bds = compton_test->get_group_bounds();
   const std::vector<double> etemp_evals = compton_test->get_etemp_pts();
 
@@ -188,9 +193,10 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
     std::cout << "\nCorrectly read multigroup data points!" << std::endl;
 
   if (ut.numFails == 0) {
-    PASSMSG("Successfully linked Draco against NWA (const version).");
+    PASSMSG("Successfully linked Draco against CSK_generator (const version).");
   } else {
-    FAILMSG("Did not successfully link Draco against NWA (const version).");
+    FAILMSG("Did not successfully link Draco against CSK_generator (const "
+            "version).");
   }
 }
 
@@ -198,9 +204,12 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
-  std::cout << "\n------------------------------------------" << std::endl;
-  std::cout << "Test Draco call to NWA mg opacity builder" << std::endl;
-  std::cout << "------------------------------------------" << std::endl;
+  std::cout << "\n---------------------------------------------------------"
+            << std::endl;
+  std::cout << "Test Draco call to CSK_generator mg opacity builder"
+            << std::endl;
+  std::cout << "---------------------------------------------------------"
+            << std::endl;
 
   // open a small pointwise opacity file:
   const std::string filename = "lagrange_csk_ascii.compton";
@@ -228,7 +237,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   }
   std::cout << "(...Success!)" << std::endl;
 
-  // Check some of the data in the NWA-formed data file:
+  // Check some of the data in the CSK_generator-formed data file:
   const std::vector<double> grp_bds = compton_test->get_group_bounds();
 
   if (!soft_equiv(grp_bds.begin(), grp_bds.end(), test_groups.begin(),
@@ -246,17 +255,19 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   }
 
   if (ut.numFails == 0) {
-    PASSMSG("Successfully built an NWA mg library.");
+    PASSMSG("Successfully built a CSK_generator mg library.");
   } else {
-    FAILMSG("Did not successfully build an NWA mg library.");
+    FAILMSG("Did not successfully build a CSK_generator mg library.");
   }
 }
 
 //!  Tests Compton's error-handling on a non-existent file.
 void compton_fail_test(rtt_dsxx::UnitTest &ut) {
-  std::cout << "\n------------------------------------------" << std::endl;
+  std::cout << "\n---------------------------------------------------------"
+            << std::endl;
   std::cout << "    Test Compton bad file handling    " << std::endl;
-  std::cout << "------------------------------------------" << std::endl;
+  std::cout << "---------------------------------------------------------"
+            << std::endl;
   // open a small mg opacity file:
   std::string filename = "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
@@ -275,9 +286,9 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   if (ut.numFails == 0) {
-    PASSMSG("Successfully caught an NWA exception.");
+    PASSMSG("Successfully caught a CSK_generator exception.");
   } else {
-    FAILMSG("Did not successfully catch an NWA exception.");
+    FAILMSG("Did not successfully catch a CSK_generator exception.");
   }
 }
 }

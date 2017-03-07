@@ -3,7 +3,7 @@
  * \file   compton/Compton.cc
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
- * \brief  Implementation file for compton NWA interface
+ * \brief  Implementation file for compton CSK_generator interface
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
@@ -27,9 +27,9 @@ namespace rtt_compton {
 /*!
  * \brief Constructor for an existing multigroup libfile.
  *
- * This calls NWA methods to read the data file and store everything in a
+ * This calls CSK_generator methods to read the data file and store everything in a
  * Compton data object, a smart pointer to which is then passed to (and held by)
- * the NWA etemp_interp class.
+ * the CSK_generator etemp_interp class.
  *
  * \param filehandle The name of the multigroup file to use for Compton scatters
  */
@@ -52,9 +52,9 @@ Compton::Compton(const std::string &filehandle) {
 /*!
  * \brief Constructor for an existing pointwise file and a multigroup structure.
  *
- * This calls NWA methods to read the pointwise library and construct a
+ * This calls CSK_generator methods to read the pointwise library and construct a
  * multigroup Compton data object, a smart pointer to which is then passed
- * to (and held by) the NWA etemp_interp class.
+ * to (and held by) the CSK_generator etemp_interp class.
  *
  * \param filehandle The name of the pointwise lib to build MG data from
  * \param grp_bds    A vector containing the multigroup bounds (in keV)
