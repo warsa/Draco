@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   compton/Compton_NWA.hh
+ * \file   compton/Compton.hh
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
  * \brief  Header file for compton NWA interface
@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef __compton_Compton_NWA_hh__
-#define __compton_Compton_NWA_hh__
+#ifndef __compton_Compton_hh__
+#define __compton_Compton_hh__
 
 // C++ standard library dependencies
 #include <iostream>
@@ -22,7 +22,7 @@
 namespace rtt_compton {
 //===========================================================================//
 /*!
- * \class Compton_NWA
+ * \class Compton
  *
  * \brief Provides access to relativistic Compton scattering angle and
  * multigroup frequency distributions from the NWA project.
@@ -50,13 +50,13 @@ namespace rtt_compton {
  */
 
 /*!
- * \example compton/test/tCompton_NWA.cc
+ * \example compton/test/tCompton.cc
  *
- * This unit test demonstrates the two methods for constructing a Compton_NWA
+ * This unit test demonstrates the two methods for constructing a Compton
  * object, and exercises all routines for interpolation and data access.
 */
 
-class Compton_NWA {
+class Compton {
 
 private:
   //! Shared pointer to an electron interpolation object:
@@ -64,11 +64,11 @@ private:
 
 public:
   //! Constructor for an existing multigroup library
-  explicit Compton_NWA(const std::string &filehandle);
+  explicit Compton(const std::string &filehandle);
 
   //! Constructor to build a multigroup library from an existing pointwise file
-  Compton_NWA(const std::string &file, const std::vector<double> &group_bounds,
-              const size_t n_xi);
+  Compton(const std::string &file, const std::vector<double> &group_bounds,
+          const size_t n_xi);
 
   //! Interpolation of all data to a certain electron temperature:
   std::vector<std::vector<std::vector<double>>> interpolate(const double etemp);

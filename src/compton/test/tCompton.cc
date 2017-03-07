@@ -1,15 +1,15 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   compton/test/tCompton_NWA.cc
+ * \file   compton/test/tCompton.cc
  * \author Kendra Keady
  * \date   2017 Feb 10
- * \brief  Implementation file for tCompton_NWA
+ * \brief  Implementation file for tCompton
  * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
 
-#include "compton/Compton_NWA.hh"
+#include "compton/Compton.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
@@ -26,7 +26,7 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-//!  Tests the Compton_NWA constructor and a couple of access routines.
+//!  Tests the Compton constructor and a couple of access routines.
 void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
@@ -36,13 +36,13 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // open a small mg opacity file:
   const std::string filename = "mg_ascii.compton";
-  std::cout << "Attempting to construct a Compton_NWA object...\n" << std::endl;
-  std::shared_ptr<rtt_compton::Compton_NWA> compton_test;
+  std::cout << "Attempting to construct a Compton object...\n" << std::endl;
+  std::shared_ptr<rtt_compton::Compton> compton_test;
 
   try {
-    compton_test.reset(new rtt_compton::Compton_NWA(filename));
+    compton_test.reset(new rtt_compton::Compton(filename));
   } catch (int asrt) {
-    FAILMSG("Failed to construct a Compton_NWA object!");
+    FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
   }
@@ -119,14 +119,14 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // open a small mg opacity file:
   const std::string filename = "mg_ascii.compton";
-  std::cout << "Attempting to construct a const Compton_NWA object...\n"
+  std::cout << "Attempting to construct a const Compton object...\n"
             << std::endl;
-  std::shared_ptr<const rtt_compton::Compton_NWA> compton_test;
+  std::shared_ptr<const rtt_compton::Compton> compton_test;
 
   try {
-    compton_test.reset(new const rtt_compton::Compton_NWA(filename));
+    compton_test.reset(new const rtt_compton::Compton(filename));
   } catch (int asrt) {
-    FAILMSG("Failed to construct a Compton_NWA object!");
+    FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
   }
@@ -194,7 +194,7 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//!  Tests the Compton_NWA mg build capability
+//!  Tests the Compton mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
@@ -204,10 +204,10 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   // open a small pointwise opacity file:
   const std::string filename = "lagrange_csk_ascii.compton";
-  std::cout << "Attempting to construct a Compton_NWA object..." << std::endl;
+  std::cout << "Attempting to construct a Compton object..." << std::endl;
 
   // make an uninitialized pointer...
-  std::shared_ptr<rtt_compton::Compton_NWA> compton_test;
+  std::shared_ptr<rtt_compton::Compton> compton_test;
 
   // make a small fake group structure to pass in:
   const std::vector<double> test_groups = {20.0, 30.0, 40.0, 50.0, 60.0};
@@ -219,11 +219,10 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     // (This call has some output of its own, so we print some newlines
     // around it)
     std::cout << "\n\n";
-    compton_test.reset(
-        new rtt_compton::Compton_NWA(filename, test_groups, nxi));
+    compton_test.reset(new rtt_compton::Compton(filename, test_groups, nxi));
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion &asrt) {
-    FAILMSG("Failed to construct a Compton_NWA object!");
+    FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
   }
@@ -253,19 +252,19 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   }
 }
 
-//!  Tests Compton_NWA's error-handling on a non-existent file.
+//!  Tests Compton's error-handling on a non-existent file.
 void compton_fail_test(rtt_dsxx::UnitTest &ut) {
   std::cout << "\n------------------------------------------" << std::endl;
-  std::cout << "    Test Compton_NWA bad file handling    " << std::endl;
+  std::cout << "    Test Compton bad file handling    " << std::endl;
   std::cout << "------------------------------------------" << std::endl;
   // open a small mg opacity file:
   std::string filename = "non_existent.compton";
   std::cout << "Testing with a non-existent file...\n" << std::endl;
-  std::shared_ptr<rtt_compton::Compton_NWA> compton_test;
+  std::shared_ptr<rtt_compton::Compton> compton_test;
 
   bool caught = false;
   try {
-    compton_test.reset(new rtt_compton::Compton_NWA(filename));
+    compton_test.reset(new rtt_compton::Compton(filename));
   } catch (rtt_dsxx::assertion &asrt) {
     std::cout << "Exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!

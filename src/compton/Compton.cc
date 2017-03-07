@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   compton/Compton_NWA.cc
+ * \file   compton/Compton.cc
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton NWA interface
@@ -9,9 +9,9 @@
 //---------------------------------------------------------------------------//
 
 // headers provided in draco:
-#include "Compton_NWA.hh"
+#include "Compton.hh"
 #include "ds++/Assert.hh"
-// headers provided in Compton_NWA include directory:
+// headers provided in Compton include directory:
 #include "compton_file.hh"
 #include "multigroup_compton_data.hh"
 #include "multigroup_data_types.hh"
@@ -33,7 +33,7 @@ namespace rtt_compton {
  *
  * \param filehandle The name of the multigroup file to use for Compton scatters
  */
-Compton_NWA::Compton_NWA(const std::string &filehandle) {
+Compton::Compton(const std::string &filehandle) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -60,8 +60,8 @@ Compton_NWA::Compton_NWA(const std::string &filehandle) {
  * \param grp_bds    A vector containing the multigroup bounds (in keV)
  * \param n_xi       The number of angular points/Legendre moments desired
  */
-Compton_NWA::Compton_NWA(const std::string &filehandle,
-                         const std::vector<double> &grp_bds, const size_t nxi) {
+Compton::Compton(const std::string &filehandle,
+                 const std::vector<double> &grp_bds, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -109,7 +109,7 @@ Compton_NWA::Compton_NWA(const std::string &filehandle,
  * \return      n_grp x n_grp x n_xi interpolated scattering kernel values
  */
 std::vector<std::vector<std::vector<double>>>
-Compton_NWA::interpolate(const double etemp) {
+Compton::interpolate(const double etemp) {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
@@ -120,7 +120,7 @@ Compton_NWA::interpolate(const double etemp) {
 }
 
 std::vector<std::vector<std::vector<double>>>
-Compton_NWA::interpolate(const double etemp) const {
+Compton::interpolate(const double etemp) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
