@@ -25,7 +25,6 @@ endif()
        $ENV{COMPTON_INC_DIR}
        $ENV{VENDOR_DIR}/include
        ${VENDOR_DIR}/include
-       /home/keadyk/development/CSK_generator/src
     NO_DEFAULT_PATH
 )
 
@@ -47,7 +46,6 @@ find_library(COMPTON_LIBRARY
         $ENV{COMPTON_LIB_DIR}
         $ENV{VENDOR_DIR}/lib
         ${VENDOR_DIR}/lib
-        /home/keadyk/builds/gcc/CSK_generator
     NO_DEFAULT_PATH
 )
 
