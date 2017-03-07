@@ -118,4 +118,15 @@ Compton_NWA::interpolate(const double etemp) {
   // call the appropriate routine in the electron interp object
   return ei->interpolate_etemp(etemp);
 }
+
+std::vector<std::vector<std::vector<double>>>
+Compton_NWA::interpolate(const double etemp) const {
+
+  // Be sure the passed electron temperature is within the bounds of the lib!
+  Require(etemp >= ei->get_min_etemp());
+  Require(etemp <= ei->get_max_etemp());
+
+  // call the appropriate routine in the electron interp object
+  return ei->interpolate_etemp(etemp);
+}
 }
