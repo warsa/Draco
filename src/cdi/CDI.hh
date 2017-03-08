@@ -21,6 +21,7 @@
 #include "ds++/SP.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <algorithm>
+#include <limits>
 
 //---------------------------------------------------------------------------//
 // UNNAMED NAMESPACE
@@ -222,9 +223,8 @@ static double Planck2Rosseland(double const freq, double const exp_freq) {
 
   double const freq_3 = freq * freq * freq;
   // ensure freq_3 is not an overflow
-  Check(freq > 1.0
-	? freq < std::numeric_limits<decltype(freq)>::max() / freq_3
-        : true );
+  Check(freq > 1.0 ? freq < std::numeric_limits<decltype(freq)>::max() / freq_3
+                   : true );
 
   double factor(0.0);
 
