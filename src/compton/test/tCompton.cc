@@ -102,6 +102,9 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (compton_test->get_num_xi() != 4)
     ITFAILS;
 
+  if (compton_test->get_num_groups() != 1)
+    ITFAILS;
+
   if (ut.numFails == 0)
     std::cout << "\nCorrectly read multigroup data points!" << std::endl;
 
@@ -187,6 +190,9 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   // get the number of xi evals in the library (we know it should be 4)
   if (compton_test->get_num_xi() != 4)
+    ITFAILS;
+
+  if (compton_test->get_num_groups() != 1)
     ITFAILS;
 
   if (ut.numFails == 0)
