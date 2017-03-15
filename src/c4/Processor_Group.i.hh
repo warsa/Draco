@@ -22,9 +22,12 @@
 
 namespace rtt_c4 {
 //---------------------------------------------------------------------------//
-template <typename T> void Processor_Group::sum(std::vector<T> &x) {
+template <typename RandomAccessContainer>
+void Processor_Group::sum(RandomAccessContainer &x) {
+  typedef typename RandomAccessContainer::value_type T;
+
   // copy data into send buffer
-  std::vector<T> y = x;
+  std::vector<T> y(x.begin(), x.end());
 
   // do global MPI reduction (result is on all processors) into x
   int status =
