@@ -14,6 +14,8 @@
 #ifndef c4_Processor_Group_i_hh
 #define c4_Processor_Group_i_hh
 
+#include "Processor_Group.hh"
+
 #include "MPI_Traits.hh"
 #include "c4/config.h"
 #include "ds++/Assert.hh"
