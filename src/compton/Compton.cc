@@ -13,7 +13,6 @@
 #include "ds++/Assert.hh"
 // headers provided in Compton include directory:
 #include "compton_file.hh"
-#include "multigroup_compton_data.hh"
 #include "multigroup_data_types.hh"
 #include "multigroup_lib_builder.hh"
 
