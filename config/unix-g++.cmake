@@ -43,6 +43,7 @@ check_c_compiler_flag(   "-march=native" HAS_MARCH_NATIVE )
 check_cxx_compiler_flag( "-Wnoexcept"    HAS_WNOEXCEPT )
 check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
 check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
+check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
 check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
 include(platform_checks)
 query_openmp_availability()
@@ -113,6 +114,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
    if( HAS_WUNUSED_LOCAL_TYPEDEFS )
      string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
    endif()
+   if( HAS_WUNUSED_MACROS )
+     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-macros" )
+   endif()
 
    # Features for GCC-5.0 or later
    # See https://gcc.gnu.org/gcc-5/changes.html
@@ -143,8 +147,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
       # Wiki page for more details
       # (https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler)
 
-      # string( APPEND CMAKE_C_FLAGS_DEBUG
-      #         " -fsanitize=float-divide-by-zero -fcheck-ponter-bounds")
+      string( APPEND CMAKE_C_FLAGS_DEBUG
+        " -fsanitize=float-divide-by-zero -fcheck-ponter-bounds")
+      string( APPEND CMAKE_CXX_FLAGS_DEBUG
+        " -fsanitize=float-divide-by-zero -fcheck-ponter-bounds")
    endif()
 endif()
 
