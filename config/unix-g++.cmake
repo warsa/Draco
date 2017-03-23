@@ -114,9 +114,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
    if( HAS_WUNUSED_LOCAL_TYPEDEFS )
      string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-local-typedefs" )
    endif()
-   if( HAS_WUNUSED_MACROS )
-     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-macros" )
-   endif()
+# Issues with tstFMA[12].cc:
+#   if( HAS_WUNUSED_MACROS )
+#     string( APPEND CMAKE_CXX_FLAGS_DEBUG " -Wunused-macros" )
+#   endif()
 
    # Features for GCC-5.0 or later
    # See https://gcc.gnu.org/gcc-5/changes.html
