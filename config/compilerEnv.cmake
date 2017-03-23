@@ -379,9 +379,9 @@ macro(dbsSetupFortran)
 
 endmacro()
 
-##---------------------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 ## Setup profile tools: MAP, PAPI, HPCToolkit, TAU, etc.
-##---------------------------------------------------------------------------------------##
+##---------------------------------------------------------------------------##
 macro( dbsSetupProfilerTools )
 
   # ------------------------------------------------------------
@@ -438,7 +438,7 @@ macro( dbsSetupProfilerTools )
         PATHS ${PROJECT_BINARY_DIR}
         NO_DEFAULT_PATH
         )
-      findl_ibrary( map-sampler
+      find_library( map-sampler
         NAMES map-sampler
         PATHS ${PROJECT_BINARY_DIR}
         NO_DEFAULT_PATH
