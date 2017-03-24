@@ -60,6 +60,7 @@ function dracoenv ()
 {
   module unload gcc/6.1.0 cray-libsci intel
   module load intel/17.0.1
+  module swap cray-mpich cray-mpich/7.4.2
   for m in $dracomodules; do
     module load $m
   done
