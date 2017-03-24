@@ -19,6 +19,20 @@ namespace // anonymous
 unsigned available = rtt_parser::DEBUG_END;
 
 std::map<std::string, unsigned> extended_debug_option;
+std::map<unsigned, std::string> extended_debug_back_option;
+
+bool is_bit(unsigned bit)
+// Is the bit actually a bit? That is, a power of 2?
+{
+  Require(bit > 0); // corner case won't work
+
+  // Shift to first bit
+  while ((bit & 1U) == 0U) {
+    bit >>= 1U;
+  }
+  // Erase that bit; see if the result is zero, as it must be for a power of 2.
+  return (bit ^ 1U) == 0U;
+}
 }
 
 namespace rtt_parser {
@@ -148,25 +162,66 @@ string debug_options_as_text(unsigned debug_options) {
 }
 
 //---------------------------------------------------------------------------------------//
-/*! Add a new debug option to the debug parser specific to an application.
+/*! Add a new debug option to the debug parser specific to an application. This version
+    assigns the next available bit.
  *
  * \param Debug option keyword
  *
  * \return Bitflag value assigned to the new debug option.
  */
 unsigned add_debug_option(string const &option_name) {
-  if (available == 0) {
-    throw std::range_error("maximum debug options exceeded");
+  if (extended_debug_option.find(option_name) != extended_debug_option.end()) {
+    // option already exists; regard as benign
+    return extended_debug_option[option_name];
+  } else {
+    while (available != 0 &&
+           extended_debug_back_option.find(available) !=
+               extended_debug_back_option.end()) {
+      available <<= 1U;
+    }
+    if (available == 0) {
+      throw std::range_error("maximum debug options exceeded");
+      // yeah, i know, if there are 4G debug options, someone has lost his mind. Still.
+    }
+    extended_debug_option[option_name] = available;
+    extended_debug_back_option[available] = option_name;
+    return available;
   }
-  extended_debug_option[option_name] = available;
-  unsigned Result = available;
-  available <<= 1U;
-  return Result;
+}
+
+//---------------------------------------------------------------------------------------//
+/*! Add a new debug option to the debug parser specific to an application. This version
+ * requests a specific bit and throws an exception if has already been requested
+ * elsewhere. This version will typically be called at the initial setup of an
+ * application.
+ *
+ * \param Debug option keyword
+ *
+ * \param Bitflag value to be assigned to the new debug option.
+ */
+void add_debug_option(string const &option_name, unsigned const bit) {
+  Require(bit != 0);         // corner case will fail
+  Require(bit >= DEBUG_END); // can't redefine standard debug
+  Require(is_bit(bit));
+
+  if (extended_debug_option.find(option_name) != extended_debug_option.end()) {
+    if (extended_debug_option[option_name] != bit) {
+      throw std::invalid_argument("debug option redefined");
+    }
+    // else duplicate identical definition acceptable
+  } else if (extended_debug_back_option.find(bit) !=
+             extended_debug_back_option.end()) {
+    throw std::invalid_argument("bitflag already allocated");
+  } else {
+    extended_debug_option[option_name] = bit;
+    extended_debug_back_option[bit] = option_name;
+  }
 }
 
 //---------------------------------------------------------------------------------------//
 void flush_debug_options() {
   extended_debug_option.clear();
+  extended_debug_back_option.clear();
   available = DEBUG_END;
 }
 

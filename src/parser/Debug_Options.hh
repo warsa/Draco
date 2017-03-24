@@ -41,6 +41,11 @@ DLL_PUBLIC_parser unsigned parse_debug_options(rtt_parser::Token_Stream &,
 
 //---------------------------------------------------------------------------//
 //! Add an application-specific debug option.
+DLL_PUBLIC_parser void add_debug_option(string const &option_name,
+                                        unsigned bitflag);
+
+//---------------------------------------------------------------------------//
+//! Add an application-specific debug option.
 DLL_PUBLIC_parser unsigned add_debug_option(string const &option_name);
 
 //---------------------------------------------------------------------------//
