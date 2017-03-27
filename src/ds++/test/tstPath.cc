@@ -52,7 +52,8 @@ void test_getFilenameComponent(ScalarUnitTest &ut, string const &fqp) {
   std::string const fqpn = getFilenameComponent(fqp, rtt_dsxx::FC_NATIVE);
 
   cout << "\nTesting getFilenameComponent() function with fqpn = " << fqpn
-       << " ...\n" << endl;
+       << " ...\n"
+       << endl;
 
   bool usesUnixDirSep = true;
 

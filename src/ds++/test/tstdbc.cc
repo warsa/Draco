@@ -57,11 +57,11 @@ void dbc_test(UnitTest &ut) {
 
   if (!is_monotonic_increasing(sum_test_array, sum_test_array + 1))
     FAILMSG(string("is_monotonic_increasing function template ") +
-               string("incorrectly reported length=1 container ") +
-               string("non-monotonic."));
+            string("incorrectly reported length=1 container ") +
+            string("non-monotonic."));
   else
     PASSMSG(string("is_monotonic_increasing function template worked for ") +
-              string("length=1 test."));
+            string("length=1 test."));
 
   if (is_strict_monotonic_increasing(sum_test_array, sum_test_array + 6) ||
       !is_strict_monotonic_increasing(sum_test_array, sum_test_array + 2))
@@ -73,13 +73,11 @@ void dbc_test(UnitTest &ut) {
   // true if there is only one data point.
 
   if (is_strict_monotonic_increasing(sum_test_array, sum_test_array + 1))
-    PASSMSG(
-        string("is_strict_monotonic_increasing function template worked ") +
-        string("for length=1 test."));
+    PASSMSG(string("is_strict_monotonic_increasing function template worked ") +
+            string("for length=1 test."));
   else
-    FAILMSG(
-        string("is_strict_monotonic_increasing function template ") +
-        string("incorrectly reported length=1 container non-monotonic."));
+    FAILMSG(string("is_strict_monotonic_increasing function template ") +
+            string("incorrectly reported length=1 container non-monotonic."));
 
   if (is_strict_monotonic_decreasing(sum_test_array + 1, sum_test_array + 3) &&
       !is_strict_monotonic_decreasing(sum_test_array, sum_test_array + 6))
@@ -92,10 +90,10 @@ void dbc_test(UnitTest &ut) {
 
   if (is_strict_monotonic_decreasing(sum_test_array, sum_test_array + 1))
     PASSMSG(string("is_strict_monotonic_decreasing function template ") +
-              string("worked for length=1 test."));
+            string("worked for length=1 test."));
   else
     FAILMSG(string("is_strict_monotonic_decreasing function template ") +
-               string("incorrectly reported length=1 container monotonic."));
+            string("incorrectly reported length=1 container monotonic."));
 
   if (std::find_if(sum_test_array, sum_test_array + 6,
                    bind2nd(greater<double>(), 2.)) != sum_test_array + 1)

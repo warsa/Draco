@@ -48,8 +48,14 @@ public:
 
   // ACCESSORS
 
-  Index_Counter &operator++() { increment(); return *this; }
-  Index_Counter &operator--() { decrement(); return *this; }
+  Index_Counter &operator++() {
+    increment();
+    return *this;
+  }
+  Index_Counter &operator--() {
+    decrement();
+    return *this;
+  }
 
   // Accessors for the 1-index
   int get_index() const { return index; }

@@ -20,7 +20,7 @@ using namespace rtt_dsxx;
 //---------------------------------------------------------------------------//
 
 void tstSlice(UnitTest &ut) {
-  vector<unsigned> v = { 0,1,2,3,4 };
+  vector<unsigned> v = {0, 1, 2, 3, 4};
   Slice<vector<unsigned>::iterator> s = slice(v.begin() + 1, 2, 2);
   if (s.size() == 2)
     PASSMSG("size of vector Slice is correct");

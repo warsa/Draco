@@ -29,9 +29,9 @@ using rtt_dsxx::soft_equiv;
 
 void do_some_packing(Packer &p, vector<double> const &vd,
                      vector<int> const &vi) {
-  for( const auto & item : vd )
+  for (const auto &item : vd)
     p << item;
-  for (const auto & item : vi)
+  for (const auto &item : vi)
     p << item;
   return;
 }

@@ -16,10 +16,11 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
-  
+
   // Define a vector of strings for testing
-  vector<string> names = { "this", "is", "a#", "test", "xxx!", "space check", 
-    "123", "x", "test", "dog", "is", "cat", "", "abc" };
+  vector<string> names = {"this",        "is",  "a#", "test", "xxx!",
+                          "space check", "123", "x",  "test", "dog",
+                          "is",          "cat", "",   "abc"};
   typedef vector<string>::iterator VS_iter;
 
   // Print a header
@@ -28,7 +29,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
   // List the test string
 
   cout << "The " << names.size() << " strings to be tested are: " << endl;
-  for( const auto& name : names )
+  for (const auto &name : names)
     cout << "\"" << name << "\"" << endl;
   cout << endl;
 
@@ -43,9 +44,9 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for( const auto bad_entry : result )
+    for (const auto bad_entry : result)
       cout << "Found disallowed character(s) in string: \"" << *bad_entry
-      << "\"" << endl;
+           << "\"" << endl;
     cout << "The following characters are forbidden:" << endl
          << " \"" << bad_chars << "\","
          << " as well as any white-space characters." << endl;
@@ -78,7 +79,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for( const auto bad_entry : result2 )
+    for (const auto bad_entry : result2)
       cout << "Size of string is not in allowable range: \"" << *bad_entry
            << "\"" << endl;
     cout << "Strings lengths must be greater than " << low << " and less than "
@@ -108,7 +109,7 @@ void Check_Strings_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Failed to find bad characters in string definition.");
   } else {
     PASSMSG("Successfully found bad characters in string definition.");
-    for (const auto & bad_entry: result3)
+    for (const auto &bad_entry : result3)
       cout << "Duplicate string found: \"" << *bad_entry << "\"" << endl;
     cout << "All strings must be unique!" << endl;
   }
