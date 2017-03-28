@@ -85,7 +85,7 @@ CC=`which cc`
 CXX=`which CC`
 FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=17
 export TARGET=knl
 }
 
