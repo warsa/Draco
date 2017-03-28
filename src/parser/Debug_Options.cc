@@ -2,12 +2,10 @@
 /*!
  * \file   parser/Debug_Options.cc
  * \author Kent Grimmett Budge
- * \brief
- * \note   Copyright (C) 2014-2016-2017 Los Alamos National Security, LLC.
+ * \brief  Define Debug_Options parse functions.
+ * \note   Copyright (C) 2014-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
-/*---------------------------------------------------------------------------*/
-/* $Id: template.h 7388 2014-01-22 16:02:07Z kellyt $ */
 /*---------------------------------------------------------------------------*/
 
 #include "Debug_Options.hh"
@@ -41,7 +39,7 @@ using std::string;
 //---------------------------------------------------------------------------------------//
 /*! Get a debug specification.
  *
- * \param option_name A string specifying a debug option keyword.
+ * \param[in] option_name A string specifying a debug option keyword.
  *
  * \return The bitmask value assigned to the keyword, or
  * 0 if the keyword is not recognized.
@@ -75,11 +73,11 @@ unsigned get_debug_option(string const &option_name) {
 //---------------------------------------------------------------------------------------//
 /*! Parse a debug specification.
  *
- * \param tokens Token stream from which to parse a debug specification. The specification
+ * \param[in,out] tokens Token stream from which to parse a debug specification. The specification
  * is a set of debug keywords, each optionally prefixed with a '!', and ends with the first
  * token that is not a recognized debug keyword.
  *
- * \param parent Optional parent mask; defaults to zero. Allows a debug mask to be
+ * \param[in] parent Optional parent mask; defaults to zero. Allows a debug mask to be
  * based on a parent mask, with selected bits added or masked out.
  *
  * \return A debug options mask.
@@ -116,7 +114,7 @@ unsigned parse_debug_options(Token_Stream &tokens, unsigned const parent) {
 //---------------------------------------------------------------------------------------//
 /*! Convert a debug mask to a string containing comma-delimited set of debug keywords.
  *
- * \param debug_options Debug mask to be converted to a set of keywords.
+ * \param[in] debug_options Debug mask to be converted to a set of keywords.
  *
  * \return A string containing a comma-delimited set of debug options.
  */
@@ -150,10 +148,9 @@ string debug_options_as_text(unsigned debug_options) {
                     DEBUG_RESET_TIMING | DEBUG_BALANCE | DEBUG_MEMORY);
 
   if (debug_options) {
-    for (auto i = extended_debug_option.begin();
-         i != extended_debug_option.end(); ++i) {
-      if (debug_options & i->second) {
-        Result += ", " + i->first;
+    for (const auto &i : extended_debug_option) {
+      if (debug_options & i.second) {
+        Result += ", " + i.first;
       }
     }
   }
@@ -165,7 +162,7 @@ string debug_options_as_text(unsigned debug_options) {
 /*! Add a new debug option to the debug parser specific to an application. This version
     assigns the next available bit.
  *
- * \param Debug option keyword
+ * \param[in] option_name Debug option keyword
  *
  * \return Bitflag value assigned to the new debug option.
  */
@@ -195,9 +192,9 @@ unsigned add_debug_option(string const &option_name) {
  * elsewhere. This version will typically be called at the initial setup of an
  * application.
  *
- * \param Debug option keyword
+ * \param[in] Debug option keyword
  *
- * \param Bitflag value to be assigned to the new debug option.
+ * \param[in] Bitflag value to be assigned to the new debug option.
  */
 void add_debug_option(string const &option_name, unsigned const bit) {
   Require(bit != 0);         // corner case will fail

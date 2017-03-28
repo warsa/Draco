@@ -2,7 +2,7 @@
 /*!
  * \file   parser/Debug_Options.hh
  * \author Kent Grimmett Budge
- * \brief
+ * \brief  Define the Debug_Options enumeration and declare parse functions.
  * \note   Copyright (C) 2014-2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -20,13 +20,13 @@ namespace rtt_parser {
 //! Enumeration of debug flag bits
 
 enum Debug_Options {
-  DEBUG_ALGORITHM = 1,    // Report on behavior of the algorithm.
-  DEBUG_TIMESTEP = 2,     // Report on what is limiting the time step.
-  DEBUG_TIMING = 4,       // Report CPU times for various code regions.
-  DEBUG_RESET_TIMING = 8, // Reset all timings to zero.
-  DEBUG_BALANCE = 16,     // Report on energy balance.
-  DEBUG_GMV_DUMP = 32,    // Produce a GMV dump of the solution.
-  DEBUG_MEMORY = 64,      // Report on memory usage.
+  DEBUG_ALGORITHM = 1,     // Report on behavior of the algorithm.
+  DEBUG_TIMESTEP = 2,      // Report on what is limiting the time step.
+  DEBUG_TIMING = 4,        // Report CPU times for various code regions.
+  DEBUG_BALANCE = 8,       // Report on energy balance.
+  DEBUG_GMV_DUMP = 16,     // Produce a GMV dump of the solution.
+  DEBUG_MEMORY = 32,       // Report on memory usage.
+  DEBUG_RESET_TIMING = 64, // Reset all timings to zero.
 
   DEBUG_END = 128, // Sentinel value and first available extension.
 
