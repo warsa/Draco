@@ -27,7 +27,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_1
+ddir=draco-6_21_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -124,20 +124,20 @@ ppn=`lookupppn`
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=SHARED"
 OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=SHARED"
-#OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RelWithDebInfo -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_LIBRARY_TYPE=SHARED"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
+LOGGING_RWDI="-DDRACO_DBC_LEVEL=15 -DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-# VERSIONS=( "debug" "opt" "rwdi" )
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
     "$OPTIMIZE_OFF  $LOGGING_OFF" \
     "$OPTIMIZE_ON   $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_RWDI" \
 )
-#     "$OPTIMIZE_RWDI $LOGGING_OFF" \
 
 ##---------------------------------------------------------------------------##
 ## Environment review
