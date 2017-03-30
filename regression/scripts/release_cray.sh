@@ -43,7 +43,7 @@ function intel17env()
 run "module load user_contrib friendly-testing"
 run "module unload ndi metis parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
-run "module unload cmake numdiff"
+run "module unload cmake"
 run "module unload intel gcc"
 run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
@@ -68,7 +68,7 @@ function intel17env-knl()
 run "module load user_contrib friendly-testing"
 run "module unload ndi metis parmetis superlu-dist trilinos"
 run "module unload lapack gsl intel"
-run "module unload cmake numdiff"
+run "module unload cmake"
 run "module unload intel gcc"
 run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
@@ -98,8 +98,7 @@ export TARGET=knl
 ##---------------------------------------------------------------------------##
 sdir=`dirname $0`
 cdir=`pwd`
-cd $sdir
-export script_dir=`pwd`
+export script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export draco_script_dir=$script_dir
 
 # CMake options that will be included in the configuration step
@@ -138,6 +137,11 @@ OPTIONS=(\
     "$OPTIMIZE_ON   $LOGGING_OFF" \
     "$OPTIMIZE_RWDI $LOGGING_RWDI" \
 )
+
+# VERSIONS=( "debug" )
+# OPTIONS=(\
+#     "$OPTIMIZE_OFF  $LOGGING_OFF" \
+# )
 
 ##---------------------------------------------------------------------------##
 ## Environment review
@@ -196,7 +200,7 @@ for env in $environments; do
 
     # Run the tests on the back-end.
     export steps="test"
-    cmd="msub -V $access_queue -l walltime=08:00:00 \
+    cmd="msub -V -l walltime=08:00:00 \
 -l nodes=2:${TARGET}:ppn=${ppn} -j oe \
 -o $source_prefix/logs/release-$buildflavor-$version-t.log \
 $draco_script_dir/release_cray.msub"
@@ -210,6 +214,7 @@ $draco_script_dir/release_cray.msub"
 
     # export dry_run=0
   done
+
 done
 
 ##---------------------------------------------------------------------------##
