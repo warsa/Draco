@@ -68,23 +68,16 @@ endif()
 # Consider using these diagnostic flags for Debug builds:
 # -Wundef     - warn about CPP macros read but not defined.
 # -Wcast-qual - warn about casts that remove qualifiers like const.
-# -Wfloat-equal
-# -Wstrict-overflow=4
-# -Wwrite-strings
 # -Wunreachable-code
 #
 # Consider using these optimization flags:
-# -ffast-math -mtune=native -ftree-vectorize
+# -ffast-math -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
 
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
-  #if( CMAKE_C_COMPILER_VERSION VERSION_GREATER 5.0 )
-  #set( CMAKE_C_FLAGS              "${CMAKE_C_FLAGS} -fdiagnostics-color=always" )
-  # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
-  #endif()
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -DDEBUG")
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
@@ -92,7 +85,9 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # LTO appears to be broken for gcc/4.8.5 (at least for Jayenne).
-    string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
+    # LTO appears to be broken for gcc/5.3.0 (Draco on Moonlight).
+    #string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
+
     # See https://gcc.gnu.org/gcc-5/changes.html
     # UndefinedBehaviorSanitizer gained a few new sanitization options:
     #    -fsanitize=float-divide-by-zero: detect floating-point division
@@ -111,8 +106,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #                     pointers to base and derived classes, detect if
     #                     the referenced object does not have the correct
     #                     dynamic type.
-    string( APPEND CMAKE_C_FLAGS_DEBUG
-      " -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+    # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
   endif()
 
   if (NOT APPLE AND HAS_MARCH_NATIVE)
