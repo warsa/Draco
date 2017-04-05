@@ -33,8 +33,25 @@ logdir="$( cd $scriptdir/../../logs && pwd )"
 logfile=$logdir/sync_repository_$target.log
 lockfile=/var/tmp/sync_repository_$target.lock
 
+case ${target} in
+  sn-fey*)
+    echo "looking for locks..."
+    echo "   FLOCKER = ${FLOCKER}"
+    echo "   lockfile will be $lockfile"
+    echo "   logfile will be $logfile"
+    echo "   ${0}"
+    echo "   $@"
+    ;;
+esac
+
 # Prevent multiple copies of this script from running at the same time:
 [ "${FLOCKER}" != "${lockfile}" ] && exec env FLOCKER="${lockfile}" flock -en "${lockfile}" "${0}" "$@" || :
+
+case ${target} in
+  sn-fey*)
+    echo "running..."
+    echo "redirecting output to $logfile" ;;
+esac
 
 # Redirect all future output to the logfile.
 exec > $logfile
@@ -69,33 +86,6 @@ fi
 #
 # Environment
 #
-
-##----------------------------------------------------------------------------##
-# Pause until the 'last modified' timestamp of file $1 to be $2 seconds old.
-function allow_file_to_age
-{
-  if [[ ! $2 ]]; then
-    echo "ERROR: This function requires two arguments: a filename and an age value (sec)."
-    exit 1
-  fi
-
-  # If file does not exist, no need to wait.
-  if [[ ! -f $1 ]]; then
-    return
-  fi
-
-  # assume file was last modified 0 seconds ago.
-  timediff=0
-
-  # If no changes for $2 seconds, continue
-  # else, wait until until file, $1, hasn't been touched for $2 seconds.
-  while [[ $timediff -lt $2 ]]; do
-    eval "$(date +'now=%s')"
-    pr_last_check=$(date +%s -r $1)
-    timediff=$(expr $now - $pr_last_check)
-    sleep 30s
-  done
-}
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
@@ -154,7 +144,7 @@ fi
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
 MYHOSTNAME="`uname -n`"
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
 if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
   run "source $HOME/.keychain/$MYHOSTNAME-sh"
 else
@@ -320,7 +310,6 @@ for prline in $draco_prs; do
 
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
     ccscs*)
-      # Coverage (Debug) & Valgrind (Debug)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
       allow_file_to_age $logfile 600
@@ -644,7 +633,6 @@ run "rm $lockfile"
 
 echo " "
 echo "All done."
-
 
 #------------------------------------------------------------------------------#
 # End sync_repository.sh
