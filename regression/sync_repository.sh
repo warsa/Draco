@@ -30,7 +30,10 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # All output will be saved to this log file.  This is also the lockfile for flock.
 logdir="$( cd $scriptdir/../../logs && pwd )"
-logfile=$logdir/sync_repository_$target.log
+timestamp=`date +%Y%m%d-%H%M`
+echo "target = $target"
+echo "timestamp = $timestamp"
+logfile=$logdir/sync_repository_${target}_${timestamp}.log
 lockfile=/var/tmp/sync_repository_$target.lock
 
 case ${target} in
@@ -181,8 +184,10 @@ if test -d $gitroot/Draco.git; then
   run "cd $gitroot/Draco.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO
-  cat $TMPFILE_DRACO
+  run "cat $TMPFILE_DRACO"
   run "git reset --soft"
+  run "chgrp -R draco $gitroot/Draco.git"
+  run "chmod -R g+rwX $gitroot/Draco.git"
 else
   run "mkdir -p $gitroot"
   run "cd $gitroot"
@@ -222,8 +227,10 @@ if test -d $gitroot/jayenne.git; then
   run "cd $gitroot/jayenne.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_JAYENNE
-  cat $TMPFILE_JAYENNE
+  run "cat $TMPFILE_JAYENNE"
   run "git reset --soft"
+  run "chgrp -R draco $gitroot/jayenne.git"
+  run "chmod -R g+rwX $gitroot/jayenne.git"
 else
   run "mkdir -p $gitroot; cd $gitroot"
   run "git clone --bare git@gitlab.lanl.gov:jayenne/jayenne.git jayenne.git"
@@ -241,6 +248,8 @@ case ${target} in
       run "cd $gitroot/jayenne-redmine.git"
       run "git fetch origin +refs/heads/*:refs/heads/*"
       run "git reset --soft"
+      run "chgrp -R draco $gitroot/capsaicin.git"
+      run "chmod -R g+rwX $gitroot/capsaicin.git"
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
@@ -261,7 +270,7 @@ if test -d $gitroot/capsaicin.git; then
   run "cd $gitroot/capsaicin.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_CAPSAICIN
-  cat $TMPFILE_CAPSAICIN
+  run "cat $TMPFILE_CAPSAICIN"
   run "git reset --soft"
 else
   run "mkdir -p $gitroot; cd $gitroot"
@@ -296,20 +305,30 @@ esac
 # parsing the output of 'git fetch' from above.
 #
 # The output from the above command may include text of the form:
+#
 #   [new ref]        refs/pull/84/head -> refs/pull/84/head <-- new PR
 #   03392b8..fd3eabc refs/pull/86/head -> refs/pull/86/head <-- updated PR
-#                    Extract a list of PRs that are new and optionally start
-#                    regression run
+#   881a1f4...86c80c8 refs/pull/157/merge -> refs/pull/157/merge  (forced update)
+#
+# Extract a list of PRs that are new and optionally start regression run
 # ------------------------------------------------------------------------------#
 
+echo " "
+echo "========================================================================"
+echo "Starting CI regressions (if any)"
+echo "========================================================================"
+echo " "
 # Draco CI ------------------------------------------------------------
-draco_prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE_DRACO | awk '{print $NF}'`
+#draco_prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE_DRACO | awk '{print $NF}'`
+draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
+
 for prline in $draco_prs; do
   echo " "
   case ${target} in
 
     # CCS-NET: Coverage (Debug) & Valgrind (Debug)
     ccscs*)
+      # Coverage (Debug) & Valgrind (Debug)
       pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
       logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
       allow_file_to_age $logfile 600
@@ -376,11 +395,16 @@ case ${target} in
   tt-fe*) draco_tag_file=$regdir/logs/last-draco-develop-tt.log ;;
   darwin-fe*) draco_tag_file=$regdir/logs/last-draco-develop-darwin.log ;;
 esac
+if ! [[ -f $draco_tag_file ]]; then
+  touch $draco_tag_file
+fi
 draco_last_built=$(date +%s -r $draco_tag_file)
 
 # Get the list of new Jayenne and Capsaicin Prs
-jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
-capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
+#jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
+#capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
+jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/merge-requests/[0-9]*/merge.*forced update' -e 'refs/merge-requests/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
+capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/merge-requests/[0-9]*/merge.*forced update' -e 'refs/merge-requests/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
 
 ipr=0 # count the number of PRs processed. Only the first needs to build draco.
 for prline in $jayenne_prs $capsaicin_prs; do
