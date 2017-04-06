@@ -342,10 +342,10 @@ class UnitTest:
       if (stdin_file):
         print("About to run \'{0}\'".format(' '.join(clean_run_args)))
         test_process = subprocess.Popen(clean_run_args, stdout=subprocess.PIPE, \
-          stderr=subprocess.PIPE, stdin=f_in)
+          stderr=subprocess.PIPE, stdin=f_in, universal_newlines=True)
       else:
         test_process = subprocess.Popen(clean_run_args, stdout=subprocess.PIPE, \
-          stderr=subprocess.PIPE)
+          stderr=subprocess.PIPE, universal_newlines=True)
 
       test_out, test_err = test_process.communicate()
       if (stdin_file): f_in.close();
