@@ -226,9 +226,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
     # only define if they do not already exist...
     function dracoenv ()
     {
-      for m in $dracomodules; do
-        module load $m
-      done
+      module load $dracomodules
     }
     function rmdracoenv ()
     {
