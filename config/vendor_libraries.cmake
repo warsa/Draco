@@ -23,13 +23,16 @@ macro( setupLAPACKLibrariesUnix )
 
   message( STATUS "Looking for lapack...")
   set( lapack_FOUND FALSE )
+
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
+  # This first try will also look for BLAS/LAPACK at CMAKE_PREFIX_PATH.
   foreach( version 3.4.1 3.4.2 3.5.0 3.6.0 3.6.1 )
     if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
       list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
-      find_package( lapack CONFIG )
     endif()
   endforeach()
+  find_package( lapack CONFIG )
+
   if( lapack_FOUND )
     set( lapack_flavor "netlib")
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
