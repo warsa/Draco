@@ -8,13 +8,15 @@
 ##---------------------------------------------------------------------------##
 
 # Use:
-#   <path>/regression-master.sh [options]
+#   <path>/checkpr.sh [options]
 #
 # Options:
-#   -p <project>
-#   -f <number>
+#   -p <project>  - project name, {draco, jayenne, capasaicin}
+#   -f <number>   - pr number
+#   -h            - help message
+#   -r            - special run mode that uses the regress account's
+#                   credentials.
 #
-# <project> must be one of draco, jayenne or capsaicin.
 # <number> must be an integer value that represents the pull request.
 
 ##---------------------------------------------------------------------------##
@@ -188,8 +190,8 @@ case $project in
       # Call this script recursively to build the draco 'develop' branch.
       $rscriptdir/checkpr.sh draco
 
-      # Reset the modified date on the file used to determine when draco was last
-      # built.
+      # Reset the modified date on the file used to determine when draco was
+      # last built.
       date &> $draco_tag_file
     fi
     ;;
