@@ -39,7 +39,7 @@ export host=`uname -n | sed -e 's/[.].*//g'`
 ccs_extra_params="belosmods bounds_checking clang coverage fulldiagnostics gcc530 gcc610 nr perfbench valgrind "
 darwin_extra_params="cuda fulldiagnostics nr perfbench valgrind"
 ml_extra_params="fulldiagnostics nr perfbench pgi valgrind"
-sn_extra_params="fulldiagnostics intel1702 nr perfbench"
+sn_extra_params="fulldiagnostics gcc610 newtools nr perfbench"
 tt_extra_params="fulldiagnostics knl nr perfbench"
 all_extra_params=`echo $ml_extra_params $tt_extra_params $sn_extra_params $ccs_extra_params $darwin_extra_params | xargs -n1 | sort -u | xargs`
 
@@ -190,6 +190,7 @@ esac
 ##---------------------------------------------------------------------------##
 ## Main
 ##---------------------------------------------------------------------------##
+
 case ${host} in
 ml-*)
     export machine_name_long=Moonlight
@@ -222,7 +223,7 @@ sn-*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        fulldiagnostics | intel1702 | nr | perfbench ) # known, continue
+        fulldiagnostics | gcc610 | newtools | nr | perfbench ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;
@@ -288,7 +289,7 @@ mkdir -p $logdir || die "Could not create a directory for log files."
 # Redirect output to logfile.
 timestamp=`date +%Y%m%d-%H%M`
 logfile=$logdir/${machine_name_short}-${build_type}-master-$timestamp.log
-echo "Redirecting output to $logfile"
+#echo "Redirecting output to $logfile"
 exec > $logfile
 exec 2>&1
 

@@ -24,6 +24,7 @@
 #    all pull requests.
 
 target="`uname -n | sed -e s/[.].*//`"
+verbose=off
 
 # Locate the directory that this script is located in:
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -31,30 +32,25 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # All output will be saved to this log file.  This is also the lockfile for flock.
 logdir="$( cd $scriptdir/../../logs && pwd )"
 timestamp=`date +%Y%m%d-%H%M`
-echo "target = $target"
-echo "timestamp = $timestamp"
 logfile=$logdir/sync_repository_${target}_${timestamp}.log
 lockfile=/var/tmp/sync_repository_$target.lock
 
-case ${target} in
-  sn-fey*)
-    echo "looking for locks..."
-    echo "   FLOCKER = ${FLOCKER}"
-    echo "   lockfile will be $lockfile"
-    echo "   logfile will be $logfile"
-    echo "   ${0}"
-    echo "   $@"
-    ;;
-esac
+if [[ ${verbose:-off} == "on" ]]; then
+  echo "looking for locks..."
+  echo "   FLOCKER     = ${FLOCKER}"
+  echo "   lockfile    = $lockfile"
+  echo "   logfile     = $logfile"
+  echo "   script name = ${0}"
+  echo "   script args = $@"
+fi
 
 # Prevent multiple copies of this script from running at the same time:
 [ "${FLOCKER}" != "${lockfile}" ] && exec env FLOCKER="${lockfile}" flock -en "${lockfile}" "${0}" "$@" || :
 
-case ${target} in
-  sn-fey*)
-    echo "running..."
-    echo "redirecting output to $logfile" ;;
-esac
+if [[ ${verbose:-off} == "on" ]]; then
+  echo "running..."
+  echo "redirecting output to $logfile"
+fi
 
 # Redirect all future output to the logfile.
 exec > $logfile
