@@ -124,7 +124,7 @@ echo "   rscriptdir   = $rscriptdir"
 echo "   regress_mode = $regress_mode"
 
 #------------------------------------------------------------------------------#
-# Kick of a regregression
+# Kick off a regression
 #------------------------------------------------------------------------------#
 
 function startCI()
