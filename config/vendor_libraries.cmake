@@ -21,7 +21,7 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
-  message( STATUS "Looking for lapack...")
+  message( STATUS "Looking for lapack (netlib)...")
   set( lapack_FOUND FALSE )
 
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
@@ -31,7 +31,7 @@ macro( setupLAPACKLibrariesUnix )
       list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
     endif()
   endforeach()
-  find_package( lapack CONFIG )
+  find_package( lapack CONFIG QUIET )
 
   if( lapack_FOUND )
     set( lapack_flavor "netlib")
@@ -41,7 +41,7 @@ macro( setupLAPACKLibrariesUnix )
         set( lapack_FOUND TRUE )
       endif()
     endforeach()
-    message( STATUS "Looking for lapack....found ${LAPACK_LIB_DIR}")
+    message( STATUS "Looking for lapack (netlib)....found ${LAPACK_LIB_DIR}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:
@@ -53,12 +53,12 @@ macro( setupLAPACKLibrariesUnix )
           IMPORTED_LOCATION                 "${BLAS_LIBRARIES}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran")
       else()
-        message( FATAL_ERROR "Looking for lapack....blas not found")
+        message( FATAL_ERROR "Looking for lapack (netlib)....blas not found")
       endif()
     endif()
 
   else()
-    message( STATUS "Looking for lapack....not found")
+    message( STATUS "Looking for lapack (netlib)....not found")
   endif()
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
@@ -94,8 +94,9 @@ macro( setupLAPACKLibrariesUnix )
       endif()
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE )
-        set( lapack_FOUND ON )
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?")
+        set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
         add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)

@@ -105,6 +105,7 @@ feature_summary(
 feature_summary(
   WHAT DISABLED_FEATURES
   INCLUDE_QUIET_PACKAGES
+#  QUIET_ON_EMPTY
   DESCRIPTION "Disabled features:")
 
 if( CMAKE_CONFIGURATION_TYPES )
