@@ -105,7 +105,7 @@ feature_summary(
 feature_summary(
   WHAT DISABLED_FEATURES
   INCLUDE_QUIET_PACKAGES
-#  QUIET_ON_EMPTY
+#  QUIET_ON_EMPTY # only available for cmake-3.8+
   DESCRIPTION "Disabled features:")
 
 if( CMAKE_CONFIGURATION_TYPES )

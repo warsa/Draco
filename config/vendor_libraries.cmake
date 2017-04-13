@@ -21,16 +21,22 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibrariesUnix )
 
+  # There are several flavors of LAPACK.
+  # 1. look for netlib-lapack
+  # 2. look for MKL (Intel)
+  # 3. look for OpenBLAS.
+
   message( STATUS "Looking for lapack (netlib)...")
   set( lapack_FOUND FALSE )
 
   # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
   # This first try will also look for BLAS/LAPACK at CMAKE_PREFIX_PATH.
-  foreach( version 3.4.1 3.4.2 3.5.0 3.6.0 3.6.1 )
-    if( EXISTS  ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
-      list( APPEND CMAKE_PREFIX_PATH ${LAPACK_LIB_DIR}/cmake/lapack-${version} )
-    endif()
-  endforeach()
+  if( EXISTS ${LAPACK_LIB_DIR}/cmake )
+    file( GLOB lapack_cmake_prefix_path
+      LIST_DIRECTORIES true
+      ${LAPACK_LIB_DIR}/cmake/lapack-* )
+    list( APPEND CMAKE_PREFIX_PATH ${lapack_cmake_prefix_path} )
+  endif()
   find_package( lapack CONFIG QUIET )
 
   if( lapack_FOUND )
@@ -195,6 +201,7 @@ macro( setupLAPACKLibrariesUnix )
         IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
         IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
         IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
+        IMPORTED_LOCATION_RELWITHDEBINFO
         IMPORTED_IMPLIB
         IMPORTED_IMPLIB_DEBUG
         IMPORTED_LINK_INTERFACE_LANGUAGES
@@ -210,7 +217,8 @@ macro( setupLAPACKLibrariesUnix )
         POSITION_INDEPENDENT_CODE
         IMPORTED_LOCATION )
       if( "${lapack_flavor}" STREQUAL "mkl" )
-        save_vendor_imported_library_to_draco_config( "blas::mkl_thread;blas::mkl_core" "${props}" )
+        save_vendor_imported_library_to_draco_config(
+          "blas::mkl_thread;blas::mkl_core" "${props}" )
       endif()
       save_vendor_imported_library_to_draco_config( "lapack;blas" "${props}" )
   endif()
