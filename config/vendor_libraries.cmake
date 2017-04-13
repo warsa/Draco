@@ -69,7 +69,7 @@ macro( setupLAPACKLibrariesUnix )
 
   if( NOT lapack_FOUND )
     if( NOT "$ENV{MKLROOT}x" STREQUAL "x")
-      message( STATUS "Looking for lapack(MKL)...")
+      message( STATUS "Looking for lapack (MKL)...")
       # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
       # cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
@@ -121,9 +121,9 @@ macro( setupLAPACKLibrariesUnix )
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
-        message(STATUS "Looking for lapack(MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
+        message(STATUS "Looking for lapack (MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
       else()
-        message(STATUS "Looking for lapack(MKL)...NOTFOUND")
+        message(STATUS "Looking for lapack (MKL)...NOTFOUND")
       endif()
 
     endif()
@@ -133,7 +133,7 @@ macro( setupLAPACKLibrariesUnix )
   # local system.
 
   if( NOT lapack_FOUND )
-      message( STATUS "Looking for lapack(OpenBLAS)...")
+      message( STATUS "Looking for lapack (OpenBLAS)...")
       # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro. For
       # details see the cmake documentation for FindBLAS.
       set( BLA_VENDOR "OpenBLAS" )
@@ -151,9 +151,9 @@ macro( setupLAPACKLibrariesUnix )
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_openblas_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C" )
-        message(STATUS "Looking for lapack(OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
+        message(STATUS "Looking for lapack (OpenBLAS)...found ${BLAS_openblas_LIBRARY}")
       else()
-        message(STATUS "Looking for lapack(OpenBLAS)...NOTFOUND")
+        message(STATUS "Looking for lapack (OpenBLAS)...NOTFOUND")
       endif()
 
   endif()
@@ -382,8 +382,7 @@ set_target_properties( ${tgt} PROPERTIES")
    ${prop} \"${v}\"")
         endif()
       endforeach()
-      set( tmp "${tmp}
-   TYPE \"${library_type}_LIBRARY\" )
+      set( tmp "${tmp} )
 ")
     else()
       message(FATAL_ERROR "There is no target named '${tgt}'")
