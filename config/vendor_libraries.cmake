@@ -146,8 +146,8 @@ macro( setupLAPACKLibrariesUnix )
       find_package( BLAS QUIET )
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE )
-        set( lapack_FOUND ON )
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
         set( lapack_flavor "openblas")
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
@@ -197,25 +197,25 @@ macro( setupLAPACKLibrariesUnix )
       # print_targets_properties("blas;lapack")
       set( props
         GNUtoMS
+        IMPORTED
         IMPORTED_CONFIGURATIONS
-        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
-        IMPORTED_LOCATION_RELWITHDEBINFO
         IMPORTED_IMPLIB
         IMPORTED_IMPLIB_DEBUG
         IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
+        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
+        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
+        IMPORTED_LOCATION
         IMPORTED_LOCATION_DEBUG
         IMPORTED_LOCATION_RELEASE
         IMPORTED_LOCATION_RELWITHDEBINFO
-        IMPORTED
         IMPORTED_SONAME_DEBUG
         IMPORTED_SONAME_RELEASE
         IMPORTED_SONAME_RELWITHDEBINFO
         INTERFACE_INCLUDE_DIRECTORIES
+        INTERFACE_LINK_LIBRARIES
         POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
+        )
       if( "${lapack_flavor}" STREQUAL "mkl" )
         save_vendor_imported_library_to_draco_config(
           "blas::mkl_thread;blas::mkl_core" "${props}" )
