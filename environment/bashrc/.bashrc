@@ -1,4 +1,4 @@
-#!/bin/bash
+2#!/bin/bash
 ##-*- Mode: bash -*-
 ##---------------------------------------------------------------------------##
 ## File  : environment/bashrc/.bashrc
@@ -37,7 +37,7 @@ case ${-} in
 
    # Turn on checkwinsize
    shopt -s checkwinsize # autocorrect window size
-   #shopt -s cdspell # autocorrect spelling errors on cd command line.
+   shopt -s cdspell # autocorrect spelling errors on cd command line.
 
    # Prevent creation of core files (ulimit -a to see all limits).
    ulimit -c 0
@@ -110,6 +110,19 @@ esac
 
 if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
 
+  # Attempt to find DRACO
+  if test -z "$DRACO_SRC_DIR"; then
+    _BINDIR=`dirname "$BASH_ARGV"`
+    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
+  fi
+  if test -z "$DRACO_ENV_DIR"; then
+    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
+  fi
+
+  # Common bash functions and alias definitions
+  source ${DRACO_ENV_DIR}/bin/bash_functions.sh
+  source ${DRACO_SRC_DIR}/regression/scripts/common.sh
+
   # Clean up the default path to remove duplicates
   tmpifs=$IFS
   oldpath=$PATH
@@ -128,22 +141,9 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   export PATH=`echo ${PATH} | sed -e 's/[:]$//'`
   export LD_LIBRARY_PATH=`echo ${LD_LIBRARY_PATH} | sed -e 's/[:]$//'`
 
-  # Attempt to find DRACO
-  if test -z "$DRACO_SRC_DIR"; then
-    _BINDIR=`dirname "$BASH_ARGV"`
-    export DRACO_SRC_DIR=`(cd $_BINDIR/../..;pwd)`
-  fi
-  if test -z "$DRACO_ENV_DIR"; then
-    export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
-  fi
-
   # Append PATHS (not linux specific, not ccs2 specific).
-  extradirs="${DRACO_ENV_DIR}/bin ${DRACO_SRC_DIR}/tools"
-  for mydir in ${extradirs}; do
-    if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-      export PATH=${PATH}:${mydir}
-    fi
-  done
+  add_to_path ${DRACO_ENV_DIR}/bin
+  add_to_path ${DRACO_SRC_DIR}/tools
 
   # Tell wget to use LANL's www proxy (see
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
@@ -212,7 +212,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
         else
           echo "Draco's environment is not fully supported on 32-bit Linux."
           echo "Module support may not be available. Email kgt@lanl.gov for more information."
-          source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
+          # source ${DRACO_ENV_DIR}/bashrc/.bashrc_linux32
         fi
       elif [[ -d /usr/projects/draco ]]; then
         # XCP machine like 'toolbox'?
@@ -249,9 +249,6 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   export DRACO_BASHRC_DONE=yes
 
 fi
-
-# Common bash functions and alias definitions
-source ${DRACO_ENV_DIR}/bin/bash_functions.sh
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc

@@ -1,7 +1,33 @@
 #!/bin/bash -l
-
+## -*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## Helpful functions
+## File  : environment/bin/bash_functions.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
+##
+## Summary: Misc bash functions useful during development of code.
+##
+## Functions
+## ---------
+## die           - exit with a message
+## run           - echo a command and then run it.
+## fn_exists     - return true if named bash function is defined
+## establish_permissions - Change group to othello, dacodes or draco and change
+##                 permissions to g+rwX,o-rwX
+## machineName   - return a string to represent the current machine.
+## osName        - return a string to represent the current machine's OS.
+## flavor        - build a string that looks like fire-openmpi-2.0.2-intel-17.0.1
+## selectscratch - find a scratch drive
+## lookupppn     - return PE's per node.
+## npes_build    - return PE's to be used for compiling.
+## npes_test     - return PE's to be used for testing.
+## install_verions - helper for doing releases (see release_toss2.sh)
+## publish_release - helper for doing releases (see release_toss2.sh)
+## allow_file_to_age - pause a program until a file is 'old'
+
 ##---------------------------------------------------------------------------##
 
 function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
