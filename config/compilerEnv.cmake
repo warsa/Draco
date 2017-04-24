@@ -143,8 +143,10 @@ macro(dbsSetupCxx)
 
   # C++11 support:
   set( CMAKE_CXX_STANDARD 11 )
+  set( CXX_STANDARD_REQUIRED ON )
 
   # Do not enable extensions (e.g.: --std=gnu++11)
+  # https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
   set( CMAKE_CXX_EXTENSIONS OFF )
   set( CMAKE_C_EXTENSIONS   OFF )
 
