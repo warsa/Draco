@@ -4,10 +4,10 @@
 ## Helpful functions
 ##---------------------------------------------------------------------------##
 
-function die () { echo "ERROR: $1"; exit 1;}
+function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 
 function run () {
-  echo $1
+  echo "==> $1"
   if test ${dry_run:-no} = "no"; then eval $1; fi
 }
 
@@ -167,26 +167,36 @@ function flavor
   echo $platform-$mpiflavor-$compilerflavor
 }
 
+#------------------------------------------------------------------------------#
 function selectscratchdir
 {
-  # TOSS, CLE, BGQ, Darwin:
-  toss2_yellow_scratchdirs="lustre/scratch2/yellow lustre/scratch3/yellow"
-  toss2_red_scratchdirs="lustre/scratch3 lustre/scratch4"
-  cray_yellow_scratchdirs="lustre/ttscratch1"
-  cray_red_scratchdirs="lustre/trscratch1 lustre/trscratch2"
-  bgq_scratchdirs="nfs/tmp2"
-  scratchdirs="$toss2_yellow_scratchdirs $toss2_red_scratchdirs \
-$cray_yellow_scratchdirs $cray_red_scratchdirs $bgq_scratchdirs \
-usr/projects/draco/devs/releases"
-  for dir in $scratchdirs; do
-    mkdir -p /$dir/$USER &> /dev/null
-    if test -x /$dir/$USER; then
-      echo "$dir"
+  # if df is too old this command won't work correctly, use an alternate form.
+  local scratchdirs=`df --output=pcent,target 2>&1 | grep -c unrecognized`
+  if [[ $scratchdirs == 0 ]]; then
+    scratchdirs=`df --output=pcent,target | grep scratch | sort -g`
+  else
+    scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
+  fi
+  local odd=1
+  for item in $scratchdirs; do
+    # odd numbered items are disk's 'percent full'. They are ordered from least
+    # used to most used.  Skip these values.
+    if [[ $odd == 1 ]]; then
+      odd=0
+      continue
+    else
+      odd=1
+    fi
+    # if this location is good, return the path.
+    mkdir -p $item/$USER &> /dev/null
+    if test -x $item/$USER; then
+      echo "$item"
       return
     fi
   done
 }
 
+#------------------------------------------------------------------------------#
 function lookupppn()
 {
   # https://hpc.lanl.gov/index.php?q=summary_table
@@ -195,14 +205,12 @@ function lookupppn()
   case ${target} in
     ml* | pi* | wf* | lu* ) ppn=16 ;;
     t[rt]-fe* | t[rt]-login*)
-      if [[ $TARGET ]]; then
-        if $TARGET == 'haswell'; then
+      if [[ $CRAY_CPU_TARGET == "haswell" ]]; then
           ppn=32
-        elif $TARGET == 'knl'; then
-          ppn=68
-        fi
+      elif [[ $CRAY_CPU_TARGET == "knl" ]]; then
+        ppn=68
       else
-        echo "ERROR: Exected TARGET to be set in the environment."
+        echo "ERROR: Expected CRAY_CPU_TARGET to be set in the environment."
         exit 1
       fi
       ;;
@@ -427,6 +435,44 @@ function publish_release()
 
   fi
 }
+
+#------------------------------------------------------------------------------#
+# Pause until the 'last modified' timestamp of file $1 to be $2 seconds old.
+function allow_file_to_age
+{
+  if [[ ! $2 ]]; then
+    echo "ERROR: This function requires two arguments: a filename and an age value (sec)."
+    exit 1
+  fi
+
+  # If file does not exist, no need to wait.
+  if [[ ! -f $1 ]]; then
+    return
+  fi
+
+  # assume file was last modified 0 seconds ago.
+  local timediff=0
+
+  # If no changes for $2 seconds, continue
+  # else, wait until until file, $1, hasn't been touched for $2 seconds.
+  local print_message=1
+  while [[ $timediff -lt $2 ]]; do
+    eval "$(date +'now=%s')"
+    local pr_last_check=$(date +%s -r $1)
+    local timediff=$(expr $now - $pr_last_check)
+    local timeleft=$(expr $2 - $timediff)
+    if [[ $timeleft -gt 0 ]]; then
+      if [[ $print_message == 1 ]]; then
+        echo "The log file $1 was recently modified."
+        echo "To avoid colliding with another running test we are waiting"
+        print_message=0
+      fi
+      echo "... $timeleft seconds"
+    fi
+    sleep 30s
+  done
+}
+
 
 ##----------------------------------------------------------------------------##
 export die
