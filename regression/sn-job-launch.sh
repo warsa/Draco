@@ -29,7 +29,7 @@ for mydir in ${extradirs}; do
       export PATH=${PATH}:${mydir}
    fi
 done
-export SHOWQ=`which showq`
+export SHOWQ=/bin/squeue
 
 # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -132,7 +132,11 @@ eval "${cmd}"
 echo " "
 echo "Build, Test:"
 export REGRESSION_PHASE=bt
-cmd="/opt/MOAB/bin/msub ${access_queue} -j oe -V -o ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log ${rscriptdir}/sn-regress.msub"
+logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-bt.log
+if [[ -f $logfile ]]; then
+  rm $logfile
+fi
+cmd="/bin/sbatch ${access_queue} -v -o ${logfile} -e ${logfile} ${rscriptdir}/sn-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -142,6 +146,7 @@ jobid=`echo ${jobid//[^0-9]/}`
 sleep 1m
 while test "`$SHOWQ | grep $jobid`" != ""; do
    $SHOWQ | grep $jobid
+   echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 minutes)."
    sleep 5m
 done
 
