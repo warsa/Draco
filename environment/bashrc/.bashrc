@@ -10,6 +10,8 @@
 ##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
+#verbose=1
+
 ## Instructions (customization)
 ##
 ## Before sourcing this file, you may wish to set the following
@@ -194,7 +196,7 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
     # trinitite (tt-fey) | trinity (tr-fe)
-    tt-fey* | tt-login* | tr-fe* | tr-login*)
+    tt-fey* | tt-login* | tr-fe* | tr-login* | nid0* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
     # rzuseq

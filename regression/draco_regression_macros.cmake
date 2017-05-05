@@ -28,7 +28,9 @@ macro( find_num_procs_avail_for_running_tests )
 
   # If this job is running under Torque (msub script), use the environment
   # variable PBS_NP or SLURM_NPROCS
-  if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
+  if( ENV{CRAYPE_DIR} )
+    set( num_test_procs 1 )
+  elseif( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
     set( num_test_procs $ENV{PBS_NP} )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
