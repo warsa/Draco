@@ -358,7 +358,7 @@ template <typename T> DLL_PUBLIC_c4 void global_max(T *x, int n) {
 template <typename T> DLL_PUBLIC_c4 T prefix_sum(T &node_value) {
   T prefix_sum = 0;
   MPI_Scan(&node_value, &prefix_sum, 1, MPI_Traits<T>::element_type(), MPI_SUM,
-    communicator);
+           communicator);
   return prefix_sum;
 }
 

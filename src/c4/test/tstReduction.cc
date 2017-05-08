@@ -193,7 +193,6 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
-
   // Calculate prefix sums on rank ID with MPI call and by hand and compare
   // the output. As a reminder, the prefix sum on a node includes all previos
   // node's value and the value of the current node
@@ -208,8 +207,8 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
       int_answer += i + 1;
   }
 
-  std::cout<<"Prefix sum on this node: "<<xint_prefix_sum;
-  std::cout<<" Answer: "<<int_answer<<std::endl;
+  std::cout << "Prefix sum on this node: " << xint_prefix_sum;
+  std::cout << " Answer: " << int_answer << std::endl;
 
   if (xint_prefix_sum != int_answer)
     ITFAILS;
@@ -220,12 +219,12 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   long long_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++) {
-    if (i <= rtt_c4::node() || i==0)
+    if (i <= rtt_c4::node() || i == 0)
       long_answer += i + 1000;
   }
 
-  std::cout<<"Prefix sum on this node: "<<xlong_prefix_sum;
-  std::cout<<" Answer: "<<long_answer<<std::endl;
+  std::cout << "Prefix sum on this node: " << xlong_prefix_sum;
+  std::cout << " Answer: " << long_answer << std::endl;
 
   if (xlong_prefix_sum != long_answer)
     ITFAILS;
@@ -236,12 +235,12 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   double dbl_answer = 0.0;
   for (int i = 0; i < rtt_c4::nodes(); i++) {
-    if (i <= rtt_c4::node() || i==0)
+    if (i <= rtt_c4::node() || i == 0)
       dbl_answer += static_cast<double>(i) + 0.1;
   }
 
-  std::cout<<"Prefix sum on this node: "<<xdbl_prefix_sum;
-  std::cout<<" Answer: "<<dbl_answer<<std::endl;
+  std::cout << "Prefix sum on this node: " << xdbl_prefix_sum;
+  std::cout << " Answer: " << dbl_answer << std::endl;
 
   if (!soft_equiv(xdbl_prefix_sum, dbl_answer))
     ITFAILS;
@@ -249,7 +248,6 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   if (ut.numFails == 0)
     PASSMSG("Prefix sum ok.");
   return;
-
 }
 
 //---------------------------------------------------------------------------//
