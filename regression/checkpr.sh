@@ -42,7 +42,7 @@ fi
 export target=`uname -n | sed -e 's/[.].*//g'`
 scratchdir=`selectscratchdir`
 export regdir="$scratchdir/$USER"
-export logdir="$HOME/logs"
+export logdir="$regdir/logs"
 pr=develop
 project=draco
 regress_mode="off"
@@ -180,8 +180,12 @@ case $project in
     eval "$(date +'today=%F now=%s')"
     midnight=$(date -d "$today 0" +%s)
     draco_tag_file=$logdir/last-draco-develop-${machine_name_short}.log
+    if [[ -f $draco_tag_file ]]; then
     draco_last_built=$(date +%s -r $draco_tag_file)
-    build_draco=0
+    else
+      draco_last_built=0
+    fi
+    # build_draco=0
     if [[ $midnight -gt $draco_last_built ]]; then
       echo " "
       echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."

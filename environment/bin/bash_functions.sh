@@ -362,23 +362,14 @@ function qrm ()
     fi
 
     # Identify the scratch system
-    target=`uname -n`
-    case $target in
-      sn* | fi* | ic* | ml* | pi* | wf* | lu* )
-        if [[ `echo $fqd | grep -c scratch2` == 1 ]]; then
-          trashdir=/lustre/scratch2/yellow/$USER/trash
-        elif [[ `echo $fqd | grep -c scratch3` == 1 ]]; then
-          trashdir=/lustre/scratch3/yellow/$USER/trash
-        fi
-        ;;
-      tt* )
-        trashdir=/lustre/ttscratch1/$USER/trash ;;
-      tr* )
-        trashdir=/lustre/trscratch/$USER/trash ;;
-    esac
+    trashdir=`echo $fqd | sed -e "s%$USER.*%$USER/trash%"`
 
     # ensure trash folder exists.
     mkdir -p $trashdir
+    if ! [[ -d $trashdir ]]; then
+      echo "FATAL ERROR: Unable access trashdir = $trashdir"
+      return
+    fi
 
     # We rename/move the old directory to a random name
     TMPDIR=$(mktemp -d $trashdir/XXXXXXXXXX) || { echo \
