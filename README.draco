@@ -1,10 +1,8 @@
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> DRACO Component Libraries for Radiation Transport Codes
 >>> CCS-2 Computational Physics Group
->>> Copyright (C) 2016, Los Alamos National Security, LLC.
+>>> Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 >>> All rights reserved.
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
->>> $Id$
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 Draco is an object-oriented component library geared towards numerically
@@ -26,6 +24,23 @@ Configuring and Building
 =============================
 
 Please review the notes at the top of CMakeLists.txt or the wiki page:
+
+Developer Environment Configuration
+=============================
+
+1. git-hooks:
+
+cd environment/git
+./install-hooks.sh $HOME/draco
+
+2. bash environment and modules:
+
+See environment/bashrc/README
+
+3. emacs
+
+See environment/elisp/README.elisp
+
 
 Active Draco Component Synopsis
 =============================

@@ -9,12 +9,9 @@
 
 # This script is used for 2 similar but distinct operations:
 #
-# 1. It mirrors portions of the Capsaicin SVN repositories to a HPC
-#    location. The repository must be mirrored because the ctest regression
-#    system must be run from the HPC backend (via msub) where access to
-#    ccscs7:/ccs/codes/radtran/svn is not available.
-# 2. It also mirrors git@github.com/lanl/Draco.git and
-#    git@gitlab.lanl.gov/jayenne/jayenne.git to these locations:
+# 1. It mirrors git@github.com/lanl/Draco.git,
+#    git@gitlab.lanl.gov/jayenne/jayenne.git and
+#    git@gitlab.lanl.gov/capsaicin/capsaicin to these locations:
 #    - ccscs7:/ccs/codes/radtran/git
 #    - darwin-fe:/usr/projects/draco/regress/git
 #    On ccscs7, this is done to allow Redmine to parse the current repository
@@ -22,6 +19,9 @@
 #    tracked issues. On darwin, this is done to allow the regressions running on
 #    the compute node to access the latest git repository. This also copies down
 #    all pull requests.
+# 2. It captures the output produced during the mirroring process.  If a new PR
+#    is found in the mirrored repository, continuous integration testing is
+#    started.
 
 target="`uname -n | sed -e s/[.].*//`"
 verbose=off
@@ -211,7 +211,6 @@ case ${target} in
     ;;
 esac
 
-
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
 
@@ -315,323 +314,20 @@ echo "Starting CI regressions (if any)"
 echo "========================================================================"
 echo " "
 # Draco CI ------------------------------------------------------------
-#draco_prs=`grep 'refs/pull/[0-9]*/head$' $TMPFILE_DRACO | awk '{print $NF}'`
 draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
 
 for prline in $draco_prs; do
-  echo " "
-  case ${target} in
-
-    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-    ccscs*)
-      # Coverage (Debug) & Valgrind (Debug)
-      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-      logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (coverage) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
-        -p draco -f pr${pr} &> $logfile &
-      logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (valgrind) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
-        -p draco -f pr${pr} &> $logfile &
-      ;;
-
-    # Moonlight: Fulldiagnostics (Debug)
-    ml-fey*)
-      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-      logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (fulldiagnostics) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -e fulldiagnostics -p draco -f pr${pr} &> $logfile &
-      ;;
-
-    # Snow ----------------------------------------
-    sn-fe*)
-      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-      logfile=$regdir/logs/sn-draco-Debug-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -p draco -f pr${pr} &> $logfile &
-      ;;
-
-    # Trinitite: Release
-    tt-fey*)
-      pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-      logfile=$regdir/logs/tt-draco-Release-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (Release) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
-        -f pr${pr} &> $logfile &
-      ;;
-
-    # Darwin ----------------------------------------
-    darwin-fe*)
-      # No CI
-      ;;
-  esac
+  $scriptdir/checkpr.sh -p draco -f $pr
 done
 
-# Prepare for Jayenne and Capsaicin Prs --------------------------------------
-# Do we need to build draco? Only build draco-develop once per day.
-eval "$(date +'today=%F now=%s')"
-midnight=$(date -d "$today 0" +%s)
-case ${target} in
-  ccscs*) draco_tag_file=$regdir/logs/last-draco-develop-ccscs.log ;;
-  ml-fe*) draco_tag_file=$regdir/logs/last-draco-develop-ml.log ;;
-  sn-fe*) draco_tag_file=$regdir/logs/last-draco-develop-sn.log ;;
-  tt-fe*) draco_tag_file=$regdir/logs/last-draco-develop-tt.log ;;
-  darwin-fe*) draco_tag_file=$regdir/logs/last-draco-develop-darwin.log ;;
-esac
-if ! [[ -f $draco_tag_file ]]; then
-  touch $draco_tag_file
-fi
-draco_last_built=$(date +%s -r $draco_tag_file)
-
-# Get the list of new Jayenne and Capsaicin Prs
-#jayenne_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_JAYENNE | awk '{print $NF}'`
-#capsaicin_prs=`grep 'refs/merge-requests/[0-9]*/head$' $TMPFILE_CAPSAICIN | awk '{print $NF}'`
-jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/merge-requests/[0-9]*/merge.*forced update' -e 'refs/merge-requests/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/merge-requests/[0-9]*/merge.*forced update' -e 'refs/merge-requests/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-
-ipr=0 # count the number of PRs processed. Only the first needs to build draco.
-for prline in $jayenne_prs $capsaicin_prs; do
-
-#  seconds_since_draco_built=`expr $(date +%s) - $(date +%s -r $draco_tag_file)`
-
-  # ----------------------------------------
-  # Build draco-develop once per day for each case.
-  #
-  # If we haven't built draco today, build it with this PR, otherwise link to
-  # the existing draco build.  Additionally, if two PRs are started at the same
-  # time, only build draco for the 1st one.
-  if [[ $midnight -gt $draco_last_built ]] && [[ $ipr == 0 ]]; then
-
-    echo " "
-    echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."
-    echo " "
-
-    projects="draco"
-    featurebranches="develop"
-
-    # Reset the modified date on the file used to determine when draco was last
-    # built.
-    date &> $draco_tag_file
-
-    case ${target} in
-
-      # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-      ccscs*)
-        logfile=$regdir/logs/ccscs-draco-Debug-coverage-master-develop.log
-        allow_file_to_age $logfile 600
-        echo "- Starting regression (coverage) for develop."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
-          -p "${projects}" &> $logfile &
-
-        logfile=$regdir/logs/ccscs-draco-Debug-valgrind-master-develop.log
-        allow_file_to_age $logfile 600
-        echo "- Starting regression (valgrind) for develop."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
-          -p "${projects}" &> $logfile
-        # Do not put the above command into the background! It must finish
-        # before jayenne is started.
-        ;;
-
-      # Moonlight: Fulldiagnostics (Debug)
-      ml-fey*)
-        logfile=$regdir/logs/ml-draco-Debug-fulldiagnostics-master-develop.log
-        allow_file_to_age $logfile 600
-        echo "- Starting regression (fulldiagnostics) for develop."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug \
-          -e fulldiagnostics -p draco &> $logfile
-        # Do not put the above command into the background! It must finish
-        # before jayenne is started.
-        ;;
-
-      # Snow ----------------------------------------
-      sn-fe*)
-        logfile=$regdir/logs/sn-draco-Debug-master-develop.log
-        allow_file_to_age $logfile 600
-        echo "- Starting regression for develop."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Debug \
-          -p draco &> $logfile
-        # Do not put the above command into the background! It must finish
-        # before jayenne is started.
-        ;;
-
-      # Trinitite: Release
-      tt-fey*)
-        logfile=$regdir/logs/tt-draco-Release-master-develop.log
-        allow_file_to_age $logfile 600
-        echo "- Starting regression (Release) for develop."
-        echo "  Log: $logfile"
-        $regdir/draco/regression/regression-master.sh -r -b Release -p draco \
-          &> $logfile
-        # Do not put the above command into the background! It must finish
-        # before jayenne is started.
-        ;;
-
-      # Darwin ----------------------------------------
-      darwin-fe*)
-        # No CI
-        ;;
-    esac
-  fi
-  ((ipr++))
-done
-
-# Jayenne CI ------------------------------------------------------------
-
-projects="jayenne"
+# Jayenne CI ----------------------------------------------------------
 for prline in $jayenne_prs; do
-
-  # ----------------------------------------
-  # Build Jayenne PRs against draco-develop
-  #
-  # All of these can be put into the backround when they run since they are
-  # completely independent.
-  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-  featurebranches="pr${pr}"
-
-  case ${target} in
-
-    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-    ccscs*)
-      logfile=$regdir/logs/ccscs-jayenne-Debug-coverage-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (coverage) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-
-      logfile=$regdir/logs/ccscs-jayenne-Debug-valgrind-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (valgrind) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-      ;;
-
-    # Moonlight: Fulldiagnostics (Debug)
-    ml-fey*)
-      logfile=$regdir/logs/ml-jayenne-Debug-fulldiagnostics-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (fulldiagnostics) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -e fulldiagnostics -p "${projects}" -f "${featurebranches}" \
-        &> $logfile &
-      ;;
-
-    # Snow ----------------------------------------
-    sn-fe*)
-      logfile=$regdir/logs/sn-jayenne-Debug-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -p "${projects}" -f "${featurebranches}" \
-        &> $logfile &
-      ;;
-
-    # Trinitite: Release
-    tt-fey*)
-      logfile=$regdir/logs/tt-jayenne-Release-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (Release) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Release \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-      ;;
-
-    # Darwin ----------------------------------------
-    darwin-fe*)
-      # No CI
-      ;;
-  esac
+  $scriptdir/checkpr.sh -p jayenne -f $pr
 done
 
-# Capsaicin CI ------------------------------------------------------------
-
-projects="capsaicin"
+# Capsaicin CI ----------------------------------------------------------
 for prline in $capsaicin_prs; do
-
-  # ----------------------------------------
-  # Build Capsaicin PRs against draco-develop
-  #
-  # All of these can be put into the backround when they run since they are
-  # completely independent.
-  pr=`echo $prline |  sed -r 's/^[^0-9]*([0-9]+).*/\1/'`
-  featurebranches="pr${pr}"
-
-  case ${target} in
-
-    # CCS-NET: Coverage (Debug) & Valgrind (Debug)
-    ccscs*)
-      logfile=$regdir/logs/ccscs-capsaicin-Debug-coverage-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (coverage) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e coverage \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-
-      logfile=$regdir/logs/ccscs-capsaicin-Debug-valgrind-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (valgrind) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug -e valgrind \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-      ;;
-
-    # Moonlight: Fulldiagnostics (Debug)
-    ml-fey*)
-      logfile=$regdir/logs/ml-capsaicin-Debug-fulldiagnostics-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (fulldiagnostics) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -e fulldiagnostics -p "${projects}" -f "${featurebranches}" \
-        &> $logfile &
-      ;;
-
-    # Snow ----------------------------------------
-    sn-fe*)
-      logfile=$regdir/logs/sn-capsaicin-Debug-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Debug \
-        -p "${projects}" -f "${featurebranches}" \
-        &> $logfile &
-      ;;
-
-    # Trinitite: Release
-    tt-fey*)
-      logfile=$regdir/logs/tt-capsaicin-Release-master-pr${pr}.log
-      allow_file_to_age $logfile 600
-      echo "- Starting regression (Release) for pr${pr}."
-      echo "  Log: $logfile"
-      $regdir/draco/regression/regression-master.sh -r -b Release \
-        -p "${projects}" -f "${featurebranches}" &> $logfile &
-      ;;
-
-    # Darwin ----------------------------------------
-    darwin-fe*)
-      # No CI
-      ;;
-  esac
+  $scriptdir/checkpr.sh -p capsaicin -f $pr
 done
 
 # Wait for all subprocesses to finish before exiting this script

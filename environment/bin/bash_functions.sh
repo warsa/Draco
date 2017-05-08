@@ -9,10 +9,6 @@
 ##
 ## Summary: Misc bash functions useful during development of code.
 ##
-## 1. Use GNU tools instead of vendor tools when possible
-## 2. Create some alias commands to provide hints when invalid commands are
-##    issued.
-##
 ## Functions
 ## ---------
 ##
@@ -25,11 +21,23 @@
 ## findsymbol <sym>  - search all libraries (.so and .a files) in the
 ##                     current directory for symbol <sym>.
 ##
-## pkgdepends        - Print a list of dependencies for the current
-##                     directory.
-##
 ## npwd              - function used to set the prompt under bash.
 ##
+## xfstatus          - report status of transfer.lanl.gov
+##
+## rm_from_path      - remove a directory from $PATH
+##
+## add_to_path       - add a directory to $PATH
+##
+## proxy             - (un)set http_proxy variables
+##
+## fn_exists         - test if a bash function is defined
+##
+## run               - echo then evaluate a bash command
+##
+## rdde              - reload the default draco environment
+##
+## qrm               - quick remove (for lustre filesystems).
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
@@ -168,86 +176,6 @@ function findsymbol()
 }
 
 ##---------------------------------------------------------------------------##
-## Usage:
-##    pkgdepends
-##
-## Purpose:
-##    The script will list all of the vendors and Draco packages
-##    dependencies for the files in the current directory.
-##---------------------------------------------------------------------------##
-
-function pkgdepends()
-{
-  echo "This package depends on:"
-  echo " "
-  echo "Packages:"
-  grep 'include [<"].*[/]' *.cc *.hh | sed -e 's/.*[#]include [<"]/   /' | sed -e 's/\/.*//' | sort -u
-  echo " "
-  if test -f configure.ac; then
-    echo "Vendors:"
-    grep "SETUP[(]pkg" configure.ac | sed -e 's/AC_/   /' | sed -e 's/_.*//'
-  fi
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    findgrep <regex>
-##
-## Finds all occurances of <regex> by looking at all files in the
-## current directory and all subdirectories recursively.  Prints the
-## filename and line number for each occurance.
-##---------------------------------------------------------------------------##
-function findgrep()
-{
-  # Exclude .svn directories: (-path '*/.svn' -prune)
-  # Or (-o)
-  files=`find . -path '*/.svn' -prune -o -type f -exec grep -q $1 {} /dev/null \; -print`
-  for file in $files; do
-    echo " "
-    echo "--> Found \"$1\" in file \"$file\" :"
-    echo " "
-    grep $1 $file
-  done
-  echo " "
-}
-
-##---------------------------------------------------------------------------##
-## Usage:
-##    archive [age_in_days]
-##
-## Move all files older than [age_in_days] (default: 7d) from the
-## current directory into a subdirectory named as the current year.
-##---------------------------------------------------------------------------##
-function archive()
-{
-  # Find files (-type f) older than 7 days (-mtime +7) and in the local
-  # directory (-maxdepth 1) and move them to a subdirectory named by
-  # the current year.
-  local dt=7
-  if test -n "$1"; then
-    dt=$1
-  fi
-  local year=`date +%Y`
-  #  local year=`stat {} | grep Change | sed -e 's/Change: //' -e 's/[-].*//'
-  #  if ! test -d $year; then
-  #    mkdir $year
-  #  fi
-  #  echo "Moving files to ${year}/..."
-  #  cmd="find . -maxdepth 1 -mtime +${dt} -type f -exec mv {} ${year}/. \;"
-  # echo $cmd
-  #  eval $cmd
-  files=`find . -maxdepth 1 -mtime +${dt} -type f`
-  for file in $files; do
-    year=`stat ${file} | grep Modify | sed -e 's/Modify: //' -e 's/[-].*//'`
-    echo "   Moving $file to ${year}"
-    if ! test -d $year; then
-      mkdir $year
-    fi
-    mv ${file} $year/$file
-  done
-}
-
-##---------------------------------------------------------------------------##
 ## Transfer 2.0 (Mercury replacement)
 ## Ref: http://transfer.lanl.gov
 ##
@@ -276,6 +204,27 @@ function rm_from_path ()
   done
   newpath=`echo $newpath | sed -e s/^[:]//`
   export PATH=$newpath
+}
+
+##---------------------------------------------------------------------------##
+## If path is a directory add it to PATH (if not already in PATH)
+##---------------------------------------------------------------------------##
+function add_to_path ()
+{
+  case $2 in
+    TEXINPUTS)
+      if [ -d "$1" ] && [[ ":${TEXINPUTS}:" != *":$1:"* ]]; then
+        TEXINPUTS="${TEXINPUTS:+${TEXINPUTS}:}$1"; fi ;;
+    BSTINPUTS)
+      if [ -d "$1" ] && [[ ":${BSTINPUTS}:" != *":$1:"* ]]; then
+        BSTINPUTS="${BSTINPUTS:+${BSTINPUTS}:}$1"; fi ;;
+    BIBINPUTS)
+      if [ -d "$1" ] && [[ ":${BIBINPUTS}:" != *":$1:"* ]]; then
+        BIBINPUTS="${BIBINPUTS:+${BIBINPUTS}:}$1"; fi ;;
+    *)
+      if [ -d "$1" ] && [[ ":${PATH}:" != *":$1:"* ]]; then
+        PATH="${PATH:+${PATH}:}$1"; fi ;;
+  esac
 }
 
 ##---------------------------------------------------------------------------##
@@ -380,3 +329,7 @@ function qrm ()
 
   done
 }
+
+#------------------------------------------------------------------------------#
+# End environment/bin/.bash_functions
+#------------------------------------------------------------------------------#
