@@ -181,7 +181,7 @@ on)
     ;;
 off)
     regdir="$scratchdir/$USER"
-    logdir="$HOME/logs"
+    logdir="$regdir/logs"
     ;;
 *)  echo "" ;echo "FATAL ERROR: value of regress_mode=$regress_mode is incorrect."
     exit 1 ;;
@@ -420,7 +420,7 @@ fi
 
 # set permissions
 chgrp -R draco ${logdir} &> /dev/null
-chmod -R g+rwX ${logdir} &> /dev/null
+chmod -R g+rX ${logdir} &> /dev/null
 
 echo " "
 echo "All done"
