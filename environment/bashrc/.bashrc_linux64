@@ -84,7 +84,6 @@ add_to_path ${DRACO_SRC_DIR}/environment/latex TEXINPUTS
 add_to_path ${DRACO_SRC_DIR}/environment/bibtex BSTINPUTS
 add_to_path ${DRACO_SRC_DIR}/environment/bibfiles BIBINPUTS
 
-
 #------------------------------------------------------------------------------#
 function switch_to_lmod()
 {
@@ -124,11 +123,11 @@ function switch_to_lmod()
   alias mav='module avail'
 
   # modules for draco developer environment
-  dracomodules_core="cmake eospac git ndi python totalview dia \
-graphviz doxygen ack ccache"
-  dracomodules_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
-  dracomodules_openmpi="openmpi parmetis superlu-dist trilinos"
-  export dracomodules="$dracomodules_core $dracomodules_gcc $dracomodules_openmpi"
+  dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
+ack ccache"
+  dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
+  dm_openmpi="openmpi parmetis superlu-dist trilinos"
+  export dracomodules="$dm_core $dm_gcc $dm_openmpi"
   module load $dracomodules
 }
 

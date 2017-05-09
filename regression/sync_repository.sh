@@ -56,13 +56,14 @@ fi
 exec > $logfile
 exec 2>&1
 
+# import some bash functions
+source $scriptdir/scripts/common.sh
+
 #
 # MODULES
 #
-# Determine if the module command is available
-modcmd=`declare -f module`
 # If not found, look for it in /usr/share/Modules (ML)
-if [[ ! ${modcmd} ]]; then
+if [[ `fn_exists module` ]]; then
   case ${target} in
     tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init/bash ;;
     # snow (Toss3)
@@ -70,13 +71,12 @@ if [[ ! ${modcmd} ]]; then
     # ccs-net, darwin, ml
     *)       module_init_dir=/usr/share/Modules/init/bash ;;
   esac
-  if test -f ${module_init_dir}; then
+  if [[ -f ${module_init_dir} ]]; then
     source ${module_init_dir}
   else
     echo "ERROR: The module command was not found. No modules will be loaded."
   fi
-  modcmd=`declare -f module`
-  if [[ ! ${modcmd} ]]; then
+  if [[ `fn_exists module` ]]; then
     echo "ERROR: the module command was not found (even after sourcing $module_init_dir"
     exit 1
   fi
@@ -85,9 +85,6 @@ fi
 #
 # Environment
 #
-
-# import some bash functions
-source $scriptdir/scripts/common.sh
 
 # Ensure that the permissions are correct
 run "umask 0002"
@@ -136,18 +133,20 @@ case ${target} in
     ;;
 esac
 
-if ! test -d $regdir; then
+if ! [[ -d $regdir ]]; then
   mkdir -p $regdir
 fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-MYHOSTNAME="`uname -n`"
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
-if test -f $HOME/.keychain/$MYHOSTNAME-sh; then
-  run "source $HOME/.keychain/$MYHOSTNAME-sh"
-else
-  echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+if [[ -f $HOME/.ssh/cmake_rsa ]]; then
+  MYHOSTNAME="`uname -n`"
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  fi
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -168,15 +167,15 @@ fi
 # datase (GUI repository, wiki/ticket references to commits).
 # ---------------------------------------------------------------------------- #
 
-# DRACO: For all machines running this scirpt, copy all of the git repositories
+# DRACO: For all machines running this script, copy all of the git repositories
 # to the local file system.
 
 # Store some output into a local file to simplify parsing.
-TMPFILE_DRACO=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+TMPFILE_DRACO=$(mktemp /var/tmp/draco_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
 
 echo " "
 echo "Copy Draco git repository to the local file system..."
-if test -d $gitroot/Draco.git; then
+if [[ -d $gitroot/Draco.git ]]; then
   run "cd $gitroot/Draco.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/pull/*:refs/pull/*" &> $TMPFILE_DRACO
@@ -192,33 +191,16 @@ else
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/pull/*:refs/pull/*"
 fi
-case ${target} in
-  ccscs7*)
-    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-    # PRs since this seems to confuse Redmine.
-    echo " "
-    echo "(Redmine) Copy Draco git repository to the local file system..."
-    if test -d $gitroot/Draco-redmine.git; then
-      run "cd $gitroot/Draco-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
-      run "chmod -R g+rwX Draco-redmine.git"
-    fi
-    ;;
-esac
+
 
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
 
 # Store some output into a local file to simplify parsing.
-TMPFILE_JAYENNE=$(mktemp /var/tmp/jayenne_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+TMPFILE_JAYENNE=$(mktemp /var/tmp/jayenne_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
 echo " "
 echo "Copy Jayenne git repository to the local file system..."
-if test -d $gitroot/jayenne.git; then
+if [[ -d $gitroot/jayenne.git ]]; then
   run "cd $gitroot/jayenne.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_JAYENNE
@@ -233,35 +215,15 @@ else
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
-case ${target} in
-  ccscs7*)
-    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-    # PRs since this seems to confuse Redmine.
-    echo " "
-    echo "(Redmine) Copy Jayenne git repository to the local file system..."
-    if test -d $gitroot/jayenne-redmine.git; then
-      run "cd $gitroot/jayenne-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-      run "chgrp -R draco $gitroot/capsaicin.git"
-      run "chmod -R g+rwX $gitroot/capsaicin.git"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --mirror git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
-      run "chmod -R g+rwX jayenne-redmine.git"
-    fi
-    ;;
-esac
 
 # CAPSAICIN: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
 
 # Store some output into a local file to simplify parsing.
-TMPFILE_CAPSAICIN=$(mktemp /var/tmp/capsaicin_repo_sync.XXXXXXXXXX) || { echo "Failed to create temporary file"; exit 1; }
+TMPFILE_CAPSAICIN=$(mktemp /var/tmp/capsaicin_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
 echo " "
 echo "Copy Capsaicin git repository to the local file system..."
-if test -d $gitroot/capsaicin.git; then
+if [[ -d $gitroot/capsaicin.git ]]; then
   run "cd $gitroot/capsaicin.git"
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> $TMPFILE_CAPSAICIN
@@ -274,24 +236,71 @@ else
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
-case ${target} in
-  ccscs7*)
-    # Keep a copy of the bare repo for Redmine.  This version doesn't have the
-    # PRs since this seems to confuse Redmine.
-    echo " "
-    echo "(Redmine) Copy Capsaicin git repository to the local file system..."
-    if test -d $gitroot/capsaicin-redmine.git; then
-      run "cd $gitroot/capsaicin-redmine.git"
-      run "git fetch origin +refs/heads/*:refs/heads/*"
-      run "git reset --soft"
-    else
-      run "mkdir -p $gitroot"
-      run "cd $gitroot"
-      run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
-      run "chmod -R g+rwX capsaicin-redmine.git"
-    fi
-    ;;
-esac
+
+#------------------------------------------------------------------------------#
+# Mirror git repository for redmine integration
+#------------------------------------------------------------------------------#
+
+# Broken? - KT needs to research this.
+
+# case ${target} in
+#   ccscs7*)
+#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+#     # PRs since this seems to confuse Redmine.
+#     echo " "
+#     echo "(Redmine) Copy Draco git repository to the local file system..."
+#     if test -d $gitroot/Draco-redmine.git; then
+#       run "cd $gitroot/Draco-redmine.git"
+#       run "git fetch origin +refs/heads/*:refs/heads/*"
+#       run "git reset --soft"
+#     else
+#       run "mkdir -p $gitroot"
+#       run "cd $gitroot"
+#       run "git clone --mirror git@github.com:lanl/Draco.git Draco-redmine.git"
+#       run "chmod -R g+rwX Draco-redmine.git"
+#     fi
+#     ;;
+# esac
+
+# case ${target} in
+#   ccscs7*)
+#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+#     # PRs since this seems to confuse Redmine.
+#     echo " "
+#     echo "(Redmine) Copy Jayenne git repository to the local file system..."
+#     if test -d $gitroot/jayenne-redmine.git; then
+#       run "cd $gitroot/jayenne-redmine.git"
+#       run "git fetch origin +refs/heads/*:refs/heads/*"
+#       run "git reset --soft"
+#       run "chgrp -R draco $gitroot/capsaicin.git"
+#       run "chmod -R g+rwX $gitroot/capsaicin.git"
+#     else
+#       run "mkdir -p $gitroot"
+#       run "cd $gitroot"
+#       run "git clone --mirror git@gitlab.lanl.gov:jayenne/jayenne.git jayenne-redmine.git"
+#       run "chmod -R g+rwX jayenne-redmine.git"
+#     fi
+#     ;;
+# esac
+
+# case ${target} in
+#   ccscs7*)
+#     # Keep a copy of the bare repo for Redmine.  This version doesn't have the
+#     # PRs since this seems to confuse Redmine.
+#     echo " "
+#     echo "(Redmine) Copy Capsaicin git repository to the local file system..."
+#     if test -d $gitroot/capsaicin-redmine.git; then
+#       run "cd $gitroot/capsaicin-redmine.git"
+#       run "git fetch origin +refs/heads/*:refs/heads/*"
+#       run "git reset --soft"
+#     else
+#       run "mkdir -p $gitroot"
+#       run "cd $gitroot"
+#       run "git clone --mirror git@gitlab.lanl.gov:capsaicin/capsaicin.git capsaicin-redmine.git"
+#       run "chmod -R g+rwX capsaicin-redmine.git"
+#     fi
+#     ;;
+# esac
 
 #------------------------------------------------------------------------------#
 # Continuous Integration Hooks:
@@ -313,19 +322,21 @@ echo "========================================================================"
 echo "Starting CI regressions (if any)"
 echo "========================================================================"
 echo " "
+
 # Draco CI ------------------------------------------------------------
 draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-
 for prline in $draco_prs; do
   $scriptdir/checkpr.sh -p draco -f $pr
 done
 
 # Jayenne CI ----------------------------------------------------------
+jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
 for prline in $jayenne_prs; do
   $scriptdir/checkpr.sh -p jayenne -f $pr
 done
 
 # Capsaicin CI ----------------------------------------------------------
+capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
 for prline in $capsaicin_prs; do
   $scriptdir/checkpr.sh -p capsaicin -f $pr
 done
