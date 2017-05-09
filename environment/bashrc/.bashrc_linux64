@@ -82,14 +82,6 @@ metis parmetis superlu-dist trilinos ndi csk"
     ;;
 esac
 
-# extra paths
-# extradirs="$VENDOR_DIR/bin"
-# for mydir in ${extradirs}; do
-#   if test -z "`echo $PATH | grep $mydir`" && test -d $mydir; then
-#     export PATH=$mydir:$PATH
-#   fi
-# done
-
 #LaTeX
 extradirs=". ${DRACO_SRC_DIR}/environment/latex"
 for mydir in ${extradirs}; do
@@ -111,22 +103,18 @@ for mydir in ${extradirs}; do
 done
 unset extradirs
 
+#------------------------------------------------------------------------------#
 function switch_to_lmod()
 {
-  export SPACK_ROOT=/scratch/vendors/spack.20170420
+  export SPACK_ROOT=/scratch/vendors/spack.20170502
   if ! [[ -d $SPACK_ROOT ]]; then
     echo "FATAL ERROR: spack root not found."
     return
   fi
   export PATH=$SPACK_ROOT/bin:$PATH
+  # Remove any environment-modules modulefiles.
   module purge
-  export CC=/bin/gcc
-  export CXX=/bin/g++
-  export FC=/bin/gfortran
-  export F90=/bin/gfortran
-  export F95=/bin/gfortran
-  export LCOMPILER=gcc
-  export LCOMPILERVER=4.8.5
+  # Point to lmod application and spack's lmod modulefiles.
   MODULE_HOME=`spack location -i lmod`
   if [[ -f $MODULE_HOME/lmod/lmod/init/bash ]]; then
     source $MODULE_HOME/lmod/lmod/init/bash
@@ -138,13 +126,27 @@ function switch_to_lmod()
   if [[ -d $HOME/privatemodules ]]; then
     module use --append $HOME/privatemodules
   fi
-  alias ml='module load'
-  alias ma='module avail'
-  export dracomodules="cmake random123 eospac git ndi python csk emacs/24.4
-totalview
-gcc/6.3.0 netlib-lapack gsl metis
-openmpi parmetis superlu-dist trilinos csk"
-# subversion dracoscripts dia graphviz doxygen ack
+
+  # Environment for default compiler (no module file)
+  export CC=/bin/gcc
+  export CXX=/bin/g++
+  export FC=/bin/gfortran
+  export F90=/bin/gfortran
+  export F95=/bin/gfortran
+  export LCOMPILER=gcc
+  export LCOMPILERVER=4.8.5
+
+  # aliases
+  alias mlo='module load'
+  alias mls='module list'
+  alias mav='module avail'
+
+  # modules for draco developer environment
+  dracomodules_core="cmake eospac git ndi python totalview dia \
+graphviz doxygen ack ccache"
+  dracomodules_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
+  dracomodules_openmpi="openmpi parmetis superlu-dist trilinos"
+  export dracomodules="$dracomodules_core $dracomodules_gcc $dracomodules_openmpi"
   module load $dracomodules
 }
 
