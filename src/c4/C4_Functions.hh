@@ -58,7 +58,7 @@ class C4_Req;
  * \brief Initialize a parallel job.
  */
 DLL_PUBLIC_c4 int initialize(int &argc, char **&argv,
-                             int required = MPI_THREAD_SINGLE);
+                             int required = DRACO_MPI_THREAD_SINGLE);
 
 //---------------------------------------------------------------------------//
 /*!
