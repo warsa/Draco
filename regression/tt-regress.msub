@@ -98,10 +98,7 @@ fi
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-    echo 'module function is defined'
-else
+if [[ `fun_exists module` == 0 ]]; then
     echo 'module function does not exist. defining a local function ...'
     module ()
     {

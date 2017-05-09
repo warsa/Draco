@@ -4,7 +4,7 @@
 ## File  : environment/bin/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -30,20 +30,16 @@
 
 ##---------------------------------------------------------------------------##
 
+# Print an error message and exit.
+# e.g.: cd $dir || die "can't change dir to $dir".
 function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 
-function run () {
-  echo "==> $1"
-  if test ${dry_run:-no} = "no"; then eval $1; fi
-}
+# Echo a command and then run it.
+function run () { echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi }
 
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
+# Return 0 if provided name is a bash function.
+fn_exists() { type $1 2>/dev/null | grep -c 'is a function' }
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -53,10 +49,10 @@ function establish_permissions
   # Permissions - new files should be marked u+rwx,g+rwx,o+rx
   # Group is set to $1 or draco
   umask 0002
-  if test `groups | grep -c othello` = 1; then
+  if [[ `groups | grep -c othello` = 1 ]]; then
     install_group="othello"
     install_permissions="g+rwX,o-rwX"
-  elif test `groups | grep -c dacodes` = 1; then
+  elif [[ `groups | grep -c dacodes` = 1 ]]; then
     install_group="dacodes"
     install_permissions="g+rwX,o-rwX"
   else
@@ -71,16 +67,15 @@ function establish_permissions
 function machineName
 {
   sysName=${sysName="unknown"}
-  if test -f /usr/projects/hpcsoft/utilities/bin/sys_name; then
+  if [[ -f /usr/projects/hpcsoft/utilities/bin/sys_name ]]; then
     sysName=`/usr/projects/hpcsoft/utilities/bin/sys_name`
-  elif test -d /projects/darwin; then
+  elif [[ -d /projects/darwin ]]; then
     sysName=darwin
   elif test -d /usr/gapps/jayenne; then
     sysName=sq
   fi
-  if test "$sysName" = "unknown"; then
-    echo "Unable to determine machine name, please edit scripts/common.sh."
-    exit 1
+  if [[ "$sysName" == "unknown" ]]; then
+    die "Unable to determine machine name, please edit scripts/common.sh."
   fi
   echo $sysName
 }
@@ -89,42 +84,43 @@ function machineName
 function osName
 {
   osName=${osName="unknown"}
-  if test -f /usr/projects/hpcsoft/utilities/bin/sys_os; then
+  if [[ -f /usr/projects/hpcsoft/utilities/bin/sys_os ]]; then
     osName=`/usr/projects/hpcsoft/utilities/bin/sys_os`
-  elif test -d /projects/darwin; then
+  elif [[ -d /projects/darwin ]]; then
     osName=darwin
   elif test -d /usr/gapps/jayenne; then
     osName=`uname -p`
   fi
-  if test "$osName" = "unknown"; then
-    echo "Unable to determine system OS, please edit scripts/common.sh."
-    exit 1
+  if [[ "$osName" == "unknown" ]]; then
+    die "Unable to determine system OS, please edit scripts/common.sh."
   fi
   echo $osName
 }
 
+#------------------------------------------------------------------------------#
+# Generates a string of the form <platform>-<mpi+ver>-<compiler+ver>
 function flavor
 {
   platform=`machineName`
   os=`osName`
   case $os in
     toss*)
-      if test -z $LMPI; then
-        mpiflavor="unknown"
-      else
+      if [[ $LMPI ]]; then
         mpiflavor=$LMPI-$LMPIVER
-      fi
-      if test -z $LCOMPILER; then
-        compilerflavor="unknown"
       else
+        mpiflavor="unknown"
+      fi
+      if [[ $LCOMPILER ]]; then
         compilerflavor=$LCOMPILER-$LCOMPILERVER
+      else
+        compilerflavor="unknown"
       fi
       ;;
     cle*)
-      if test -z $CRAY_MPICH2_VER; then
-        mpiflavor="unknown"
-      else
+      if [[ $CRAY_MPICH2_VER ]]; then
         mpiflavor=mpt-$CRAY_MPICH2_VER
+      else
+        mpiflavor="unknown"
       fi
       # Try to determine the loaded compiler
       loadedmodules=`echo $LOADEDMODULES`
@@ -147,25 +143,25 @@ function flavor
       # pick the first compiler in the list
       compilerflavor=`echo $compilermodules | sed -e 's/ *//'`
       # append target if KNL
-      if test `echo $CRAY_CPU_TARGET | grep -c knl` == 1; then
+      if [[ `echo $CRAY_CPU_TARGET | grep -c knl` == 1 ]]; then
         compilerflavor+='-knl'
       fi
       ;;
     darwin*)
-      if test -z $MPIARCH; then
-        mpiflavor="unknown"
-      else
-        if test -z $MPI_ROOT; then
-          LMPIVER=''
-        else
+      if [[ $MPIARCH ]]; then
+        if [[ $MPI_ROOT ]]; then
           LMPIVER=`echo $MPI_ROOT | sed -r 's%.*/([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3%'`
+        else
+          LMPIVER=''
         fi
         mpiflavor=$MPIARCH-$LMPIVER
-      fi
-      if test -z $LCOMPILER; then
-        compilerflavor="unknown"
       else
+        mpiflavor="unknown"
+      fi
+      if [[ $LCOMPILER ]]; then
         compilerflavor=$LCOMPILER-$LCOMPILERVER
+      else
+        compilerflavor="unknown"
       fi
       ;;
     ppc64)
@@ -189,11 +185,25 @@ function flavor
           compiler_flavor=unknown-unknown ;;
       esac
       ;;
+    *)
+      # CCS-NET machines or generic Linux?
+      if [[ $MPI_NAME ]]; then
+        mpiflavor=$MPI_NAME-$MPI_VERSION
+      else
+        mpiflavor="unknown"
+      fi
+      if [[ $LCOMPILER ]]; then
+        compilerflavor=$LCOMPILER-$LCOMPILERVER
+      else
+        compilerflavor="unknown"
+      fi
+      ;;
   esac
   echo $platform-$mpiflavor-$compilerflavor
 }
 
 #------------------------------------------------------------------------------#
+# returns a path to a directory
 function selectscratchdir
 {
   # if df is too old this command won't work correctly, use an alternate form.
@@ -215,13 +225,13 @@ function selectscratchdir
     fi
     # if this location is good, return the path.
     mkdir -p $item/$USER &> /dev/null
-    if test -x $item/$USER; then
+    if [[ -x $item/$USER ]]; then
       echo "$item"
       return
     fi
     # might need another directory level 'yellow'
     mkdir -p $item/yellow/$USER &> /dev/null
-    if test -x $item/yellow/$USER; then
+    if [[ -x $item/yellow/$USER ]]; then
       echo "$item/yellow"
       return
     fi
@@ -247,6 +257,7 @@ function lookupppn()
       fi
       ;;
     fi* | ic* | sn* ) ppn=36 ;;
+    *) ppn=`cat /proc/cpuinfo | grep -c processor` ;;
   esac
   echo $ppn
 }
@@ -254,15 +265,16 @@ function lookupppn()
 function npes_build
 {
   local np=1
-  if ! test "${PBS_NP:-notset}" = "notset"; then
+  if [[ ${PBS_NP} ]]; then
     np=${PBS_NP}
-  elif ! test "${SLURM_NPROCS:-notset}" = "notset"; then
+  elif [[ ${SLURM_NPROCS} ]]; then
     np=${SLURM_NPROCS}
-  elif ! test "${SLURM_CPUS_ON_NODE:-notset}" = "notset"; then
+  elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
     np=${SLURM_CPUS_ON_NODE}
-  elif ! test "${SLURM_TASKS_PER_NODE:-notset}" = "notset"; then
-    np=${SLURM_CPUS_ON_NODE}
-  elif test -f /proc/cpuinfo; then
+  elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
+    np=${SLURM_TSKS_PER_NODE}
+  elif [[ -f /proc/cpuinfo ]]; then
+    # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
     np=`cat /proc/cpuinfo | grep -c processor`
   fi
   echo $np
@@ -271,18 +283,19 @@ function npes_build
 function npes_test
 {
   local np=1
-  if ! test "${PBS_NP:-notset}" = "notset"; then
+  if [[ ${PBS_NP} ]]; then
     np=${PBS_NP}
-  elif ! test "${SLURM_NPROCS:-notset}" = "notset"; then
+  elif [[ ${SLURM_NPROCS} ]]; then
     np=${SLURM_NPROCS}
-  elif ! test "${SLURM_CPUS_ON_NODE:-notset}" = "notset"; then
+  elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
     np=${SLURM_CPUS_ON_NODE}
-  elif ! test "${SLURM_TASKS_PER_NODE:-notset}" = "notset"; then
-    np=${SLURM_CPUS_ON_NODE}
-  elif test `uname -p` = "ppc"; then
+  elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
+    np=${SLURM_TSKS_PER_NODE}
+  elif [[ `uname -p` == "ppc" ]]; then
     # sinfo --long --partition=pdebug (show limits)
     np=64
-  elif test -f /proc/cpuinfo; then
+  elif [[ -f /proc/cpuinfo ]]; then
+    # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
     np=`cat /proc/cpuinfo | grep -c processor`
   fi
   echo $np
@@ -418,7 +431,6 @@ function install_versions
   if ! test ${build_permissions:-notset} = "notset"; then
     run "chmod -R $build_permissions $build_dir"
   fi
-
 }
 
 ##----------------------------------------------------------------------------##
@@ -456,15 +468,6 @@ function publish_release()
       run "chgrp -R ${install_group} $source_prefix"
       run "chmod -R $install_permissions $source_prefix"
     fi
-
-    # dirs="$script_dir $source_prefix/source $source_prefix/logs"
-    # for dir in $dirs; do
-    #   if test -d $dir; then
-    #     run "chgrp -R draco $dir"
-    #     run "chmod $build_permissions $dir"
-    #   fi
-    # done
-
   fi
 }
 
@@ -504,7 +507,6 @@ function allow_file_to_age
     sleep 30s
   done
 }
-
 
 ##----------------------------------------------------------------------------##
 export die
