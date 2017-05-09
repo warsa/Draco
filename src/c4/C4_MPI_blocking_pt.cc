@@ -104,6 +104,12 @@ template DLL_PUBLIC_c4 int send_receive(double *sendbuf, int sendcount,
                                         int recvcount, int source, int sendtag,
                                         int recvtag);
 
+template DLL_PUBLIC_c4 int prefix_sum(int &node_value);
+template DLL_PUBLIC_c4 uint32_t prefix_sum(uint32_t &node_value);
+template DLL_PUBLIC_c4 long prefix_sum(long &node_value);
+template DLL_PUBLIC_c4 float prefix_sum(float &node_value);
+template DLL_PUBLIC_c4 double prefix_sum(double &node_value);
+
 } // end namespace rtt_c4
 
 #endif // C4_MPI
