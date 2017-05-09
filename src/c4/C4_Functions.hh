@@ -472,8 +472,7 @@ DLL_PUBLIC_c4 std::string get_processor_name();
 /*!
  * \brief Return the value of the prefix sum at this processor.
  *
- * \param node_value
- * Current node's value of variable to be prefix summed
+ * \param node_value Current node's value of variable to be prefix summed
  * \return Sum of value over nodes up to and including this node.
  */
 template <typename T> DLL_PUBLIC_c4 T prefix_sum(T &node_value);

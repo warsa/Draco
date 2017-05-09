@@ -213,6 +213,24 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   if (xint_prefix_sum != int_answer)
     ITFAILS;
 
+  // test unsigned ints (start at max of signed int)
+  uint32_t xuint = rtt_c4::node();
+  if (rtt_c4::node() == 0)
+    xuint = std::numeric_limits<int>::max();
+  uint32_t xuint_prefix_sum = prefix_sum(xuint);
+
+  uint32_t uint_answer = std::numeric_limits<int>::max();
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i < rtt_c4::node())
+      uint_answer += i + 1;
+  }
+
+  std::cout << "Prefix sum on this node: " << xuint_prefix_sum;
+  std::cout << " Answer: " << uint_answer << std::endl;
+
+  if (xuint_prefix_sum != uint_answer)
+    ITFAILS;
+
   // test longs
   long xlong = rtt_c4::node() + 1000;
   long xlong_prefix_sum = prefix_sum(xlong);
@@ -229,16 +247,33 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
   if (xlong_prefix_sum != long_answer)
     ITFAILS;
 
+  // test floats
+  float xfloat = static_cast<float>(rtt_c4::node()) + 0.01;
+  float xfloat_prefix_sum = prefix_sum(xfloat);
+
+  float float_answer = 0.0;
+  for (int i = 0; i < rtt_c4::nodes(); i++) {
+    if (i <= rtt_c4::node() || i == 0)
+      float_answer += static_cast<float>(i) + 0.01;
+  }
+
+  std::cout << "Prefix sum on this node: " << xfloat_prefix_sum;
+  std::cout << " Answer: " << float_answer << std::endl;
+
+  if (!soft_equiv(xfloat_prefix_sum, float_answer))
+    ITFAILS;
+
   // test doubles
-  double xdbl = static_cast<double>(rtt_c4::node()) + 0.1;
+  double xdbl = static_cast<double>(rtt_c4::node()) + 1.0e-9;
   double xdbl_prefix_sum = prefix_sum(xdbl);
 
   double dbl_answer = 0.0;
   for (int i = 0; i < rtt_c4::nodes(); i++) {
     if (i <= rtt_c4::node() || i == 0)
-      dbl_answer += static_cast<double>(i) + 0.1;
+      dbl_answer += static_cast<double>(i) + 1.0e-9;
   }
 
+  std::cout.precision(16);
   std::cout << "Prefix sum on this node: " << xdbl_prefix_sum;
   std::cout << " Answer: " << dbl_answer << std::endl;
 
