@@ -97,7 +97,7 @@ function osName
   elif test -d /usr/gapps/jayenne; then
     osName=`uname -p`
   fi
-  if [[ "$osName"== "unknown" ]]; then
+  if [[ "$osName" == "unknown" ]]; then
     die "Unable to determine system OS, please edit scripts/common.sh."
   fi
   echo $osName
@@ -263,6 +263,7 @@ function lookupppn()
       fi
       ;;
     fi* | ic* | sn* ) ppn=36 ;;
+    *) ppn=`cat /proc/cpuinfo | grep -c processor` ;;
   esac
   echo $ppn
 }
