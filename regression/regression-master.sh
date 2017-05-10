@@ -131,7 +131,7 @@ else
   # default: use 'develop' for all git branches.
   featurebranches=''
   for p in $projects; do
-      featurebranches+="develop "
+    featurebranches+="develop "
   done
 fi
 

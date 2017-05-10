@@ -58,9 +58,11 @@ exec 2>&1
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
+
 #
 # MODULES
 #
+
 # If not found, look for it in /usr/share/Modules (ML)
 if [[ `fn_exists module` == 0 ]]; then
   case ${target} in
@@ -139,12 +141,12 @@ fi
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
 if [[ -f $HOME/.ssh/cmake_rsa ]]; then
-MYHOSTNAME="`uname -n`"
-$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+  MYHOSTNAME="`uname -n`"
+  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
-  run "source $HOME/.keychain/$MYHOSTNAME-sh"
-else
-  echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+    run "source $HOME/.keychain/$MYHOSTNAME-sh"
+  else
+    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
   fi
 fi
 
@@ -234,6 +236,7 @@ else
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
+
 #------------------------------------------------------------------------------#
 # Mirror git repository for redmine integration
 #------------------------------------------------------------------------------#

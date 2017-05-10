@@ -106,7 +106,7 @@ case ${-} in
 esac
 
 ##---------------------------------------------------------------------------##
-## ENVIRONMENTS - once per login
+## ENVIRONMENTS - bash functions (all interactive sessions)
 ##---------------------------------------------------------------------------##
 
 # Bash functions are not inherited by subshells.
@@ -115,6 +115,10 @@ if [[ ${INTERACTIVE} ]]; then
   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
   source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
 fi
+
+##---------------------------------------------------------------------------##
+## ENVIRONMENTS - once per login
+##---------------------------------------------------------------------------##
 
 if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
 

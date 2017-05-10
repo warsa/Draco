@@ -1,7 +1,7 @@
 #!/bin/bash -l
 ## -*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## File  : environment/bin/bash_functions.sh
+## File  : regression/sripts/common.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
 ## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
@@ -35,13 +35,17 @@
 function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 
 # Echo a command and then run it.
-function run () { echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi }
+function run ()
+{
+  echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi
+}
 
 # Return 0 if provided name is a bash function.
 function fn_exists ()
 {
   type $1 2>/dev/null | grep -c 'is a function'
 }
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -153,7 +157,7 @@ function flavor
       if [[ $MPIARCH ]]; then
         if [[ $MPI_ROOT ]]; then
           LMPIVER=`echo $MPI_ROOT | sed -r 's%.*/([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3%'`
-      else
+        else
           LMPIVER=''
         fi
         mpiflavor=$MPIARCH-$LMPIVER
@@ -401,7 +405,6 @@ function install_versions
   # source_dir="$source_prefix/source/$package"
   build_dir="$build_prefix/$version/${package:0:1}"
 
-
   # Purge any existing files before running cmake to configure the build directory.
   if test $config_step == 1; then
     if test -d ${build_dir}; then
@@ -433,7 +436,6 @@ function install_versions
   if ! test ${build_permissions:-notset} = "notset"; then
     run "chmod -R $build_permissions $build_dir"
   fi
-
 }
 
 ##----------------------------------------------------------------------------##
@@ -511,7 +513,6 @@ function allow_file_to_age
   done
 }
 
-
 ##----------------------------------------------------------------------------##
 export die
 export run
@@ -523,4 +524,7 @@ export selectscratchdir
 export npes_build
 export npes_test
 export install_versions
-##---------------------------------------------------------------------------------------##
+
+##----------------------------------------------------------------------------##
+## End common.sh
+##----------------------------------------------------------------------------##

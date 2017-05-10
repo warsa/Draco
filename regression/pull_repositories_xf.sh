@@ -162,9 +162,6 @@ run "cd ${work_dir}/.."
 run "chgrp -R draco git"
 run "chmod -R g+rwX,o-rwX git"
 
-# Modules
-# ----------------------------------------
-#if [[ `fn_exists module` == 0 ]]; then
-#    echo 'module function does not exist. defining a local function ...'
-#    run "source /usr/share/Modules/init/bash"
-#fi
+#------------------------------------------------------------------------------#
+# End pull_repositories_xf.sh
+#------------------------------------------------------------------------------#
