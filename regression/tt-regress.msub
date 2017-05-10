@@ -37,7 +37,6 @@ fi
 # Environment setup
 # ----------------------------------------
 umask 0002
-run "ulimit -a"
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -55,31 +54,29 @@ export GIT_SSL_NO_VERIFY=true
 source $rscriptdir/scripts/common.sh
 
 machine=`uname -n`
-case $machine in
-tt-login[0-9]*)
+case $REGRESSION_PHASE in
+  cb) ctestparts="Configure,Build" ;;
+  t)
     ctestparts="Test"
 
     # Node type (aprun -n 1 lscpu)
-    partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
+    #partition=`aprun -q -n $PBS_NUM_NODES -N 1 grep -i "model name" /proc/cpuinfo | sort | uniq -c`
 
     # Force create of a new log file (don't append)
     echo "Purging ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log"
     echo "    " > ${logdir}/tt-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-t.log
     ;;
-tt-fey*)
-    if test "${REGRESSION_PHASE}" = "cb"; then
-       ctestparts="Configure,Build"
-    elif test "${REGRESSION_PHASE}" = "s"; then
-       ctestparts="Submit"
-       # Submitting to CDash requires this
-       unset http_proxy
-       unset https_proxy
-       unset HTTP_PROXY
-       unset HTTPS_PROXY
-    else
-       echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
-       exit 1
-    fi
+  s)
+    ctestparts="Submit"
+    # Submitting to CDash requires this
+    unset http_proxy
+    unset https_proxy
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    ;;
+  *)
+    echo "Fatal Error, REGRESSION_PHASE = \"${REGRESSION_PHASE}\" does not match \"cb\" or \"s\"."
+    exit 1
     ;;
 esac
 
@@ -89,12 +86,13 @@ echo "==========================================================================
 echo "Trinitite regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
-if [[ ${partition} ]]; then
+if [[ ${SLURM_JOB_PARTITION} ]]; then
   echo " "
   echo "Allocation configuration:"
-  echo $partition
+  echo $SLURM_JOB_PARTITION
   echo " "
 fi
+run "ulimit -a"
 
 # Modules
 # ----------------------------------------
@@ -121,7 +119,7 @@ run "module load intel/17.0.1"
 #run "module swap cray-mpich cray-mpich/7.4.2"
 run "module unload cray-libsci gcc/6.1.0"
 run "module load craype-hugepages4M"
-run "module load cmake/3.6.2 numdiff git"
+run "module load cmake/3.7.1 numdiff git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
@@ -132,7 +130,7 @@ export CRAYPE_LINK_TYPE=dynamic
 export OMP_NUM_THREADS=16
 comp=CC
 
-# Extra parameers
+# Extra parameters
 case $extra_params in
 knl)
     run "module swap craype-haswell craype-mic-knl"
@@ -280,7 +278,7 @@ ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctes
 if [[ ${regress_mode} == "on" ]]; then
   echo " "
   run "chgrp -R draco ${work_dir}"
-  run "chmod -R g+rwX,o-rwX ${work_dir}"
+  run "chmod -R g+rX,o-rwX ${work_dir}"
 fi
 
 echo "All done."

@@ -108,7 +108,7 @@ if [[ $regress_mode == "on" ]]; then
   elif [[ -d /usr/projects/jayenne/regress/logs ]]; then
     # HPC machines, Darwin
     logdir=/usr/projects/jayenne/regress/logs
-fi
+  fi
 fi
 export regress_mode logdir
 
@@ -187,7 +187,7 @@ case $project in
     midnight=$(date -d "$today 0" +%s)
     draco_tag_file=$logdir/last-draco-develop-${machine_name_short}.log
     if [[ -f $draco_tag_file ]]; then
-    draco_last_built=$(date +%s -r $draco_tag_file)
+      draco_last_built=$(date +%s -r $draco_tag_file)
     else
       draco_last_built=0
     fi

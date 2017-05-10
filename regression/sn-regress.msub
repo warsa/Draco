@@ -99,6 +99,7 @@ if [[ "${comp}" == "icpc" ]]; then
   comp="intel"
 fi
 
+# Extra parameters
 case $extra_params in
 "")
     # no-op
@@ -277,7 +278,7 @@ ctest -VV -S ${script_dir}/${script_name},${dashboard_type},${build_type},${ctes
 if [[ ${regress_mode} == "on" ]]; then
   echo " "
   run "chgrp -R draco ${work_dir}"
-  run "chmod -R g+rwX,o-rwX ${work_dir}"
+  run "chmod -R g+rX,o-rwX ${work_dir}"
 fi
 
 echo "All done."
