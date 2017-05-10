@@ -66,10 +66,10 @@ parmetis-4.0.3-intel-17.0.1 superlu-dist-4.3-intel-17.0.1"
     ;;
 *)
     # Locate the vendor directory
-    if test "${VENDOR_DIR}x" == "x"; then
+    if ! [[ ${VENDOR_DIR} ]]; then
       export VENDOR_DIR=/ccs/codes/radtran/vendors
       if test -d /var/tmp/vendors; then
-      export VENDOR_DIR=/var/tmp/vendors
+        export VENDOR_DIR=/var/tmp/vendors
       fi
     fi
     module use /ccs/codes/radtran/vendors/Modules
@@ -83,6 +83,9 @@ esac
 add_to_path ${DRACO_SRC_DIR}/environment/latex TEXINPUTS
 add_to_path ${DRACO_SRC_DIR}/environment/bibtex BSTINPUTS
 add_to_path ${DRACO_SRC_DIR}/environment/bibfiles BIBINPUTS
+
+# see environment/bin/bash_functions.sh for the 'switch_to_lmod' bash function
+# definition.
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc_linux64

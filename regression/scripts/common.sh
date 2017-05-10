@@ -1,7 +1,7 @@
 #!/bin/bash -l
 ## -*- Mode: sh -*-
 ##---------------------------------------------------------------------------##
-## File  : environment/bin/bash_functions.sh
+## File  : regression/sripts/common.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
 ## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
@@ -35,7 +35,10 @@
 function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 
 # Echo a command and then run it.
-function run () { echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi }
+function run ()
+{
+  echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi
+}
 
 # Return 0 if provided name is a bash function.
 function fn_exists ()
@@ -521,4 +524,7 @@ export selectscratchdir
 export npes_build
 export npes_test
 export install_versions
-##---------------------------------------------------------------------------------------##
+
+##----------------------------------------------------------------------------##
+## End common.sh
+##----------------------------------------------------------------------------##

@@ -1,8 +1,14 @@
 #!/bin/bash
-
-#------------------------------------------------------------------------------#
-# Generate a list of authors by using git annotate
-#------------------------------------------------------------------------------#
+## -*- Mode: sh -*-
+##---------------------------------------------------------------------------##
+## File  : regression/alist.sh
+## Date  : Tuesday, May 31, 2016, 14:48 pm
+## Author: Kelly Thompson
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+##         All rights are reserved.
+##---------------------------------------------------------------------------##
+## Generate a list of authors by using git annotate
+##---------------------------------------------------------------------------##
 
 # Should be run from the draco top-level source directory.
 if ! test -f CMakeLists.txt; then
@@ -135,10 +141,6 @@ cat $author_loc | sort -rn
 
 # cleanup
 rm $author_loc $author_list_file
-
-# while read line; do
-#   echo $line | sed -e 's/\([0-9]*\):/current_developers[\1]=/'
-# done < $author_loc
 
 #------------------------------------------------------------------------------#
 # end alist.sh
