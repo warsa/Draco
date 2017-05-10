@@ -131,7 +131,7 @@ else
   # default: use 'develop' for all git branches.
   featurebranches=''
   for p in $projects; do
-    featurebranches+="develop "
+      featurebranches+="develop "
   done
 fi
 
@@ -191,7 +191,7 @@ case ${host} in
 ml-*)
     export machine_name_long=Moonlight
     export machine_name_short=ml
-    if [[ `fn_exists module` ]]; then
+    if [[ `fn_exists module` == 0 ]]; then
       source /usr/share/Modules/init/bash
     fi
     module purge
@@ -209,7 +209,7 @@ ml-*)
 sn-*)
     export machine_name_long=Snow
     export machine_name_short=sn
-    if [[ `fn_exists module` ]]; then
+    if [[ `fn_exists module` == 0 ]]; then
       source /usr/share/lmod/lmod/init/bash
     fi
     module purge
@@ -306,16 +306,21 @@ echo " "
 echo "Host: $host"
 echo " "
 echo "Environment:"
+echo "   build_autodoc  = $build_autodoc"
 echo "   build_type     = ${build_type}"
-echo "   extra_params   = ${extra_params}"
-echo "   regdir         = ${regdir}"
 echo "   dashboard_type = ${dashboard_type}"
-echo "   rscriptdir     = ${rscriptdir}"
+echo "   epdash         = $epdash"
+echo "   extra_params   = ${extra_params}"
+echo "   featurebranches= \"${featurebranches}\""
 echo "   logdir         = ${logdir}"
-echo "   scratchdir     = ${scratchdir}"
+echo "   logfile        = ${logfile}"
+echo "   machine_name_long = $machine_name_long"
+echo "   prdash         = $prdash"
 echo "   projects       = \"${projects}\""
+echo "   regdir         = ${regdir}"
 echo "   regress_mode   = ${regress_mode}"
-echo "   featurebranches  = ${featurebranches}"
+echo "   rscriptdir     = ${rscriptdir}"
+echo "   scratchdir     = ${scratchdir}"
 echo " "
 echo "Descriptions:"
 echo "   rscriptdir -  the location of the draco regression scripts."

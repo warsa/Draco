@@ -38,14 +38,10 @@ function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 function run () { echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi }
 
 # Return 0 if provided name is a bash function.
-fn_exists()
+function fn_exists ()
 {
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
+  type $1 2>/dev/null | grep -c 'is a function'
 }
-
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -157,7 +153,7 @@ function flavor
       if [[ $MPIARCH ]]; then
         if [[ $MPI_ROOT ]]; then
           LMPIVER=`echo $MPI_ROOT | sed -r 's%.*/([0-9]+)[.]([0-9]+)[.]([0-9]+).*%\1.\2.\3%'`
-        else
+      else
           LMPIVER=''
         fi
         mpiflavor=$MPIARCH-$LMPIVER
@@ -289,7 +285,6 @@ function npes_build
 function npes_test
 {
   local np=1
-
   if [[ ${PBS_NP} ]]; then
     np=${PBS_NP}
   elif [[ ${SLURM_NPROCS} ]]; then
@@ -438,6 +433,7 @@ function install_versions
   if ! test ${build_permissions:-notset} = "notset"; then
     run "chmod -R $build_permissions $build_dir"
   fi
+
 }
 
 ##----------------------------------------------------------------------------##
@@ -514,6 +510,7 @@ function allow_file_to_age
     sleep 30s
   done
 }
+
 
 ##----------------------------------------------------------------------------##
 export die

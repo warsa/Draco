@@ -31,7 +31,6 @@ bool is_bit(unsigned bit) {
   // Erase that bit; see if the result is zero, as it must be for a power of 2.
   return (bit ^ 1U) == 0U;
 }
-
 #endif
 
 } // end anonymous namespace
@@ -82,10 +81,8 @@ unsigned get_debug_option(string const &option_name) {
  *      specification. The specification is a set of debug keywords, each
  *      optionally prefixed with a '!', and ends with the first token that is
  *      not a recognized debug keyword.
- *
  * \param[in] parent Optional parent mask; defaults to zero. Allows a debug mask
  *      to be based on a parent mask, with selected bits added or masked out.
- *
  * \return A debug options mask.
  */
 unsigned parse_debug_options(Token_Stream &tokens, unsigned const parent) {
@@ -123,7 +120,6 @@ unsigned parse_debug_options(Token_Stream &tokens, unsigned const parent) {
  *      debug keywords.
  *
  * \param[in] debug_options Debug mask to be converted to a set of keywords.
- *
  * \return A string containing a comma-delimited set of debug options.
  */
 string debug_options_as_text(unsigned debug_options) {
@@ -172,7 +168,6 @@ string debug_options_as_text(unsigned debug_options) {
  *      application. This version assigns the next available bit.
  *
  * \param[in] option_name Debug option keyword
- *
  * \return Bitflag value assigned to the new debug option.
  */
 unsigned add_debug_option(string const &option_name) {

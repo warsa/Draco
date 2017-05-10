@@ -10,6 +10,9 @@
 ##  Bash configuration file upon bash shell startup
 ##---------------------------------------------------------------------------##
 
+#uncomment to debug this script.
+#export verbose=true
+
 ## Instructions (customization)
 ##
 ## Before sourcing this file, you may wish to set the following
@@ -99,14 +102,19 @@ case ${-} in
 
 *) # Not an interactive shell (e.g. A PBS shell?)
    export INTERACTIVE=false
-   # return
    ;;
 esac
-#export verbose=true
 
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS - once per login
 ##---------------------------------------------------------------------------##
+
+# Bash functions are not inherited by subshells.
+if [[ ${INTERACTIVE} ]]; then
+  # Common bash functions and alias definitions
+  source ${DRACO_ENV_DIR}/bin/bash_functions.sh
+  source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
+fi
 
 if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
 
@@ -118,10 +126,6 @@ if test ${DRACO_BASHRC_DONE:-no} = no && test ${INTERACTIVE} = true; then
   if test -z "$DRACO_ENV_DIR"; then
     export DRACO_ENV_DIR=${DRACO_SRC_DIR}/environment
   fi
-
-  # Common bash functions and alias definitions
-  source ${DRACO_ENV_DIR}/bin/bash_functions.sh
-  source ${DRACO_SRC_DIR}/regression/scripts/common.sh
 
   # Clean up the default path to remove duplicates
   tmpifs=$IFS

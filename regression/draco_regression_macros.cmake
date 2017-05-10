@@ -366,7 +366,7 @@ macro( parse_args )
 
   # Bounds Checking
   if( ${CTEST_SCRIPT_ARG} MATCHES bounds_checking )
-    if( "${compiler_short_name}" STREQUAL "gcc-4.8.5" )
+    if( "${compiler_short_name}" MATCHES "gcc-4.8.5" )
       set( BOUNDS_CHECKING "GCC_ENABLE_GLIBCXX_DEBUG:BOOL=ON" )
     else()
       message(FATAL_ERROR "I don't know how to turn on bounds checking for compiler = ${compiler_short_name}" )

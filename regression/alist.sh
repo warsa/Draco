@@ -98,7 +98,8 @@ for entry in "${entries[@]}"; do
   echo "$current_author:$current_loc"
 
 done | sort -rn > $author_loc
-#cat $author_loc
+
+# cat $author_loc
 
 #--------------------------------------------------------------------------------
 # Merge data
@@ -113,7 +114,6 @@ for entry in "${entries[@]}"; do
 
   current_author=`echo $entry | sed -e 's/:.*//'`
   current_loc=`echo $entry | sed -e 's/.*://'`
-
   if [[ $current_author == $prev_author ]]; then
     prev_loc=`math "$prev_loc + $current_loc"`
   else
@@ -138,6 +138,9 @@ rm $author_loc $author_list_file
 # while read line; do
 #   echo $line | sed -e 's/\([0-9]*\):/current_developers[\1]=/'
 # done < $author_loc
+
+
+
 
 #------------------------------------------------------------------------------#
 # end alist.sh

@@ -58,12 +58,11 @@ exec 2>&1
 
 # import some bash functions
 source $scriptdir/scripts/common.sh
-
 #
 # MODULES
 #
 # If not found, look for it in /usr/share/Modules (ML)
-if [[ `fn_exists module` ]]; then
+if [[ `fn_exists module` == 0 ]]; then
   case ${target} in
     tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init/bash ;;
     # snow (Toss3)
@@ -76,7 +75,7 @@ if [[ `fn_exists module` ]]; then
   else
     echo "ERROR: The module command was not found. No modules will be loaded."
   fi
-  if [[ `fn_exists module` ]]; then
+  if [[ `fn_exists module` == 0 ]]; then
     echo "ERROR: the module command was not found (even after sourcing $module_init_dir"
     exit 1
   fi
@@ -140,12 +139,12 @@ fi
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
 if [[ -f $HOME/.ssh/cmake_rsa ]]; then
-  MYHOSTNAME="`uname -n`"
-  $VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
+MYHOSTNAME="`uname -n`"
+$VENDOR_DIR/$keychain/keychain $HOME/.ssh/cmake_dsa $HOME/.ssh/cmake_rsa
   if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
-    run "source $HOME/.keychain/$MYHOSTNAME-sh"
-  else
-    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+  run "source $HOME/.keychain/$MYHOSTNAME-sh"
+else
+  echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
   fi
 fi
 
@@ -192,7 +191,6 @@ else
   run "git fetch origin +refs/pull/*:refs/pull/*"
 fi
 
-
 # JAYENNE: For all machines running this scirpt, copy all of the git repositories
 # to the local file system.
 
@@ -236,7 +234,6 @@ else
   run "git fetch origin +refs/heads/*:refs/heads/*"
   run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
 fi
-
 #------------------------------------------------------------------------------#
 # Mirror git repository for redmine integration
 #------------------------------------------------------------------------------#
@@ -322,23 +319,25 @@ echo "========================================================================"
 echo "Starting CI regressions (if any)"
 echo "========================================================================"
 echo " "
-
 # Draco CI ------------------------------------------------------------
-draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-for prline in $draco_prs; do
-  $scriptdir/checkpr.sh -p draco -f $pr
+
+draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+for pr in $draco_prs; do
+  run "$scriptdir/checkpr.sh -r -p draco -f $pr"
 done
 
 # Jayenne CI ----------------------------------------------------------
-jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-for prline in $jayenne_prs; do
-  $scriptdir/checkpr.sh -p jayenne -f $pr
+
+jayenne_prs=`cat $TMPFILE_JAYENNE | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+for pr in $jayenne_prs; do
+  run "$scriptdir/checkpr.sh -r -p jayenne -f $pr"
 done
 
 # Capsaicin CI ----------------------------------------------------------
-capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/pull/[0-9]*/merge.*forced update' -e 'refs/pull/[0-9]*/head$' | sed -e 's/  (forced update)//' | awk '{print $NF}'`
-for prline in $capsaicin_prs; do
-  $scriptdir/checkpr.sh -p capsaicin -f $pr
+
+capsaicin_prs=`cat $TMPFILE_CAPSAICIN | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+for pr in $capsaicin_prs; do
+  run "$scriptdir/checkpr.sh -r -p capsaicin -f $pr"
 done
 
 # Wait for all subprocesses to finish before exiting this script
