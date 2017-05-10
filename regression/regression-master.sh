@@ -39,7 +39,7 @@ export host=`uname -n | sed -e 's/[.].*//g'`
 ccs_extra_params="belosmods bounds_checking clang coverage fulldiagnostics gcc530 gcc610 nr perfbench valgrind "
 darwin_extra_params="cuda fulldiagnostics nr perfbench valgrind"
 ml_extra_params="fulldiagnostics nr perfbench pgi valgrind"
-sn_extra_params="fulldiagnostics gcc newtools nr perfbench"
+sn_extra_params="fulldiagnostics gcc610 newtools nr perfbench"
 tt_extra_params="fulldiagnostics knl nr perfbench"
 all_extra_params=`echo $ml_extra_params $tt_extra_params $sn_extra_params $ccs_extra_params $darwin_extra_params | xargs -n1 | sort -u | xargs`
 
@@ -191,7 +191,7 @@ case ${host} in
 ml-*)
     export machine_name_long=Moonlight
     export machine_name_short=ml
-    if [[ `fn_exists module` ]]; then
+    if [[ `fn_exists module` == 0 ]]; then
       source /usr/share/Modules/init/bash
     fi
     module purge
@@ -209,7 +209,7 @@ ml-*)
 sn-*)
     export machine_name_long=Snow
     export machine_name_short=sn
-    if [[ `fn_exists module` ]]; then
+    if [[ `fn_exists module` == 0 ]]; then
       source /usr/share/lmod/lmod/init/bash
     fi
     module purge
@@ -217,7 +217,7 @@ sn-*)
     if [[ ${extra_params} ]]; then
         case $extra_params in
         none)  extra_params=""; epdash="" ;;
-        fulldiagnostics | gcc | newtools | nr | perfbench ) # known, continue
+        fulldiagnostics | gcc610 | newtools | nr | perfbench ) # known, continue
         ;;
         *) echo "" ;echo "FATAL ERROR: unknown extra params (-e) = ${extra_params}"
            print_use; exit 1 ;;

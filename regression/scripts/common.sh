@@ -38,13 +38,7 @@ function die () { echo " "; echo "FATAL ERROR: $1"; exit 1;}
 function run () { echo "==> $1"; if test ${dry_run:-no} = "no"; then eval $1; fi }
 
 # Return 0 if provided name is a bash function.
-fn_exists()
-{
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
-}
+fn_exists() { type $1 2>/dev/null | grep -c 'is a function' }
 
 #----------------------------------------------------------------------#
 # The script starts here

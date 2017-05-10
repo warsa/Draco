@@ -82,10 +82,7 @@ ulimit -a
 
 # Modules
 # ----------------------------------------
-result=`fn_exists module`
-if test $result -eq 0; then
-  echo 'module function is defined'
-else
+if [[ `fn_exists module` == 0 ]]; then
   echo 'module function does not exist. defining a local function ...'
   source /usr/share/Modules/init/bash
 fi

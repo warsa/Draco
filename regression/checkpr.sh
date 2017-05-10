@@ -201,6 +201,7 @@ case $project in
         rflag="-r"
       fi
       run "$rscriptdir/checkpr.sh ${rflag} -p draco"
+      echo " "
 
       # Reset the modified date on the file used to determine when draco was
       # last built.

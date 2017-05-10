@@ -64,7 +64,7 @@ source $scriptdir/scripts/common.sh
 #
 
 # If not found, look for it in /usr/share/Modules (ML)
-if [[ `fn_exists module` ]]; then
+if [[ `fn_exists module` == 0 ]]; then
   case ${target} in
     tt-fey*) module_init_dir=/opt/cray/pe/modules/3.2.10.4/init/bash ;;
     # snow (Toss3)
@@ -77,7 +77,7 @@ if [[ `fn_exists module` ]]; then
   else
     echo "ERROR: The module command was not found. No modules will be loaded."
   fi
-  if [[ `fn_exists module` ]]; then
+  if [[ `fn_exists module` == 0 ]]; then
     echo "ERROR: the module command was not found (even after sourcing $module_init_dir"
     exit 1
   fi
