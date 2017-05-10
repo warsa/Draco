@@ -64,7 +64,7 @@ fi
 available_queues=`sacctmgr -np list assoc user=$LOGNAME | grep access | sed -e 's/.*|\(.*access.*\)|.*/\1/'  | sed -e 's/|.*//'`
 # snow: available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
 case $available_queues in
-*access*) access_queue="-A access" ;;
+  *access*) access_queue="-A access --qos=access" ;;
   *dev*) access_queue="--qos=dev" ;;
 esac
 
