@@ -75,7 +75,7 @@ endif()
 # - https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 #
 # Consider using these optimization flags:
-# -ffast-math -mtune=native -ftree-vectorize
+# -ffast-math -ftree-vectorize
 # -fno-finite-math-only -fno-associative-math -fsignaling-nans
 
 if( NOT CXX_FLAGS_INITIALIZED )
@@ -90,10 +90,6 @@ if( NOT CXX_FLAGS_INITIALIZED )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     # LTO appears to be broken (at least for Jayenne with gcc 4 and 5 series).
     # string( APPEND CMAKE_C_FLAGS_RELEASE " -flto" )
-
-    # Color output
-    string( APPEND CMAKE_C_FLAGS " -fdiagnostics-color=always" )
-    # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
 
     # See https://gcc.gnu.org/gcc-5/changes.html
     # UndefinedBehaviorSanitizer gained a few new sanitization options:
@@ -112,7 +108,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #             the correct dynamic type.
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=bounds")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+    # GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
   endif()
 
   # [2017-04-15 KT] -march=native doesn't seem to work correctly on toolbox
