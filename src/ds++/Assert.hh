@@ -428,10 +428,12 @@ DLL_PUBLIC_dsxx std::string verbose_error(std::string const &message);
 #if DBC
 #define REMEMBER_ON
 #define Remember(c) c
-#define NOEXCEPT(...)
+#define NOEXCEPT
+#define NOEXCEPT_C(c)
 #else
 #define Remember(c)
-#define NOEXCEPT(...) noexcept(#__VA_ARGS__)
+#define NOEXCEPT noexcept
+#define NOEXCEPT_C(c) noexcept(c)
 #endif
 
 #if defined(MSVC)
