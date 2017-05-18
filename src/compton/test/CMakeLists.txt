@@ -33,7 +33,8 @@ include_directories(
 
 add_scalar_tests(
   SOURCES "${test_sources}"
-  DEPS    "Lib_compton" )
+  DEPS    "Lib_compton"
+  LABELS  nomemcheck )
 
 #------------------------------------------------------------------------------#
 # Copy data files
