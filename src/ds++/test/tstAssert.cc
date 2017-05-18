@@ -449,6 +449,17 @@ void tverbose_error(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+bool no_exception() NOEXCEPT();
+
+void tnoexcept(rtt_dsxx::UnitTest &ut) {
+#if DBC
+  ut.check(!noexcept(no_exception()), "with DBC on, NOEXCEPT has no effect");
+#else
+  ut.check(noexcept(no_exception()), "with DBC off, NOEXCEPT has effect");
+#endif
+}
+
+//---------------------------------------------------------------------------//
 
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
@@ -475,6 +486,9 @@ int main(int argc, char *argv[]) {
 
     // fancy ouput
     tverbose_error(ut);
+
+    // noexcept
+    tnoexcept(ut);
   }
   UT_EPILOG(ut);
 }
