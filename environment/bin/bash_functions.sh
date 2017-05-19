@@ -380,7 +380,7 @@ function switch_to_lmod()
   dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
 ack ccache"
   dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
-  dm_openmpi="openmpi parmetis superlu-dist trilinos"
+  dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
   export dracomodules="$dm_core $dm_gcc $dm_openmpi"
   module load $dracomodules
 

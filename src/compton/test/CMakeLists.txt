@@ -34,7 +34,7 @@ include_directories(
 add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "Lib_compton"
-  LABELS  nomemcheck )
+  LABEL   "nomemcheck" )
 
 #------------------------------------------------------------------------------#
 # Copy data files
@@ -43,5 +43,5 @@ add_scalar_tests(
 provide_aux_files( FILES "${compton_data}" )
 
 # ---------------------------------------------------------------------------- #
-# end of CMakeLists.txt
+# end of compton/test/ CMakeLists.txt
 # ---------------------------------------------------------------------------- #
