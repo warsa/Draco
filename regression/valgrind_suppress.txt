@@ -1,17 +1,25 @@
 # -*-sh-*-
-# Valgrind Suppression Instructions
-# generate these expressions by specifying 'valgrind --gen-suppressions=all'
-
+#------------------------------------------------------------------------------#
+# File  : regression/valgrind_suppress.txt
+# Date  : Friday, May 19, 2017, 10:26 am
+# Author: Kelly Thompson <kgt@lanl.gov>
+# Breif : Valgrind Suppression Instructions
+# Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+#         All rights are reserved.
+#------------------------------------------------------------------------------#
+#
 # Example valgrind use:
-
+#
 # valgrind -q --tool=memcheck --leak-check=full --show-reachable=yes
 #   --trace-children=yes --num-callers=50 --gen-suppressions=all
 #   --suppressions="$HOME/draco/regression/valgrind_suppress.txt"
 #   mpirun -np 1 phw hello
-
-# OR --------
-
+#
+# -------- OR --------
+#
 # ctest -D ExperimentalMemCheck -j 12 -R c4
+#
+#------------------------------------------------------------------------------#
 
 ## -------------------------------------------------------------------------- ##
 ## rhel7
@@ -165,6 +173,14 @@
 ## Added with upgrade to valgrind 3.6.1
 ## ---------------------------------------------------------------------- ##
 
+{
+   ld217/e001
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   ...
+   obj:/usr/lib64/ld-2.17.so
+}
 {
    tstSP/condjump/ld25so
    Memcheck:Cond
@@ -444,25 +460,6 @@
    fun:__gmpn_divrem
    ...
 }
-
-{
-   numdiff/lost/01
-   Memcheck:Leak
-   fun:calloc
-   fun:process_substring
-   fun:get_separating_string
-   fun:setargs
-   fun:main
-}
-{
-   numdiff/lost/02
-   Memcheck:Leak
-   fun:calloc
-   fun:process_substring
-   fun:get_separating_string
-   fun:setargs
-   fun:main
-}
 {
    numdiff/lost/03
    Memcheck:Leak
@@ -473,6 +470,15 @@
    fun:init_mpa
    fun:init_mpa_support
    fun:main
+}
+{
+   numdiff/lost/04
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:process_substring
+   fun:get_separating_string
+   ...
 }
 
 #==================== F90 open/read/write errors ====================#
@@ -904,6 +910,15 @@
 {
    openmpi210/e001d
    Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001d
+   Memcheck:Leak
    match-leak-kinds: indirect
    fun:realloc
    ...
@@ -946,7 +961,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0004a
@@ -956,7 +971,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0004b
@@ -966,7 +981,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0004c
@@ -975,7 +990,7 @@
    fun:malloc
    ...
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0005
@@ -985,7 +1000,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0005
@@ -995,7 +1010,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0005a
@@ -1005,7 +1020,7 @@
    ...
    fun:progress_engine
    fun:start_thread
-   fun:clone
+   ...
 }
 {
    openmpi210/e0006
@@ -1122,6 +1137,51 @@
    fun:orterun
    ...
 }
+{
+   openmpi210/e0016
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Init
+   ...
+}
+{
+   openmpi210/e0017
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_create
+   ...
+}
+{
+   openmpi210/e0018
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_split
+   ...
+}
+{
+   openmpi210/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Comm_dup
+   ...
+}
+{
+   openmpi210/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:PMPI_Win_create
+   ...
+}
 
 #------------------------------------------------------------------------------#
 # Python 2.7
@@ -1138,6 +1198,14 @@
    python/e002
    Memcheck:Leak
    match-leak-kinds: reachable
+   fun:malloc
+   fun:_PyObject_GC_Malloc
+   ...
+}
+{
+   python/e002b
+   Memcheck:Leak
+   match-leak-kinds: possible
    fun:malloc
    fun:_PyObject_GC_Malloc
    ...
