@@ -13,10 +13,7 @@ function run () {
 
 fn_exists()
 {
-    type $1 2>/dev/null | grep -q 'is a function'
-    res=$?
-    echo $res
-    return $res
+  type $1 2>/dev/null | grep -c 'is a function'
 }
 
 #----------------------------------------------------------------------#

@@ -147,6 +147,12 @@ targets are installed." FORCE )
      set( CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE )
   endif()
 
+  # Register a valgrind suppression file
+  # ctest -D ExperimentalMemCheck -j 12 -R c4
+  set( MEMORYCHECK_SUPPRESSIONS_FILE
+    "${Draco_SOURCE_DIR}/regression/valgrind_suppress.txt" CACHE FILEPATH
+    "valgrind warning suppression file." FORCE )
+
 endmacro()
 
 ##---------------------------------------------------------------------------##
