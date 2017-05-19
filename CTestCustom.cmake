@@ -97,7 +97,7 @@ endforeach()
 #------------------------------------------------------------------------------#
 # EXAMPLES FROM LAPACK
 
-# SET(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
+# SET(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION})
 
 # Common warning when linking ATLAS built with GNU Fortran 4.1 and building with
 # GNU Fortran 4.4.  It can be safely ignored.
