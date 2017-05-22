@@ -36,7 +36,7 @@ void dbc_test(UnitTest &ut) {
 
   if (abs(abs(5.4) - 5.4) > std::numeric_limits<double>::epsilon() ||
       abs(abs(-2.1) - 2.1) > std::numeric_limits<double>::epsilon() ||
-      abs(abs(0.0) - 0.0) > std::numeric_limits<double>::epsilon() )
+      abs(abs(0.0) - 0.0) > std::numeric_limits<double>::epsilon())
     FAILMSG("abs function template FAILED");
   else
     PASSMSG("abs function template ok");

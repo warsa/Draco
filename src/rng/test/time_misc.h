@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * performance.  We do not distribute those RNGs or
  * their timing code.
  */
-# include "util_other.h"
+#include "util_other.h"
 #endif
 
 const char *progname;

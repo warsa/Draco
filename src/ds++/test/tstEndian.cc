@@ -121,7 +121,7 @@ void test_idempotence(ScalarUnitTest &ut) {
     // Use the copy-generating version to test negative numbers.
     const double neg_local = byte_swap_copy(byte_swap_copy(-value));
 
-    if ( std::abs(neg_local + value) > std::numeric_limits<double>::epsilon())
+    if (std::abs(neg_local + value) > std::numeric_limits<double>::epsilon())
       FAILMSG("byte_swap failed to reproduce original number");
   }
 

@@ -20,8 +20,8 @@
 
 #include "Assert.hh"
 #include <cmath>
-#include <iterator>
 #include <cstdint>
+#include <iterator>
 #include <vector>
 
 namespace rtt_dsxx {
