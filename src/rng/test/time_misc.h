@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TIME_MISC_H__ 1
 /* Miscellaneous common definitions for time_*.c */
 
-#if TRY_OTHER
+#if defined(TRY_OTHER)
 /*
  * Compare with some other conventional RNGs for timing
  * performance.  We do not distribute those RNGs or

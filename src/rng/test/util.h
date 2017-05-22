@@ -39,7 +39,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <math.h>
 #include "rng/config.h"
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
+#endif
 #include <Random123/features/compilerfeatures.h>
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 extern const char *progname;
 extern int debug;
@@ -58,8 +66,8 @@ R123_STATIC_INLINE double now(){
 #else /* _MSC_VER */
 #include <sys/time.h>
 R123_STATIC_INLINE double now(){
-    struct timeval tv; 
-    gettimeofday(&tv, 0); 
+    struct timeval tv;
+    gettimeofday(&tv, 0);
     return 1.e-6*tv.tv_usec + tv.tv_sec;
 }
 #endif /* _MSC_VER */

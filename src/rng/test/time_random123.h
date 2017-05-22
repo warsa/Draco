@@ -114,7 +114,7 @@ KERNEL void test_##NAME##N##x##W##_##R(uint64_t n64, NAME##N##x##W##_ukey_t uk, 
  * above, so we undefine TRY_OTHER before including
  * util_expandtpl.  Ugh.
  */
-#if TRY_OTHER
+#if defined(TRY_OTHER)
 # include "time_other.h"
 # define RESTORE_OTHER 1
 #endif
@@ -126,7 +126,7 @@ KERNEL void test_##NAME##N##x##W##_##R(uint64_t n64, NAME##N##x##W##_ukey_t uk, 
  * Now restore TRY_OTHER if needed to that subsequent
  * expandtpl (e.g. for time_keyctrinit) will work.
  */
-#if RESTORE_OTHER
+#if defined(RESTORE_OTHER)
 # undef TRY_OTHER
 # define TRY_OTHER 1
 # undef RESTORE_OTHER
