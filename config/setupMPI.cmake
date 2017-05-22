@@ -595,8 +595,9 @@ macro( setupMPILibrariesUnix )
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
-      # Find the version
-      if( NOT "${MPIEXEC}" MATCHES "aprun" )
+      # Find the mpirun version (skip this on Cray because this command seems to
+      # occasionally hang).
+      if( NOT CRAY_PE )
         execute_process( COMMAND ${MPIEXEC} --version
           OUTPUT_VARIABLE DBS_MPI_VER_OUT
           ERROR_VARIABLE DBS_MPI_VER_ERR)
