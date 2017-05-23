@@ -68,13 +68,21 @@ public:
   explicit Compton(const std::string &filehandle);
 
   //! Constructor to build a multigroup library from an existing pointwise file
+  //! Defaulting the number of angular evals (n_xi) to zero causes the CSK
+  //! routines to use the full angular fidelity of the library
   Compton(const std::string &file, const std::vector<double> &group_bounds,
-          const size_t n_xi);
+          const size_t n_xi = 0);
 
-  //! Interpolation of all data to a certain electron temperature:
-  std::vector<std::vector<std::vector<double>>> interpolate(const double etemp);
+  //! Interpolation of all csk data to a certain electron temperature:
   std::vector<std::vector<std::vector<double>>>
-  interpolate(const double etemp) const;
+  interpolate_csk(const double etemp);
+  std::vector<std::vector<std::vector<double>>>
+  interpolate_csk(const double etemp) const;
+
+  //! Interpolation of all nu_ratio data to an electron temperature:
+  std::vector<std::vector<double>> interpolate_nu_ratio(const double etemp);
+  std::vector<std::vector<double>>
+  interpolate_nu_ratio(const double etemp) const;
 
   //! Retrieve group structure for the given library:
   std::vector<double> get_group_bounds() {

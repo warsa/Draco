@@ -73,11 +73,16 @@ Compton::Compton(const std::string &filehandle,
             << std::endl;
 
   // make a group_data struct to pass to the lib builder:
-  // TODO: How do we actually want to handle the weighting function?
-  // Allow the user to pass it in? Make some intelligent decision at runtime?
+  // TODO: How do we actually want to handle the weighting function and
+  // opacity type? Allow the user to pass it in? Make some intelligent
+  // decision at runtime?
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
+                                     multigroup::Opacity_type::INTENSITY,
                                      multigroup::Weighting_function::PLANCK,
-                                     filehandle, nxi, grp_bds};
+                                     false,
+                                     filehandle,
+                                     nxi,
+                                     grp_bds};
 
   // Construct a multigroup library builder:
   multigroup_lib_builder MG_builder(grp_data);
@@ -108,24 +113,46 @@ Compton::Compton(const std::string &filehandle,
  * \return      n_grp x n_grp x n_xi interpolated scattering kernel values
  */
 std::vector<std::vector<std::vector<double>>>
-Compton::interpolate(const double etemp) {
+Compton::interpolate_csk(const double etemp) {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_etemp(etemp);
+  return ei->interpolate_csk(etemp);
 }
 
 std::vector<std::vector<std::vector<double>>>
-Compton::interpolate(const double etemp) const {
+Compton::interpolate_csk(const double etemp) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_etemp(etemp);
+  return ei->interpolate_csk(etemp);
+}
+
+std::vector<std::vector<double>>
+Compton::interpolate_nu_ratio(const double etemp) {
+
+  // Be sure the passed electron temperature is within the bounds of the lib!
+  Require(etemp >= ei->get_min_etemp());
+  Require(etemp <= ei->get_max_etemp());
+
+  // call the appropriate routine in the electron interp object
+  return ei->interpolate_nu_ratio(etemp);
+}
+
+std::vector<std::vector<double>>
+Compton::interpolate_nu_ratio(const double etemp) const {
+
+  // Be sure the passed electron temperature is within the bounds of the lib!
+  Require(etemp >= ei->get_min_etemp());
+  Require(etemp <= ei->get_max_etemp());
+
+  // call the appropriate routine in the electron interp object
+  return ei->interpolate_nu_ratio(etemp);
 }
 }
