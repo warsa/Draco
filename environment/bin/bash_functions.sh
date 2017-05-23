@@ -3,7 +3,7 @@
 ## File  : environment/bin/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -38,6 +38,8 @@
 ## rdde              - reload the default draco environment
 ##
 ## qrm               - quick remove (for lustre filesystems).
+##
+## switch_to_lmod    - switch module system from tcl to lmod
 ##---------------------------------------------------------------------------##
 
 ##---------------------------------------------------------------------------##
@@ -208,6 +210,9 @@ function rm_from_path ()
 
 ##---------------------------------------------------------------------------##
 ## If path is a directory add it to PATH (if not already in PATH)
+##
+## Use:
+##   add_to_path <path> TEXINPUTS|BSTINPUTS|BIBINPUTS|PATH
 ##---------------------------------------------------------------------------##
 function add_to_path ()
 {
@@ -358,13 +363,13 @@ function switch_to_lmod()
   fi
 
   # Environment for default compiler (no module file)
-  export CC=/bin/gcc
-  export CXX=/bin/g++
-  export FC=/bin/gfortran
-  export F90=/bin/gfortran
-  export F95=/bin/gfortran
-  export LCOMPILER=gcc
-  export LCOMPILERVER=4.8.5
+  # export CC=/bin/gcc
+  # export CXX=/bin/g++
+  # export FC=/bin/gfortran
+  # export F90=/bin/gfortran
+  # export F95=/bin/gfortran
+  # export LCOMPILER=gcc
+  # export LCOMPILERVER=4.8.5
 
   # aliases
   alias mlo='module load'
@@ -372,16 +377,14 @@ function switch_to_lmod()
   alias mav='module avail'
 
   # modules for draco developer environment
-  dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
-ack ccache"
-  dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk"
-  dm_openmpi="openmpi parmetis superlu-dist trilinos"
+  dm_core="cmake eospac git tk ndi python doxygen ccache numdiff totalview \
+dia graphviz ack"
+  dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
+  dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
   export dracomodules="$dm_core $dm_gcc $dm_openmpi"
   module load $dracomodules
 
-  if [[ -d $VENDOR_DIR/bin ]]; then
-    export PATH=$PATH:$VENDOR_DIR/bin
-  fi
+  add_to_path $VENDOR_DIR/bin
 }
 
 #------------------------------------------------------------------------------#
