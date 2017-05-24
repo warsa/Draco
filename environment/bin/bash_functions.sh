@@ -363,13 +363,13 @@ function switch_to_lmod()
   fi
 
   # Environment for default compiler (no module file)
-  export CC=/bin/gcc
-  export CXX=/bin/g++
-  export FC=/bin/gfortran
-  export F90=/bin/gfortran
-  export F95=/bin/gfortran
-  export LCOMPILER=gcc
-  export LCOMPILERVER=4.8.5
+  # export CC=/bin/gcc
+  # export CXX=/bin/g++
+  # export FC=/bin/gfortran
+  # export F90=/bin/gfortran
+  # export F95=/bin/gfortran
+  # export LCOMPILER=gcc
+  # export LCOMPILERVER=4.8.5
 
   # aliases
   alias mlo='module load'
@@ -377,8 +377,8 @@ function switch_to_lmod()
   alias mav='module avail'
 
   # modules for draco developer environment
-  dm_core="cmake eospac git tk ndi python totalview dia graphviz doxygen \
-ack ccache"
+  dm_core="cmake eospac git tk ndi python doxygen ccache numdiff totalview \
+dia graphviz ack"
   dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
   dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
   export dracomodules="$dm_core $dm_gcc $dm_openmpi"
