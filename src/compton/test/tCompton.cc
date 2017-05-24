@@ -269,7 +269,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   if (!soft_equiv(compton_test->get_min_etemp(), 0.0))
     FAILMSG("Min etemp read incorrectly!");
-  if (!soft_equiv(compton_test->get_max_etemp(), 1.0))
+  if (!soft_equiv(compton_test->get_max_etemp(), 0.0223607))
     FAILMSG("Max etemp read incorrectly!");
 
   if (ut.numFails == 0) {
