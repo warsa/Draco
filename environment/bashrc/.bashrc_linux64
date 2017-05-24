@@ -32,6 +32,8 @@ if ! [[ ${VENDOR_DIR} ]]; then
   esac
 fi
 
+add_to_path ${VENDOR_DIR}/bin PATH
+
 #------------------------------------------------------------------------------#
 # Setup Modules (Lmod or TCL)
 
