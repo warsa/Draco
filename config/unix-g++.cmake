@@ -83,7 +83,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
 
   set( CMAKE_C_FLAGS                "-Wcast-align -Wpointer-arith -Wall -pedantic" )
   set( CMAKE_C_FLAGS_DEBUG          "-g -gdwarf-3 -fno-inline -fno-eliminate-unused-debug-types -O0 -Wextra -Wundef -DDEBUG")
-  # -Werror
+  # '-Werror'
   # -D_FORTIFY_SOURCE=2 -Wconversion -Wfloat-equal -Wunreachable-code
   set( CMAKE_C_FLAGS_RELEASE        "-O3 -funroll-loops -DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_RELEASE}" )
