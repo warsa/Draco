@@ -40,7 +40,7 @@ public:
    * \param[in] v_in v_in is lvalue; its type is rval ref
    */
   explicit A(std::vector<double> &&v_in)
-      : v_(v_in) // regular std::vector copy ctor called b/c lvalue
+      : v_(v_in) // regular vector copy ctor called b/c lvalue
   {
     /* empty */
   }
@@ -63,7 +63,7 @@ struct B {
    * \param[in] v_in v_in is lvalue; its type is rval ref
    */
   explicit B(std::vector<double> &&v_in)
-      : v_(std::move(v_in)) /* std::move casts to rval, move ctor called */
+      : v_(std::move(v_in)) /* move casts to rval, move ctor called */
   {
     /* empty */
   }
@@ -110,7 +110,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   if (v1_data_loc != &v1[0])
     ITFAILS;
   else
-    PASSMSG("v1 remains unchanged! (but this is not the behavior we want).");
+    PASSMSG("v1 remains unchanged! (but we want v1 to be empty).");
   if (v1_loc == &a.v_)
     ITFAILS;
   if (v1_data_loc == &a.v_[0])
@@ -150,7 +150,7 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
   // Create an object, attempt to transfer ownership from v1 to b.
   // This works.
   cout << "\nCreate an instantiation of B that takes ownership of v1's data.";
-  B b(std::move(v1));
+  B b(move(v1));
   cout << "\nAfter call to B::ctor\n";
   report_memory_locations(v1, "v1");
   report_memory_locations(b.v_, "b.v_");
@@ -183,7 +183,7 @@ void report_memory_locations(std::vector<double> const &v,
   using namespace std;
   cout << name << " @ " << &v << ", " << name << " data @ " << &v[0] << endl;
   cout << name << " = {";
-  copy(v.begin(), v.end(), std::ostream_iterator<double>(cout, ","));
+  copy(v.begin(), v.end(), ostream_iterator<double>(cout, ","));
   cout << "}" << endl;
   return;
 }
