@@ -881,7 +881,16 @@
    ...
 }
 {
-   openmpi210/e001aa
+   openmpi210/e001b
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   ...
+   fun:PMPI_Init_thread
+   ...
+}
+{
+   openmpi210/e001ba
    Memcheck:Leak
    match-leak-kinds: indirect
    fun:malloc
@@ -890,7 +899,7 @@
    ...
 }
 {
-   openmpi210/e001b
+   openmpi210/e001c
    Memcheck:Leak
    match-leak-kinds: indirect
    fun:calloc
@@ -899,7 +908,7 @@
    ...
 }
 {
-   openmpi210/e001c
+   openmpi210/e001d
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:calloc
