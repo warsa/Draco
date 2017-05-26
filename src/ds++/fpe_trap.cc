@@ -199,6 +199,7 @@ void fpe_trap::disable(void) {
 #include <float.h>   // defines _controlfp_s
 #include <new.h>     // _set_new_handler
 #include <signal.h>  // SIGABRT
+#include <intrin.h>  // _ReturnAddress
 
 // typdef ignored on left...
 #pragma warning(push)

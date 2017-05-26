@@ -10,7 +10,6 @@
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
-// #include <cmath>
 
 using namespace std;
 
