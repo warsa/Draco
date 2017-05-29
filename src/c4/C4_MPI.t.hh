@@ -83,6 +83,8 @@ template <typename TS, typename TR>
 DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
                                TR *recvbuf, int recvcount, int source,
                                int sendtag, int recvtag) {
+  Require(sendbuf != nullptr);
+  Require(recvbuf != nullptr);
   // buffers must not overlap
   Require(recvbuf + recvcount <= sendbuf || recvbuf >= sendbuf + sendcount);
 
