@@ -20,8 +20,7 @@ namespace rtt_c4 {
 // MPI version of get_num_recv()
 #ifdef C4_MPI
 int get_num_recv(Invert_Comm_Map_t::const_iterator first,
-                 Invert_Comm_Map_t::const_iterator last)
-{
+                 Invert_Comm_Map_t::const_iterator last) {
   const int myproc = rtt_c4::node();
   const int numprocs = rtt_c4::nodes();
   const int one = 1;
@@ -43,14 +42,13 @@ int get_num_recv(Invert_Comm_Map_t::const_iterator first,
     Require(it->first < numprocs);
     if (it->first != myproc) { // treat only non-local sends
       // ...increment the remote number of receives
-      MPI_Accumulate(&one, 1, MPI_Traits<int>::element_type(),
-                     it->first, 0, 1, MPI_Traits<int>::element_type(),
-                     MPI_SUM, win);
+      MPI_Accumulate(&one, 1, MPI_Traits<int>::element_type(), it->first, 0, 1,
+                     MPI_Traits<int>::element_type(), MPI_SUM, win);
     }
   }
   MPI_Win_fence(fence_assert, win);
   MPI_Win_free(&win);
-  
+
   Ensure(num_recv >= 0 && num_recv < numprocs);
   return num_recv;
 }
@@ -92,7 +90,7 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
   // Posts the receives for the data sizes.  We don't yet know the proc numbers
   // sending the data, so use any_source.
   for (int i = 0; i < num_recv; ++i) {
-    receive_async(recvs[i], &sizes[num_recv], 1, any_source, tag);
+    receive_async(recvs[i], &sizes[i], 1, any_source, tag);
   }
 
   from_map.clear(); // empty whatever came in
@@ -109,7 +107,7 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
     } else {
       // we can ignore the request returned, because our send buffers are
       // not shared, and we'll wait on the receives below.
-      send_async(it->second, 1, it->first, tag);
+      send_async(&(it->second), 1, it->first, tag);
     }
   }
 
@@ -121,7 +119,7 @@ void invert_comm_map(Invert_Comm_Map_t const &to_map,
     const int proc = status.get_source();
     Check(proc >= 0);
     Check(proc < num_procs);
-    
+
     // proc should not yet exist in map
     Check(from_map.find(proc) == from_map.end());
 

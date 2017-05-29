@@ -27,9 +27,6 @@ namespace rtt_c4 {
 
 template <typename T>
 DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination, int tag) {
-  Require(buffer != nullptr);
-  Require(size > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
   MPI_Send(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
            destination, tag, communicator);
   return C4_SUCCESS;
@@ -39,11 +36,6 @@ DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination, int tag) {
 
 template <typename T>
 DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
-  Require(buffer != nullptr);
-  Require(size > 0);
-  // any_source not supported:
-  //Require(source == any_source || (source >= 0 && source < nodes()));
-  Require(source >= 0 && source < nodes());
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -63,9 +55,6 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
 template <typename T>
 DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
                            C4_Datatype &data_type, int tag) {
-  Require(buffer != nullptr);
-  Require(size > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
   MPI_Send(const_cast<T *>(buffer), size, data_type, destination, tag,
            communicator);
   return C4_SUCCESS;
@@ -76,11 +65,6 @@ DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
 template <typename T>
 DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,
                               C4_Datatype &data_type, int tag) {
-  Require(buffer != nullptr);
-  Require(size > 0);
-  // any_source not supported:
-  //Require(source == any_source || (source >= 0 && source < nodes()));
-  Require(source >= 0 && source < nodes());
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -99,16 +83,8 @@ template <typename TS, typename TR>
 DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
                                TR *recvbuf, int recvcount, int source,
                                int sendtag, int recvtag) {
-  Require(sendbuf != nullptr);
-  Require(sendcount > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
-  Require(recvbuf != nullptr);
-  Require(recvcount > 0);
   // buffers must not overlap
   Require(recvbuf + recvcount <= sendbuf || recvbuf >= sendbuf + sendcount);
-  // any_source not supported:
-  //Require(source == any_source || (source >= 0 && source < nodes()));
-  Require(source >= 0 && source < nodes());
 
   int check = MPI_Sendrecv(sendbuf, sendcount, MPI_Traits<TS>::element_type(),
                            destination, sendtag, recvbuf, recvcount,
@@ -124,9 +100,6 @@ DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
 template <typename T>
 DLL_PUBLIC_c4 C4_Req send_async(const T *buffer, int size, int destination,
                                 int tag) {
-  Require(buffer != nullptr);
-  Require(size > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
 
   // make a c4 request handle
   C4_Req request;
@@ -148,9 +121,6 @@ template <typename T>
 DLL_PUBLIC_c4 void send_async(C4_Req &request, const T *buffer, int size,
                               int destination, int tag) {
   Require(!request.inuse());
-  Require(buffer != nullptr);
-  Require(size > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
 
   // set the request
   request.set();
@@ -166,9 +136,6 @@ template <typename T>
 DLL_PUBLIC_c4 void send_is(C4_Req &request, const T *buffer, int size,
                            int destination, int tag) {
   Require(!request.inuse());
-  Require(buffer != nullptr);
-  Require(size > 0);
-  Require(destination >= 0 && destination < nodes()); // no any_source
 
   // set the request
   request.set();
@@ -185,6 +152,7 @@ DLL_PUBLIC_c4 void send_is(C4_Req &request, const T *buffer, int size,
 
 template <typename T>
 C4_Req receive_async(T *buffer, int size, int source, int tag) {
+
   // make a c4 request handle
   C4_Req request;
 
@@ -205,11 +173,6 @@ template <typename T>
 DLL_PUBLIC_c4 void receive_async(C4_Req &request, T *buffer, int size,
                                  int source, int tag) {
   Require(!request.inuse());
-  Require(buffer != nullptr);
-  Require(size > 0);
-  // any_source not supported
-  //Require(source == any_source || (source >= 0 && source < nodes()));
-  Require(source >= 0 && source < nodes());
 
   // set the request
   request.set();
@@ -228,8 +191,6 @@ DLL_PUBLIC_c4 void receive_async(C4_Req &request, T *buffer, int size,
 
 template <typename T>
 DLL_PUBLIC_c4 int broadcast(T *buffer, int size, int root) {
-  Require(buffer != nullptr);
-  Require(size > 0);
   Require(root >= 0 && root < nodes());
   int r = MPI_Bcast(buffer, size, MPI_Traits<T>::element_type(), root,
                     communicator);
@@ -242,9 +203,6 @@ DLL_PUBLIC_c4 int broadcast(T *buffer, int size, int root) {
 
 template <typename T>
 DLL_PUBLIC_c4 int gather(T *send_buffer, T *receive_buffer, int size) {
-  Require(send_buffer != nullptr);
-  Require(recv_buffer != nullptr);
-  Require(size > 0);
   int Result = MPI_Gather(send_buffer, size, MPI_Traits<T>::element_type(),
                           receive_buffer, size, MPI_Traits<T>::element_type(),
                           0, // root is always processor 0 at present
@@ -255,9 +213,6 @@ DLL_PUBLIC_c4 int gather(T *send_buffer, T *receive_buffer, int size) {
 
 template <typename T>
 DLL_PUBLIC_c4 int allgather(T *send_buffer, T *receive_buffer, int size) {
-  Require(send_buffer != nullptr);
-  Require(recv_buffer != nullptr);
-  Require(size > 0);
   int Result = MPI_Allgather(send_buffer, size, MPI_Traits<T>::element_type(),
                              receive_buffer, size,
                              MPI_Traits<T>::element_type(), communicator);
@@ -267,9 +222,6 @@ DLL_PUBLIC_c4 int allgather(T *send_buffer, T *receive_buffer, int size) {
 
 template <typename T>
 DLL_PUBLIC_c4 int scatter(T *send_buffer, T *receive_buffer, int size) {
-  Require(send_buffer != nullptr);
-  Require(recv_buffer != nullptr);
-  Require(size > 0);
   int Result = MPI_Scatter(send_buffer, size, MPI_Traits<T>::element_type(),
                            receive_buffer, size, MPI_Traits<T>::element_type(),
                            0, // root is always processor 0 at present
@@ -281,11 +233,6 @@ DLL_PUBLIC_c4 int scatter(T *send_buffer, T *receive_buffer, int size) {
 template <typename T>
 int gatherv(T *send_buffer, int send_size, T *receive_buffer,
             int *receive_sizes, int *receive_displs) {
-  Require(send_buffer != nullptr);
-  Require(send_size > 0);
-  Require(recv_buffer != nullptr);
-  Require(receive_sizes != nullptr);
-  Require(receive_displs != nullptr);
   int Result = MPI_Gatherv(
       send_buffer, send_size, MPI_Traits<T>::element_type(), receive_buffer,
       receive_sizes, receive_displs, MPI_Traits<T>::element_type(),
@@ -298,11 +245,6 @@ int gatherv(T *send_buffer, int send_size, T *receive_buffer,
 template <typename T>
 int scatterv(T *send_buffer, int *send_sizes, int *send_displs,
              T *receive_buffer, int receive_size) {
-  Require(send_buffer != nullptr);
-  Require(receive_size > 0);
-  Require(recv_buffer != nullptr);
-  Require(send_sizes != nullptr);
-  Require(send_displs != nullptr);
   int Result =
       MPI_Scatterv(send_buffer, send_sizes, send_displs,
                    MPI_Traits<T>::element_type(), receive_buffer, receive_size,

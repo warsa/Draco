@@ -44,7 +44,7 @@ class DLL_PUBLIC_c4 C4_Status {
 
 public:
   // Use default ctor, dtor, assignment
-  
+
   //! Returns the message size (in bytes) of the last communication.
   int get_message_size() const;
 
@@ -52,7 +52,7 @@ public:
   int get_source() const;
 
   //! Return a handle to the underlying data status object.
-  status_type *get_status_obj() {return &d_status}
+  status_type *get_status_obj() { return &d_status; }
 };
 
 } // end namespace rtt_c4

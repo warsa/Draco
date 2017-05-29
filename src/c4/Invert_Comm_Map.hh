@@ -58,7 +58,6 @@ DLL_PUBLIC_c4 void invert_comm_map(Invert_Comm_Map_t const &to_map,
 DLL_PUBLIC_c4 int get_num_recv(Invert_Comm_Map_t::const_iterator first,
                                Invert_Comm_Map_t::const_iterator last);
 
-
 } // end namespace rtt_c4
 
 #endif // c4_Invert_Comm_Map_hh

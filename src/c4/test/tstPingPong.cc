@@ -17,6 +17,7 @@
 using namespace std;
 
 using rtt_c4::C4_Req;
+using rtt_c4::C4_Status;
 using rtt_c4::C4_Traits;
 using rtt_c4::send;
 using rtt_c4::receive;
@@ -207,13 +208,13 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
     if (status.get_source() != 1)
       ITFAILS;
-    
+
     frr.wait(&status);
     if (status.get_message_size() != sizeof(float))
       ITFAILS;
     if (status.get_source() != 1)
       ITFAILS;
-    
+
     drr.wait(&status);
     if (status.get_message_size() != sizeof(double))
       ITFAILS;

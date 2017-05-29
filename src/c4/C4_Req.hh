@@ -13,6 +13,7 @@
 #define c4_C4_Req_hh
 
 // C4 package configure
+#include "C4_Status.hh"
 #include "c4/config.h"
 #include "ds++/Assert.hh"
 
