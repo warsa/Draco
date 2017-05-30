@@ -3,7 +3,7 @@
 ## File  : environment/bin/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -208,6 +208,9 @@ function rm_from_path ()
 
 ##---------------------------------------------------------------------------##
 ## If path is a directory add it to PATH (if not already in PATH)
+##
+## Use:
+##   add_to_path <path> TEXINPUTS|BSTINPUTS|BIBINPUTS|PATH
 ##---------------------------------------------------------------------------##
 function add_to_path ()
 {
