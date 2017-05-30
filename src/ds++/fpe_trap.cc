@@ -135,7 +135,7 @@ void fpe_trap::disable(void) {
   return;
 }
 
-} // end namespace rtt_shared_lib
+} // namespace rtt_dsxx
 
 #endif // FPETRAP_LINUX_X86
 
@@ -197,9 +197,9 @@ void fpe_trap::disable(void) {
 
 #include <Windows.h> // defines STATUS_FLOAT_...
 #include <float.h>   // defines _controlfp_s
+#include <intrin.h>  // _ReturnAddress
 #include <new.h>     // _set_new_handler
 #include <signal.h>  // SIGABRT
-#include <intrin.h>  // _ReturnAddress
 
 // typdef ignored on left...
 #pragma warning(push)
@@ -724,7 +724,7 @@ void fpe_trap::disable(void) {
   return;
 }
 
-} // end namespace rtt_shared_lib
+} // namespace rtt_dsxx
 
 #endif // FPETRAP_DARWIN_INTEL
 
@@ -800,7 +800,7 @@ void fpe_trap::disable(void) {
   return;
 }
 
-} // end namespace rtt_shared_lib
+} // namespace rtt_dsxx
 
 #endif // FPETRAP_DARWIN_PPC
 
