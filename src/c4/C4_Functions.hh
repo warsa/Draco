@@ -433,7 +433,7 @@ DLL_PUBLIC_c4 void blocking_probe(int source, int tag, int &message_size);
  * \param requests
  * Set of requests to wait on.
  */
-DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
+DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -445,7 +445,7 @@ DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
  * Set of requests to wait on.
  * \return The request that completed.
  */
-DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
+DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
 
 //---------------------------------------------------------------------------//
 // ABORT

@@ -152,8 +152,8 @@ private:
   friend DLL_PUBLIC_c4 void receive_async(C4_Req &r, T *buf, int nels,
                                           int source, int tag);
 
-  friend DLL_PUBLIC_c4 void wait_all(int count, C4_Req *requests);
-  friend DLL_PUBLIC_c4 unsigned wait_any(int count, C4_Req *requests);
+  friend DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
+  friend DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
 #endif
 };
 

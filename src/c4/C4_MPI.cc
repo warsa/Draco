@@ -155,8 +155,7 @@ void blocking_probe(int source, int tag, int &message_size) {
 }
 
 //---------------------------------------------------------------------------//
-void wait_all(int count, C4_Req *requests) {
-  Require(count >= 0);
+void wait_all(unsigned count, C4_Req *requests) {
 
   // Nothing to do if count is zero.
   if (count == 0)

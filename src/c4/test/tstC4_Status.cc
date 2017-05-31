@@ -86,6 +86,8 @@ int main(int argc, char *argv[]) {
   try {
     if (rtt_c4::nodes() == 2)
       tst2Procs(ut);
+    else
+      FAILMSG("tstC4_Status should only be run on 2 procs!");
   }
   UT_EPILOG(ut);
 }
