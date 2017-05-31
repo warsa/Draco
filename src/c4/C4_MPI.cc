@@ -162,7 +162,7 @@ void wait_all(unsigned count, C4_Req *requests) {
     return;
 
   std::vector<MPI_Request> array_of_requests(count);
-  for (int i = 0; i < count; ++i) {
+  for (unsigned i = 0; i < count; ++i) {
     if (requests[i].inuse())
       array_of_requests[i] = requests[i].r();
     else
