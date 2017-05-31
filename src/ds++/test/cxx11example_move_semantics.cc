@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   ds++/test/cxx11example_move_sematics.cc
  * \author Tim M. Kelley <tkelley@lanl.gov>, Kelly G. Thompson <kgt@lanl.gov>
@@ -9,7 +9,7 @@
  *
  * \sa http://blog.smartbear.com/c-plus-plus/c11-tutorial-introducing-the-move-constructor-and-the-move-assignment-operator/
  */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
@@ -31,7 +31,6 @@ void report_memory_locations(std::vector<double> const &v,
  * \brief Improper use of move semantics in constructor.
  */
 //============================================================================//
-
 struct A {
 
 public:
@@ -55,7 +54,6 @@ public:
  * \brief Proper use of move semantics in constructor.
  */
 //============================================================================//
-
 struct B {
 
   /*!
@@ -181,14 +179,21 @@ void move_semantics_example(rtt_dsxx::UnitTest &ut) {
 void report_memory_locations(std::vector<double> const &v,
                              std::string const &name) {
   using namespace std;
-  cout << name << " @ " << &v << ", " << name << " data @ " << &v[0] << endl;
+  cout << name << " @ " << &v << ", " << name << " data @ ";
+  if (v.size() > 0)
+    cout << &v[0] << endl;
+  else
+    cout << "nullptr" << endl;
   cout << name << " = {";
-  copy(v.begin(), v.end(), ostream_iterator<double>(cout, ","));
+  if (!v.empty()) {
+    copy(v.begin(), prev(v.end()), ostream_iterator<double>(cout, ","));
+    cout << v.back();
+  }
   cout << "}" << endl;
   return;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
@@ -197,6 +202,6 @@ int main(int argc, char *argv[]) {
   UT_EPILOG(ut);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of cxx11example_move_semantics.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
