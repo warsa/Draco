@@ -25,38 +25,35 @@
 # Per release settings go here (edits go here)
 #----------------------------------------------------------------------#
 
-# Avoid 'unbound variable' errors on Sequoia
-set +u
-
-# CAUTION: Cannot have too many environment variables set!  When
-# running this script use a bare-bones environment and unset things
-# like LS_COLORS and MANPATH.
-
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_20_1
+ddir=draco-6_21_0
 pdir=$ddir
 
 # environment (use draco modules)
 # release for each module set
-environments="gcc484"
-function gcc484()
+environments="intel17env gcc610env"
+function intel17env()
 {
-  export VENDOR_DIR=/usr/gapps/jayenne/vendors
-  export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
-  export OMP_NUM_THREADS=4
-  use gcc484 python-2.7.3
-  use cmake361 gsl numdiff random123
-  use
+  run "module purge"
+  run "module load friendly-testing user_contrib"
+  run "module load cmake/3.7.1 git numdiff"
+  run "module load intel/17.0.1 openmpi/1.10.5"
+  run "module load random123 eospac/6.2.4 gsl/2.1"
+  run "module load mkl metis/5.1.0 ndi"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
+  run "module list"
 }
-function xlc12()
+function gcc610env()
 {
-  export VENDOR_DIR=/usr/gapps/jayenne/vendors
-  export DK_NODE=$DK_NODE:/$VENDOR_DIR/Modules/sq
-  export OMP_NUM_THREADS=4
-  use xlc12
-  use cmake340 gsl numdiff random123
-  use
+  run "module purge"
+  run "module load friendly-testing user_contrib"
+  run "module load cmake/3.7.1 git numdiff"
+  run "module load gcc/6.1.0 openmpi/1.10.5"
+  run "module load random123 eospac/6.2.4 gsl/2.3"
+  run "module load lapack/3.6.1 metis/5.1.0 ndi"
+  run "module load parmetis/4.0.3 superlu-dist/4.3 trilinos/12.8.1"
+  run "module list"
 }
 
 # ============================================================================
@@ -72,35 +69,46 @@ cd $sdir
 export script_dir=`pwd`
 export draco_script_dir=$script_dir
 cd $cdir
-source $draco_script_dir/common.sh
+source $draco_script_dir/common_slurm.sh
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_LIBRARY_TYPE=STATIC -DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
 establish_permissions
 
-export source_prefix="/usr/gapps/jayenne/$pdir"
+export source_prefix="/usr/projects/$package/$pdir"
+(cd /usr/projects/$package; rm latest; ln -s $pdir latest)
 scratchdir=`selectscratchdir`
-build_pe=`npes_build`
-test_pe=`npes_test`
 
-# Sequoia limits the environment size to 8192, so clean up to keep the
-# environment below this limit.
-unset LS_COLORS
-unset MANPATH
-unset NLSPATH
-unset EXINIT
-unset CLASSPATH
-unset QTDIR
-unset QTLIB
-unset QTINC
-unset DRACO_AUTO_CLANG_FORMAT
-unset EDITOR
-unset SSH_ASKPASS
-unset CVS_RSH
-unset CEI_HOME
+# ppn=`showstats -n | tail -n 1 | awk '{print $3}'`
+#build_pe=`npes_build`
+#test_pe=`npes_test`
+
+myos=`osName`
+case $myos in
+  toss2) # MOAB
+    avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
+    ;;
+  toss3) # SLURM
+    available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
+    ;;
+esac
+case $avail_queues in
+  *access*) access_queue="-A access" ;;
+  *dev*) access_queue="--qos=dev" ;;
+esac
+
+# Make sure there is enough tmp space for the compiler's temporary files.
+export TMPDIR=/$scratchdir/$USER/tmp
+if ! test -d $TMPDIR; then
+  mkdir -p $TMPDIR
+fi
+if ! test -d $TMPDIR; then
+  echo "Could not create TMPDIR=$TMPDIR."
+  exit 1
+fi
 
 # =============================================================================
 # Build types:
@@ -109,17 +117,19 @@ unset CEI_HOME
 # =============================================================================
 
 OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  "
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_DBC_LEVEL=15"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 
 # Define the meanings of the various code versions:
 
-VERSIONS=( "debug" "opt" )
+VERSIONS=( "debug" "opt" "rwdi" )
 OPTIONS=(\
     "$OPTIMIZE_OFF $LOGGING_OFF" \
     "$OPTIMIZE_ON $LOGGING_OFF" \
+    "$OPTIMIZE_RWDI $LOGGING_OFF" \
 )
 
 ##---------------------------------------------------------------------------##
@@ -162,7 +172,7 @@ for env in $environments; do
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"
-  export draco_prefix="/usr/gapps/jayenne/$ddir/$buildflavor"
+  export draco_prefix="/usr/projects/draco/$ddir/$buildflavor"
 
   for (( i=0 ; i < ${#VERSIONS[@]} ; ++i )); do
 
@@ -172,19 +182,12 @@ for env in $environments; do
     export CONFIG_EXTRA="$CONFIG_BASE"
 
     # export dry_run=1
-
-    # Config and build on the front end
-    echo -e "\nConfigure and Build $buildflavor-$version version of $package."
-    export steps="config build"
-    run "$draco_script_dir/release_bgq.msub &> $source_prefix/logs/release-$buildflavor-$version-cb.log"
-
-    # Run the tests on the back-end.
-    echo -e "\nTest $buildflavor-$version version of $package."
-    export steps="test"
-    cmd="sbatch -v -N 64 -p pdebug -t 6:00:00 \
--o $source_prefix/logs/release-$buildflavor-$version-t.log \
--e $source_prefix/logs/release-$buildflavor-$version-t.log \
-$script_dir/release_bgq.msub"
+    export steps="config build test"
+    cmd="sbatch -v $access_queue -t 1:00:00 -N 1 \
+-o $source_prefix/logs/release-$buildflavor-$version.log \
+-e $source_prefix/logs/release-$buildflavor-$version.log \
+$script_dir/release_toss_slurm.msub"
+    echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
     jobid=`eval ${cmd} &`
     sleep 1m
@@ -193,6 +196,13 @@ $script_dir/release_bgq.msub"
     export jobids="$jobid $jobids"
 
     # export dry_run=0
+
+    # The Pack_Build_gnu EAP target needs this symlink on moonlight
+    #if test `machineName` == moonlight; then
+    #  run "cd $source_prefix"
+    #  gccflavor=`echo $flavor | sed -e s%$LMPI-$LMPIVER%gcc-4.9.2%`
+    #  run "ln -s $flavor $gccflavor"
+    #fi
 
   done
 done

@@ -28,7 +28,32 @@ macro( find_num_procs_avail_for_running_tests )
 
   # If this job is running under Torque (msub script), use the environment
   # variable PBS_NP or SLURM_NPROCS
-  if( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
+  if( DEFINED ENV{CRAYPE_DIR} )
+
+    set( num_test_procs 1 )
+    if( EXISTS /usr/bin/lscpu )
+      execute_process( COMMAND /usr/bin/lscpu
+        OUTPUT_VARIABLE lscpu_out
+        OUTPUT_STRIP_TRAILING_WHITESPACE )
+      # break text block into a list of lines
+      string( REPLACE "\n" ";"  lscpu ${lscpu_out} )
+      foreach( line ${lscpu} )
+        # find number of physical cores
+        if( ${line} MATCHES "per socket")
+          string( REGEX REPLACE "^.* ([0-9]+)$" "\\1" num_test_procs ${line} )
+        endif()
+        if( ${line} MATCHES "Model name")
+          if( ${line} MATCHES "Xeon Phi" )
+            #     message("is knl")
+            # With srun, the KNL has trouble with 68 cores worth of jobs, so
+            # limit to a lower number
+            set( num_test_procs 8 )
+          endif()
+        endif()
+      endforeach()
+    endif()
+
+  elseif( NOT "$ENV{PBS_NP}x" STREQUAL "x" )
     set( num_test_procs $ENV{PBS_NP} )
   elseif( NOT "$ENV{SLURM_NPROCS}x" STREQUAL "x")
     set( num_test_procs $ENV{SLURM_NPROCS} )
@@ -80,23 +105,21 @@ win32$ set work_dir=c:/full/path/to/work_dir
   endif( NOT work_dir )
   file( TO_CMAKE_PATH ${work_dir} work_dir )
 
-  # Set the sitename, but strip any domain information
-  site_name( sitename )
-  string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
-  if( ${sitename} MATCHES "tt" )
-     set( sitename "Trinitite" )
-  elseif( ${sitename} MATCHES "tr" )
-     set( sitename "Trinity" )
-  elseif( ${sitename} MATCHES "ml[0-9]+" OR
-      ${sitename} MATCHES "ml-fey"       OR
-      ${sitename} STREQUAL "ml")
-    set( sitename "Moonlight" )
-  elseif( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-fe")
-     set( sitename "Darwin" )
-  elseif( ${sitename} MATCHES "sn[0-9]+" OR
-      ${sitename} MATCHES "sn-fey" OR
-      ${sitename} STREQUAL "sn")
-     set( sitename "Snow" )
+  # Set the sitename, but strip any domain information. If we are on an HPC
+  # machine, attempt to associate the backend name with the same string that is
+  # used to identify the front end. If we are on a LANL HPC machine, attempt to
+  # use the sys_name tool for this purpose.
+  if( EXISTS /usr/projects/hpcsoft/utilities/bin/sys_name )
+    execute_process( COMMAND /usr/projects/hpcsoft/utilities/bin/sys_name
+      OUTPUT_VARIABLE sitename
+      OUTPUT_STRIP_TRAILING_WHITESPACE )
+  else()
+    site_name( sitename )
+    string( REGEX REPLACE "([A-z0-9]+).*" "\\1" sitename ${sitename} )
+  endif()
+
+  if( ${sitename} MATCHES "cn[0-9]+" OR ${sitename} MATCHES "darwin-fe")
+    set( sitename "Darwin" )
   endif()
   message( "sitename = ${sitename}")
   set( CTEST_SITE ${sitename} )
@@ -232,11 +255,11 @@ macro( parse_args )
   # Default is "Release."
   # Special types are "Debug," "RelWithDebInfo" or "MinSizeRel"
   if( ${CTEST_SCRIPT_ARG} MATCHES Debug )
-     set( CTEST_BUILD_CONFIGURATION "Debug" )
+    set( CTEST_BUILD_CONFIGURATION "Debug" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES RelWithDebInfo )
-     set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
+    set( CTEST_BUILD_CONFIGURATION "RelWithDebInfo" )
   elseif( ${CTEST_SCRIPT_ARG} MATCHES MinSizeRel )
-     set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
+    set( CTEST_BUILD_CONFIGURATION "MinSizeRel" )
   endif( ${CTEST_SCRIPT_ARG} MATCHES Debug )
 
   # Post options: SubmitOnly or NoSubmit
@@ -246,19 +269,19 @@ macro( parse_args )
   set( CTEST_SUBMIT    OFF )
   set( CTEST_AUTODOC   OFF )
   if( ${CTEST_SCRIPT_ARG} MATCHES Configure )
-     set( CTEST_CONFIGURE "ON" )
+    set( CTEST_CONFIGURE "ON" )
   endif()
   if( ${CTEST_SCRIPT_ARG} MATCHES Build )
-     set( CTEST_BUILD "ON" )
+    set( CTEST_BUILD "ON" )
   endif()
   if( ${CTEST_SCRIPT_ARG} MATCHES Test )
-     set( CTEST_TEST "ON" )
+    set( CTEST_TEST "ON" )
   endif()
   if( ${CTEST_SCRIPT_ARG} MATCHES Submit )
-     set( CTEST_SUBMIT "ON" )
+    set( CTEST_SUBMIT "ON" )
   endif()
   if( ${CTEST_SCRIPT_ARG} MATCHES Autodoc )
-     set( CTEST_AUTODOC "ON" )
+    set( CTEST_AUTODOC "ON" )
   endif()
 
   # default compiler name based on platform
@@ -342,12 +365,10 @@ macro( parse_args )
     set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
   else() # Unix
     set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}" )
-    if( NOT "$ENV{USE_GITHUB}notset" STREQUAL "notset" )
-      if( "$ENV{featurebranch}notset" STREQUAL "notset" )
-        message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
-      endif()
-      set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
+    if( "$ENV{featurebranch}notset" STREQUAL "notset" )
+      message(FATAL_ERROR "Checkout from github requested, but ENV{featurebranch} is not set.")
     endif()
+    set( CTEST_BUILD_NAME "${compiler_short_name}_${CTEST_BUILD_CONFIGURATION}-$ENV{featurebranch}" )
   endif()
 
   # Default is no Coverage Analysis
@@ -368,7 +389,7 @@ macro( parse_args )
 
   # Bounds Checking
   if( ${CTEST_SCRIPT_ARG} MATCHES bounds_checking )
-    if( "${compiler_short_name}" STREQUAL "gcc-4.8.5" )
+    if( "${compiler_short_name}" MATCHES "gcc-4.8.5" )
       set( BOUNDS_CHECKING "GCC_ENABLE_GLIBCXX_DEBUG:BOOL=ON" )
     else()
       message(FATAL_ERROR "I don't know how to turn on bounds checking for compiler = ${compiler_short_name}" )

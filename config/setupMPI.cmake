@@ -301,8 +301,8 @@ macro( setupOpenMPI )
   endif()
 
   # sanity check, these OpenMPI flags (below) require version >= 1.4
-  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.4 )
-    message( FATAL_ERROR "OpenMPI version < 1.4 found." )
+  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.8 )
+    message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
   # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
@@ -313,15 +313,11 @@ macro( setupOpenMPI )
 
   # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
   # regress_funcs.py.
-  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
-    set( MPIEXEC_POSTFLAGS "--mca mpi_paffinity_alone 0 ${runasroot}" CACHE
-      STRING "extra mpirun flags (list)." FORCE)
-  else()
-    # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
-    # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
-    set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
-      "extra mpirun flags (list)." FORCE)
-  endif()
+
+  # (2017-01-13) Bugs in openmpi-1.10.x are mostly fixed. Remove flags used
+  # to work around bugs: '-mca btl self,vader -mca timer_require_monotonic 0'
+  set( MPIEXEC_POSTFLAGS "-bind-to none ${runasroot}" CACHE STRING
+    "extra mpirun flags (list)." FORCE)
 
   # Find cores/cpu, cpu/node, hyperthreading
   query_topology()
@@ -329,18 +325,11 @@ macro( setupOpenMPI )
   #
   # Setup for OMP plus MPI
   #
-  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.7 )
+  if( NOT APPLE )
+    # -bind-to fails on OSX, See #691
     set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to-socket -cpus-per-proc ${MPI_CORES_PER_CPU} --report-bindings" )
-  elseif( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_GREATER 1.7 )
-    if( NOT APPLE )
-      # -bind-to fails on OSX, See #691
-      set( MPIEXEC_OMP_POSTFLAGS
-        "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
-    endif()
-  else()  # Version 1.7.4
-    set( MPIEXEC_OMP_POSTFLAGS
-      "-bind-to socket --map-by socket:PPR=${MPI_CORES_PER_CPU}" )
+      "--map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}" )
+      # "-bind-to socket --map-by ppr:${MPI_CORES_PER_CPU}:socket --report-bindings ${runasroot}"
   endif()
 
   set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
@@ -494,8 +483,11 @@ macro( setupCrayMPI )
   #           haswells, 1.4GB/core for KNL
   # -F shared enabled shared mode to allow multiple applications to run on a
   #           single node.
-  set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
-    "extra mpirun flags (list)." FORCE)
+  # set( MPIEXEC_POSTFLAGS "-q -F shared -b -m 1400m" CACHE STRING
+  #   "extra mpirun flags (list)." FORCE)
+   set( MPIEXEC_POSTFLAGS "-O --exclusive"
+     CACHE STRING
+     "extra mpirun flags (list)." FORCE)
     # Consider using 'aprun -n # -N # -S # -d # -T -cc depth ...'
     # -n #  number of processes
     # -N #  number of processes per node
@@ -505,16 +497,19 @@ macro( setupCrayMPI )
     # -cc depth PEs are constrained to CPUs with a distance of depth between
     #       them so each PE's threads can be constrained to the CPUs closest to
     #       the PE's CPU.
-    set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
+    #set( MPIEXEC_OMP_POSTFLAGS "-q -b -d $ENV{OMP_NUM_THREADS}"
+    #  CACHE STRING "extra mpirun flags (list)." FORCE)
+
+    set( MPIEXEC_OMP_POSTFLAGS "-N 1 -c ${MPI_CORES_PER_CPU} --exclusive"
       CACHE STRING "extra mpirun flags (list)." FORCE)
   # Extra flags for OpenMP + MPI
-  if( DEFINED ENV{OMP_NUM_THREADS} )
+#   if( DEFINED ENV{OMP_NUM_THREADS} )
 
-  else()
-    message( STATUS "
-WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
-         all OMP tests will be disabled." )
-  endif()
+#   else()
+#     message( STATUS "
+# WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
+#          all OMP tests will be disabled." )
+#   endif()
 
 endmacro()
 
@@ -528,7 +523,7 @@ macro( setupSequoiaMPI )
       "Number of multi-core CPUs per node" FORCE )
     set( MPI_CORES_PER_CPU $ENV{OMP_NUM_THREADS} CACHE STRING
       "Number of cores per cpu" FORCE )
-    set( MPIEXEC_OMP_POSTFLAGS "-c${MPI_CORES_PER_CPU}" CACHE
+    set( MPIEXEC_OMP_POSTFLAGS "-c ${MPI_CORES_PER_CPU}" CACHE
       STRING "extra mpirun flags (list)." FORCE)
   else()
     message( STATUS "
@@ -562,28 +557,33 @@ macro( setupMPILibrariesUnix )
 
       # If this is a Cray system and the Cray MPI compile wrappers are used,
       # then do some special setup:
+
       if( CRAY_PE )
-        set( MPIEXEC "aprun" CACHE STRING
+        set( MPIEXEC "srun" CACHE STRING
           "Program to execute MPI prallel programs." )
         set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
           "mpirun flag used to specify the number of processors to use")
-     endif()
+      endif()
 
       # Preserve data that may already be set.
       if( DEFINED ENV{MPIRUN} )
-        set( MPIEXEC $ENV{MPIRUN} CACHE STRING "Program to execute MPI prallel programs." )
+        set( MPIEXEC $ENV{MPIRUN} CACHE STRING
+          "Program to execute MPI prallel programs." )
       elseif( DEFINED ENV{MPIEXEC} )
-        set( MPIEXEC $ENV{MPIEXEC} CACHE STRING "Program to execute MPI prallel programs." )
+        set( MPIEXEC $ENV{MPIEXEC} CACHE STRING
+          "Program to execute MPI prallel programs." )
       endif()
 
-      # Temporary work around until FindMPI.cmake is fixed:
-      # Setting MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE
-      # forces FindMPI to skip it's bad logic and just rely on the MPI
-      # compiler wrapper to do the right thing. see Bug #467.
+      # Temporary work around until FindMPI.cmake is fixed: Setting
+      # MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE forces FindMPI to skip
+      # it's bad logic and just rely on the MPI compiler wrapper to do the right
+      # thing. see Bug #467.
       foreach( lang C CXX Fortran )
-        get_filename_component( CMAKE_${lang}_COMPILER_NOPATH "${CMAKE_${lang}_COMPILER}" NAME )
+        get_filename_component( CMAKE_${lang}_COMPILER_NOPATH
+          "${CMAKE_${lang}_COMPILER}" NAME )
         if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
-          get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}" NAME )
+          get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}"
+            NAME )
           set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
           set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
         endif()
@@ -595,8 +595,9 @@ macro( setupMPILibrariesUnix )
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
-      # Find the version
-      if( NOT "${MPIEXEC}" MATCHES "aprun" )
+      # Find the mpirun version (skip this on Cray because this command seems to
+      # occasionally hang).
+      if( NOT CRAY_PE )
         execute_process( COMMAND ${MPIEXEC} --version
           OUTPUT_VARIABLE DBS_MPI_VER_OUT
           ERROR_VARIABLE DBS_MPI_VER_ERR)
@@ -610,7 +611,7 @@ macro( setupMPILibrariesUnix )
         PURPOSE "If not available, all Draco components will be built as scalar applications."
         )
 
-      # -------------------------------------------------------------------------------- #
+      # ---------------------------------------------------------------------- #
       # Check flavor and add optional flags
       #
       # Notes:
@@ -628,7 +629,8 @@ macro( setupMPILibrariesUnix )
           "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
         setupIntelMPI()
 
-      elseif( "${MPIEXEC}" MATCHES aprun)
+      # elseif( "${MPIEXEC}" MATCHES aprun)
+      elseif( CRAY_PE )
         setupCrayMPI()
 
       elseif( "${MPIEXEC}" MATCHES srun)
@@ -650,7 +652,8 @@ The Draco build system doesn't know how to configure the build for
 
       # Sanity Checks for DRACO_C4==MPI
       if( "${MPI_CORES_PER_CPU}x" STREQUAL "x" )
-         message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU is not set!")
+         message( FATAL_ERROR "setupMPILibrariesUnix:: MPI_CORES_PER_CPU "
+           "is not set!")
       endif()
 
     else()
