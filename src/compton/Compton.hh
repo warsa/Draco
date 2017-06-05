@@ -71,12 +71,13 @@ public:
   //! Defaulting the number of angular evals (n_xi) to zero causes the CSK
   //! routines to use the full angular fidelity of the library
   Compton(const std::string &file, const std::vector<double> &group_bounds,
-          const size_t n_xi = 0);
+          const std::string opac_type, const std::string wt_func,
+          const bool induced, const size_t n_xi = 0);
 
   //! Interpolation of all csk data to a certain electron temperature:
-  std::vector<std::vector<std::vector<double>>>
+  std::vector<std::vector<std::vector<std::vector<double>>>>
   interpolate_csk(const double etemp);
-  std::vector<std::vector<std::vector<double>>>
+  std::vector<std::vector<std::vector<std::vector<double>>>>
   interpolate_csk(const double etemp) const;
 
   //! Interpolation of all nu_ratio data to an electron temperature:

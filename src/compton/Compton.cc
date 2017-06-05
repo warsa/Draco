@@ -57,10 +57,20 @@ Compton::Compton(const std::string &filehandle) {
  *
  * \param filehandle The name of the pointwise lib to build MG data from
  * \param grp_bds    A vector containing the multigroup bounds (in keV)
+ * \param opac_type  The type of opacity to build. Valid options for CSK v0.2
+                     are "jayenne" (for IMC-style opacities) or "capsaicin"
+                     (for Sn-style opacities). Any other string will cause CSK 
+                     to throw an exception 
+ * \param            The frequency weighting function used to numerically 
+                     integrate the opacities. Valid options for CSK v0.2 are
+                     "wien" or "planck." Any other string will cause CSK to 
+                     throw an exception.
  * \param n_xi       The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
-                 const std::vector<double> &grp_bds, const size_t nxi) {
+                 const std::vector<double> &grp_bds,
+                 const std::string opac_type, const std::string wt_func,
+                 const bool induced, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -77,9 +87,9 @@ Compton::Compton(const std::string &filehandle,
   // opacity type? Allow the user to pass it in? Make some intelligent
   // decision at runtime?
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
-                                     multigroup::Opacity_type::INTENSITY,
-                                     multigroup::Weighting_function::PLANCK,
-                                     false,
+                                     multigroup::string_to_opac_type(opac_type),
+                                     multigroup::string_to_wt_func(wt_func),
+                                     induced,
                                      filehandle,
                                      nxi,
                                      grp_bds};
@@ -112,7 +122,7 @@ Compton::Compton(const std::string &filehandle,
  * \param etemp The SCALED electron temperature ( temp / electron rest-mass )
  * \return      n_grp x n_grp x n_xi interpolated scattering kernel values
  */
-std::vector<std::vector<std::vector<double>>>
+std::vector<std::vector<std::vector<std::vector<double>>>>
 Compton::interpolate_csk(const double etemp) {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
@@ -123,7 +133,7 @@ Compton::interpolate_csk(const double etemp) {
   return ei->interpolate_csk(etemp);
 }
 
-std::vector<std::vector<std::vector<double>>>
+std::vector<std::vector<std::vector<std::vector<double>>>>
 Compton::interpolate_csk(const double etemp) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
