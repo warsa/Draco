@@ -81,7 +81,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   // and check the result:
   const double test_etemp = 4.87227167e-04;
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate_csk(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
 
   // Check the size of the returned data:
   Ensure(interp_data.size() == 1);
@@ -172,7 +172,7 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
   const double test_etemp = 4.87227167e-04;
   // get interpolated csks
   std::vector<std::vector<std::vector<double>>> interp_data =
-      compton_test->interpolate_csk(test_etemp);
+      compton_test->interpolate_csk(test_etemp)[0];
   // get interpolated nu_ratios
   std::vector<std::vector<double>> interp_nu_data =
       compton_test->interpolate_nu_ratio(test_etemp);
@@ -243,6 +243,9 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   // make a small fake group structure to pass in:
   const std::vector<double> test_groups = {20.0, 30.0, 40.0, 50.0, 60.0};
+  const std::string opac_type = "jayenne";
+  const std::string wt_func = "planck";
+  const bool induced = false;
 
   // set the number of angular points to retrieve (legendre or otherwise)
   const size_t nxi = 3;
@@ -251,7 +254,8 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     // (This call has some output of its own, so we print some newlines
     // around it)
     std::cout << "\n\n";
-    compton_test.reset(new rtt_compton::Compton(filename, test_groups, nxi));
+    compton_test.reset(new rtt_compton::Compton(
+        filename, test_groups, opac_type, wt_func, induced, nxi));
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion &asrt) {
     FAILMSG("Failed to construct a Compton object!");
