@@ -36,7 +36,11 @@ if( WIN32 )
       set( COMPTON_LIBRARY_NAME libcompton_dll.lib)
    endif()
 else()
-   set( COMPTON_LIBRARY_NAME libLib_compton.a)
+  if( OPENMP_FOUND )
+    set( COMPTON_LIBRARY_NAME libLib_compton_omp.a)
+  else()
+    set( COMPTON_LIBRARY_NAME libLib_compton.a)
+  endif()
 endif()
 
 find_library(COMPTON_LIBRARY
