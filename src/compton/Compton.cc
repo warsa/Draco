@@ -58,13 +58,14 @@ Compton::Compton(const std::string &filehandle) {
  * \param filehandle The name of the pointwise lib to build MG data from
  * \param grp_bds    A vector containing the multigroup bounds (in keV)
  * \param opac_type  The type of opacity to build. Valid options for CSK v0.2
-                     are "jayenne" (for IMC-style opacities) or "capsaicin"
-                     (for Sn-style opacities). Any other string will cause CSK 
-                     to throw an exception 
- * \param            The frequency weighting function used to numerically 
-                     integrate the opacities. Valid options for CSK v0.2 are
-                     "wien" or "planck." Any other string will cause CSK to 
-                     throw an exception.
+ *                   are "jayenne" (for IMC-style opacities) or "capsaicin"
+ *                   (for Sn-style opacities). Any other string will cause CSK 
+ *                   to throw an exception 
+ * \param wt_func    The frequency weighting function used to numerically 
+ *                   integrate the opacities. Valid options for CSK v0.2 are
+ *                   "flat", "wien" or "planck." Any other string will cause 
+ *                   CSK to throw an exception.
+ * \param induced    Bool to toggle consideration of induced effects off/on
  * \param n_xi       The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
