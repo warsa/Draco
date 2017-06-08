@@ -82,8 +82,13 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   const double test_etemp = 4.87227167e-04;
   std::vector<std::vector<std::vector<double>>> interp_data =
       compton_test->interpolate_csk(test_etemp)[0];
+  // get interpolated nu_ratios
+  std::vector<std::vector<double>> interp_nu_data =
+      compton_test->interpolate_nu_ratio(test_etemp);
 
   // Check the size of the returned data:
+  Ensure(interp_nu_data.size() == 1);
+  Ensure(interp_nu_data[0].size() == 1);
   Ensure(interp_data.size() == 1);
   Ensure(interp_data[0].size() == 1);
   Ensure(interp_data[0][0].size() == 4);
@@ -96,6 +101,17 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(interp_data[0][0][2], 4.50133379e-01))
     ITFAILS;
   if (!soft_equiv(interp_data[0][0][3], 3.59663442e-02))
+    ITFAILS;
+
+  if (!soft_equiv(interp_nu_data[0][0], 1.5000000e+00))
+    ITFAILS;
+
+  const double test_etemp2 = 6.75507064e-04;
+  // get interpolated nu_ratio for a different
+  std::vector<std::vector<double>> interp_nu_data2 =
+      compton_test->interpolate_nu_ratio(test_etemp2);
+
+  if (!soft_equiv(interp_nu_data2[0][0], 2.0000000e+00))
     ITFAILS;
 
   // get the number of xi evals in the library (we know it should be 4)
