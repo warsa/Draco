@@ -204,12 +204,44 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     drs.wait();
 
     // wait on receives and check
-    brr.wait();
-    crr.wait();
-    irr.wait();
-    lrr.wait();
-    frr.wait();
-    drr.wait();
+
+    C4_Status status;
+
+    brr.wait(&status);
+    if (status.get_message_size() != sizeof(bool))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    crr.wait(&status);
+    if (status.get_message_size() != 1)
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    irr.wait(&status);
+    if (status.get_message_size() != sizeof(int))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    lrr.wait(&status);
+    if (status.get_message_size() != sizeof(long))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    frr.wait(&status);
+    if (status.get_message_size() != sizeof(float))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
+
+    drr.wait(&status);
+    if (status.get_message_size() != sizeof(double))
+      ITFAILS;
+    if (status.get_source() != 1)
+      ITFAILS;
 
     // check values
     if (br != false)
