@@ -35,7 +35,7 @@ using rtt_c4::send_receive;
 void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
   if (rtt_c4::nodes() != 2)
     return;
-  
+
   bool b = false;
   char c = 0;
   int i = 0;
@@ -110,6 +110,7 @@ void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     // assign new values
+    b = false;
     c = 'B';
     i = 2;
     l = 2000;
@@ -117,6 +118,7 @@ void blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     d = 3.5;
 
     // send them back
+    send(&b, 1, 0);
     send(&c, 1, 0);
     send(&i, 1, 0);
     send(&l, 1, 0);
@@ -142,13 +144,14 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
 
   if (rtt_c4::nodes() != 2)
     return;
-
+  bool b = false;
   char c = 0;
   int i = 0;
   long l = 0;
   float f = 0;
   double d = 0;
 
+  bool br = false;
   char cr = 0;
   int ir = 0;
   long lr = 0;
@@ -156,10 +159,10 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
   double dr = 0;
 
   // send requests
-  C4_Req crs, irs, lrs, frs, drs;
+  C4_Req brs, crs, irs, lrs, frs, drs;
 
   // receive requests
-  C4_Req crr, irr, lrr, frr, drr;
+  C4_Req brr, crr, irr, lrr, frr, drr;
 
   // assign on node 0
   if (rtt_c4::node() == 0) {
@@ -208,43 +211,6 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     frr.wait();
     drr.wait();
 
-    C4_Status status;
-    brr.wait(&status);
-    if (status.get_message_size() != 1)
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
-    crr.wait(&status);
-    if (status.get_message_size() != 1)
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
-    irr.wait(&status);
-    if (status.get_message_size() != sizeof(int))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
-    lrr.wait(&status);
-    if (status.get_message_size() != sizeof(long))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
-    frr.wait(&status);
-    if (status.get_message_size() != sizeof(float))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
-    drr.wait(&status);
-    if (status.get_message_size() != sizeof(double))
-      ITFAILS;
-    if (status.get_source() != 1)
-      ITFAILS;
-
     // check values
     if (br != false)
       ITFAILS;
@@ -257,17 +223,6 @@ void non_blocking_ping_pong(rtt_dsxx::UnitTest &ut) {
     if (!soft_equiv(fr, 2.5f))
       ITFAILS;
     if (!soft_equiv(dr, 3.5))
-      ITFAILS;
-
-    if (crr.count() != 1)
-      ITFAILS;
-    if (irr.count() != sizeof(int))
-      ITFAILS;
-    if (lrr.count() != sizeof(long))
-      ITFAILS;
-    if (frr.count() != sizeof(float))
-      ITFAILS;
-    if (drr.count() != sizeof(double))
       ITFAILS;
   }
 
