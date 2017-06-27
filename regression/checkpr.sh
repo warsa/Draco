@@ -96,6 +96,13 @@ case $project in
     print_use; exit 1 ;;
 esac
 
+
+if ! [[ $LOGNAME == "kellyt" ]]; then
+  echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
+  exit 1
+fi
+
+
 if [[ $regress_mode == "on" ]]; then
   if ! [[ $LOGNAME == "kellyt" ]]; then
     echo ""; echo "FATAL ERROR: invalid use of -r"

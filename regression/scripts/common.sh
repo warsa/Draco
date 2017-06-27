@@ -513,6 +513,84 @@ function allow_file_to_age
   done
 }
 
+#------------------------------------------------------------------------------#
+# Ensure environment is reasonable
+# Called from <machine>-job-launch.sh
+function job_launch_sanity_checks()
+{
+  if [[ ! ${regdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${rscriptdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${subproj} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${build_type} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${logdir} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
+    echo "printenv -> "
+    printenv
+    exit 1
+  fi
+  if [[ ! ${featurebranch} ]]; then
+    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
+    echo "printenv -> "
+    printenv
+  fi
+}
+
+#------------------------------------------------------------------------------#
+# Job Launch Banner
+function print_job_launch_banner()
+{
+echo "==========================================================================="
+echo "$machine_name_long regression job launcher for ${subproj} - ${build_type} flavor."
+echo "==========================================================================="
+echo " "
+echo "Environment:"
+echo "   build_autodoc  = ${build_autodoc}"
+echo "   build_type     = ${build_type}"
+echo "   dashboard_type = ${dashboard_type}"
+echo "   epdash         = $epdash"
+if [[ ! ${extra_params} ]]; then
+  echo "   extra_params   = none"
+else
+  echo "   extra_params   = ${extra_params}"
+fi
+if [[ ${featurebranch} ]]; then
+  echo "   featurebranch  = ${featurebranch}"
+fi
+echo "   logdir         = ${logdir}"
+echo "   logfile        = ${logfile}"
+echo "   machine_name_long = $machine_name_long"
+echo "   prdash         = $prdash"
+echo "   projects       = \"${projects}\""
+echo "   regdir         = ${regdir}"
+echo "   regress_mode   = ${regress_mode}"
+echo "   rscriptdir     = ${rscriptdir}"
+echo "   scratchdir     = ${scratchdir}"
+echo "   subproj        = ${subproj}"
+echo " "
+echo "   ${subproj}: dep_jobids = ${dep_jobids}"
+echo " "
+}
+
 ##----------------------------------------------------------------------------##
 export die
 export run
@@ -524,6 +602,7 @@ export selectscratchdir
 export npes_build
 export npes_test
 export install_versions
+export job_launch_sanity_checks
 
 ##----------------------------------------------------------------------------##
 ## End common.sh
