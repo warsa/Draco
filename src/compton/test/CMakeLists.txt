@@ -34,7 +34,8 @@ include_directories(
 add_scalar_tests(
   SOURCES "${test_sources}"
   DEPS    "Lib_compton"
-  LABEL   "nomemcheck" )
+  LABEL   "nomemcheck"
+  MPI_PLUS_OMP )
 
 #------------------------------------------------------------------------------#
 # Copy data files
