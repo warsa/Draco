@@ -29,6 +29,8 @@
 ## allow_file_to_age - pause a program until a file is 'old'
 
 ##---------------------------------------------------------------------------##
+## Helpful functions
+##---------------------------------------------------------------------------##
 
 # Print an error message and exit.
 # e.g.: cd $dir || die "can't change dir to $dir".
@@ -356,10 +358,10 @@ function install_versions
     echo "E.g.: install_prefix=/usr/projects/draco/$pdir/$buildflavor"
     return
   fi
-  if test -z ${build_pe}; then
+  if ! [[ ${build_pe} ]]; then
     build_pe=`npes_build`
   fi
-  if test -z ${test_pe}; then
+  if ! [[ ${test_pe} ]]; then
     test_pe=`npes_test`
   fi
 
@@ -450,7 +452,7 @@ function publish_release()
   establish_permissions
 
   case `osName` in
-    toss* | cle* ) SHOWQ=showq ;;
+    toss* | cle* ) SHOWQ=squeue ;;
     darwin| ppc64) SHOWQ=squeue ;;
   esac
 
