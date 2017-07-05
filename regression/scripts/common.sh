@@ -20,7 +20,7 @@
 ## machineName   - return a string to represent the current machine.
 ## osName        - return a string to represent the current machine's OS.
 ## flavor        - build a string that looks like fire-openmpi-2.0.2-intel-17.0.1
-## selectscratch - find a scratch drive
+## selectscratchdir - find a scratch drive
 ## lookupppn     - return PE's per node.
 ## npes_build    - return PE's to be used for compiling.
 ## npes_test     - return PE's to be used for testing.
@@ -220,6 +220,10 @@ function selectscratchdir
     scratchdirs=`df --output=pcent,target | grep scratch | sort -g`
   else
     scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
+    if ! [[ $scratchdirs ]]; then
+      scratchdirs=`df -a 2> /dev/null | grep lustre/scratch | awk '{ print $4 " "$5 }' | sort -g`
+
+    fi
   fi
   local odd=1
   for item in $scratchdirs; do
