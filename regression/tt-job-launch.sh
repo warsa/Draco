@@ -28,6 +28,7 @@ scriptname=${0##*/}
 host=`uname -n`
 
 # import some bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $rscriptdir/scripts/common.sh
 
 export SHOWQ=`which squeue`
@@ -39,57 +40,11 @@ for (( i=0; i < $nargs ; ++i )); do
    dep_jobids="${dep_jobids} ${args[$i]} "
 done
 
-# sanity check
-if [[ ! ${regdir} ]]; then
-  die "FATAL ERROR in ${scriptname}: You did not set 'regdir' in the environment!"
-fi
-if [[ ! ${rscriptdir} ]]; then
-  die "FATAL ERROR in ${scriptname}: You did not set 'rscriptdir' in the environment!"
-fi
-if [[ ! ${subproj} ]]; then
-  die "FATAL ERROR in ${scriptname}: You did not set 'subproj' in the environment!"
-fi
-if [[ ! ${build_type} ]]; then
-  die "FATAL ERROR in ${scriptname}: You did not set 'build_type' in the environment!"
-fi
-if [[ ! ${logdir} ]]; then
-  die "FATAL ERROR in ${scriptname}: You did not set 'logdir' in the environment!"
-fi
-
-if test $subproj == draco || test $subproj == jayenne; then
-  if [[ ! ${featurebranch} ]]; then
-    echo "FATAL ERROR in ${scriptname}: You did not set 'featurebranch' in the environment!"
-    echo "printenv -> "
-    printenv
-  fi
-fi
+# sanity checks
+job_launch_sanity_checks
 
 # Banner
-echo "==========================================================================="
-echo "Trinitite Regression job launcher for ${subproj} - ${build_type} flavor."
-echo "==========================================================================="
-echo " "
-echo "Environment:"
-echo "   subproj        = ${subproj}"
-echo "   build_type     = ${build_type}"
-if [[ ! ${extra_params} ]]; then
-  echo "   extra_params   = none"
-else
-  echo "   extra_params   = ${extra_params}"
-fi
-if [[ ${featurebranch} ]]; then
-  echo "   featurebranch  = ${featurebranch}"
-fi
-echo "   regdir         = ${regdir}"
-echo "   rscriptdir     = ${rscriptdir}"
-echo "   scratchdir     = ${scratchdir}"
-echo "   logdir         = ${logdir}"
-echo "   dashboard_type = ${dashboard_type}"
-echo "   build_autodoc  = ${build_autodoc}"
-echo "   access_queue   = ${access_queue}"
-echo " "
-echo "   ${subproj}: dep_jobids = ${dep_jobids}"
-echo " "
+print_job_launch_banner
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
