@@ -85,17 +85,11 @@ scratchdir=`selectscratchdir`
 #build_pe=`npes_build`
 #test_pe=`npes_test`
 
-myos=`osName`
-case $myos in
-  toss2) # MOAB
-    avail_queues=`mdiag -u $LOGNAME | grep ALIST | sed -e 's/.*ALIST=//' | sed -e 's/,/ /g'`
-    ;;
-  toss3) # SLURM
-    available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
-    ;;
-esac
+# SLURM
+avail_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\|.*access.*\)|.*/\1/' | sed -e 's/|.*//'`
+
 case $avail_queues in
-  *access*) access_queue="-A access --qos=access" ;;
+  *access*) access_queue="-A access" ;;
   *dev*) access_queue="--qos=dev" ;;
 esac
 
