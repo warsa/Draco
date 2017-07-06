@@ -89,7 +89,7 @@ scratchdir=`selectscratchdir`
 avail_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\|.*access.*\)|.*/\1/' | sed -e 's/|.*//'`
 
 case $avail_queues in
-  *access*) access_queue="-A access" ;;
+  *access*) access_queue="-A access --qos=access" ;;
   *dev*) access_queue="--qos=dev" ;;
 esac
 
@@ -178,7 +178,6 @@ for env in $environments; do
     export steps="config build test"
     cmd="sbatch -J release_draco $access_queue -t 1:00:00 -N 1 \
 -o $source_prefix/logs/release-$buildflavor-$version.log \
--e $source_prefix/logs/release-$buildflavor-$version.log \
 $script_dir/release_toss2.msub"
     echo -e "\nConfigure, Build and Test $buildflavor-$version version of $package."
     echo "$cmd"
