@@ -295,20 +295,32 @@ function npes_build
 function npes_test
 {
   local np=1
-  if [[ ${PBS_NP} ]]; then
-    np=${PBS_NP}
-  elif [[ ${SLURM_NPROCS} ]]; then
-    np=${SLURM_NPROCS}
-  elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
-    np=${SLURM_CPUS_ON_NODE}
-  elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
-    np=${SLURM_TSKS_PER_NODE}
-  elif [[ `uname -p` == "ppc" ]]; then
-    # sinfo --long --partition=pdebug (show limits)
-    np=64
-  elif [[ -f /proc/cpuinfo ]]; then
-    # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
-    np=`cat /proc/cpuinfo | grep -c processor`
+  # use lscpu if it is available.
+  if ! [[ `which lscpu 2>/dev/null` == 0 ]]; then
+    # number of cores per socket
+    local cps=`lscpu | grep "^Core(s)" | awk '{ print $4 }'`
+    # number of sockets
+    local ns=`lscpu | grep "^Socket(s):" | awk '{ print $2 }'`
+    np=`expr $cps \* $ns`
+
+  else
+
+    if [[ ${PBS_NP} ]]; then
+      np=${PBS_NP}
+    elif [[ ${SLURM_NPROCS} ]]; then
+      np=${SLURM_NPROCS}
+    elif [[  ${SLURM_CPUS_ON_NODE} ]]; then
+      np=${SLURM_CPUS_ON_NODE}
+    elif [[ ${SLURM_TASKS_PER_NODE} ]]; then
+      np=${SLURM_TSKS_PER_NODE}
+    elif [[ `uname -p` == "ppc" ]]; then
+      # sinfo --long --partition=pdebug (show limits)
+      np=64
+    elif [[ -f /proc/cpuinfo ]]; then
+      # lscpu=`lscpu | grep "CPU(s):" | head -n 1 | awk '{ print $2 }'`
+      np=`cat /proc/cpuinfo | grep -c processor`
+    fi
+
   fi
   echo $np
 }

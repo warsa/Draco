@@ -18,8 +18,7 @@
 ## 1. Set modulefiles to be loaded in named environment functions.
 ## 2. Update variables that control the build:
 ##    - $ddir
-##    - $CONFIG_BASE
-## 3. Run this script: ./release_ml &> ../logs/relase_moonlight.log
+## 3. Run this script: scripts/release_cray.sh &> logs/relase-trinitite.log
 
 #----------------------------------------------------------------------#
 # Per release settings go here:
@@ -96,12 +95,11 @@ export TARGET=knl
 ##---------------------------------------------------------------------------##
 ## Generic setup
 ##---------------------------------------------------------------------------##
-sdir=`dirname $0`
-cdir=`pwd`
-cd $sdir
+initial_working_dir=`pwd`
+cd `dirname $0`
 export script_dir=`pwd`
 export draco_script_dir=$script_dir
-cd $cdir
+cd $initial_working_dir
 source $draco_script_dir/common.sh
 
 # CMake options that will be included in the configuration step
@@ -121,9 +119,9 @@ ppn=`lookupppn`
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
-OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=STATIC"
-OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=STATIC"
-OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_LIBRARY_TYPE=STATIC -DDRACO_DBC_LEVEL=15"
+OPTIMIZE_ON="-DCMAKE_BUILD_TYPE=Release -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_OFF="-DCMAKE_BUILD_TYPE=Debug  -DDRACO_LIBRARY_TYPE=SHARED"
+OPTIMIZE_RWDI="-DCMAKE_BUILD_TYPE=RELWITHDEBINFO -DDRACO_LIBRARY_TYPE=SHARED -DDRACO_DBC_LEVEL=15"
 
 LOGGING_ON="-DDRACO_DIAGNOSTICS=7 -DDRACO_TIMING=1"
 LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
