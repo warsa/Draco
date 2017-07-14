@@ -217,7 +217,7 @@ function selectscratchdir
   # if df is too old this command won't work correctly, use an alternate form.
   local scratchdirs=`df --output=pcent,target 2>&1 | grep -c unrecognized`
   if [[ $scratchdirs == 0 ]]; then
-    scratchdirs=`df --output=pcent,target | grep scratch | sort -g`
+    scratchdirs=`df --output=pcent,target | grep scratch | grep -v netscratch | sort -g`
   else
     scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
     if ! [[ $scratchdirs ]]; then
@@ -235,19 +235,35 @@ function selectscratchdir
     else
       odd=1
     fi
-    # if this location is good, return the path.
+    # if this location is good (must be able to write to this location), return
+    # the path.
     mkdir -p $item/$USER &> /dev/null
-    if [[ -x $item/$USER ]]; then
+    touch $item/$USER/selectscratchdir &> /dev/null
+    if [[ -f $item/$USER/selectscratchdir ]]; then
+      rm $item/$USER/selectscratchdir
       echo "$item"
       return
     fi
     # might need another directory level 'yellow'
     mkdir -p $item/yellow/$USER &> /dev/null
-    if [[ -x $item/yellow/$USER ]]; then
+    touch $item/yellow/$USER/selectscratchdir &> /dev/null
+    if [[ -f $item/yellow/$USER/selectscratchdir ]]; then
+      rm $item/yellow/$USER/selectscratchdir
       echo "$item/yellow"
       return
     fi
   done
+
+  # if no writable scratch directory is located, then also try netscratch;
+  item=/netscratch/$USER
+  mkdir -p $item &> /dev/null
+  touch $item/selectscratchdir &> /dev/null
+  if [[ -f $item/selectscratchdir ]]; then
+    rm $item/selectscratchdir
+    echo "$item"
+    return
+  fi
+
 }
 
 #------------------------------------------------------------------------------#
