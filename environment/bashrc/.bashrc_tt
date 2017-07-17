@@ -29,6 +29,8 @@ if [[ ! ${VENDOR_DIR} ]]; then
    fi
 fi
 
+add_to_path $VENDOR_DIR/bin
+
 # If LESS is set, is should include '-R' so that git diff's color
 # displays correctly.
 if [[ -n "${LESS}" ]]; then
