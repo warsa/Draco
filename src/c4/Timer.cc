@@ -13,6 +13,7 @@
 #include "Timer.hh"
 #include "C4_sys_times.h"
 #include "ds++/XGetopt.hh"
+#include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
@@ -321,6 +322,57 @@ void Timer::pause(double const pauseSeconds) {
   Ensure(elapsed >= pauseSeconds);
   return;
 }
+
+//---------------------------------------------------------------------------//
+//! Print out a summary timing report for averages across MPI ranks.
+void Timer::printline_mean(std::ostream &out, unsigned const p,
+                           unsigned const w) const {
+  using std::setw;
+  using std::ios;
+
+  unsigned const ranks = rtt_c4::nodes();
+
+  double ni = num_intervals, ni2 = ni * ni;
+  rtt_c4::global_sum(ni);
+  rtt_c4::global_sum(ni2);
+  double mni = ni / ranks;
+
+  double u = sum_user_cpu(), u2 = u * u;
+  rtt_c4::global_sum(u);
+  rtt_c4::global_sum(u2);
+  double mu = u / ranks;
+
+  double s = sum_system_cpu(), s2 = s * s;
+  rtt_c4::global_sum(s);
+  rtt_c4::global_sum(s2);
+  double ms = s / ranks;
+
+  double ww = sum_wall_clock(), ww2 = ww * ww;
+  rtt_c4::global_sum(ww);
+  rtt_c4::global_sum(ww2);
+  double mww = ww / ranks;
+
+  if (rtt_c4::node() == 0) {
+    out.setf(ios::fixed, ios::floatfield);
+    out.precision(p);
+
+    // Width of first column (intervals) should be set by client before
+    // calling this function.
+    out << mni << " +/- "
+        << sqrt((ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
+        << mu << " +/- " << sqrt((u2 - 2 * mu * u + ranks * mu * mu) / ranks)
+        << setw(w) << mu << " +/- "
+        << sqrt((s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w) << mu
+        << " +/- " << sqrt((ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
+
+    // Omit PAPI for now.
+
+    out << std::endl;
+
+    out.flush();
+  }
+}
+
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//
