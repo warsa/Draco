@@ -65,8 +65,8 @@ void test_fma1(rtt_dsxx::UnitTest &ut) {
             << "\t#define FMA(a,b,c) fma(a,b,c)\n"
             << std::endl;
 
-  if (std::soft_equiv(fma_result, macro_fma_result,
-                      std::numeric_limits<double>::epsilon()))
+  if (rtt_dsxx::soft_equiv(fma_result, macro_fma_result,
+                           std::numeric_limits<double>::epsilon()))
     PASSMSG("With FP_ACCURATE_FMA=1, a*b+c == FMA(a,b,c).");
   else
     FAILMSG("With FP_ACCURATE_FMA=1, a*b+c != FMA(a,b,c).");
