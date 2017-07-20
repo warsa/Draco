@@ -33,7 +33,7 @@ double CDI::integratePlanckSpectrum(double low, double high, const double T) {
   Require(T >= 0.0);
 
   // return 0 if temperature is a hard zero
-  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
+  if (rtt_dsxx::soft_equiv(T, 0.0, std::numeric_limits<double>::epsilon()))
     return 0.0;
 
   // Sale the frequencies by temperature

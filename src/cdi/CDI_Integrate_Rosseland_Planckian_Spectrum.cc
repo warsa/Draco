@@ -51,7 +51,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double low, double high,
   Require(high >= low);
   Require(T >= 0.0);
 
-  if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16)) {
+  if (rtt_dsxx::soft_equiv(T, 0.0, std::numeric_limits<double>::epsilon())) {
     planck = 0.0;
     rosseland = 0.0;
     return;
