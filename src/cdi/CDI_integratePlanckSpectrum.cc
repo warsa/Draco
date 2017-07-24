@@ -21,9 +21,9 @@ namespace rtt_cdi {
  * and high must first be multiplied by Planck's constant and temperature by
  * Boltzmann's constant before they are passed to this function.
  *
- * \param low lower frequency bound.
- * \param high higher frequency bound.
- * \param T the temperature (must be greater than 0.0)
+ * \param[in] low lower frequency bound.
+ * \param[in] high higher frequency bound.
+ * \param[in] T the temperature (must be greater than 0.0)
  *
  * \return integrated normalized Plankian from low to high
  */
@@ -32,8 +32,9 @@ double CDI::integratePlanckSpectrum(double low, double high, const double T) {
   Require(high >= low);
   Require(T >= 0.0);
 
-  // return 0 if temperature is a hard zero
-  if (rtt_dsxx::soft_equiv(T, 0.0, std::numeric_limits<double>::epsilon()))
+  // high/T must be < numeric_limits<double>::max().  So, if T ~< high*min, then
+  // return early with zero values (assuming max() ~ 1/min()).
+  if (T < high * std::numeric_limits<double>::min())
     return 0.0;
 
   // Sale the frequencies by temperature

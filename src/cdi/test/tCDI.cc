@@ -678,6 +678,23 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
   if (!soft_equiv(int_range, 0.0345683, 3.e-5))
     ITFAILS;
 
+  // Try an extreme case 1. This should do the normal computation, but the
+  // result is zero.
+  {
+    double const integrate_range_cold =
+        CDI::integratePlanckSpectrum(0.1, 1.0, 1.0e-30);
+    if (!soft_equiv(integrate_range_cold, 0.0))
+      ITFAILS;
+  }
+  // Try an extreme case 2. T < numeric_limits<double>::min() --> follow special
+  // logic and return zero.
+  {
+    double const integrate_range_cold =
+        CDI::integratePlanckSpectrum(0.1, 1.0, 1.0e-308);
+    if (!soft_equiv(integrate_range_cold, 0.0))
+      ITFAILS;
+  }
+
   // Catch an illegal group assertion.
   CDI cdi;
   std::shared_ptr<const MultigroupOpacity> mg(
