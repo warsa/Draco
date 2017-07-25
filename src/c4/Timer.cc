@@ -324,33 +324,49 @@ void Timer::pause(double const pauseSeconds) {
 }
 
 //---------------------------------------------------------------------------//
-//! Print out a summary timing report for averages across MPI ranks.
+/*! Print out a summary timing report for averages across MPI ranks.
+ *
+ * \param out Stream to which to write the report.
+ *
+ * \param p Precision with which to write the timing and variance numbers.
+ * Defaults to 2.
+ *
+ * \param w Width of the timing number fields. Defaults to each field being 13
+ * characters wide.
+ *
+ * \param v Width of the variance number fields. Defaults to each field being 5
+ * characters wide.
+ */
 void Timer::printline_mean(std::ostream &out, unsigned const p,
-                           unsigned const w) const {
+                           unsigned const w, unsigned const v) const {
   using std::setw;
   using std::ios;
 
   unsigned const ranks = rtt_c4::nodes();
 
   double ni = num_intervals, ni2 = ni * ni;
-  rtt_c4::global_sum(ni);
-  rtt_c4::global_sum(ni2);
   double mni = ni / ranks;
 
   double u = sum_user_cpu(), u2 = u * u;
-  rtt_c4::global_sum(u);
-  rtt_c4::global_sum(u2);
   double mu = u / ranks;
 
   double s = sum_system_cpu(), s2 = s * s;
-  rtt_c4::global_sum(s);
-  rtt_c4::global_sum(s2);
   double ms = s / ranks;
 
   double ww = sum_wall_clock(), ww2 = ww * ww;
-  rtt_c4::global_sum(ww);
-  rtt_c4::global_sum(ww2);
   double mww = ww / ranks;
+
+  double buffer[8] = {ni, mni, u, mu, s, ms, ww, mww};
+  rtt_c4::global_sum(buffer, 8);
+
+  ni = buffer[0];
+  mni = buffer[1];
+  u = buffer[2];
+  mu = buffer[3];
+  s = buffer[4];
+  ms = buffer[5];
+  ww = buffer[6];
+  mww = buffer[7];
 
   if (rtt_c4::node() == 0) {
     out.setf(ios::fixed, ios::floatfield);
@@ -358,18 +374,18 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
 
     // Width of first column (intervals) should be set by client before
     // calling this function.
-    out << mni << " +/- "
+    out << setw(w) << mni << " +/- " << setw(v)
         << sqrt((ni2 - 2 * mni * ni + ranks * mni * mni) / ranks) << setw(w)
-        << mu << " +/- " << sqrt((u2 - 2 * mu * u + ranks * mu * mu) / ranks)
-        << setw(w) << mu << " +/- "
+        << mu << " +/- " << setw(v)
+        << sqrt((u2 - 2 * mu * u + ranks * mu * mu) / ranks) << setw(w) << mu
+        << " +/- " << setw(v)
         << sqrt((s2 - 2 * ms * s + ranks * ms * ms) / ranks) << setw(w) << mu
-        << " +/- " << sqrt((ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
+        << " +/- " << setw(v)
+        << sqrt((ww2 - 2 * mww * ww + ranks * mww * mww) / ranks);
 
     // Omit PAPI for now.
 
     out << std::endl;
-
-    out.flush();
   }
 }
 

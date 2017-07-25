@@ -88,14 +88,14 @@ void Global_Timer::reset_all() {
 /*static*/
 void Global_Timer::report_all(ostream &out) {
   if (rtt_c4::node() == 0) {
-    for (unsigned i = 0; i < 80; ++i)
+    for (unsigned i = 0; i < 92; ++i)
       cout << '-';
     cout << endl;
     cout << "Timing report for all global timers:" << endl << endl;
-    cout
-        << "N                      user                  system                "
-           "wall"
-        << endl;
+    cout << "         N                      user                   system     "
+            "           "
+            " wall"
+         << endl;
   }
   bool deferred_not_found = false;
   for (auto const &i : active_list_) {
@@ -130,7 +130,7 @@ void Global_Timer::report_all(ostream &out) {
         }
       }
     }
-    for (unsigned i = 0; i < 80; ++i)
+    for (unsigned i = 0; i < 92; ++i)
       cout << '-';
     cout << endl;
   }

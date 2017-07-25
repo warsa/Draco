@@ -251,8 +251,8 @@ public:
 
   void printline(std::ostream &, unsigned p = 2U, unsigned width = 15U) const;
 
-  void printline_mean(std::ostream &, unsigned p = 2U,
-                      unsigned width = 13U) const;
+  void printline_mean(std::ostream &, unsigned p = 2U, unsigned w = 13U,
+                      unsigned v = 5U) const;
 
   inline void merge(Timer const &);
 
