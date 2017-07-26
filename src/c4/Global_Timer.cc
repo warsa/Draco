@@ -88,9 +88,8 @@ void Global_Timer::reset_all() {
 /*static*/
 void Global_Timer::report_all(ostream &out) {
   if (rtt_c4::node() == 0) {
-    for (unsigned i = 0; i < 92; ++i)
-      cout << '-';
-    cout << endl;
+
+    cout << string(92U, '-') << endl;
     cout << "Timing report for all global timers:" << endl << endl;
     cout << "         N                      user                   system     "
             "           "
@@ -130,9 +129,7 @@ void Global_Timer::report_all(ostream &out) {
         }
       }
     }
-    for (unsigned i = 0; i < 92; ++i)
-      cout << '-';
-    cout << endl;
+    cout << string(92U, '-') << endl;
   }
 }
 
