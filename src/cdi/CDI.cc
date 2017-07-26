@@ -10,6 +10,7 @@
 
 #include "CDI.hh"
 #include "ds++/Safe_Divide.hh"
+#include "ds++/Soft_Equivalence.hh"
 #include <iostream>
 #include <limits>
 #include <numeric>
@@ -23,17 +24,17 @@ namespace rtt_cdi {
 /*!
  * \brief Construct a CDI object.
  *
- * Builds a CDI object.  The opacity and eos objects that this holds must
- * be loaded using the set functions.  There is no easy way to guarantee
- * that all of the set objects point to the same material.  CDI does do
- * checking that only one of each Model:Reaction pair of opacity objects
- * are assigned; however, the user can "fake" CDI with different
- * materials if he/she is malicious enough.
+ * Builds a CDI object.  The opacity and eos objects that this holds must be
+ * loaded using the set functions.  There is no easy way to guarantee that all
+ * of the set objects point to the same material.  CDI does do checking that
+ * only one of each Model:Reaction pair of opacity objects are assigned;
+ * however, the user can "fake" CDI with different materials if he/she is
+ * malicious enough.
  *
- * CDI does allow a string material ID indicator.  It is up to the client
- * to ascribe meaning to the indicator.
+ * CDI does allow a string material ID indicator.  It is up to the client to
+ * ascribe meaning to the indicator.
  *
- * \param id string material id descriptor, this is defaulted to null
+ * \param[in] id string material id descriptor, this is defaulted to null
  */
 CDI::CDI(const std_string &id)
     : grayOpacities(constants::num_Models,
@@ -67,14 +68,13 @@ std::vector<double> CDI::opacityCdfBandBoundaries = std::vector<double>();
 /*!
  * \brief Return the frequency group boundaries.
  *
- * Every multigroup opacity object held by any CDI object contains the
- * same frequency group boundaries.  This static function allows CDI
- * users to access the group boundaries without referencing a particular
- * material.
+ * Every multigroup opacity object held by any CDI object contains the same
+ * frequency group boundaries.  This static function allows CDI users to access
+ * the group boundaries without referencing a particular material.
  *
- * Note, the group boundaries are not set until a multigroup opacity
- * object is set for the first time (in any CDI object) with the
- * setMultigroupOpacity function.
+ * Note, the group boundaries are not set until a multigroup opacity object is
+ * set for the first time (in any CDI object) with the setMultigroupOpacity
+ * function.
  */
 std::vector<double> CDI::getFrequencyGroupBoundaries() {
   return frequencyGroupBoundaries;
@@ -82,14 +82,13 @@ std::vector<double> CDI::getFrequencyGroupBoundaries() {
 /*!
  * \brief Return the opacity band boundaries.
  *
- * Every multiband opacity object held by any CDI object contains the
- * same band boundaries, and also inside each group.  This static function
- * allows CDI users to access the band boundaries without referencing a
- * particular material.
+ * Every multiband opacity object held by any CDI object contains the same band
+ * boundaries, and also inside each group.  This static function allows CDI
+ * users to access the band boundaries without referencing a particular
+ * material.
  *
- * Note, the band boundaries are not set until a multigroup opacity
- * object is set for the first time (in any CDI object) with the
- * setOdfmgOpacity function.
+ * Note, the band boundaries are not set until a multigroup opacity object is
+ * set for the first time (in any CDI object) with the setOdfmgOpacity function.
  */
 std::vector<double> CDI::getOpacityCdfBandBoundaries() {
   return opacityCdfBandBoundaries;
@@ -117,8 +116,8 @@ size_t CDI::getNumberOpacityBands() {
 // Core Integrators
 /*
  * These are the most basic of the Planckian and Rosseland integration
- * functions. They are used in the implementation of integration functions
- * with friendlier interfaces.
+ * functions. They are used in the implementation of integration functions with
+ * friendlier interfaces.
  */
 //---------------------------------------------------------------------------//
 
@@ -135,11 +134,12 @@ size_t CDI::getNumberOpacityBands() {
  *
  * \brief Integrate the Planckian spectrum over a frequency group.
  *
- * \param groupIndex Index of the frequency group to integrate [1,num_groups].
- * \param T          The temperature in keV (must be greater than 0.0).
- * \return           Integrated normalized Plankian over the group specified
- *                   by groupIndex.
+ * \param[in] groupIndex Index of the frequency group to integrate
+ *                       [1,num_groups].
+ * \param[in] T          The temperature in keV (must be greater than 0.0).
  *
+ * \return Integrated normalized Plankian over the group specified by
+ *         groupIndex.
  */
 double CDI::integratePlanckSpectrum(size_t const groupIndex, double const T) {
   Insist(!frequencyGroupBoundaries.empty(), "No groups defined!");
@@ -164,7 +164,7 @@ double CDI::integratePlanckSpectrum(size_t const groupIndex, double const T) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Integrate the Planckian spectrum over all frequency groups.
- * \param T The temperature in keV (must be greater than 0.0).
+ * \param[in] T The temperature in keV (must be greater than 0.0).
  * \return Integrated normalized Plankian over all frequency groups.
  */
 double CDI::integratePlanckSpectrum(const double T) {
@@ -193,10 +193,11 @@ double CDI::integratePlanckSpectrum(const double T) {
  *
  * \brief Integrate the Rosseland spectrum over a frequency group.
  *
- * \param groupIndex index of the frequency group to integrate [1,num_groups]
- * \param T          the temperature in keV (must be greater than 0.0)
- * \return           integrated normalized Plankian over the group specified
- *                   by groupIndex.
+ * \param[in] groupIndex index of the frequency group to integrate
+ *                       [1,num_groups]
+ * \param[in] T          the temperature in keV (must be greater than 0.0)
+ * \return integrated normalized Plankian over the group specified by
+ *         groupIndex.
  */
 double CDI::integrateRosselandSpectrum(size_t const groupIndex,
                                        double const T) {
@@ -216,18 +217,16 @@ double CDI::integrateRosselandSpectrum(size_t const groupIndex,
 
 //---------------------------------------------------------------------------//
 /*!
- *
- * \brief Integrate the Planckian and Rosseland spectrum over a frequency
- * group.
+ * \brief Integrate the Planckian and Rosseland spectrum over a frequency group.
  *
  * \param groupIndex index of the frequency group to integrate [1,num_groups]
  * \param T          The temperature in keV (must be greater than 0.0)
  * \param PL         Reference argument for the Planckian integral
  * \param ROSL       Reference argument for the Rosseland integral
  *
- * \return The integrated normalized Planckian and Rosseland over the
- * requested frequency group. These are returned as references in argument PL
- * and ROSL
+ * \return The integrated normalized Planckian and Rosseland over the requested
+ *         frequency group. These are returned as references in argument PL and
+ *         ROSL
  */
 void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex,
                                                  const double T, double &planck,
@@ -250,8 +249,9 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(const size_t groupIndex,
 }
 
 //---------------------------------------------------------------------------//
-/*!\brief Integrate the Planckian Specrum over an entire a set of frequency
- * groups, returning a vector of the integrals
+/*!
+ * \brief Integrate the Planckian Specrum over an entire a set of frequency
+ *        groups, returning a vector of the integrals
  *
  * \param bounds The vector of group boundaries. Size n+1
  * \param T The temperature
@@ -267,7 +267,11 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
 
   planck.resize(groups, 0.0);
 
-  if (T == 0)
+  // max_bounds/T must be < numeric_limits<double>::max().  So, if T ~<
+  // max_bounds*min, then return early.
+  double const max_bounds_val =
+      *(std::max_element(bounds.begin(), bounds.end()));
+  if (T < max_bounds_val * std::numeric_limits<double>::min())
     return;
 
   double scaled_frequency;
@@ -300,8 +304,8 @@ void CDI::integrate_Planckian_Spectrum(std::vector<double> const &bounds,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Integrate the Rosseland Spectrum over an entire a set
- * of frequency groups, returning a vector of the integrals
+ * \brief Integrate the Rosseland Spectrum over an entire a set of frequency
+ *        groups, returning a vector of the integrals
  *
  * \param bounds    The vector of group boundaries (size n+1)
  * \param T         The temperature
@@ -317,14 +321,16 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
 
   rosseland.resize(groups, 0.0);
 
-  if (T == 0.0)
+  // max_bounds/T must be < numeric_limits<double>::max().  So, if T ~<
+  // max_bounds*min, then return early.
+  double const max_bounds_val =
+      *(std::max_element(bounds.begin(), bounds.end()));
+  if (T < max_bounds_val * std::numeric_limits<double>::min())
     return;
 
   double scaled_frequency;
   double exp_scaled_frequency;
-
   Remember(double last_scaled_frequency;);
-
   double planck_value;
   double last_rosseland, rosseland_value;
 
@@ -359,8 +365,8 @@ void CDI::integrate_Rosseland_Spectrum(std::vector<double> const &bounds,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Integrate the Planckian and Rosseland Specrum over an entire a set
- * of frequency groups, returning a vector of the integrals
+ * \brief Integrate the Planckian and Rosseland Specrum over an entire a set of
+ *        frequency groups, returning a vector of the integrals
  *
  * \param bounds    The vector of group boundaries. Size n+1
  * \param T         The temperature
@@ -378,7 +384,11 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
   planck.resize(groups, 0.0);
   rosseland.resize(groups, 0.0);
 
-  if (T == 0.0)
+  // max_bounds/T must be < numeric_limits<double>::max().  So, if T ~<
+  // max_bounds*min, then return early.
+  double const max_bounds_val =
+      *(std::max_element(bounds.begin(), bounds.end()));
+  if (T < max_bounds_val * std::numeric_limits<double>::min())
     return;
 
   double scaled_frequency;
@@ -436,8 +446,8 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(
  * \param emission_group_cdf
  * \return A single interval Planckian weighted opacity value.
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum.
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -478,9 +488,8 @@ double CDI::collapseMultigroupOpacitiesPlanck(
   if (planck_integral > 0.0)
     planck_opacity = sig_planck_sum / planck_integral;
   else {
-    // Weak check that the zero integrated Planck is due to a cold
-    // temperature whose Planckian peak is below the lowest (first) group
-    // boundary.
+    // Weak check that the zero integrated Planck is due to a cold temperature
+    // whose Planckian peak is below the lowest (first) group boundary.
     Check(rtt_dsxx::soft_equiv(sig_planck_sum, 0.0));
     // Check( T >= 0.0 );
     // Check( 3.0 * T <= groupBounds[0] );
@@ -494,8 +503,8 @@ double CDI::collapseMultigroupOpacitiesPlanck(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Collapse a multigroup reciprocal opacity set into a single representative value
- *        weighted by the Planckian function.
+ * \brief Collapse a multigroup reciprocal opacity set into a single
+ *        representative value weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
@@ -504,8 +513,8 @@ double CDI::collapseMultigroupOpacitiesPlanck(
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \return A single interval Planckian weighted reciprocal opacity value.
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum.
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
  */
 double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
     std::vector<double> const &groupBounds, std::vector<double> const &opacity,
@@ -562,16 +571,15 @@ double CDI::collapseMultigroupReciprocalOpacitiesPlanck(
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  * \return A single interval Rosseland weighted opacity value.
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain rosselandSpectrum.
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain rosselandSpectrum.
  *
  * There are 2 special cases that we check for:
  * 1. All opacities are zero - just return 0.0;
  * 2. The Rosseland Integral is very small (or zero).  In this case, perform a
  *    modified calculation that does not depend on the Rosseland integral.
  *
- * If neither of the special cases are in effect, then do the normal
- * evaluation.
+ * If neither of the special cases are in effect, then do the normal evaluation.
  */
 double CDI::collapseMultigroupOpacitiesRosseland(
     std::vector<double> const &groupBounds, std::vector<double> const &opacity,
@@ -581,7 +589,7 @@ double CDI::collapseMultigroupOpacitiesRosseland(
   Require(rosselandSpectrum.size() == groupBounds.size() - 1);
 
   // If all opacities are zero, then the Rosseland mean will also be zero.
-  double const eps(1.0e-16);
+  double const eps(std::numeric_limits<double>::epsilon());
   double const opacity_sum =
       std::accumulate(opacity.begin(), opacity.end(), 0.0);
   if (rtt_dsxx::soft_equiv(opacity_sum, 0.0, eps)) {
@@ -597,11 +605,11 @@ double CDI::collapseMultigroupOpacitiesRosseland(
   double const rosseland_integral =
       std::accumulate(rosselandSpectrum.begin(), rosselandSpectrum.end(), 0.0);
 
-  // If the group bounds are well outside the Rosseland Spectrum at the
-  // current temperature, our algorithm may return a value that is within
-  // machine precision of zero.  In this case, we assume that this occurs
-  // when the temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).
-  // In this case we have:
+  // If the group bounds are well outside the Rosseland Spectrum at the current
+  // temperature, our algorithm may return a value that is within machine
+  // precision of zero.  In this case, we assume that this occurs when the
+  // temperature -> 0, so that limit(T->0) dB/dT = \delta(\nu).  In this case we
+  // have:
   //
   // sigma_R = sigma(g=0)
 
@@ -636,7 +644,7 @@ double CDI::collapseMultigroupOpacitiesRosseland(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Collapse a multigroup-multiband opacity set into a single
- * representative value weighted by the Planckian function.
+ *        representative value weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
  * \param T         The material temperature.
@@ -647,8 +655,8 @@ double CDI::collapseMultigroupOpacitiesRosseland(
  * \param emission_group_cdf
  * \return A single interval Planckian weighted opacity value.
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum.
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
  */
 double CDI::collapseOdfmgOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -717,7 +725,7 @@ double CDI::collapseOdfmgOpacitiesPlanck(
 //---------------------------------------------------------------------------//
 /*!
  * \brief Collapse a multigroup-multiband opacity set into a single
- * representative reciprocal value weighted by the Planckian function.
+ *        representative reciprocal value weighted by the Planckian function.
  *
  * \param groupBounds The vector of group boundaries.
  * \param opacity   A vector of multigroup opacity data.
@@ -725,8 +733,8 @@ double CDI::collapseOdfmgOpacitiesPlanck(
  *                  spectrum (normally generated via
  *                  CDI::integrate_Rosseland_Planckian_Sectrum(...).
  *
- * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before
- * this function to obtain planckSpectrum.
+ * Typically, CDI::integrate_Rosseland_Planckian_Spectrum is called before this
+ * function to obtain planckSpectrum.
  */
 double CDI::collapseOdfmgReciprocalOpacitiesPlanck(
     std::vector<double> const &groupBounds,
@@ -817,15 +825,14 @@ void CDI::setGrayOpacity(const SP_GrayOpacity &spGOp) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Register a multigroup opacity (rtt_cdi::MultigroupOpacity) with
- * CDI.
+ * \brief Register a multigroup opacity (rtt_cdi::MultigroupOpacity) with CDI.
  *
  * This function sets a multigroup opacity object of type
  * rtt_cdi::MultigroupOpacity with the CDI object.  It stores the multigroup
- * opacity object based upon its rtt_cdi::Model and rtt_cdi::Reaction types.
- * If a MultigroupOpacity with these type has already been registered an
- * exception is thrown.  To register a new set of MultigroupOpacity objects
- * call CDI::reset() first.  You cannot overwrite registered objects with the
+ * opacity object based upon its rtt_cdi::Model and rtt_cdi::Reaction types.  If
+ * a MultigroupOpacity with these type has already been registered an exception
+ * is thrown.  To register a new set of MultigroupOpacity objects call
+ * CDI::reset() first.  You cannot overwrite registered objects with the
  * setMultigroupOpacity() function!
  *
  * \param spGOp smart pointer to a MultigroupOpacity object
@@ -842,11 +849,11 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
   Insist(!multigroupOpacities[model][reaction],
          "Tried to overwrite a set MultigroupOpacity object!");
 
-  // if the frequency group boundaries have not been assigned in any CDI
-  // object, then assign them here
+  // if the frequency group boundaries have not been assigned in any CDI object,
+  // then assign them here
   if (frequencyGroupBoundaries.empty()) {
-    // copy the the group boundaries for this material to the "global"
-    // group boundaries that will be enforced for all CDI objects
+    // copy the the group boundaries for this material to the "global" group
+    // boundaries that will be enforced for all CDI objects
     frequencyGroupBoundaries = spMGOp->getGroupBoundaries();
   }
 
@@ -855,8 +862,8 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
   Insist(spMGOp->getNumGroupBoundaries() == frequencyGroupBoundaries.size(),
          "Incompatible frequency groups assigned for this material");
 
-  // do a check of the actual boundary values when DBC check is on (this is
-  // more expensive so we retain the option of turning it off)
+  // do a check of the actual boundary values when DBC check is on (this is more
+  // expensive so we retain the option of turning it off)
   Remember(std::vector<double> const ref = spMGOp->getGroupBoundaries(););
   Check(soft_equiv(frequencyGroupBoundaries.begin(),
                    frequencyGroupBoundaries.end(), ref.begin(), ref.end(),
@@ -870,16 +877,14 @@ void CDI::setMultigroupOpacity(const SP_MultigroupOpacity &spMGOp) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Register a multigroup opacity (rtt_cdi::OdfmgOpacity) with
- * CDI.
+ * \brief Register a multigroup opacity (rtt_cdi::OdfmgOpacity) with CDI.
  *
- * This function sets a multigroup opacity object of type
- * rtt_cdi::OdfmgOpacity with the CDI object.  It stores the multigroup
- * opacity object based upon its rtt_cdi::Model and rtt_cdi::Reaction types.
- * If a OdfmgOpacity with these type has already been registered an
- * exception is thrown.  To register a new set of OdfmgOpacity objects
- * call CDI::reset() first.  You cannot overwrite registered objects with the
- * setOdfmgOpacity() function!
+ * This function sets a multigroup opacity object of type rtt_cdi::OdfmgOpacity
+ * with the CDI object.  It stores the multigroup opacity object based upon its
+ * rtt_cdi::Model and rtt_cdi::Reaction types.  If a OdfmgOpacity with these
+ * type has already been registered an exception is thrown.  To register a new
+ * set of OdfmgOpacity objects call CDI::reset() first.  You cannot overwrite
+ * registered objects with the setOdfmgOpacity() function!
  *
  * \param spGOp smart pointer to a OdfmgOpacity object
  */
@@ -895,43 +900,41 @@ void CDI::setOdfmgOpacity(const SP_OdfmgOpacity &spODFOp) {
   Insist(!odfmgOpacities[model][reaction],
          "Tried to overwrite a set odfmgOpacity object!");
 
-  // if the frequency group boundaries have not been assigned in any CDI
-  // object, then assign them here
+  // if the frequency group boundaries have not been assigned in any CDI object,
+  // then assign them here
   if (frequencyGroupBoundaries.empty()) {
-    // copy the the group boundaries for this material to the
-    // "global" group boundaries that will be enforced for all CDI
-    // objects
+    // copy the the group boundaries for this material to the "global" group
+    // boundaries that will be enforced for all CDI objects
     frequencyGroupBoundaries = spODFOp->getGroupBoundaries();
   }
 
-  // if the opacity band boundaries have not been assigned in any CDI
-  // object, then assign them here
+  // if the opacity band boundaries have not been assigned in any CDI object,
+  // then assign them here
   if (opacityCdfBandBoundaries.empty()) {
-    // copy the the band boundaries for this material to the
-    // "global" band boundaries that will be enforced for all CDI
-    // objects
+    // copy the the band boundaries for this material to the "global" band
+    // boundaries that will be enforced for all CDI objects
     opacityCdfBandBoundaries = spODFOp->getBandBoundaries();
   }
 
-  // always check that the number of frequency groups is the same for
-  // each odfmg material added to CDI
+  // always check that the number of frequency groups is the same for each odfmg
+  // material added to CDI
   Insist(spODFOp->getNumGroupBoundaries() == frequencyGroupBoundaries.size(),
          "Incompatible frequency groups assigned for this material");
 
-  // always check that the number of frequency groups is the same for
-  // each odfmg material added to CDI
+  // always check that the number of frequency groups is the same for each odfmg
+  // material added to CDI
   Insist(spODFOp->getNumBandBoundaries() == opacityCdfBandBoundaries.size(),
          "Incompatible opacity bands assigned for this material");
 
-  // do a check of the actual boundary values when DBC check is on (this
-  // is more expensive so we retain the option of turning it off)
+  // do a check of the actual boundary values when DBC check is on (this is more
+  // expensive so we retain the option of turning it off)
   Remember(std::vector<double> const refGroup = spODFOp->getGroupBoundaries(););
   Check(soft_equiv(frequencyGroupBoundaries.begin(),
                    frequencyGroupBoundaries.end(), refGroup.begin(),
                    refGroup.end(), 1.0e-6));
 
-  // do a check of the actual band boundary values when DBC check is on
-  // (this is more expensive so we retain the option of turning it off)
+  // do a check of the actual band boundary values when DBC check is on (this is
+  // more expensive so we retain the option of turning it off)
   Remember(std::vector<double> const refBand = spODFOp->getBandBoundaries(););
   Check(soft_equiv(opacityCdfBandBoundaries.begin(),
                    opacityCdfBandBoundaries.end(), refBand.begin(),
@@ -962,6 +965,7 @@ void CDI::setEoS(const SP_EoS &in_spEoS) {
  *
  * This provides the CDI with the full functionality of the interface defined in
  * GrayOpacity.hh.  For example, the host code could make the following call:
+ *
  * \code
  * double newOp = spCDI1->gray()->getOpacity( 55.3, 27.4 );
  * \endcode
@@ -977,12 +981,14 @@ CDI::SP_GrayOpacity CDI::gray(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
   return grayOpacities[m][r];
 }
 
+//----------------------------------------------------------------------------//
 /*!
  * \brief This fuction returns the MultigroupOpacity object.
  *
- * This provides the CDI with the full functionality of the interface
- * defined in MultigroupOpacity.hh.  For example, the host code could
- * make the following call:
+ * This provides the CDI with the full functionality of the interface defined in
+ * MultigroupOpacity.hh.  For example, the host code could make the following
+ * call:
+ *
  * \code
  * size_t numGroups = spCDI1->mg()->getNumGroupBoundaries();
  * \endcode
@@ -997,11 +1003,13 @@ CDI::SP_MultigroupOpacity CDI::mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
   return multigroupOpacities[m][r];
 }
 
+//----------------------------------------------------------------------------//
 /*!
  * \brief This fuction returns the OdfmgOpacity object.
  *
  * This provides the CDI with the full functionality of the interface defined in
  * OdfmgOpacity.hh.  For example, the host code could make the following call:
+ *
  * \code
  * size_t numGroups = spCDI1->mg()->getNumGroupBoundaries();
  * \endcode
@@ -1017,13 +1025,12 @@ CDI::SP_OdfmgOpacity CDI::odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
 }
 
 //---------------------------------------------------------------------------//
-
 /*!
  * \brief This fuction returns the EoS object.
  *
- * This provides the CDI with the full functionality of the interface
- * defined in EoS.hh.  For example, the host code could make the
- * following call:
+ * This provides the CDI with the full functionality of the interface defined in
+ * EoS.hh.  For example, the host code could make the following call:
+ *
  * \code
  * double Cve = spCDI1->eos()->getElectronHeatCapacity( * density, temperature );
  * \endcode
