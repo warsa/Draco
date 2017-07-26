@@ -739,10 +739,10 @@ double CDI::integrate_planck(double const scaled_freq) {
  */
 double CDI::integrate_planck(double const scaled_freq,
                              double const exp_scaled_freq) {
-  Require( scaled_freq >=0 );
+  Require(scaled_freq >= 0);
 
   // Case 1: nu/T very large -> integral == 1.0
-  if( scaled_freq > std::sqrt(std::numeric_limits<double>::max()))
+  if (scaled_freq > std::sqrt(std::numeric_limits<double>::max()))
     return 1.0;
 
   // Case 2: nu/T is sufficiently small

@@ -702,33 +702,33 @@ void test_planck_integration(rtt_dsxx::UnitTest &ut) {
   // Extreme case 3. This should do the normal computation, but the result is
   // zero.
   {
-    std::vector<double> const bounds = { 1.0, 3.0, 30.0 };
+    std::vector<double> const bounds = {1.0, 3.0, 30.0};
     // If T < sqrt(numeric_limits<double>::min()), the integration will fail.
     double const T_eval = 1.0e-300;
     std::vector<double> planck;
-    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck );
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
     if (!soft_equiv(planck[0], 0.0, tol))
       ITFAILS;
   }
   // Extreme case 4a. T < numeric_limits<double>::min() --> follow special logic
   // and return zero.
   {
-    std::vector<double> const bounds = { 1.0, 3.0, 30.0 };
+    std::vector<double> const bounds = {1.0, 3.0, 30.0};
     double const T_eval = 1.0e-308;
     std::vector<double> planck;
-    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck );
-    if (!soft_equiv(planck, std::vector<double>(planck.size(),0.0), tol))
-       ITFAILS;
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
+      ITFAILS;
   }
   // Extreme case 4b. T < numeric_limits<double>::min() --> follow special logic
   // and return zero. Also, let v_0 == 0.0
   {
-    std::vector<double> const bounds = { 0.0, 3.0, 30.0 };
+    std::vector<double> const bounds = {0.0, 3.0, 30.0};
     double const T_eval = 1.0e-308;
     std::vector<double> planck;
-    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck );
-    if (!soft_equiv(planck, std::vector<double>(planck.size(),0.0), tol))
-       ITFAILS;
+    CDI::integrate_Planckian_Spectrum(bounds, T_eval, planck);
+    if (!soft_equiv(planck, std::vector<double>(planck.size(), 0.0), tol))
+      ITFAILS;
   }
 
   // Catch an illegal group assertion.
