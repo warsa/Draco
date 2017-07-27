@@ -34,7 +34,7 @@ double CDI::integratePlanckSpectrum(double low, double high, const double T) {
 
   // high/T must be < numeric_limits<double>::max().  So, if T ~< high*min, then
   // return early with zero values (assuming max() ~ 1/min()).
-  if (T < high * std::numeric_limits<double>::min())
+  if (T <= high * std::numeric_limits<double>::min())
     return 0.0;
 
   // Sale the frequencies by temperature
