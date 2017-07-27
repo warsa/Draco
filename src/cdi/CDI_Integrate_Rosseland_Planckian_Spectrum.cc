@@ -49,7 +49,7 @@ void CDI::integrate_Rosseland_Planckian_Spectrum(double low, double high,
 
   // high/T must be < numeric_limits<double>::max().  So, if T ~< high*min, then
   // return early with zero values (assuming max() ~ 1/min()).
-  if (T < high * std::numeric_limits<double>::min()) {
+  if (T <= high * std::numeric_limits<double>::min()) {
     planck = 0.0;
     rosseland = 0.0;
     return;
