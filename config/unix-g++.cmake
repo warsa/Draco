@@ -110,7 +110,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
     #             the correct dynamic type.
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-divide-by-zero")
     string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=float-cast-overflow")
-    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=always")
+    string( APPEND CMAKE_C_FLAGS_DEBUG " -fdiagnostics-color=auto")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=vptr")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=object-size")
 #    string( APPEND CMAKE_C_FLAGS_DEBUG " -fsanitize=alignment")
