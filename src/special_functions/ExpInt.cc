@@ -9,9 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "ExpInt.hh"
-#include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>
@@ -24,8 +22,8 @@ namespace rtt_sf {
 /*!
  * \brief Compute general exponential integrals of type Ei(x) or E_n(x).
  *
- * \param n Used to specify order of E_n(x).
- * \param x Used to specify argument of E_n(x).
+ * \param[in] n Used to specify order of E_n(x).
+ * \param[in] x Used to specify argument of E_n(x).
  * \return E_n(x) evaluated at the argument x.
  *
  * This routine makes use of those described in Numerical Recipes for C++, 3rd
@@ -38,8 +36,7 @@ namespace rtt_sf {
 double En(unsigned const n, double const x) {
   using std::numeric_limits;
 
-  Insist(!(x < 0.0 || (rtt_dsxx::soft_equiv(
-                           x, 0.0, std::numeric_limits<double>::epsilon()) &&
+  Insist(!(x < 0.0 || (std::abs(x) < std::numeric_limits<double>::min() &&
                        (n == 0 || n == 1))),
          "bad arguments in En");
 

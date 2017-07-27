@@ -20,10 +20,8 @@ namespace rtt_sf {
 /*!
  * \brief kronecker_delta
  *
- * Return 1 if test_value == offset, otherwise return 0;
- *
- * \param test_value
- * \param offset
+ * \param[in] test_value
+ * \param[in] offset
  * \return 1 if test_value == offset, otherwise return 0;
  */
 template <typename T>
