@@ -345,28 +345,26 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
   unsigned const ranks = rtt_c4::nodes();
 
   double ni = num_intervals, ni2 = ni * ni;
-  double mni = ni / ranks;
-
   double u = sum_user_cpu(), u2 = u * u;
-  double mu = u / ranks;
-
   double s = sum_system_cpu(), s2 = s * s;
-  double ms = s / ranks;
-
   double ww = sum_wall_clock(), ww2 = ww * ww;
-  double mww = ww / ranks;
 
-  double buffer[8] = {ni, mni, u, mu, s, ms, ww, mww};
+  double buffer[8] = {ni, ni2, u, u2, s, s2, ww, ww2};
   rtt_c4::global_sum(buffer, 8);
 
   ni = buffer[0];
-  mni = buffer[1];
+  ni2 = buffer[1];
   u = buffer[2];
-  mu = buffer[3];
+  u2 = buffer[3];
   s = buffer[4];
-  ms = buffer[5];
+  s2 = buffer[5];
   ww = buffer[6];
-  mww = buffer[7];
+  ww2 = buffer[7];
+
+  double mni = ni / ranks;
+  double mu = u / ranks;
+  double ms = s / ranks;
+  double mww = ww / ranks;
 
   if (rtt_c4::node() == 0) {
     out.setf(ios::fixed, ios::floatfield);
