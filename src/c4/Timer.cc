@@ -361,7 +361,7 @@ void Timer::printline_mean(std::ostream &out, unsigned const p,
   ww = buffer[6];
   ww2 = buffer[7];
 
-  double mni = ni / ranks;
+  unsigned mni = ni / ranks;
   double mu = u / ranks;
   double ms = s / ranks;
   double mww = ww / ranks;

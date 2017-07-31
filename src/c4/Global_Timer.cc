@@ -91,7 +91,7 @@ void Global_Timer::report_all(ostream &out) {
 
     cout << string(92U, '-') << endl;
     cout << "Timing report for all global timers:" << endl << endl;
-    cout << "         N                      user                   system     "
+    cout << "            N                   user                   system     "
             "           "
             " wall"
          << endl;
