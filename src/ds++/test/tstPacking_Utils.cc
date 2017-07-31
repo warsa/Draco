@@ -37,7 +37,6 @@ void do_some_packing(Packer &p, vector<double> const &vd,
 }
 
 //---------------------------------------------------------------------------//
-
 void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   // make data
 
@@ -124,6 +123,10 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
 
 //---------------------------------------------------------------------------//
 void packing_test(rtt_dsxx::UnitTest &ut) {
+
+  double const eps = std::numeric_limits<double>::epsilon();
+  double const mrv = std::numeric_limits<double>::min();
+
   // make some data
   double x = 102.45;
   double y = 203.89;
@@ -177,7 +180,6 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
     double d = 0;
     int i = 0;
-    double eps(1.0e-16);
 
     u.set_buffer(s1, b1);
     u >> d >> i;
@@ -304,10 +306,10 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
     u.extract(2, cc);
 
     for (size_t i = 0; i < 50; ++i)
-      if (!rtt_dsxx::soft_equiv(x[i], 0.0))
+      if (!rtt_dsxx::soft_equiv(x[i], 0.0, mrv))
         ITFAILS;
     for (size_t i = 50; i < x.size(); ++i)
-      if (!rtt_dsxx::soft_equiv(x[i], ref[i]))
+      if (!rtt_dsxx::soft_equiv(x[i], ref[i], eps))
         ITFAILS;
 
     if (cc[0] != 'a')
@@ -318,6 +320,7 @@ void packing_test(rtt_dsxx::UnitTest &ut) {
 
   delete[] buffer;
 }
+
 //---------------------------------------------------------------------------//
 void packing_test_c90(rtt_dsxx::UnitTest &ut) {
   using std::vector;
@@ -407,7 +410,6 @@ void packing_test_c90(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void std_string_test(rtt_dsxx::UnitTest &ut) {
   vector<char> pack_string;
 
@@ -471,7 +473,6 @@ void std_string_test(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 void packing_functions_test(rtt_dsxx::UnitTest &ut) {
 
   // Data to pack:

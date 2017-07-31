@@ -34,11 +34,14 @@ void tstFT(UnitTest &ut) {
   else
     FAILMSG("complex zero NOT good");
 
-  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::zero(), 0.0))
+  double const eps = std::numeric_limits<double>::epsilon();
+  double const mrv = std::numeric_limits<double>::min();
+
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::zero(), 0.0, mrv))
     PASSMSG("double zero good");
   else
     FAILMSG("double zero NOT good");
-  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::one(), 1.0))
+  if (rtt_dsxx::soft_equiv(Field_Traits<double const>::one(), 1.0, eps))
     PASSMSG("double zero good");
   else
     FAILMSG("double zero NOT good");
