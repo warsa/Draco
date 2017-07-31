@@ -111,14 +111,14 @@ double F_eta(double const eta, double const gamma) {
         sign *= -1;
         double srt = pow((double)j, i + 1.5);
         double term = sign * ep / srt;
-        if (fabs(term / si) < std::numeric_limits<double>::epsilon())
+        if (fabs(term) < fabs(si) * std::numeric_limits<double>::epsilon())
           break;
         double dterm = sign * dep / srt;
         si += term;
         dsi += dterm;
       }
       double const term = 0.75 * sqrt(PI) * e * fac * si / factorial(i);
-      if (fabs(term / sum) < std::numeric_limits<double>::epsilon())
+      if (fabs(term) < fabs(sum) * std::numeric_limits<double>::epsilon())
         break;
       double const dterm =
           0.75 * sqrt(PI) * fac * (de * si + e * dsi) / factorial(i);
