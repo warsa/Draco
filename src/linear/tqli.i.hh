@@ -52,6 +52,10 @@ void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z) {
   using namespace std;
   using namespace rtt_dsxx;
 
+  // minimum representable value
+  double const mrv =
+      std::numeric_limits<typename FieldVector1::value_type>::min();
+
   for (unsigned i = 1; i < n; ++i) {
     e[i - 1] = e[i];
   }
@@ -81,7 +85,7 @@ void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z) {
           double f = s * e[i];
           const double b = c * e[i];
           e[i + 1] = (r = pythag(f, g));
-          if (rtt_dsxx::soft_equiv(r, 0.0, 1.0e-16)) {
+          if (std::abs(r) < mrv) {
             d[i + 1] -= p;
             e[m] = 0.0;
             break;
@@ -99,7 +103,7 @@ void tqli(FieldVector1 &d, FieldVector2 &e, const unsigned n, FieldVector3 &z) {
             z[k + n * i] = c * z[k + n * i] - s * f;
           }
         }
-        if (rtt_dsxx::soft_equiv(r, 0.0, 1.0e-16) && i >= l)
+        if (std::abs(r) < mrv && i >= l)
           continue;
         d[l] -= p;
         e[l] = g;

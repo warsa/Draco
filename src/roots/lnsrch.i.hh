@@ -63,6 +63,8 @@ void lnsrch(RandomContainer const &xold, double const fold,
   using rtt_dsxx::square;
   using rtt_linear::fnorm;
 
+  double const eps =
+      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
   const unsigned n = xold.size();
 
   x.resize(n);
@@ -84,7 +86,7 @@ void lnsrch(RandomContainer const &xold, double const fold,
     bool lambda_too_small = true;
     for (unsigned i = 0; i < n; i++) {
       x[i] = xold[i] + lambda * p[i];
-      if (!rtt_dsxx::soft_equiv(x[i], xold[i], 1.0e-16))
+      if (!rtt_dsxx::soft_equiv(x[i], xold[i], eps))
         lambda_too_small = false;
     }
     if (lambda_too_small || lambda < min_lambda) {
@@ -97,13 +99,13 @@ void lnsrch(RandomContainer const &xold, double const fold,
           (fold > 0 && f <= 0.5 * fold)) {
         return;
         // Good enough
-      } else if (rtt_dsxx::soft_equiv(f, fold, 1.0e-16)) {
+      } else if (rtt_dsxx::soft_equiv(f, fold, eps)) {
         // Not good enough, and we've stagnated; give up
         check = true;
         return;
       } else {
         // Not good enough; if first try, use quadratic
-        if (rtt_dsxx::soft_equiv(lambda, 1.0, 1.0e-16)) {
+        if (rtt_dsxx::soft_equiv(lambda, 1.0, eps)) {
           lambda_2 = 0.0;
           lambda_1 = 1.0;
           lambda = max(0.1, -0.5 * slope / (f - fold - slope));

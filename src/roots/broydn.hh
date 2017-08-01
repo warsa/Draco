@@ -45,15 +45,12 @@ namespace rtt_roots {
  *
  * \param x Initial estimate of the solution of the set of equations.  On
  *         return, contains the best solution found.
- *
  * \param STPMX Set size parameter.  A large value dials a large initial step in
  *         line minimization; a small value dials a small initial step.  Larger
  *         is better unless this takes the argument to the function outside the
  *         function's domain.  A typical choice for this parameter is 100.
- *
  * \param vecfunc A Function_N_to_N object representing the set of nonlinear
  *         equations.
- *
  * \param alf Success determination parameter for line search.  A value of 0
  *         means that any reduction in the function value is considered a
  *         successful search.
@@ -129,8 +126,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         // As we approach the root, the change in f will begin to be swamped by
         // roundoff noise.  Filter out all w that are likely to be noisy.  If
         // all w are noisy, don't try to update the Jacobian.
-        if (fabs(w[i]) > numeric_limits<double>::epsilon() *
-                             (fabs(fvec[i]) + fabs(fvcold[i]))) {
+        if (std::abs(w[i]) > numeric_limits<double>::epsilon() *
+                                 (std::abs(fvec[i]) + std::abs(fvcold[i]))) {
           noisy = false; // this w is not yet swamped by roundoff
         } else {
           w[i] = 0.0; // this w is swamped with noise; leave it out
@@ -143,14 +140,14 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
             sum += qt[i + n * j] * w[j];
           t[i] = sum;
         }
-        double scale = fabs(s[0]); // To avoid overflow
+        double scale = std::abs(s[0]); // To avoid overflow
         for (unsigned i = 1; i < n; i++) {
-          double const fs = fabs(s[i]);
+          double const fs = std::abs(s[i]);
           if (fs > scale) {
             scale = fs;
           }
         }
-        Check(fabs(scale) > std::numeric_limits<double>::epsilon());
+        Check(scale > std::numeric_limits<double>::min());
         // Shouldn't happen, as a negligible change in x should already have
         // triggered a successful return.
         double const rscale = 1 / scale;
@@ -164,7 +161,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          if (fabs(r[i + n * i]) < std::numeric_limits<double>::epsilon())
+          if (std::abs(r[i + n * i]) < std::numeric_limits<double>::min())
             throw range_error("broydn: singular Jacobian matrix (1)");
         }
       }
@@ -197,14 +194,14 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
       }
       rsolv(r, n, p);
     } else {
-      double wmax = fabs(w[0]);
+      double wmax = std::abs(w[0]);
       for (unsigned i = 1; i < n; i++) {
         if (w[i] > wmax) {
           wmax = w[i];
         }
       }
       for (unsigned i = 0; i < n; i++) {
-        if (fabs(w[i]) < wmax * numeric_limits<double>::epsilon()) {
+        if (std::abs(w[i]) < wmax * numeric_limits<double>::epsilon()) {
           w[i] = 0.0;
         }
         xold[i] = x[i];
@@ -234,9 +231,9 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
           den = f;
         }
         for (unsigned i = 0; i < n; i++) {
-          double fx = fabs(x[i]);
+          double fx = std::abs(x[i]);
           double f = (fx > 1.0 ? fx : 1.0);
-          double const temp = fabs(g[i]) * f / den;
+          double const temp = std::abs(g[i]) * f / den;
           if (temp > test)
             test = temp;
         }
@@ -366,8 +363,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         // As we approach the root, the change in f will begin to be swamped by
         // roundoff noise.  Filter out all w that are likely to be noisy.  If
         // all w are noisy, don't try to update the Jacobian.
-        if (fabs(w[i]) > numeric_limits<double>::epsilon() *
-                             (fabs(fvec[i]) + fabs(fvcold[i]))) {
+        if (std::abs(w[i]) > numeric_limits<double>::epsilon() *
+                                 (std::abs(fvec[i]) + std::abs(fvcold[i]))) {
           noisy = false; // this w is not yet swamped by roundoff
         } else {
           w[i] = 0.0; // this w is swamped with noise; leave it out
@@ -380,10 +377,10 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
             sum += qt[i + n * j] * w[j];
           t[i] = sum;
         }
-        double scale = fabs(s[0]); // To avoid overflow
+        double scale = std::abs(s[0]); // To avoid overflow
         for (unsigned i = 1; i < n; i++)
-          scale = std::max(scale, fabs(s[i]));
-        Check(fabs(scale) > std::numeric_limits<double>::epsilon());
+          scale = std::max(scale, std::abs(s[i]));
+        Check(scale > std::numeric_limits<double>::min());
         // Shouldn't happen, as a negligible change in x should already have
         // triggered a successful return.
         double const rscale = 1 / scale;
@@ -398,7 +395,7 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         qrupdt(r, qt, n, t, s);
         // Check singularity.
         for (unsigned i = 0; i < n; i++) {
-          if (fabs(r[i + n * i]) < std::numeric_limits<double>::epsilon())
+          if (std::abs(r[i + n * i]) < std::numeric_limits<double>::min())
             throw range_error("broydn: singular Jacobian matrix (2)");
         }
       }
@@ -429,12 +426,12 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
       }
       rsolv(r, n, p);
     } else {
-      double wmax = fabs(w[0]);
+      double wmax = std::abs(w[0]);
       for (unsigned i = 1; i < n; i++) {
         wmax = std::max(wmax, w[i]);
       }
       for (unsigned i = 0; i < n; i++) {
-        if (fabs(w[i]) < wmax * numeric_limits<double>::epsilon()) {
+        if (std::abs(w[i]) < wmax * numeric_limits<double>::epsilon()) {
           w[i] = 0.0;
         }
         xold[i] = x[i];
@@ -459,7 +456,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         double test = 0.0;
         double den = std::max(f, 0.5 * n);
         for (unsigned i = 0; i < n; i++) {
-          double const temp = fabs(g[i]) * std::max(fabs(x[i]), 1.0) / den;
+          double const temp =
+              std::abs(g[i]) * std::max(std::abs(x[i]), 1.0) / den;
           if (temp > test)
             test = temp;
         }

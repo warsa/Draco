@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Aug  9 13:17:31 2004
  * \brief  Compute an explicit representation of a packed QR decomposition.
- * \note   Copyright (C) 2004-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -15,6 +15,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/DracoMath.hh"
 #include <algorithm>
+#include <limits>
 #include <sstream>
 
 namespace rtt_linear {
@@ -54,6 +55,9 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
   Require(n == c.size());
   Require(n == d.size());
 
+  // minimum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
   qt.resize(n * n);
 
   for (unsigned i = 0; i < n; ++i) {
@@ -64,7 +68,7 @@ void qr_unpack(RandomContainer &r, const unsigned n, const RandomContainer &c,
   }
   // Explicitly form Q transpose
   for (unsigned i = 0; i + 1 < n; ++i) {
-    if (!rtt_dsxx::soft_equiv(c[i], 0.0, 1.0e-16)) {
+    if (fabs(c[i]) > mrv) {
       double rscale = -1 / c[i];
       for (unsigned j = 0; j < n; ++j) {
         double sum = r[i + n * i] * qt[i + n * j];

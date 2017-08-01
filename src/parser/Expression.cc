@@ -43,8 +43,8 @@ public:
 private:
   virtual double evaluate_(double const *const x) const {
     double const eps(std::numeric_limits<double>::epsilon());
-    return (abs(evaluate_def_(e1_, x)) > eps) &&
-           (abs(evaluate_def_(e2_, x)) > eps);
+    return ((std::abs(evaluate_def_(e1_, x)) > eps) &&
+            (std::abs(evaluate_def_(e2_, x)) > eps));
   }
 
   virtual bool is_constant_(unsigned const i) const {
@@ -494,7 +494,7 @@ public:
 private:
   virtual double evaluate_(double const *const x) const {
     double const eps(std::numeric_limits<double>::epsilon());
-    return abs(evaluate_def_(expression_, x)) < eps;
+    return std::abs(evaluate_def_(expression_, x)) < eps;
   }
 
   virtual bool is_constant_(unsigned const i) const {
@@ -539,8 +539,8 @@ public:
 private:
   virtual double evaluate_(double const *const x) const {
     double const eps(std::numeric_limits<double>::epsilon());
-    return (abs(evaluate_def_(e1_, x)) > eps) ||
-           (abs(evaluate_def_(e2_, x)) > eps);
+    return (std::abs(evaluate_def_(e1_, x)) > eps) ||
+           (std::abs(evaluate_def_(e2_, x)) > eps);
   }
 
   virtual bool is_constant_(unsigned const i) const {

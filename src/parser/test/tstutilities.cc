@@ -26,6 +26,8 @@ using namespace rtt_dsxx;
 void tstutilities(UnitTest &ut) {
   std::cout << "Running test tstutilities()..." << std::endl;
 
+  double const eps = std::numeric_limits<double>::epsilon();
+
   // Build path for the input file "utilities.inp"
   string const inputFile(ut.getTestSourcePath() + std::string("utilities.inp"));
 
@@ -35,7 +37,7 @@ void tstutilities(UnitTest &ut) {
   // Try to read a real number.
 
   double d = parse_real(tokens);
-  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 5.0, 1.0e-16))
+  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 5.0, eps))
     FAILMSG("real NOT successfully parsed");
   else
     PASSMSG("real successfully parsed");
@@ -75,7 +77,7 @@ void tstutilities(UnitTest &ut) {
   // Try to read an integer as a real.
 
   d = parse_real(tokens);
-  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 2.0, 1.0e-16))
+  if (tokens.error_count() != 0 || !rtt_dsxx::soft_equiv(d, 2.0, eps))
     FAILMSG("integer NOT successfully parsed as real");
   else
     PASSMSG("integer successfully parsed as real");
@@ -85,9 +87,9 @@ void tstutilities(UnitTest &ut) {
   double v[3];
   parse_vector(tokens, v);
   Token token = tokens.shift();
-  if (rtt_dsxx::soft_equiv(v[0], 3.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[1], 0.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[2], 0.0, 1.0e-16) && token.type() == KEYWORD &&
+  if (rtt_dsxx::soft_equiv(v[0], 3.0, eps) &&
+      rtt_dsxx::soft_equiv(v[1], 0.0, eps) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD &&
       token.text() == "stop")
     PASSMSG("1-D vector successfully parsed");
   else
@@ -95,19 +97,18 @@ void tstutilities(UnitTest &ut) {
 
   parse_vector(tokens, v);
   token = tokens.shift();
-  if (rtt_dsxx::soft_equiv(v[0], 1.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[1], 2.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[2], 0.0, 1.0e-16) && token.type() == KEYWORD &&
+  if (rtt_dsxx::soft_equiv(v[0], 1.0, eps) &&
+      rtt_dsxx::soft_equiv(v[1], 2.0, eps) &&
+      rtt_dsxx::soft_equiv(v[2], 0.0, eps) && token.type() == KEYWORD &&
       token.text() == "stop")
     PASSMSG("2-D vector successfully parsed");
   else
     FAILMSG("2-D vector NOT successfully parsed");
 
   parse_vector(tokens, v);
-  if (rtt_dsxx::soft_equiv(v[0], 4.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[1], 3.0, 1.0e-16) &&
-      rtt_dsxx::soft_equiv(v[2], 2.0, 1.0e-16) &&
-      tokens.shift().text() == "stop")
+  if (rtt_dsxx::soft_equiv(v[0], 4.0, eps) &&
+      rtt_dsxx::soft_equiv(v[1], 3.0, eps) &&
+      rtt_dsxx::soft_equiv(v[2], 2.0, eps) && tokens.shift().text() == "stop")
     PASSMSG("3-D vector successfully parsed");
   else
     FAILMSG("3-D vector NOT successfully parsed");
@@ -315,7 +316,7 @@ void tstutilities(UnitTest &ut) {
   {
     String_Token_Stream tokens("-3.0 K");
     double const T = parse_temperature(tokens);
-    if (tokens.error_count() == 0 || (!rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16)))
+    if (tokens.error_count() == 0 || (!rtt_dsxx::soft_equiv(T, 0.0, eps)))
       FAILMSG("did NOT detect negative temperature");
     else
       PASSMSG("correctly detected negative temperature");
@@ -536,7 +537,7 @@ void tstutilities(UnitTest &ut) {
   {
     String_Token_Stream string("0.0");
     double const T = parse_nonnegative_real(string);
-    if (rtt_dsxx::soft_equiv(T, 0.0, 1.0e-16))
+    if (rtt_dsxx::soft_equiv(T, 0.0, eps))
       PASSMSG("parsed nonnegative real correctly");
     else
       FAILMSG("did NOT parse nonnegative real correctly");

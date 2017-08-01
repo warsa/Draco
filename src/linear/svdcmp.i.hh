@@ -47,13 +47,17 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
   using std::fabs;
   using std::max;
   using std::sqrt;
+  using std::min;
+  using std::max;
 
   // More than 30 iterations says something is terribly wrong -- this shouldn't
   // happen even for very large matrices.
   const unsigned MAX_ITERATIONS = 30;
-
-  using std::min;
-  using std::max;
+  // minimum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
+  double const eps =
+      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
 
   w.resize(n);
   v.resize(n * n);
@@ -73,7 +77,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
     if (i < m) {
       for (unsigned k = i; k < m; k++)
         scale += fabs(a[k + m * i]);
-      if (!rtt_dsxx::soft_equiv(scale, 0.0, 1.0e-16)) {
+      if (std::abs(scale) > mrv) {
         double rscale = 1 / scale;
         for (unsigned k = i; k < m; k++) {
           a[k + m * i] *= rscale;
@@ -89,7 +93,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
           s = 0;
           for (unsigned k = i; k < m; k++)
             s += a[k + m * i] * a[k + m * j];
-          Check(!rtt_dsxx::soft_equiv(h, 0.0, 1.0e-16));
+          Check(std::abs(h) > mrv);
           f = s / h;
           for (unsigned k = i; k < m; k++)
             a[k + m * j] += f * a[k + m * i];
@@ -105,7 +109,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
     if (i < m) {
       for (unsigned k = l; k < n; k++)
         scale += fabs(a[i + m * k]);
-      if (!rtt_dsxx::soft_equiv(scale, 0.0, 1.0e-16)) {
+      if (std::abs(scale) > mrv) {
         double rscale = 1 / scale;
         for (unsigned k = l; k < n; k++) {
           a[i + m * k] *= rscale;
@@ -136,7 +140,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
   // Accumulation of right-hand transformations
   for (unsigned i = n - 1; i < n; i--) {
     if (i != n - 1) {
-      if (!rtt_dsxx::soft_equiv(g, 0.0, 1.0e-16)) {
+      if (std::abs(g) > mrv) {
         double rg = 1 / g;
         for (unsigned j = l; j < n; j++)
           v[j + n * i] = rg * (a[i + m * j] / a[i + m * l]);
@@ -162,7 +166,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
     g = w[i];
     for (unsigned j = l; j < n; j++)
       a[i + m * j] = 0.0;
-    if (!rtt_dsxx::soft_equiv(g, 0.0, 1.0e-16)) {
+    if (std::abs(g) > mrv) {
       double rg = 1 / g;
       for (unsigned j = l; j < n; j++) {
         double s = 0;
@@ -194,11 +198,11 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
       unsigned l = k;
       for (; l <= k; l--) {
         unsigned l1 = l - 1;
-        if (rtt_dsxx::soft_equiv(fabs(rv1[l]) + norm, norm, 1.0e-16)) {
+        if (rtt_dsxx::soft_equiv(fabs(rv1[l]) + norm, norm, eps)) {
           flag = false;
           break;
         }
-        if (rtt_dsxx::soft_equiv(fabs(w[l1]) + norm, norm, 1.0e-16))
+        if (rtt_dsxx::soft_equiv(fabs(w[l1]) + norm, norm, eps))
           break;
       }
       if (flag) {
@@ -208,7 +212,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
         for (unsigned i = l; i <= k; i++) {
           double f = s * rv1[i];
           rv1[i] *= c;
-          if (!rtt_dsxx::soft_equiv(fabs(f) + norm, norm, 1.0e-16)) {
+          if (!rtt_dsxx::soft_equiv(fabs(f) + norm, norm, eps)) {
             g = w[i];
             double h = pythag(f, g);
             w[i] = h;
@@ -265,7 +269,7 @@ void svdcmp(RandomContainer &a, const unsigned m, const unsigned n,
           }
           z = pythag(f, h);
           w[j] = z;
-          if (!rtt_dsxx::soft_equiv(z, 0.0, 1.0e-16)) {
+          if (std::abs(z) > eps) {
             c = f / z;
             s = h / z;
           }

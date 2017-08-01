@@ -14,6 +14,7 @@
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <cmath>
+#include <limits>
 
 namespace rtt_linear {
 
@@ -53,9 +54,13 @@ void rotate(RandomContainer &r, RandomContainer &qt, const unsigned n,
 
   using std::fabs;
 
-  double c, s; // cosine and sine of rotation
+  // cosine and sine of rotation
+  double c, s;
+  // minimum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
 
-  if (rtt_dsxx::soft_equiv(a, 0.0, 1.0e-16)) {
+  if (std::abs(a) < mrv) {
     c = 0.0;
     s = (b > 0.0 ? 1.0 : -1.0);
   } else if (fabs(a) > fabs(b)) {

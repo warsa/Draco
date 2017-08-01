@@ -307,15 +307,6 @@ void tstExpression(UnitTest &ut) {
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {
-    if (static_cast<bool>(1.0))
-      std::cout << "1.0 -> true" << std::endl;
-    if (static_cast<bool>(0.0))
-      std::cout << "0.0 -> true" << std::endl;
-    if (static_cast<bool>(0.1))
-      std::cout << "0.1 -> true" << std::endl;
-    if (static_cast<bool>(-1.0))
-      std::cout << "-1.0 -> true" << std::endl;
-
     tstExpression(ut);
   }
   UT_EPILOG(ut);

@@ -53,6 +53,9 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
 
   typedef typename FieldVector1::value_type Field;
 
+  // minimum representable value
+  double const mrv = std::numeric_limits<Field>::min();
+
   d.resize(n);
   e.resize(n);
 
@@ -64,7 +67,7 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
       for (unsigned k = 0; k <= l; k++) {
         scale += std::abs(a[i + n * k]);
       }
-      if (rtt_dsxx::soft_equiv(scale, 0.0, 1.0e-16)) {
+      if (std::abs(scale) < mrv) {
         e[i] = a[i + n * l];
       } else {
         for (unsigned k = 0; k <= l; k++) {
@@ -106,7 +109,7 @@ void tred2(FieldVector1 &a, unsigned n, FieldVector2 &d, FieldVector3 &e) {
   d[0] = 0.0;
   e[0] = 0.0;
   for (unsigned i = 0; i < n; i++) {
-    if (!rtt_dsxx::soft_equiv(d[i], 0.0, 1.0e-16)) {
+    if (std::abs(d[i]) > mrv) {
       for (unsigned j = 0; j < i; j++) {
         double g = 0.0;
         for (unsigned k = 0; k < i; k++) {

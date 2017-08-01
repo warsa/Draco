@@ -63,7 +63,7 @@ void fdjac(const std::vector<Field> &x, const std::vector<Field> &fvec,
   for (unsigned j = 0; j < n; j++) {
     Field temp = xt[j];
     Field h = EPS * abs(temp);
-    if (rtt_dsxx::soft_equiv(h, 0.0, 1.0e-16))
+    if (std::abs(h) < std::numeric_limits<float>::min())
       h = EPS;
     xt[j] = temp + h;
     h = xt[j] - temp;

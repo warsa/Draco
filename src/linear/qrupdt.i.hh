@@ -41,26 +41,30 @@ namespace rtt_linear {
 template <class RandomContainer>
 void qrupdt(RandomContainer &r, RandomContainer &qt, const unsigned n,
             RandomContainer &u, RandomContainer &v) {
+
   Require(r.size() == n * n);
   Require(qt.size() == n * n);
   Require(u.size() == n);
   Require(v.size() == n);
 
   using std::fabs;
-
   using namespace rtt_dsxx;
+
+  // minumum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
 
   // Find first nonzero element of u.
   int k;
   for (k = n - 1; k >= 0; --k) {
-    if (!rtt_dsxx::soft_equiv(u[k], 0.0, 1.0e-16))
+    if (std::abs(u[k]) > mrv)
       break;
   }
   if (k < 0)
     k = 0;
   for (int i = k - 1; i >= 0; i--) {
     rotate(r, qt, n, i, u[i], -u[i + 1]);
-    if (rtt_dsxx::soft_equiv(u[i], 0.0, 1.0e-16)) {
+    if (std::abs(u[i]) < mrv) {
       u[i] = fabs(u[i + 1]);
     } else if (fabs(u[i]) > fabs(u[i + 1])) {
       u[i] = fabs(u[i]) * sqrt(1.0 + square(u[i + 1] / u[i]));

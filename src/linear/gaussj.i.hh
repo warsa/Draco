@@ -40,12 +40,9 @@ bool is_square(DoubleRandomContainer const &A) {
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
- *
  * \param n Rank of matrix A
- *
  * \param b Right hand side of the system of equations. Replaced by the
  *          solution on return.
- *
  * \param m Column count of the right hand side of the system of equations.
  *          Setting this to a value other than one amounts to simultaneously
  *          solving m systems of equations.
@@ -58,6 +55,8 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
 
   Require(A.size() == n * n);
   Require(b.size() == n * m);
+  double const eps =
+      std::numeric_limits<typename RandomContainer::value_type>::epsilon();
 
   vector<int> indxc(n);
   vector<int> indxr(n);
@@ -90,7 +89,7 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
     }
     indxr[i] = irow;
     indxc[i] = icol;
-    if (rtt_dsxx::soft_equiv(A[icol + n * icol], 0.0, 1.0e-16)) {
+    if (rtt_dsxx::soft_equiv(A[icol + n * icol], 0.0, eps)) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     double const pivinv = 1.0 / A[icol + n * icol];
@@ -128,11 +127,9 @@ void gaussj(RandomContainer &A, unsigned const n, RandomContainer &b,
 //---------------------------------------------------------------------------//
 /*!
  * \arg \a DoubleRandomContainer A double-subscript random access container type
- *
  * \arg \a RandomContainer A random access container type
  *
  * \param A Coefficient matrix of the system of equations. Destroyed on return.
- *
  * \param b Right hand side of the system of equations. Replacec by the solution
  *          of the system on return.
  */
@@ -144,6 +141,9 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
   Require(is_square(A));
   Require(b.size() == 0 || b.size() == A.size());
 
+  // minimum representable value
+  double const mrv =
+      std::numeric_limits<typename RandomContainer::value_type>::min();
   unsigned const n = A.size();
 
   vector<int> indxc(n);
@@ -166,7 +166,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
         }
       }
     }
-    if (rtt_dsxx::soft_equiv(big, 0.0, 1.0e-16)) {
+    if (fabs(big) < mrv) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     ++ipiv[icol];
@@ -178,7 +178,7 @@ void gaussj(DoubleRandomContainer &A, RandomContainer &b) {
     }
     indxr[i] = irow;
     indxc[i] = icol;
-    if (rtt_dsxx::soft_equiv(value(A[icol][icol]), 0.0, 1.0e-16)) {
+    if (fabs(value(A[icol][icol])) < mrv) {
       throw invalid_argument("gaussj:  singular matrix");
     }
     double const pivinv = 1.0 / A[icol][icol];

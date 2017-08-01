@@ -30,14 +30,15 @@ using namespace std;
  * \param value Unit dimension value
  * \param unit Unit name
  */
-
 void dash_insert(ostream &str, bool &dash, double const value,
                  char const *const name) {
-  if (abs(value) > std::numeric_limits<double>::epsilon()) {
+  double const eps = std::numeric_limits<double>::epsilon();
+  double const mrv = std::numeric_limits<double>::min();
+  if (std::abs(value) > mrv) {
     if (dash) {
       str << '-';
     }
-    if (!rtt_dsxx::soft_equiv(value, 1.0, 1.0e-16)) {
+    if (!rtt_dsxx::soft_equiv(value, 1.0, eps)) {
       str << name << '^' << value;
     } else {
       str << name;
@@ -45,7 +46,8 @@ void dash_insert(ostream &str, bool &dash, double const value,
     dash = true;
   }
 }
-}
+
+} // end anonymous namespace
 
 namespace rtt_parser {
 using namespace std;
@@ -56,7 +58,6 @@ using namespace std;
  * \param u Unit to write the text description for.
  * \return A reference to s.
  */
-
 std::ostream &operator<<(std::ostream &str, const Unit &u) {
   str << u.conv << ' ';
   bool dash = false;

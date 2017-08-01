@@ -122,6 +122,8 @@ void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
 
   typedef typename FieldVector2::value_type Field;
 
+  // minimum representable value
+  double const mrv = std::numeric_limits<Field>::min();
   unsigned const n = indx.size();
 
   unsigned ii = 0;
@@ -134,7 +136,7 @@ void lubksb(FieldVector1 const &a, IntVector const &indx, FieldVector2 &b) {
       for (unsigned j = ii - 1; j < i; ++j)
         sum -= a[i + n * j] * b[j];
     } else {
-      if (!rtt_dsxx::soft_equiv(sum, 0.0, 1.0e-16))
+      if (fabs(sum) > mrv)
         ii = i + 1;
     }
     b[i] = sum;

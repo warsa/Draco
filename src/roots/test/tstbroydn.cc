@@ -51,10 +51,7 @@ public:
 
 //---------------------------------------------------------------------------//
 void tstbroydn(UnitTest &ut) {
-  // vector<double> x = { 0.2, -0.1 };
-  vector<double> x(2);
-  x[0] = 0.2;
-  x[1] = -0.1;
+  vector<double> x = {0.2, -0.1};
 
   // Check broydn solution method for function
   broydn(x, 100.0, &broydn_test_function, 1.0e-2);

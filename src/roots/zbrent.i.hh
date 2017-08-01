@@ -59,6 +59,7 @@ Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
   using std::numeric_limits;
   using std::min;
 
+  double const eps = std::numeric_limits<Real>::epsilon();
   Real a = x1, b = x2, c = x2;
   Real fa = func(a), fb = func(b);
 
@@ -100,7 +101,7 @@ Real zbrent(Function func, Real x1, Real x2, unsigned itmax, Real &tol,
     if (ae >= tol1 && afa > afb) {
       Real const s = fb / fa;
       Real p, q;
-      if (rtt_dsxx::soft_equiv(a, c, 1.0e-16)) {
+      if (rtt_dsxx::soft_equiv(a, c, eps)) {
         p = 2.0 * xm * s;
         q = 1.0 - s;
       } else {

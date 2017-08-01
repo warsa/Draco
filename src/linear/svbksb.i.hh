@@ -14,6 +14,7 @@
 #include "svbksb.hh"
 #include "ds++/Assert.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <limits>
 #include <vector>
 
 namespace rtt_linear {
@@ -59,11 +60,12 @@ void svbksb(const RandomContainer &u, const RandomContainer &w,
   Require(v.size() == n * n);
 
   typedef typename RandomContainer::value_type value_type;
-
+  // minimum representable value
+  double const mrv = std::numeric_limits<value_type>::min();
   std::vector<value_type> tmp(n);
 
   for (unsigned i = 0; i < n; i++) {
-    if (!rtt_dsxx::soft_equiv(w[i], 0.0, 1.0e-16))
+    if (std::abs(w[i]) > mrv)
     // Exclude singular values.  This is most of the "magic" of singular value
     // decomposition.
     {
