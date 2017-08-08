@@ -123,7 +123,7 @@ static double const permittivityOfFreeSpaceSI =
 //! [re] Classical electron radius (M)
 static double const classicalElectronRadiusSI =
     std::pow(electronChargeSI, 2) / (4 * PI * permittivityOfFreeSpaceSI *
-    electronMassSI * std::pow(cLightSI, 2));
+                                     electronMassSI * std::pow(cLightSI, 2));
 
 } // end namespace rtt_units
 
