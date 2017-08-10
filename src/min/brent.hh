@@ -40,7 +40,8 @@ double brent(double const ax, double const bx, double const cx, Function f,
   using rtt_dsxx::sign;
 
   unsigned const ITMAX = 100;
-  double const ZEPS = numeric_limits<double>::epsilon() * 1.0e-3;
+  double const eps = numeric_limits<double>::epsilon();
+  double const ZEPS = eps * 1.0e-3;
   double const CGOLD = 0.3819660;
 
   double d = 0.0;
@@ -106,13 +107,13 @@ double brent(double const ax, double const bx, double const cx, Function f,
       } else {
         b = u;
       }
-      if (fu <= fw || rtt_dsxx::soft_equiv(w, x)) {
+      if (fu <= fw || rtt_dsxx::soft_equiv(w, x, eps)) {
         v = w;
         w = u;
         fv = fw;
         fw = fu;
-      } else if (fu <= fv || rtt_dsxx::soft_equiv(v, x) ||
-                 rtt_dsxx::soft_equiv(v, w)) {
+      } else if (fu <= fv || rtt_dsxx::soft_equiv(v, x, eps) ||
+                 rtt_dsxx::soft_equiv(v, w, eps)) {
         v = u;
         fv = fu;
       }
