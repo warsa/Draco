@@ -5,10 +5,7 @@
  * \date   Thu May 18 15:46:19 2006
  * \brief  Implementation file for UnitTest.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "UnitTest.hh"
@@ -89,9 +86,9 @@ std::string UnitTest::resultMessage() const {
 
 //---------------------------------------------------------------------------//
 /*!\brief Increment the failure count and print a message with the source line
- * number.
- * \param line The line number of the source code where the failure was
- * ecnountered.
+ *        number.
+ * \param[in] line The line number of the source code where the failure was
+ *        ecnountered.
  */
 bool UnitTest::failure(int line) {
   out << "Test: failed on line " << line << std::endl;
@@ -184,7 +181,8 @@ bool UnitTest::failure(const std::string &failmsg) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Parse msg to provide a list of words and the number of occurances of each.
+ * \brief Parse msg to provide a list of words and the number of occurances of 
+ *        each.
  */
 std::map<std::string, unsigned>
 UnitTest::get_word_count(std::ostringstream const &msg, bool verbose) {
@@ -197,8 +195,7 @@ UnitTest::get_word_count(std::ostringstream const &msg, bool verbose) {
   string msgbuf(msg.str());
   string delims(" \n\t:,.;");
 
-  { // Build a list of words found in msgbuf.  Count the number of
-    // occurances.
+  { // Build a list of words found in msgbuf.  Count the number of occurances.
 
     // Find the beginning of the first word.
     string::size_type begIdx = msgbuf.find_first_not_of(delims);
@@ -234,7 +231,7 @@ UnitTest::get_word_count(std::ostringstream const &msg, bool verbose) {
   return word_list;
 }
 
-//---------------------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 //! \brief Convert a string into a vector of words.
 std::vector<std::string> UnitTest::tokenize(std::string const &source,
                                             char const *delimiter_list,
@@ -259,7 +256,8 @@ std::vector<std::string> UnitTest::tokenize(std::string const &source,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Parse text file to provide a list of words and the number of occurances of each.
+ * \brief Parse text file to provide a list of words and the number of 
+ *        occurances of each.
  */
 std::map<std::string, unsigned>
 UnitTest::get_word_count(std::string const &filename, bool verbose) {

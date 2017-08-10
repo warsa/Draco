@@ -103,14 +103,21 @@ macro(dbsSetupCompilers)
   # In component_macros.cmake, this target property will be set:
   # INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
 
-  set(USE_IPO ON)
-  if( CRAY_PE )
-    set( USE_IPO OFF )
-  elseif( "${SITENAME}" STREQUAL "Moonlight" )
-    set( USE_IPO OFF )
-  endif()
-  set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
-
+  #if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.9.0)  
+  
+  #  See https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT USE_IPO)  
+  # else()
+    # set(USE_IPO ON)
+    # if( CRAY_PE )
+      # set( USE_IPO OFF )
+    # elseif( "${SITENAME}" STREQUAL "Moonlight" )
+      # set( USE_IPO OFF )
+    # endif()
+    # set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
+  # endif()
+  
 endmacro()
 
 #------------------------------------------------------------------------------#
