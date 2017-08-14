@@ -214,6 +214,8 @@ function flavor
 # returns a path to a directory
 function selectscratchdir
 {
+  local platform=`machineName`
+
   # if df is too old this command won't work correctly, use an alternate form.
   local scratchdirs=`df --output=pcent,target 2>&1 | grep -c unrecognized`
   if [[ $scratchdirs == 0 ]]; then
@@ -222,7 +224,6 @@ function selectscratchdir
     scratchdirs=`df -a 2> /dev/null | grep net/scratch | awk '{ print $4 " "$5 }' | sort -g`
     if ! [[ $scratchdirs ]]; then
       scratchdirs=`df -a 2> /dev/null | grep lustre/scratch | awk '{ print $4 " "$5 }' | sort -g`
-
     fi
   fi
   local odd=1
@@ -238,17 +239,17 @@ function selectscratchdir
     # if this location is good (must be able to write to this location), return
     # the path.
     mkdir -p $item/$USER &> /dev/null
-    touch $item/$USER/selectscratchdir &> /dev/null
-    if [[ -f $item/$USER/selectscratchdir ]]; then
-      rm $item/$USER/selectscratchdir
+    touch $item/$USER/selectscratchdir-${platform} &> /dev/null
+    if [[ -f $item/$USER/selectscratchdir-${platform} ]]; then
+      rm $item/$USER/selectscratchdir-${platform} &> /dev/null
       echo "$item"
       return
     fi
     # might need another directory level 'yellow'
     mkdir -p $item/yellow/$USER &> /dev/null
-    touch $item/yellow/$USER/selectscratchdir &> /dev/null
-    if [[ -f $item/yellow/$USER/selectscratchdir ]]; then
-      rm $item/yellow/$USER/selectscratchdir
+    touch $item/yellow/$USER/selectscratchdir-${platform} &> /dev/null
+    if [[ -f $item/yellow/$USER/selectscratchdir-${platform} ]]; then
+      rm $item/yellow/$USER/selectscratchdir-${platform} &> /dev/null
       echo "$item/yellow"
       return
     fi
@@ -257,9 +258,9 @@ function selectscratchdir
   # if no writable scratch directory is located, then also try netscratch;
   item=/netscratch/$USER
   mkdir -p $item &> /dev/null
-  touch $item/selectscratchdir &> /dev/null
-  if [[ -f $item/selectscratchdir ]]; then
-    rm $item/selectscratchdir
+  touch $item/selectscratchdir-${platform} &> /dev/null
+  if [[ -f $item/selectscratchdir-${platform} ]]; then
+    rm $item/selectscratchdir-${platform} &> /dev/null
     echo "$item"
     return
   fi
