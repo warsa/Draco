@@ -125,7 +125,7 @@ run "module load intel/17.0.1"
 #run "module swap cray-mpich cray-mpich/7.4.2"
 run "module unload cray-libsci gcc/6.1.0"
 run "module load craype-hugepages4M"
-run "module load cmake/3.7.1 numdiff git"
+run "module load cmake/3.9.0 numdiff git"
 run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
 run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
 
