@@ -52,8 +52,9 @@ int main(int argc, char *argv[]) {
  *   5. Release the process grid and terminate the MPI environment
  */
 void test_superludist(rtt_c4::ParallelUnitTest &ut) {
-// SUPERLU_DIST_MAJOR_VERSION is defined in superlu_defs.h
-#if SUPERLU_DIST_MAJOR_VERSION > 4
+// for superlu-dist > version 4, SUPERLU_DIST_MAJOR_VERSION is defined in
+// superlu_defs.h
+#ifdef SUPERLU_DIST_MAJOR_VERSION
   superlu_dist_options_t options;
 #else
   superlu_options_t options;
