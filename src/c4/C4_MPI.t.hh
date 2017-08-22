@@ -272,6 +272,22 @@ template <typename T> DLL_PUBLIC_c4 void global_sum(T &x) {
 
 //---------------------------------------------------------------------------//
 
+template <typename T>
+DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer,
+                               C4_Req &request) {
+
+  // do global MPI non-blocking reduction (result is on all processors) into
+  // recv_buffer
+  Remember(int check =) MPI_Iallreduce(&send_buffer, &recv_buffer, 1,
+                                       MPI_Traits<T>::element_type(), MPI_SUM,
+                                       communicator, &(request.r()));
+  request.set();
+  Check(check == MPI_SUCCESS);
+  return;
+}
+
+//---------------------------------------------------------------------------//
+
 template <typename T> DLL_PUBLIC_c4 void global_prod(T &x) {
   // copy data into send buffer
   T y = x;
