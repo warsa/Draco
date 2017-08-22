@@ -239,12 +239,10 @@ void send_is(C4_Req &request, T const *buffer, int size, int destination) {
  * \param[in] size size of buffer
  * \param[in] destination rank that will receive this message
  * \param[in] tag message tag
- * \param[in] custom_type MPI type for object T (must be registered with MPI)
  */
 template <typename T>
 DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, T const *buffer, int size,
-                                  int destination, int tag,
-                                  MPI_Datatype custom_type);
+                                  int destination, int tag);
 
 // [2011-05-11 GMR] This declaration should replace the two preceeding ones.
 // However, I expect that PGI-10 doesn't like this syntax for the same reason
@@ -305,12 +303,10 @@ void receive_async(C4_Req &request, T *buffer, int size, int source) {
  * \param[in] size size of buffer
  * \param[in] source remote rank sending message to this rank
  * \param[in] tag message tag
- * \param[in] custom_type MPI type for object T (must be registered with MPI)
  */
 template <typename T>
 DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
-                                        int source, int tag,
-                                        MPI_Datatype custom_type);
+                                        int source, int tag);
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:

@@ -18,8 +18,8 @@ namespace rtt_c4 {
 //---------------------------------------------------------------------------//
 template <typename T>
 DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
-                                  int destination, int tag,
-                                  MPI_Datatype custom_type) {
+                                  int destination, int tag) {
+
   Require(!request.inuse());
 
   // set the request
@@ -37,8 +37,7 @@ DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
 
 template <typename T>
 DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
-                                        int source, int tag,
-                                        MPI_Datatype custom_type) {
+                                        int source, int tag) {
   Require(!request.inuse());
   Remember(int custom_mpi_type_size);
   Remember(MPI_Type_size(T::MPI_Type, &custom_mpi_type_size));

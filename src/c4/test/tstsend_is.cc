@@ -186,13 +186,13 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
   // post asynchronous receives.
   Custom recv_custom_object(-1);
   rtt_c4::receive_async_custom(comm_int[0], &recv_custom_object, 1, left,
-                               Custom::mpi_tag, Custom::MPI_Type);
+                               Custom::mpi_tag);
 
   try {
     // send data using non-blocking synchronous send. Custom sends check to make\
     // sure that the type
     rtt_c4::send_is_custom(comm_int[1], &my_custom_object, 1, right,
-                           Custom::mpi_tag, Custom::MPI_Type);
+                           Custom::mpi_tag);
 
     // wait for all communication to finish
     rtt_c4::wait_all(comm_int.size(), &comm_int[0]);
