@@ -161,13 +161,11 @@ private:
 
   template <typename T>
   friend DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, T const *buffer,
-                                           int size, int destination, int tag,
-                                           MPI_Datatype custom_type);
+                                           int size, int destination, int tag);
 
   template <typename T>
   friend DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer,
-                                                 int size, int source, int tag,
-                                                 MPI_Datatype custom_type);
+                                                 int size, int source, int tag);
 
 #endif
 };
