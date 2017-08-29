@@ -9,6 +9,7 @@
 //---------------------------------------------------------------------------//
 
 #include "DracoStrings.hh"
+#include "Assert.hh"
 #include <fstream>
 #include <iostream>
 
@@ -18,20 +19,20 @@ namespace rtt_dsxx {
 // Definitions for fully specialized template functions
 //----------------------------------------------------------------------------//
 
-template <> auto parse_number<int>(std::string const &str) -> int {
+template <> auto parse_number_impl<int>(std::string const &str) -> int {
   return std::stoi(str);
 }
-template <> auto parse_number<long>(std::string const &str) -> long {
+template <> auto parse_number_impl<long>(std::string const &str) -> long {
   return std::stol(str);
 }
 template <>
-auto parse_number<unsigned long>(std::string const &str) -> unsigned long {
+auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long {
   return std::stoul(str);
 }
-template <> auto parse_number<float>(std::string const &str) -> float {
+template <> auto parse_number_impl<float>(std::string const &str) -> float {
   return std::stof(str);
 }
-template <> auto parse_number<double>(std::string const &str) -> double {
+template <> auto parse_number_impl<double>(std::string const &str) -> double {
   return std::stod(str);
 }
 

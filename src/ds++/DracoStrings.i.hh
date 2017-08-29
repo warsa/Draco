@@ -14,8 +14,44 @@
 
 #include "Assert.hh"
 #include <algorithm>
+#include <iostream>
 
 namespace rtt_dsxx {
+
+//----------------------------------------------------------------------------//
+//! Convert a string into a numeric-type type with error checking.
+template <typename T>
+auto parse_number(std::string const &str, bool verbose) -> T {
+  T retval(0);
+  try {
+    retval = parse_number_impl<T>(str);
+  } catch (std::invalid_argument &e) {
+    // if no conversion could be performed
+    if (verbose)
+      std::cerr
+          << "\n==ERROR==\nrtt_dsxx::parse_number:: "
+          << "No valid conversion from string to a numeric value could be "
+          << "found.\n"
+          << "\tstring = \"" << str << "\"\n"
+          << std::endl;
+    throw e;
+  } catch (std::out_of_range &e) {
+    // if the converted value would fall out of the range of the result type
+    // or if the underlying function (std::strtol or std::strtoull) sets
+    // errno to ERANGE.
+    if (verbose)
+      std::cerr << "\n==ERROR==\nrtt_dsxx::parse_number:: "
+                << "Type conversion from string to a numeric value resulted in "
+                << "a value that is out of range.\n"
+                << "\tstring = \"" << str << "\"\n"
+                << std::endl;
+    throw;
+  } catch (...) {
+    // everything else
+    Insist(false, "Unknown failures in call to std::sto[x] from parse_number.");
+  }
+  return retval;
+}
 
 //----------------------------------------------------------------------------//
 //! Convert a string into a vector of floating-point or an integral values.
