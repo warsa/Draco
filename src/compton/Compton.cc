@@ -67,12 +67,13 @@ Compton::Compton(const std::string &filehandle) {
  *                       "flat", "wien" or "planck." Any other string will cause
  *                       CSK to throw an exception.
  * \param[in] induced    Bool to toggle consideration of induced effects off/on
+ * \param[in] det_bal   Bool to toggle detailed balance enforcement off/on
  * \param[in] n_xi       The number of angular points/Legendre moments desired
  */
 Compton::Compton(const std::string &filehandle,
                  const std::vector<double> &grp_bds,
                  const std::string &opac_type, const std::string &wt_func,
-                 const bool induced, const size_t nxi) {
+                 const bool induced, const bool det_bal, const size_t nxi) {
 
   // Check input validity
   Require(std::ifstream(filehandle).good());
@@ -89,6 +90,7 @@ Compton::Compton(const std::string &filehandle,
                                      multigroup::string_to_opac_type(opac_type),
                                      multigroup::string_to_wt_func(wt_func),
                                      induced,
+                                     det_bal,
                                      filehandle,
                                      nxi,
                                      grp_bds};

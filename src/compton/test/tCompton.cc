@@ -235,6 +235,8 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 
 //----------------------------------------------------------------------------//
 //!  Tests the Compton mg build capability
+//----------------------------------------------------------------------------//
+//!  Tests the Compton mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
@@ -287,6 +289,27 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
 
   if (ut.numFails == 0) {
     std::cout << "\nCorrectly stored group bounds and electron temps! "
+              << std::endl;
+  }
+
+  // check that the files were constructed with the correct name, and
+  // that they're open-able:
+  std::string libfile =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton_4group";
+  std::string nufile =
+      ut.getTestSourcePath() + "lagrange_csk_ascii.compton_4group_nu_ratios";
+
+  if (!std::ifstream(libfile).good()) {
+    ITFAILS;
+  } else { // remove the file-- we don't actually want it sitting around...
+    std::remove(libfile.c_str());
+    std::cout << "Successfully wrote MG file -- deleting! " << std::endl;
+  }
+  if (!std::ifstream(nufile).good()) {
+    ITFAILS;
+  } else { // remove the file-- we don't actually want it sitting around...
+    std::remove(nufile.c_str());
+    std::cout << "Successfully wrote MG nu_ratio file -- deleting! "
               << std::endl;
   }
 

@@ -21,6 +21,7 @@ endif()
     NAMES
        multigroup_lib_builder.hh
     PATHS
+       /home/keadyk/development/CSK_generator/src/
        ${COMPTON_INC_DIR}
        $ENV{COMPTON_INC_DIR}
        $ENV{VENDOR_DIR}/include
@@ -46,6 +47,7 @@ endif()
 find_library(COMPTON_LIBRARY
     NAMES ${COMPTON_LIBRARY_NAME}
     PATHS
+        /home/keadyk/builds/gcc/CSK_generator/
         ${COMPTON_LIB_DIR}
         $ENV{COMPTON_LIB_DIR}
         $ENV{VENDOR_DIR}/lib
