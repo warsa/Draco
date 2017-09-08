@@ -608,7 +608,7 @@ machines."  )
 endmacro()
 
 #------------------------------------------------------------------------------
-# Setup COMPTON (https://gitlab.lanl.gov/csk)
+# Setup COMPTON (https://gitlab.lanl.gov/keadyk/CSK_generator)
 #------------------------------------------------------------------------------
 macro( setupCOMPTON )
 
