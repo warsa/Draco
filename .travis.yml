@@ -10,12 +10,12 @@ dist: trusty
 env:
   global:
     - BLAS_blas_LIBRARY=/usr/lib/libblas.a
-    - CC=gcc-5
+    - CC=gcc-6
     - CCACHE_CPP2=yes
-    - CMAKE=$HOME/cmake-3.6.2-Linux-x86_64/bin/cmake
-    - CTEST=$HOME/cmake-3.6.2-Linux-x86_64/bin/ctest
-    - CXX=g++-5
-    - FC=gfortran-5
+    - CMAKE=$HOME/cmake-3.8.2-Linux-x86_64/bin/cmake
+    - CTEST=$HOME/cmake-3.8.2-Linux-x86_64/bin/ctest
+    - CXX=g++-6
+    - FC=gfortran-6
     - LAPACK_LIB_DIR=/usr/lib
     - OMP_NUM_THREADS=4
     - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
@@ -33,9 +33,9 @@ addons:
     packages:
       - ccache
       - libgsl0-dev
-      - gcc-5
-      - g++-5
-      - gfortran-5
+      - gcc-6
+      - g++-6
+      - gfortran-6
       - liblapack-dev
 
 before_install:
@@ -45,7 +45,7 @@ before_install:
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
-  - ./.travis-install-dependencies.sh
+  - travis_wait ./.travis-install-dependencies.sh
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
@@ -55,13 +55,13 @@ script:
   - ./.travis-run-tests.sh
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-5; fi
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
 
 cache:
   - ccache
 
 compiler:
-  - gcc
+  - gcc-6
 
 git:
   depth: 3

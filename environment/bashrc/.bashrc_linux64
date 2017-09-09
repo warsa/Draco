@@ -40,20 +40,16 @@ add_to_path ${VENDOR_DIR}/bin PATH
 target=`uname -n`
 case $target in
   ccscs[1-9]*)
-    if [[ -d /scratch/vendors/Modules.core ]]; then
-      # spack generated "core" modulefils
-      export MODULEPATH=/scratch/vendors/Modules.core
-    fi
-
-    # hand-written modulefiles for non spack tools.
-    module use --append /scratch/vendors/Modules.lmod
+    # Add /scratch/vendors/Modules.lmod (totalview, ddt, etc.)
+    # Add /scratch/vendors/Modules.core (spack generated modules).
+    module load user_contrib
     if [[ -d $HOME/privatemodules ]]; then
       module use --append $HOME/privatemodules
     fi
     dm_core="cmake eospac git tk ndi python doxygen ccache numdiff totalview \
 dia graphviz ack"
     dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
-    dm_openmpi="openmpi parmetis superlu-dist/4.3-netlib trilinos valgrind"
+    dm_openmpi="openmpi parmetis superlu-dist trilinos valgrind"
     export dracomodules="$dm_core $dm_gcc $dm_openmpi"
     ;;
   ccsnet3*)
