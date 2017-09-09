@@ -12,8 +12,8 @@ env:
     - BLAS_blas_LIBRARY=/usr/lib/libblas.a
     - CC=gcc-6
     - CCACHE_CPP2=yes
-    - CMAKE=$HOME/cmake-3.8.2-Linux-x86_64/bin/cmake
-    - CTEST=$HOME/cmake-3.8.2-Linux-x86_64/bin/ctest
+    - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
+    - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
     - CXX=g++-6
     - FC=gfortran-6
     - LAPACK_LIB_DIR=/usr/lib
@@ -70,17 +70,11 @@ git:
 # output from printenv
 #
 # CASHER_DIR=/home/travis/.casher
-# CC=gcc-5
 # CCACHE_CPP2=yes
 # CI=true
-# CMAKE=/home/travis/cmake-3.5.2-Linux-x86_64/bin/cmake
-# CMAKE_VERSION=3.5.2-Linux-x86_64
 # COMPOSER_NO_INTERACTION=1
 # CONTINUOUS_INTEGRATION=true
-# CTEST=/home/travis/cmake-3.5.2-Linux-x86_64/bin/ctest
-# CXX=g++-5
 # DEBIAN_FRONTEND=noninteractive
-# FC=gfortran-5
 # GEM_HOME=/home/travis/.rvm/gems/ruby-2.2.5
 # GEM_PATH=/home/travis/.rvm/gems/ruby-2.2.5:/home/travis/.rvm/gems/ruby-2.2.5@global
 # GIT_ASKPASS=echo
