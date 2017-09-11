@@ -12,6 +12,7 @@
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
