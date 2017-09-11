@@ -236,8 +236,6 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 
 //----------------------------------------------------------------------------//
 //!  Tests the Compton mg build capability
-//----------------------------------------------------------------------------//
-//!  Tests the Compton mg build capability
 void compton_build_test(rtt_dsxx::UnitTest &ut) {
   // Start the test.
 
