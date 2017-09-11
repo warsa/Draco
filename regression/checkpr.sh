@@ -168,14 +168,14 @@ function startCI()
     rflag="-r"
   fi
 
-  logfile=${logdir}/${machine_name_short}-${project}-${build_type}${edash}${extra}-master-${pr}.log
-  allow_file_to_age $logfile 600
-  echo " "
-  echo "- Starting CI regression ${extrastring}for ${pr}."
-  echo "  Log: $logfile"
+  # logfile=${logdir}/${machine_name_short}-${project}-${build_type}${edash}${extra}-master-${pr}.log
+  # allow_file_to_age $logfile 600
+  echo -e "\n- Starting CI regression ${extrastring}for ${pr}."
+#  echo "  Log: $logfile"
+  echo "  Log: $logdir/${machine_name_short}-${build_type}-master-YYYYMMDD-hhmm.log"
   echo " "
   cmd="$rscriptdir/regression-master.sh ${rflag} -b ${build_type}"
-  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr} &> $logfile"
+  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr}"
   echo "$cmd"
   eval "$cmd"
 }
