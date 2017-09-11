@@ -80,13 +80,12 @@ find_path( COMPTON_INCLUDE_DIR
   NAMES multigroup_lib_builder.hh
   HINTS ${COMPTON_ROOT_DIR}/include ${COMPTON_INCLUDEDIR}
   PATH_SUFFIXES Release Debug
-
+)
 
 set( COMPTON_LIBRARY_NAME Lib_compton)
 if( OPENMP_FOUND )
   set( COMPTON_LIBRARY_NAME Lib_compton_omp)
 endif()
-
 find_library( COMPTON_LIBRARY
   NAMES ${COMPTON_LIBRARY_NAME}
   HINTS ${COMPTON_ROOT_DIR}/lib ${COMPTON_LIBDIR}
