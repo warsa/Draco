@@ -24,7 +24,7 @@ macro( add_dir_if_exists package )
 endmacro()
 
 # Extra 'draco-only' flags (don't pass these to Capsaicin).
-if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
+if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     toggle_compiler_flag( TRUE "-Wfloat-equal -Wunused-macros" "CXX;C" "DEBUG")
   endif()
