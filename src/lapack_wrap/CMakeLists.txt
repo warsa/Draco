@@ -3,17 +3,16 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for lapack_wrap.
-# note   Copyright (C) 2016, Los Alamos National Security
+# note   Copyright (C) 2016-2017, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( lapack_wrap CXX )
 
 # ---------------------------------------------------------------------------- #
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 if( NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
-
   if( NOT lapack_FOUND )
     message( STATUS
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
@@ -22,7 +21,7 @@ if( NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
       "NOTE: Skipping lapack_wrap component because Generator is XCode" )
   endif()
 
-else()
+else(NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
 
   if( MSVC )
 
@@ -51,12 +50,12 @@ else()
   else()
 
     # cmake --help-module FortranCInterface
-    # This module automatically detects the API by which C and Fortran
-    # languages interact.
+    # This module automatically detects the API by which C and Fortran languages
+    # interact.
     include(FortranCInterface)
 
-    # A function is provided to generate a C header file containing macros
-    # to mangle symbol names:
+    # A function is provided to generate a C header file containing macros to
+    # mangle symbol names:
     #
     # FortranCInterface_HEADER(<file>
     #                          [MACRO_NAMESPACE <macro-ns>]
@@ -65,8 +64,8 @@ else()
 
     if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
       # This creates a "lapack_wrap.h" header that defines mangling macros
-      # FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().
-      # define saxpy FC_GLOBAL(saxpy, SAXPY)
+      # FC_GLOBAL(), FC_GLOBAL_() FC_MODULE(), and FC_MODULE().  define saxpy
+      # FC_GLOBAL(saxpy, SAXPY)
       FortranCInterface_HEADER( lapack_wrap/config.h
         MACRO_NAMESPACE "FC_"
         SYMBOLS scopy dcopy saxpy daxpy sscal dscal sdot ddot snrm2 dnrm2
@@ -76,8 +75,7 @@ else()
 
   endif()
 
-  # Omit this package is the mangling was not found by
-  # FortranCInterface.cmake
+  # Omit this package is the mangling was not found by FortranCInterface.cmake
   if( EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
     # if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
 
@@ -131,7 +129,7 @@ else()
     message("   lapack_wrap - skipped because FortranCInterface failed.")
   endif()
 
-endif() # NOT lapack_FOUND
+endif(NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode) # NOT lapack_FOUND
 
 #------------------------------------------------------------------------------#
 # End lapack_wrap/CMakeLists.txt
