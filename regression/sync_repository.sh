@@ -301,11 +301,18 @@ echo "========================================================================"
 echo " "
 # Draco CI ------------------------------------------------------------
 
+# Did we find 'merge' in the repo sync?  If so, then we should reset the
+# last-draco tagfile.
+unset rmlastdracotag
+draco_merge=`cat $TMPFILE_DRACO | grep merge | wc -l`
+if [[ $draco_merge -gt 0 ]]; then
+  rmlastdracotag="-t"
+fi
 draco_prs=`cat $TMPFILE_DRACO | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
 # remove any duplicates
 draco_prs=`echo $draco_prs | xargs -n1 | sort -u | xargs`
 for pr in $draco_prs; do
-  run "$scriptdir/checkpr.sh -r -p draco -f $pr"
+  run "$scriptdir/checkpr.sh -r -p draco -f $pr $rmlastdracotag"
 done
 
 # Jayenne CI ----------------------------------------------------------

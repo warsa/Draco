@@ -26,7 +26,6 @@ fi
 # import some bash functions
 source $rscriptdir/scripts/common.sh
 
-
 if [[ ! ${subproj} ]]; then
   die "Fatal Error, subproj not found in environment."
 fi
