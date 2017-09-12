@@ -132,5 +132,5 @@ else(NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
 endif(NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode) # NOT lapack_FOUND
 
 #------------------------------------------------------------------------------#
-# end lapack_wrap/CMakeLists.txt
+# End lapack_wrap/CMakeLists.txt
 #------------------------------------------------------------------------------#

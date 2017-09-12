@@ -1,9 +1,9 @@
 #-----------------------------*-python-*---------------------------------------#
-# file   cdi_ipcress/test/tIpcress_Interpreter.py
-# author Alex Long <along@lanl.gov>
-# date   Wednesday, September 14, 2016, 14:16 pm
-# brief  This is a Python script that is used to test cdi_ipcress/Ipcress_Interpreter
-# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+# file   c4/test/tstXthi.py
+# author Kelly Thompson <kgt@lanl.gov>
+# date   Saturday, Sep 09, 2017, 14:17 pm
+# brief  This is a Python script that is used to test c4/bin/xthi
+# note   Copyright (C) 2017, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys
@@ -28,46 +28,38 @@ try:
   #----------------------------------------------------------------------------#
 
   # Setup test using sys.argv and run:
-  tIpcress_Interpreter = UnitTest()
-  tIpcress_Interpreter.aut_runTests()
+  tstXthi = UnitTest()
+  tstXthi.aut_runTests()
 
   ##---------------------------------------------------------------------------##
   ## Check the output
   ##---------------------------------------------------------------------------##
 
-  print("Checking the generated output file...\n")
+  print("\nChecking the generated output file...\n")
 
   # These strings should be found:
 
   string_found = \
-    tIpcress_Interpreter.output_contains("This opacity file has 2 materials:")
+    tstXthi.output_contains("Thread 000, core affinity = ")
   if(string_found):
-    tIpcress_Interpreter.passmsg("Found 2 materials.")
+    tstXthi.passmsg("Found thread 0.report")
   else:
-    tIpcress_Interpreter.failmsg("Did not find 2 materials.")
+    tstXthi.failmsg("Did not find thread 0 report.")
 
   string_found = \
-    tIpcress_Interpreter.output_contains("Material 1 has ID number 10001")
+    tstXthi.output_contains("Rank 00000, Thread")
   if(string_found):
-    tIpcress_Interpreter.passmsg("Found material ID 10001.")
+    tstXthi.passmsg("Found MPI rank 0.")
   else:
-    tIpcress_Interpreter.failmsg("Did not find material ID 10001.")
-
-  string_found = \
-    tIpcress_Interpreter.output_contains("Frequency grid")
-  if(string_found):
-    tIpcress_Interpreter.passmsg("Found Frequency grid.")
-  else:
-    tIpcress_Interpreter.failmsg("Did not find Frequency grid.")
-  print(" ")
+    tstXthi.failmsg("Did not find MPI rank 0.")
 
   # Diff the output vs a gold file.
-  tIpcress_Interpreter.aut_numdiff()
+  # tstXthi.aut_numdiff()
 
   ##---------------------------------------------------------------------------##
   ## Final report
   ##---------------------------------------------------------------------------##
-  tIpcress_Interpreter.aut_report()
+  tstXthi.aut_report()
 
 ##----------------------------------------------------------------------------##
 ## Handle outstanding exceptions

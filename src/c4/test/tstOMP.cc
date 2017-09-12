@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/test/phw.cc
+ * \file   c4/test/tstOMP.cc
  * \author Kelly Thompson
  * \date   Tue Jun  6 15:03:08 2006
  * \brief  Demonstrate basic OMP threads under MPI.
