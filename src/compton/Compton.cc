@@ -125,14 +125,14 @@ Compton::Compton(const std::string &filehandle,
  * \return   n_opac x n_grp x n_grp x n_xi interpolated opacity values
  */
 std::vector<std::vector<std::vector<std::vector<double>>>>
-Compton::interpolate_csk(const double etemp) const {
+Compton::interpolate_csk(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_csk(etemp);
+  return ei->interpolate_csk(etemp, limit_grps);
 }
 
 //---------------------------------------------------------------------------//
@@ -148,13 +148,13 @@ Compton::interpolate_csk(const double etemp) const {
  * \return    n_grp x n_grp interpolated nu_ratio values
  */
 std::vector<std::vector<double>>
-Compton::interpolate_nu_ratio(const double etemp) const {
+Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
 
   // Be sure the passed electron temperature is within the bounds of the lib!
   Require(etemp >= ei->get_min_etemp());
   Require(etemp <= ei->get_max_etemp());
 
   // call the appropriate routine in the electron interp object
-  return ei->interpolate_nu_ratio(etemp);
+  return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
 }

@@ -72,11 +72,11 @@ public:
 
   //! Interpolation of all csk opacity data to a certain electron temperature:
   std::vector<std::vector<std::vector<std::vector<double>>>>
-  interpolate_csk(const double etemp) const;
+  interpolate_csk(const double etemp, const bool limit_grps = true) const;
 
   //! Interpolation of all nu_ratio data to an electron temperature:
   std::vector<std::vector<double>>
-  interpolate_nu_ratio(const double etemp) const;
+  interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
 
   //! Retrieve group structure for the given library:
   std::vector<double> get_group_bounds() const {
