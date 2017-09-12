@@ -259,8 +259,6 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
     }
   }
 
-  rtt_c4::global_barrier();
-
   Ensure(check_class_invariants());
 }
 
