@@ -132,7 +132,7 @@ fi
 run "module use --append /scratch/vendors/Modules.lmod"
 
 # Load default set of modules
-dm_core="cmake eospac git ndi python graphviz doxygen ccache numdiff"
+dm_core="cmake/3.9.1 eospac git ndi python graphviz doxygen ccache numdiff"
 dm_gcc="gcc/6.3.0 netlib-lapack gsl metis random123 csk qt"
 dm_openmpi="openmpi parmetis superlu-dist/4.3-netlib trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
