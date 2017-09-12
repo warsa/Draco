@@ -59,6 +59,11 @@ add_component_library(
    VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_PATH}"
    )
 
+# xthi binary
+if( NOT WIN32 )
+  add_subdirectory( bin )
+endif()
+
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #

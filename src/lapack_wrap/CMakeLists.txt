@@ -6,8 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
-#------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.0.0)
 project( lapack_wrap CXX )
 
@@ -15,13 +13,15 @@ project( lapack_wrap CXX )
 # Generate config.h (only occurs when cmake is run)
 # ---------------------------------------------------------------------------- #
 if( NOT lapack_FOUND OR ${CMAKE_GENERATOR} MATCHES Xcode)
-   if( NOT lapack_FOUND )
-      message( STATUS
+
+  if( NOT lapack_FOUND )
+    message( STATUS
       "NOTE: Skipping lapack_wrap component because LAPACK is not found." )
-   else()
-      message( STATUS
+  else()
+    message( STATUS
       "NOTE: Skipping lapack_wrap component because Generator is XCode" )
-   endif()
+  endif()
+
 else()
 
   if( MSVC )
@@ -81,9 +81,9 @@ else()
   if( EXISTS ${PROJECT_BINARY_DIR}/lapack_wrap/config.h )
     # if( FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND )
 
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Source files
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
 
     file( GLOB sources *.cc )
     file( GLOB headers *.hh )
@@ -94,9 +94,9 @@ else()
       list( APPEND sources ${headers} )
     endif()
 
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Directories to search for include directives
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
 
     include_directories(
       ${PROJECT_SOURCE_DIR}     # sources
@@ -105,34 +105,34 @@ else()
       ${dsxx_BINARY_DIR}        # ds++/config.h
       )
 
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Installation instructions
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
 
     install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/lapack_wrap )
 
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Unit tests
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
 
     if( BUILD_TESTING )
       add_subdirectory( test )
     endif()
 
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # Autodoc
-    # ---------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
 
     process_autodoc_pages()
 
-    # --------------------------------------------------------------------------- #
+    # ------------------------------------------------------------------------ #
     # FortranCInterface_GLOBAL_FOUND AND FortranCInterface_MODULE_FOUND
   else()
     message("   lapack_wrap - skipped because FortranCInterface failed.")
   endif()
 
-  # --------------------------------------------------------------------------- #
-  # lapack_FOUND?
-else()
-  message("   lapack_wrap - skipped because lapack was not found.")
 endif() # NOT lapack_FOUND
+
+#------------------------------------------------------------------------------#
+# End lapack_wrap/CMakeLists.txt
+#------------------------------------------------------------------------------#
