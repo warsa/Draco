@@ -60,7 +60,7 @@ add_component_library(
    )
 
 # xthi binary
-if( NOT WIN32 )
+if( NOT WIN32 AND NOT APPLE )
   add_subdirectory( bin )
 endif()
 
