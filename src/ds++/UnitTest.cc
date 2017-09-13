@@ -86,10 +86,9 @@ std::string UnitTest::resultMessage() const {
 }
 
 //---------------------------------------------------------------------------//
-/*!
- * \brief Increment the failure count and print a message with the source line
+/*!\brief Increment the failure count and print a message with the source line
  *        number.
- * \param line The line number of the source code where the failure was
+ * \param[in] line The line number of the source code where the failure was
  *        ecnountered.
  */
 bool UnitTest::failure(int line) {

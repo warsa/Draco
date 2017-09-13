@@ -71,7 +71,7 @@ public:
                            std::ostream &out_ = std::cout, bool verbose = true);
 
   //! The copy constructor is disabled.
-  UnitTest(UnitTest const &rhs);
+  UnitTest(UnitTest const &rhs) = delete;
 
   //! Destructor is virtual because this class will be inherited from.
   virtual ~UnitTest(void){/*empty*/};

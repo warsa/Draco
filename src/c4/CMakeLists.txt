@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------#
 # $Id$
 #------------------------------------------------------------------------------#
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.9.0)
 project( c4 CXX )
 
 # ---------------------------------------------------------------------------- #
@@ -60,7 +60,7 @@ add_component_library(
    )
 
 # xthi binary
-if( NOT WIN32 )
+if( NOT WIN32 AND NOT APPLE )
   add_subdirectory( bin )
 endif()
 
