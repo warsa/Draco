@@ -95,8 +95,13 @@ if(NOT TARGET Lib_dsxx)
         "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
       # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
       find_file( MPI_gfortran_LIBRARIES NAMES "libmsmpi.a" )
-      set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-        "msmpi for gfortran" FORCE )
+      if( MPI_gfortran_LIBRARIES )
+        set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
+          "msmpi for gfortran" FORCE )
+      else()
+        message( FATAL_ERROR "Unable to find libmsmpi.a. This library must"
+        " be created from msmpi.dll and saved as a MinGW library. ")
+      endif()
     endif()
   endif()
 
