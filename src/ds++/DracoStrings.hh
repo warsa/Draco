@@ -95,12 +95,18 @@ tokenize(std::string const &str, std::string const &delimiters = " ",
 template <typename T> auto parse_number_impl(std::string const &str) -> T;
 
 // specializations for these types are devined in DracoStrings.cc
-template <> auto parse_number_impl<int>(std::string const &str) -> int;
-template <> auto parse_number_impl<long>(std::string const &str) -> long;
 template <>
-auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
-template <> auto parse_number_impl<float>(std::string const &str) -> float;
-template <> auto parse_number_impl<double>(std::string const &str) -> double;
+DLL_PUBLIC_dsxx auto parse_number_impl<int>(std::string const &str) -> int;
+template <>
+DLL_PUBLIC_dsxx auto parse_number_impl<long>(std::string const &str) -> long;
+template <>
+DLL_PUBLIC_dsxx auto parse_number_impl<unsigned long>(std::string const &str)
+    -> unsigned long;
+template <>
+DLL_PUBLIC_dsxx auto parse_number_impl<float>(std::string const &str) -> float;
+template <>
+DLL_PUBLIC_dsxx auto parse_number_impl<double>(std::string const &str)
+    -> double;
 
 //----------------------------------------------------------------------------//
 /*!
@@ -167,10 +173,9 @@ auto parse_number(std::string const &str, bool verbose = true) -> T;
  * std::vector<double> bar = { 1.0, 2.0, 3.0 }
  */
 template <typename T>
-DLL_PUBLIC_dsxx std::vector<T>
-string_to_numvec(std::string const &str,
-                 std::string const &range_symbols = "{}",
-                 std::string const &delimiters = ",");
+std::vector<T> string_to_numvec(std::string const &str,
+                                std::string const &range_symbols = "{}",
+                                std::string const &delimiters = ",");
 
 //----------------------------------------------------------------------------//
 /*!
