@@ -70,6 +70,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // encourage developers to copy it and modify it for their own
 // use.  We invite comments and improvements.
 
+#ifdef __GNUC__
+#define GNUC_VERSION                                                           \
+  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#if (GNUC_VERSION >= 70000)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wexpansion-to-defined"
+#endif
+#endif
+
 #include <Random123/features/compilerfeatures.h>
 #include <limits>
 #if R123_USE_CXX11_TYPE_TRAITS
@@ -231,5 +240,10 @@ R123_CUDA_DEVICE R123_STATIC_INLINE Ftype u01fixedpt(Itype in) {
 }
 
 } // namespace r123
+
+#ifdef __GNUC__
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 
 #endif
