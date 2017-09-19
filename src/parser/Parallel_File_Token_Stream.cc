@@ -133,7 +133,7 @@ void Parallel_File_Token_Stream::open_() {
     }
   }
   rtt_c4::broadcast(&at_error_, 1, 0);
-  if (at_error_ > 0) {
+  if (at_error_) {
     ostringstream errmsg;
     errmsg << "Cannot construct Parallel_File_Token_Stream.\n"
            << "The file specified could not be found.\n"
