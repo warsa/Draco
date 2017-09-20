@@ -78,9 +78,9 @@ public:
   std::vector<std::vector<double>>
   interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
 
-  //! Retrieve group structure for the given library:
+  //! Retrieve group structure for the given library (in kev):
   std::vector<double> get_group_bounds() const {
-    return ei->get_Cdata()->get_group_bds();
+    return ei->get_Cdata()->get_group_bds_kev();
   }
 
   //! Retrieve min electron temperature for the given library:

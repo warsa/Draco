@@ -10,6 +10,7 @@
 
 // headers provided in draco:
 #include "compton/Compton.hh"
+#include "c4/global.hh"
 #include "ds++/Assert.hh"
 // headers provided in Compton include directory:
 #include "compton_file.hh"
@@ -59,7 +60,7 @@ Compton::Compton(const std::string &filehandle) {
  * \param[in] filehandle The name of the pointwise lib to build MG data from
  * \param[in] grp_bds    A vector containing the multigroup bounds (in keV)
  * \param[in] opac_type  The type of opacity to build. Valid options for CSK
- *                       v0.2 are "jayenne" (for IMC-style opacities) or
+ *                       v0.3 are "jayenne" (for IMC-style opacities) or
  *                       "capsaicin" (for Sn-style opacities). Any other string
  *                       will cause CSK to throw an exception
  * \param[in] wt_func    The frequency weighting function used to numerically
@@ -79,11 +80,13 @@ Compton::Compton(const std::string &filehandle,
   Require(std::ifstream(filehandle).good());
   Require(grp_bds.size() > 0);
 
-  std::cout << "*********************************************************\n"
-            << "WARNING! Building a multigroup library from scratch might\n"
-            << " take a LOOOOOOONG time! (Don't say I didn't warn you.)  \n"
-            << "*********************************************************\n"
-            << std::endl;
+  if (rtt_c4::node() == 0) {
+    std::cout << "*********************************************************\n"
+              << "WARNING! Building a multigroup library from scratch might\n"
+              << " take a LOOOOOOONG time! (Don't say I didn't warn you.)  \n"
+              << "*********************************************************\n"
+              << std::endl;
+  }
 
   // make a group_data struct to pass to the lib builder:
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
@@ -96,7 +99,7 @@ Compton::Compton(const std::string &filehandle,
                                      grp_bds};
 
   // Construct a multigroup library builder:
-  multigroup_lib_builder MG_builder(grp_data);
+  multigroup_lib_builder MG_builder(grp_data, rtt_c4::node());
 
   // build the library:
   MG_builder.build_library();
