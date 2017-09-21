@@ -48,10 +48,10 @@ set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 if( BUILD_TESTING )
 
   if( HAVE_Fortran )
-    # For Unix, this will simply run add_subdirectory(f90sub). For Visual
-    # Studio or XCode, an ExternalProject will be created that uses an
-    # alternate gfortran via Makefiles to generate the library external to the
-    # main project.
+    # For Unix, this will simply run add_subdirectory(f90sub). For Visual Studio
+    # or XCode, an ExternalProject will be created that uses an alternate
+    # gfortran via Makefiles to generate the library external to the main
+    # project.
     include(CMakeAddFortranSubdirectory)
 
     # CMake does not support storing a list of lists when sending data to a
