@@ -25,7 +25,7 @@
 #pragma warning disable 11
 #endif
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
 #define GNUC_VERSION                                                           \
   (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 
@@ -59,7 +59,8 @@
 #endif
 
 /* #if (GNUC_VERSION >= 40600) */
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__clang__)
+/* && (GNUC_VERSION >= 70000) */
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
