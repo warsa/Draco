@@ -1284,6 +1284,17 @@
    fun:PMPI_Init_thread
    ...
 }
+{
+   openmpi211/e0006
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:opal_proc_table_set_value
+   ...
+   fun:PMPI_Init
+   ...
+}
+
 
 #------------------------------------------------------------------------------#
 # Python 2.7
