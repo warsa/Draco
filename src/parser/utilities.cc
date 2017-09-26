@@ -133,19 +133,17 @@ bool unit_expressions_are_required() { return require_unit_expressions; }
  */
 unsigned parse_unsigned_integer(Token_Stream &tokens) {
   Token const token = tokens.shift();
-  if (token.type() == INTEGER) {
-    errno = 0;
-    char *endptr;
-    unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
-    if (Result != static_cast<unsigned>(Result) || errno == ERANGE) {
-      tokens.report_semantic_error("integer value overflows");
-    }
-    Check(endptr != NULL);
-    return Result;
-  } else {
-    tokens.report_syntax_error(token, "expected an unsigned integer");
-    return 0;
-  }
+  tokens.check_syntax(token.type() == INTEGER, "expected an unsigned integer");
+  errno = 0;
+  char *endptr;
+  unsigned long const Result = strtoul(token.text().c_str(), &endptr, 0);
+
+  tokens.check_semantics(Result == static_cast<unsigned>(Result) &&
+                             errno != ERANGE,
+                         "integer value overflows");
+
+  Check(endptr != NULL);
+  return Result;
 }
 
 //---------------------------------------------------------------------------//
@@ -454,18 +452,21 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return A;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'C':
       if (u.size() == 1)
         return C;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'F':
       if (u.size() == 1)
         return F;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'H':
       if (u.size() == 1)
@@ -474,48 +475,56 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return Hz;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'J':
       if (u.size() == 1)
         return J;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'K':
       if (u.size() == 1)
         return K;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'N':
       if (u.size() == 1)
         return N;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'P':
       if (u.size() == 2)
         return Pa;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'S':
       if (u.size() == 1)
         return S;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'T':
       if (u.size() == 1)
         return T;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'V':
       if (u.size() == 1)
         return V;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'W':
       if (u.size() == 1)
@@ -524,6 +533,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return Wb;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'c':
       if (token.text() == "cd")
@@ -532,12 +542,14 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return cm;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'd':
       if (token.text() == "dyne")
         return dyne;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'e':
       if (token.text() == "erg")
@@ -546,24 +558,28 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return eV;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'f':
       if (token.text() == "foot")
         return foot;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'g':
       if (u.size() == 1)
         return g;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'i':
       if (token.text() == "inch")
         return inch;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'k':
       if (token.text() == "kg")
@@ -572,6 +588,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return keV;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'l':
       if (token.text() == "lm")
@@ -580,6 +597,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return lx;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'm':
       if (u.size() == 1)
@@ -588,24 +606,28 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return mol;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'o':
       if (token.text() == "ohm")
         return ohm;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'p':
       if (token.text() == "pound")
         return pound;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 'r':
       if (token.text() == "rad")
         return rad;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     case 's':
       if (u.size() == 1)
@@ -614,6 +636,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
         return sr;
       else
         tokens.report_syntax_error("expected a unit");
+      break;
 
     default:
       tokens.report_syntax_error("expected a unit");
@@ -846,9 +869,9 @@ std::string parse_manifest_string(Token_Stream &tokens) {
 
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry) {
-  if (parsed_geometry != rtt_mesh_element::END_GEOMETRY) {
-    tokens.report_semantic_error("geometry specified twice");
-  }
+  tokens.check_semantics(parsed_geometry == rtt_mesh_element::END_GEOMETRY,
+                         "geometry specified twice");
+
   Token const token = tokens.shift();
   if (token.text() == "axisymmetric" || token.text() == "cylindrical") {
     parsed_geometry = rtt_mesh_element::AXISYMMETRIC;

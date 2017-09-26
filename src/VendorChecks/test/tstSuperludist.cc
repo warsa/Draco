@@ -3,7 +3,7 @@
  * \file   VendorChecks/test/tstSuperludist.cc
  * \date   Monday, May 16, 2016, 16:30 pm
  * \brief  Attempt to link to libsuperludist and run a simple problem.
- * \note   Copyright (C) 2016, Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This code is a modified version of \c pddrive.c provided in the EXAMPLES
@@ -52,9 +52,13 @@ int main(int argc, char *argv[]) {
  *   5. Release the process grid and terminate the MPI environment
  */
 void test_superludist(rtt_c4::ParallelUnitTest &ut) {
-  // If we are using suprelu-dist@5:, then we need
-  //   superlu_dist_options_t options;
+// for superlu-dist > version 4, SUPERLU_DIST_MAJOR_VERSION is defined in
+// superlu_defs.h
+#ifdef SUPERLU_DIST_MAJOR_VERSION
+  superlu_dist_options_t options;
+#else
   superlu_options_t options;
+#endif
   SuperLUStat_t stat;
   SuperMatrix A;
   ScalePermstruct_t ScalePermstruct;
@@ -170,7 +174,7 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
   // Initialize the statistics variables.
   PStatInit(&stat);
 
-  if (*stat.ops != 0)
+  if (!rtt_dsxx::soft_equiv(static_cast<double>(*stat.ops), 0.0))
     ITFAILS;
   if (stat.TinyPivots != 0)
     ITFAILS;
@@ -225,8 +229,9 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
 //---------------------------------------------------------------------------//
 /*!
  * \brief Read the matrix from data file in Harwell-Boeing format, and
- * distribute it to processors in a distributed compressed row format. It also
- * generate the distributed true solution X and the right-hand side RHS.
+ *        distribute it to processors in a distributed compressed row format. It
+ *        also generate the distributed true solution X and the right-hand side
+ *        RHS.
  *
  * \param[out] A    local matrix A in NR_loc format.
  * \param[in]  nrhs number of right-hand sides.

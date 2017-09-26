@@ -103,13 +103,16 @@ macro(dbsSetupCompilers)
   # In component_macros.cmake, this target property will be set:
   # INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
 
-  set(USE_IPO ON)
-  if( CRAY_PE )
-    set( USE_IPO OFF )
-  elseif( "${SITENAME}" STREQUAL "Moonlight" )
-    set( USE_IPO OFF )
+  #  See https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT USE_IPO)
+
+  # 2017-09-15 KT - eliminate configure warning in Win32 nightly regressions:
+  # "CMake doesn't support IPO for current compiler"
+  if( ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+    set( USE_IPO OFF CACHE BOOL
+      "Enable Interprocedureal Optimization for Release builds." FORCE )
   endif()
-  set( USE_IPO ${USE_IPO} CACHE BOOL "Use IPO?" FORCE )
 
 endmacro()
 
