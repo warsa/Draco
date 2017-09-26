@@ -52,10 +52,13 @@ public:
     int num_long(2);
     int custom_array_of_block_length[3] = {num_int, num_double, num_long};
 
+    int int_size, double_size;
+    MPI_Type_size(MPI_INT, &int_size);
+    MPI_Type_size(MPI_DOUBLE, &double_size);
+
     // Displacements of each type in the cell
     MPI_Aint custom_array_of_block_displace[3] = {
-        0, num_int * sizeof(int),
-        num_int * sizeof(int) + num_double * sizeof(double)};
+        0, num_int * int_size, num_int * int_size + num_double * double_size};
 
     //Type of each memory block
     MPI_Datatype custom_array_of_types[3] = {MPI_INT, MPI_DOUBLE, MPI_LONG};
@@ -74,7 +77,7 @@ public:
 
   int get_int1(void) const { return my_ints[0]; }
   int get_int2(void) const { return my_ints[1]; }
-  int get_int3(void) const { return my_ints[3]; }
+  int get_int3(void) const { return my_ints[2]; }
   double get_double1(void) const { return my_doubles[0]; }
   double get_double2(void) const { return my_doubles[1]; }
   long get_long1(void) const { return my_longs[0]; }
@@ -168,6 +171,9 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     std::cout << " Size of custom type: " << sizeof(Custom) << std::endl;
     std::cout << " Size of custom MPI type: " << custom_mpi_type_size
               << std::endl;
+
+    if (custom_mpi_type_size != sizeof(Custom))
+      ITFAILS;
   }
 
   // C4_Req communication handles.
@@ -189,8 +195,8 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
                                Custom::mpi_tag);
 
   try {
-    // send data using non-blocking synchronous send. Custom sends check to make\
-    // sure that the type
+    // send data using non-blocking synchronous send. Custom sends check to make
+    // sure that the type, T is the same size as its MPI type
     rtt_c4::send_is_custom(comm_int[1], &my_custom_object, 1, right,
                            Custom::mpi_tag);
 
@@ -200,12 +206,24 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     // check that the exected results match the custom type from the left rank
     Custom expected_custom(left);
 
+    std::cout << "Expected ints: " << expected_custom.get_int1() << " "
+              << expected_custom.get_int2() << " " << expected_custom.get_int3()
+              << std::endl;
+    std::cout << "Received ints: " << recv_custom_object.get_int1() << " "
+              << recv_custom_object.get_int2() << " "
+              << recv_custom_object.get_int3() << std::endl;
+
     if (expected_custom.get_int1() != recv_custom_object.get_int1())
       ITFAILS;
     if (expected_custom.get_int2() != recv_custom_object.get_int2())
       ITFAILS;
     if (expected_custom.get_int3() != recv_custom_object.get_int3())
       ITFAILS;
+
+    std::cout << "Expected double 1: " << expected_custom.get_double1() << " ";
+    std::cout << "Received double 1: " << recv_custom_object.get_double1();
+    std::cout << std::endl;
+
     if (!soft_equiv(expected_custom.get_double1(),
                     recv_custom_object.get_double1()))
       ITFAILS;
