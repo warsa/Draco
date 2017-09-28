@@ -34,6 +34,15 @@ DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
 }
 
 //---------------------------------------------------------------------------//
+template <typename T>
+DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
+                              int tag) {
+  MPI_Send(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag,
+           communicator);
+  return C4_SUCCESS;
+}
+
+//---------------------------------------------------------------------------//
 
 template <typename T>
 DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
@@ -51,6 +60,31 @@ DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
                                          communicator, &request.r());
   Check(retval == MPI_SUCCESS);
   return;
+}
+
+//---------------------------------------------------------------------------//
+template <typename T>
+DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag) {
+  // get a handle to the MPI_Status
+  MPI_Status status;
+
+  // do the blocking receive
+  Remember(int check =)
+      MPI_Recv(buffer, size, T::MPI_Type, source, tag, communicator, &status);
+  Check(check == MPI_SUCCESS);
+
+  // get the count of received data
+  int count = 0;
+  MPI_Get_count(&status, T::MPI_Type, &count);
+  return count;
+}
+
+//---------------------------------------------------------------------------//
+template <typename T>
+DLL_PUBLIC_c4 int message_size_custom(C4_Status status, const T &mpi_type) {
+  int receive_count = 0;
+  MPI_Get_count(status.get_status_obj(), mpi_type, &receive_count);
+  return receive_count;
 }
 
 } // end namespace rtt_c4

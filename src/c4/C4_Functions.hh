@@ -136,10 +136,21 @@ DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination,
                        int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
+//! Do a point-to-point, blocking send.
+template <typename T>
+DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
+                              int tag);
+
+//---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
 template <typename T>
 DLL_PUBLIC_c4 int receive(T *buffer, int size, int source,
                           int tag = C4_Traits<T *>::tag);
+
+//---------------------------------------------------------------------------//
+//! Do a point-to-point, blocking receive with a custom MPI type
+template <typename T>
+DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send of a user-defined type.
@@ -229,6 +240,16 @@ void send_is(C4_Req &request, T const *buffer, int size, int destination) {
   send_is(request, buffer, size, destination, tag);
   return;
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Get the size of a message with custom types
+ *
+ * \param[in] request C4_Req object that will hold MPI request
+ * \return number of type T objects in the completed message
+ */
+template <typename T>
+DLL_PUBLIC_c4 int message_size_custom(C4_Status status, const T &mpi_type);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -363,11 +384,16 @@ int scatterv(T *send_buffer, int *send_sizes, int *send_displs,
  */
 template <typename T> DLL_PUBLIC_c4 void global_sum(T &x);
 
+//---------------------------------------------------------------------------//
 /*!
  * \brief Do a non-blocking global sum of a scalar variable.
+ *
+ * \param[in|out] send_buffer scalar value on this processing element
+ * \param[in|out] recv_buffer scalar value summed across all ranks
+ * \param[in|out] request C4_Requst handle for testing completed message
  */
 template <typename T>
-DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer, C4_Req &);
+DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);
 
 //---------------------------------------------------------------------------//
 /*!
