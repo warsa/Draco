@@ -5,10 +5,7 @@
  * \date   Mon Mar 25 17:06:25 2002
  * \brief  Serial implementation of C4.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_C4_Serial_hh__
@@ -77,7 +74,6 @@ DLL_PUBLIC_c4 int send_receive(TS * /*sendbuf*/, int /*sendcount*/,
 }
 
 //---------------------------------------------------------------------------//
-
 template <class T>
 int receive(T * /* buffer */, int /* size */, int /* source */, int /* tag */) {
   return C4_SUCCESS;
@@ -95,7 +91,8 @@ DLL_PUBLIC_c4 int receive_udt(T * /*buffer*/, int /*size*/, int /*destination*/,
   return C4_SUCCESS;
 }
 
-template <typename T> DLL_PUBLIC_c4 T prefix_sum(T &node_value) {
+//----------------------------------------------------------------------------//
+template <typename T> DLL_PUBLIC_c4 T prefix_sum(T const node_value) {
   return node_value;
 }
 

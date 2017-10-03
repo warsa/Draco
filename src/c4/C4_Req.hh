@@ -5,8 +5,7 @@
  * \date   Thu Jun  2 09:54:02 2005
  * \brief  C4_Req class definition.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_C4_Req_hh
@@ -27,8 +26,8 @@ namespace rtt_c4 {
  * \class C4_ReqRefRep
  * \brief Handle for non-blocking message requests.
  *
- * This class provides an encapsulator for the message requests (MPI) which
- * are produced by non blocking calls.  This class automatically waits for the
+ * This class provides an encapsulator for the message requests (MPI) which are
+ * produced by non blocking calls.  This class automatically waits for the
  * message to complete when the containing object goes out of scope, thus
  * plugging one of the easiest types of programming errors with non blocking
  * messaging.  Reference counting is used so that these may be passed by value
@@ -95,7 +94,7 @@ private:
  * without accidentally triggering a program stall.
  *
  * This class provides an interface for non-blocking request handles that
- * should be used by users.  
+ * should be used by users.
  */
 //===========================================================================//
 
@@ -131,8 +130,8 @@ private:
 
 // FRIENDSHIP
 
-// Specific friend C4 functions that may need to manipulate the
-// C4_ReqRefRep internals.
+// Specific friend C4 functions that may need to manipulate the C4_ReqRefRep
+// internals.
 
 #ifdef C4_MPI
   template <class T>
