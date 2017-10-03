@@ -39,8 +39,12 @@ public:
   ~Custom() {}
 
 public:
-  static MPI_Datatype MPI_Type;
   static const int mpi_tag = 512;
+#ifdef C4_SCALAR
+  static void commit_mpi_type(void) {}
+  static int MPI_Type;
+#else
+  static MPI_Datatype MPI_Type;
   static void commit_mpi_type(void) {
     MPI_Datatype og_MPI_Custom;
 
@@ -74,6 +78,7 @@ public:
     // context (I don't know why this is necessary)
     MPI_Type_dup(og_MPI_Custom, &MPI_Type);
   }
+#endif
 
   int get_int1(void) const { return my_ints[0]; }
   int get_int2(void) const { return my_ints[1]; }
@@ -89,8 +94,12 @@ private:
   long my_longs[2];
 };
 
+#ifdef C4_SCALAR
+int Custom::MPI_Type = 0;
+#else
 // the static data member needs to be defined outside the class
 MPI_Datatype Custom::MPI_Type = MPI_Datatype();
+#endif
 
 void test_simple(rtt_dsxx::UnitTest &ut) {
   // borrowed from http://mpi.deino.net/mpi_functions/MPI_Issend.html.
@@ -163,6 +172,10 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
   // an uncommited type is used in a send/receive
   Custom::commit_mpi_type();
 
+#ifdef C4_SCALAR
+  std::cout << "SERIAL TEST: This should just end in a try block catching an ";
+  std::cout << "insist failure" << std::endl;
+#else
   if (rtt_c4::node() == 0) {
     std::cout << "Test send_is_custom() by sending data to proc myid+1..."
               << std::endl;
@@ -175,6 +188,7 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     if (custom_mpi_type_size != sizeof(Custom))
       ITFAILS;
   }
+#endif
 
   // C4_Req communication handles.
   std::vector<rtt_c4::C4_Req> comm_int(2);
@@ -200,8 +214,20 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
     rtt_c4::send_is_custom(comm_int[1], &my_custom_object, 1, right,
                            Custom::mpi_tag);
 
+    // make status object to get the size of the received buffer
+    rtt_c4::C4_Status recv_custom_status;
+
     // wait for all communication to finish
-    rtt_c4::wait_all(comm_int.size(), &comm_int[0]);
+    comm_int[1].wait();
+    comm_int[0].wait(&recv_custom_status);
+
+    // get the size of the message (number of objects sent) using a C4_Status
+    int recv_size =
+        rtt_c4::message_size_custom(recv_custom_status, Custom::MPI_Type);
+
+    // make sure only one object was received
+    if (recv_size != 1)
+      ITFAILS;
 
     // check that the exected results match the custom type from the left rank
     Custom expected_custom(left);
@@ -244,6 +270,76 @@ void test_send_custom(rtt_dsxx::UnitTest &ut) {
 #endif
   }
 
+  // do the send receive again with a blocking version of custom sends and
+  // receives
+
+  // create some data to send/recv
+  Custom my_custom_object_block(rtt_c4::node());
+
+#ifdef C4_SCALAR
+  // in saclar mode make the receive object the same as the on node object
+  Custom recv_custom_object_block(rtt_c4::node());
+#else
+  // otherwise make it an invalid object
+  Custom recv_custom_object_block(-1);
+#endif
+
+  if (rtt_c4::nodes() > 1) {
+    // send data using blocking synchronous send. Custom sends check to make
+    // sure that the type, T is the same size as its MPI type. Odd ranks send
+    // first
+    int recv_size = -1;
+    if (rtt_c4::node() % 2) {
+      rtt_c4::send_custom(&my_custom_object_block, 1, right, Custom::mpi_tag);
+    } else {
+      recv_size = rtt_c4::receive_custom(&recv_custom_object_block, 1, left,
+                                         Custom::mpi_tag);
+    }
+    if (!(rtt_c4::node() % 2)) {
+      rtt_c4::send_custom(&my_custom_object_block, 1, right, Custom::mpi_tag);
+
+    } else {
+      recv_size = rtt_c4::receive_custom(&recv_custom_object_block, 1, left,
+                                         Custom::mpi_tag);
+    }
+
+    // make sure only one object was received
+    if (recv_size != 1)
+      ITFAILS;
+
+    // check that the exected results match the custom type from the left rank
+    Custom expected_custom(left);
+
+    std::cout << "Expected ints: " << expected_custom.get_int1() << " "
+              << expected_custom.get_int2() << " " << expected_custom.get_int3()
+              << std::endl;
+    std::cout << "Received ints: " << recv_custom_object_block.get_int1() << " "
+              << recv_custom_object_block.get_int2() << " "
+              << recv_custom_object_block.get_int3() << std::endl;
+
+    if (expected_custom.get_int1() != recv_custom_object_block.get_int1())
+      ITFAILS;
+    if (expected_custom.get_int2() != recv_custom_object_block.get_int2())
+      ITFAILS;
+    if (expected_custom.get_int3() != recv_custom_object_block.get_int3())
+      ITFAILS;
+
+    std::cout << "Expected double 1: " << expected_custom.get_double1() << " ";
+    std::cout << "Received double 1: "
+              << recv_custom_object_block.get_double1();
+    std::cout << std::endl;
+
+    if (!soft_equiv(expected_custom.get_double1(),
+                    recv_custom_object_block.get_double1()))
+      ITFAILS;
+    if (!soft_equiv(expected_custom.get_double2(),
+                    recv_custom_object_block.get_double2()))
+      ITFAILS;
+    if (expected_custom.get_long1() != recv_custom_object_block.get_long1())
+      ITFAILS;
+    if (expected_custom.get_long2() != recv_custom_object_block.get_long2())
+      ITFAILS;
+  }
   return;
 }
 

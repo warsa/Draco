@@ -19,8 +19,8 @@ namespace rtt_c4 {
 template <typename T>
 DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
                                   int destination, int tag) {
-
   Require(!request.inuse());
+  Require(buffer != nullptr);
 
   // set the request
   request.set();
@@ -37,6 +37,7 @@ DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
 template <typename T>
 DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
                               int tag) {
+  Require(buffer != nullptr);
   MPI_Send(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag,
            communicator);
   return C4_SUCCESS;
@@ -48,6 +49,7 @@ template <typename T>
 DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
                                         int source, int tag) {
   Require(!request.inuse());
+  Require(buffer != nullptr);
   Remember(int custom_mpi_type_size);
   Remember(MPI_Type_size(T::MPI_Type, &custom_mpi_type_size));
   Require(custom_mpi_type_size == sizeof(T));
@@ -65,6 +67,7 @@ DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
 //---------------------------------------------------------------------------//
 template <typename T>
 DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag) {
+  Require(buffer != nullptr);
   // get a handle to the MPI_Status
   MPI_Status status;
 

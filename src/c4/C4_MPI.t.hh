@@ -27,6 +27,8 @@ namespace rtt_c4 {
 
 template <typename T>
 DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination, int tag) {
+  Require(buffer != nullptr);
+
   MPI_Send(const_cast<T *>(buffer), size, MPI_Traits<T>::element_type(),
            destination, tag, communicator);
   return C4_SUCCESS;
@@ -36,6 +38,7 @@ DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination, int tag) {
 
 template <typename T>
 DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
+  Require(buffer != nullptr);
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -55,6 +58,8 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source, int tag) {
 template <typename T>
 DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
                            C4_Datatype &data_type, int tag) {
+  Require(buffer != nullptr);
+
   MPI_Send(const_cast<T *>(buffer), size, data_type, destination, tag,
            communicator);
   return C4_SUCCESS;
@@ -65,6 +70,7 @@ DLL_PUBLIC_c4 int send_udt(const T *buffer, int size, int destination,
 template <typename T>
 DLL_PUBLIC_c4 int receive_udt(T *buffer, int size, int source,
                               C4_Datatype &data_type, int tag) {
+  Require(buffer != nullptr);
 
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -102,6 +108,7 @@ DLL_PUBLIC_c4 int send_receive(TS *sendbuf, int sendcount, int destination,
 template <typename T>
 DLL_PUBLIC_c4 C4_Req send_async(const T *buffer, int size, int destination,
                                 int tag) {
+  Require(buffer != nullptr);
 
   // make a c4 request handle
   C4_Req request;
@@ -123,6 +130,7 @@ template <typename T>
 DLL_PUBLIC_c4 void send_async(C4_Req &request, const T *buffer, int size,
                               int destination, int tag) {
   Require(!request.inuse());
+  Require(buffer != nullptr);
 
   // set the request
   request.set();
@@ -138,6 +146,7 @@ template <typename T>
 DLL_PUBLIC_c4 void send_is(C4_Req &request, const T *buffer, int size,
                            int destination, int tag) {
   Require(!request.inuse());
+  Require(buffer != nullptr);
 
   // set the request
   request.set();
@@ -154,6 +163,8 @@ DLL_PUBLIC_c4 void send_is(C4_Req &request, const T *buffer, int size,
 
 template <typename T>
 C4_Req receive_async(T *buffer, int size, int source, int tag) {
+
+  Require(buffer != nullptr);
 
   // make a c4 request handle
   C4_Req request;
@@ -174,6 +185,7 @@ C4_Req receive_async(T *buffer, int size, int source, int tag) {
 template <typename T>
 DLL_PUBLIC_c4 void receive_async(C4_Req &request, T *buffer, int size,
                                  int source, int tag) {
+  Require(buffer != nullptr);
   Require(!request.inuse());
 
   // set the request
