@@ -5,10 +5,7 @@
  * \date   Mon Mar 25 15:41:00 2002
  * \brief  C4 Reduction test.
  * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -193,9 +190,9 @@ void array_reduction(rtt_dsxx::UnitTest &ut) {
 //---------------------------------------------------------------------------//
 void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
-  // Calculate prefix sums on rank ID with MPI call and by hand and compare
-  // the output. The prefix sum on a node includes all previous node's value
-  // and the value of the current node
+  // Calculate prefix sums on rank ID with MPI call and by hand and compare the
+  // output. The prefix sum on a node includes all previous node's value and the
+  // value of the current node
 
   // test ints
   int xint = rtt_c4::node();
