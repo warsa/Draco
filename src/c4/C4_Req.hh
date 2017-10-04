@@ -153,6 +153,19 @@ private:
 
   friend DLL_PUBLIC_c4 void wait_all(unsigned count, C4_Req *requests);
   friend DLL_PUBLIC_c4 unsigned wait_any(unsigned count, C4_Req *requests);
+
+  template <class T>
+  friend DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer,
+                                        C4_Req &request);
+
+  template <typename T>
+  friend DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, T const *buffer,
+                                           int size, int destination, int tag);
+
+  template <typename T>
+  friend DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer,
+                                                 int size, int source, int tag);
+
 #endif
 };
 
