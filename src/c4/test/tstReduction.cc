@@ -334,12 +334,165 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
+void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
+
+  // Calculate prefix sums on rank ID with MPI call and by hand and compare the
+  // output. The prefix sum on a node includes all previous node's value and the
+  // value of the current node
+
+  const int array_size = 12;
+
+  // test ints
+  vector<int> xint(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xint[i] = rtt_c4::node() * 10 + i;
+
+  prefix_sum(&xint[0], array_size);
+
+  vector<int> int_answer(array_size, 0);
+  for (int i = 0; i < array_size; ++i) {
+    for (int r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        int_answer[i] += r * 10 + i;
+    }
+  }
+
+  for (uint32_t i = 0; i < xint.size(); ++i) {
+    std::cout << "int: Prefix sum on this node: " << xint[i];
+    std::cout << " Answer: " << int_answer[i] << std::endl;
+    if (xint[i] != int_answer[i])
+      ITFAILS;
+  }
+
+  // test unsigned ints (use the maximum int value to make sure all types are
+  // handled correctly in the calls)
+  vector<uint32_t> xuint(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xuint[i] = std::numeric_limits<int>::max() + rtt_c4::node() * 10 + i;
+
+  prefix_sum(&xuint[0], array_size);
+
+  vector<uint32_t> uint_answer(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i) {
+    for (uint32_t r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        uint_answer[i] += std::numeric_limits<int>::max() + r * 10 + i;
+    }
+  }
+
+  for (uint32_t i = 0; i < xuint.size(); ++i) {
+    std::cout << "uint32_t: Prefix sum on this node: " << xuint[i];
+    std::cout << " Answer: " << uint_answer[i] << std::endl;
+    if (xuint[i] != uint_answer[i])
+      ITFAILS;
+  }
+
+  // test long ints (use the maximum uint32_t value to make sure all types are
+  // handled correctly in the calls)
+  vector<int64_t> xlong(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xlong[i] = std::numeric_limits<uint32_t>::max() + rtt_c4::node() * 10 + i;
+
+  prefix_sum(&xlong[0], array_size);
+
+  vector<int64_t> long_answer(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i) {
+    for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        long_answer[i] += std::numeric_limits<uint32_t>::max() + r * 10 + i;
+    }
+  }
+
+  for (int64_t i = 0; i < xlong.size(); ++i) {
+    std::cout << "int64_t: Prefix sum on this node: " << xlong[i];
+    std::cout << " Answer: " << long_answer[i] << std::endl;
+    if (xlong[i] != long_answer[i])
+      ITFAILS;
+  }
+
+  // test unsigned long ints (use the maximum int64_t value to make sure all types are
+  // handled correctly in the calls)
+  vector<uint64_t> xulong(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xulong[i] = std::numeric_limits<int64_t>::max() + rtt_c4::node() * 10 + i;
+
+  prefix_sum(&xulong[0], array_size);
+
+  vector<uint64_t> ulong_answer(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i) {
+    for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        ulong_answer[i] += std::numeric_limits<int64_t>::max() + r * 10 + i;
+    }
+  }
+
+  for (int64_t i = 0; i < xulong.size(); ++i) {
+    std::cout << "uint64_t: Prefix sum on this node: " << xulong[i];
+    std::cout << " Answer: " << ulong_answer[i] << std::endl;
+    if (xulong[i] != ulong_answer[i])
+      ITFAILS;
+  }
+
+  // test floats
+  vector<float> xfloat(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xfloat[i] = rtt_c4::node() * 9.99 + i;
+
+  prefix_sum(&xfloat[0], array_size);
+
+  vector<float> float_answer(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i) {
+    for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        float_answer[i] += r * 9.99 + i;
+    }
+  }
+
+  // comparison between floats after operations needs soft_equiv with a loose
+  // tolerance
+  for (int64_t i = 0; i < xfloat.size(); ++i) {
+    std::cout << "float: Prefix sum on this node: " << xfloat[i];
+    std::cout << " Answer: " << float_answer[i] << std::endl;
+    if (!soft_equiv(xfloat[i], float_answer[i], float(1.0e-6)))
+      ITFAILS;
+  }
+
+  // test doubles, try to express precision beyond float to test type handling
+  // in function calls
+  vector<double> xdouble(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i)
+    xdouble[i] = rtt_c4::node() * 9.000000000002 + i;
+
+  prefix_sum(&xdouble[0], array_size);
+
+  vector<double> double_answer(array_size, 0);
+  for (int32_t i = 0; i < array_size; ++i) {
+    for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
+      if (r <= rtt_c4::node())
+        double_answer[i] += r * 9.000000000002 + i;
+    }
+  }
+
+  for (int64_t i = 0; i < xdouble.size(); ++i) {
+    std::cout << "double: Prefix sum on this node: " << xdouble[i];
+    std::cout << " Answer: " << double_answer[i] << std::endl;
+    if (!soft_equiv(xdouble[i], double_answer[i]))
+      ITFAILS;
+  }
+
+  if (ut.numFails == 0)
+    PASSMSG("Array prefix sum ok.");
+  return;
+}
+
+//---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     elemental_reduction(ut);
     array_reduction(ut);
     test_prefix_sum(ut);
+    test_array_prefix_sum(ut);
   }
   UT_EPILOG(ut);
 }
