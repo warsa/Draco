@@ -50,7 +50,7 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
                           &nParts, NULL, NULL, NULL, &objval, &part[0]);
 
   std::cout << "partition: ";
-  for (uint32_t i = 0; i < nVertices; ++i) {
+  for (int32_t i = 0; i < nVertices; ++i) {
     std::cout << part[i] << " ";
   }
   std::cout << std::endl;
