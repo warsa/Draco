@@ -41,7 +41,7 @@ if(NOT TARGET Lib_dsxx)
   string( REGEX REPLACE "___" ";" cafs_Draco_TPL_INCLUDE_DIRS
     "${Draco_TPL_INCLUDE_DIRS}" )
 
-  message("dtplid = ${cafs_Draco_TPL_INCLUDE_DIRS}")
+  # message("dtplid = ${cafs_Draco_TPL_INCLUDE_DIRS}")
 
   include(CMakeAddFortranSubdirectory)
   get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../..
