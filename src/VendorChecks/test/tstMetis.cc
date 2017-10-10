@@ -3,9 +3,8 @@
  * \file   VendorChecks/test/tstMetis.cc
  * \date   Wednesday, May 11, 2016, 12:01 pm
  * \brief  Attempt to link to libmetis and run a simple problem.
- * \note   Copyright (C) 2016, Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ * \note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -51,7 +50,7 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
                           &nParts, NULL, NULL, NULL, &objval, &part[0]);
 
   std::cout << "partition: ";
-  for (uint32_t i = 0; i < nVertices; ++i) {
+  for (int32_t i = 0; i < nVertices; ++i) {
     std::cout << part[i] << " ";
   }
   std::cout << std::endl;
