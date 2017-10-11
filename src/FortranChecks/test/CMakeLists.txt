@@ -49,7 +49,10 @@ if( MSVC )
 endif()
 
 # Create the test.
-set( test_deps "Lib_FC_f90sub;Lib_FC_Derived_Type;Lib_dsxx" )
+set( test_deps "Lib_FC_f90sub" )
+
+#include(print_target_properties)
+#print_targets_properties( "Lib_FC_f90sub;Lib_FC_Derived_Type;Lib_dsxx" )
 
 # When cross-compiling with '-mmic', rpaths for libraries built from
 # Fortran code don't appear to be reported to the icpc linker.  As a
