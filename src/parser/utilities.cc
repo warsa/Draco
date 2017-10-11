@@ -200,11 +200,13 @@ int parse_integer(Token_Stream &tokens) {
  * \return \c true if the next token is REAL or INTEGER; \c false otherwise.
  */
 bool at_real(Token_Stream &tokens) {
-  Token token = tokens.lookahead();
+  Token const &token = tokens.lookahead();
   if (token.text() == "-" || token.text() == "+") {
-    token = tokens.lookahead(1);
+    Token const &token2 = tokens.lookahead(1);
+    return (token2.type() == REAL || token2.type() == INTEGER);
+  } else {
+    return (token.type() == REAL || token.type() == INTEGER);
   }
-  return (token.type() == REAL || token.type() == INTEGER);
 }
 
 //---------------------------------------------------------------------------//
@@ -218,15 +220,15 @@ bool at_real(Token_Stream &tokens) {
  */
 double parse_real(Token_Stream &tokens) {
   Token token = tokens.shift();
-  string text;
+  double sign = 1.0;
   if (token.text() == "+") {
     token = tokens.shift();
   } else if (token.text() == "-") {
-    text = '-';
+    sign = -1.0;
     token = tokens.shift();
   }
   if (token.type() == REAL || token.type() == INTEGER) {
-    text += token.text();
+    string const &text = token.text();
     errno = 0;
     char *endptr;
     const double Result = strtod(text.c_str(), &endptr);
@@ -238,7 +240,7 @@ double parse_real(Token_Stream &tokens) {
       }
     }
     Check(endptr != NULL && *endptr == '\0');
-    return Result;
+    return sign * Result;
   } else {
     tokens.report_syntax_error(token, "expected a real number");
     return 0.0;
@@ -340,9 +342,9 @@ void parse_unsigned_vector(Token_Stream &tokens, unsigned x[], unsigned size) {
  * \return \c true if we are at the start of a unit term; \c false otherwise
  */
 bool at_unit_term(Token_Stream &tokens, unsigned position) {
-  Token const token = tokens.lookahead(position);
+  Token const &token = tokens.lookahead(position);
   if (token.type() == KEYWORD) {
-    string const u = token.text();
+    string const &u = token.text();
     switch (u[0]) {
     case 'A':
       // return (u[1]=='\0');
@@ -445,7 +447,7 @@ Unit parse_unit(Token_Stream &tokens);
 static Unit parse_unit_name(Token_Stream &tokens) {
   Token token = tokens.shift();
   if (token.type() == KEYWORD) {
-    string const u = token.text();
+    string const &u = token.text();
     switch (u[0]) {
     case 'A':
       if (u.size() == 1)
@@ -665,7 +667,7 @@ static Unit parse_unit_name(Token_Stream &tokens) {
  */
 static Unit parse_unit_term(Token_Stream &tokens) {
   Unit const Result = parse_unit_name(tokens);
-  Token const token = tokens.lookahead();
+  Token const &token = tokens.lookahead();
   if (token.text() == "^") {
     tokens.shift();
     double const exponent = parse_real(tokens);
@@ -693,7 +695,7 @@ Unit parse_unit(Token_Stream &tokens) {
   Unit Result = parse_unit_term(tokens);
 
   for (;;) {
-    Token const token = tokens.lookahead();
+    Token const &token = tokens.lookahead();
     if (token.type() == OTHER) {
       if (token.text() == "-" && at_unit_term(tokens, 1)) {
         tokens.shift();

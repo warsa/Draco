@@ -91,9 +91,6 @@ String_Token_Stream::String_Token_Stream(string const &text,
  */
 
 string String_Token_Stream::location_() const {
-  ostringstream Result;
-  Result << "near\n";
-
   // search backwards four endlines
   unsigned begin;
   unsigned count = 0;
@@ -104,15 +101,20 @@ string String_Token_Stream::location_() const {
     }
   }
   unsigned const end = text_.size();
-  for (unsigned i = begin; i < end; ++i) {
+  unsigned i;
+  for (i = begin; i < end; ++i) {
     char const c = text_[i];
     if (i >= pos_ && c == '\n') {
       break;
     }
-    Result.put(c);
   }
-  Result.put('\n');
-  return Result.str();
+  // This kruftiness is to create the location string with a single allocation.
+  string Result;
+  Result.reserve(6 + i - begin);
+  Result.insert(0U, "near\n", 5U);
+  Result.insert(Result.end(), text_.begin() + begin, text_.begin() + i);
+  Result.insert(Result.end(), 1U, '\n');
+  return Result;
 }
 
 //-------------------------------------------------------------------------------------//
