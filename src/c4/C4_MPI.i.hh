@@ -17,8 +17,8 @@ namespace rtt_c4 {
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
-                                  int destination, int tag) {
+void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
+                    int tag) {
   Require(!request.inuse());
   Require(buffer != nullptr);
 
@@ -35,8 +35,7 @@ DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, const T *buffer, int size,
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
-                              int tag) {
+int send_custom(const T *buffer, int size, int destination, int tag) {
   Require(buffer != nullptr);
   MPI_Send(const_cast<T *>(buffer), size, T::MPI_Type, destination, tag,
            communicator);
@@ -44,10 +43,9 @@ DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
 }
 
 //---------------------------------------------------------------------------//
-
 template <typename T>
-DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
-                                        int source, int tag) {
+void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
+                          int tag) {
   Require(!request.inuse());
   Require(buffer != nullptr);
   Remember(int custom_mpi_type_size);
@@ -66,7 +64,7 @@ DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag) {
+int receive_custom(T *buffer, int size, int source, int tag) {
   Require(buffer != nullptr);
   // get a handle to the MPI_Status
   MPI_Status status;
@@ -84,7 +82,7 @@ DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag) {
 
 //---------------------------------------------------------------------------//
 template <typename T>
-DLL_PUBLIC_c4 int message_size_custom(C4_Status status, const T &mpi_type) {
+int message_size_custom(C4_Status status, const T &mpi_type) {
   int receive_count = 0;
   MPI_Get_count(status.get_status_obj(), mpi_type, &receive_count);
   return receive_count;
