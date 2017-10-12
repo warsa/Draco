@@ -60,9 +60,13 @@ Parse_Table::Parse_Table(Keyword const *const table, size_t const count,
  * tables as static C arrays.  This justifies a low-level interface in place
  * of, say, vector<Keyword>.
  */
-void Parse_Table::add(Keyword const *const table, size_t const count) {
+void Parse_Table::add(Keyword const *const table,
+                      size_t const count) noexcept(false) {
   Require(count == 0 || table != nullptr);
   // Additional precondition checked in loop below
+
+  // Preallocate storage.
+  vec.reserve(vec.size() + count);
 
   // Add the new keywords.
 
@@ -104,7 +108,10 @@ void Parse_Table::remove(char const *moniker) {
  * \throw invalid_argument If the keyword table is ill-formed or
  * ambiguous.
  */
-void Parse_Table::add(Parse_Table const &source) {
+void Parse_Table::add(Parse_Table const &source) noexcept(false) {
+  // Preallocate storage.
+  vec.reserve(vec.size() + source.vec.size());
+
   // Add the new keywords.
 
   for (auto i = source.vec.begin(); i != source.vec.end(); ++i) {
@@ -118,7 +125,9 @@ void Parse_Table::add(Parse_Table const &source) {
 
 //---------------------------------------------------------------------------------------//
 /* private */
-void Parse_Table::sort_table_() {
+void Parse_Table::sort_table_() noexcept(
+    false) // apparently std::sort can throw
+{
   if (vec.size() == 0)
     return;
 
@@ -585,14 +594,15 @@ int Parse_Table::Keyword_Compare_::kk_comparison(char const *m1,
  */
 
 bool Parse_Table::Keyword_Compare_::operator()(Keyword const &k1,
-                                               Token const &k2) const {
+                                               Token const &k2) const noexcept {
   Require(k1.moniker != nullptr);
 
   return kt_comparison(k1.moniker, k2.text().c_str()) < 0;
 }
 
 int Parse_Table::Keyword_Compare_::kt_comparison(char const *m1,
-                                                 char const *m2) const {
+                                                 char const *m2) const
+    noexcept {
   using namespace std;
 
   Require(m1 != nullptr);

@@ -104,7 +104,8 @@ public:
   Token shift();
 
   //! Look ahead at tokens.
-  Token lookahead(unsigned pos = 0);
+  // Lookahead references should remain valid until the referenced token is shifted.
+  Token const &lookahead(unsigned pos = 0);
 
   //! Insert a token into the stream at the cursor position.
   void pushback(Token const &token);
@@ -203,7 +204,7 @@ public:
 
   //! Return the number of errors reported to the stream since it was last
   //! constructed or rewound.
-  unsigned error_count() const { return error_count_; }
+  unsigned error_count() const noexcept { return error_count_; }
 
   //! Check that all class invariants are satisfied.
   bool check_class_invariants() const { return true; }
