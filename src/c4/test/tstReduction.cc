@@ -374,7 +374,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   vector<uint32_t> uint_answer(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i) {
-    for (uint32_t r = 0; r < rtt_c4::nodes(); ++r) {
+    for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
         uint_answer[i] += std::numeric_limits<int>::max() + r * 10 + i;
     }
@@ -403,7 +403,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  for (int64_t i = 0; i < xlong.size(); ++i) {
+  for (uint32_t i = 0; i < xlong.size(); ++i) {
     std::cout << "int64_t: Prefix sum on this node: " << xlong[i];
     std::cout << " Answer: " << long_answer[i] << std::endl;
     if (xlong[i] != long_answer[i])
@@ -426,7 +426,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  for (int64_t i = 0; i < xulong.size(); ++i) {
+  for (uint32_t i = 0; i < xulong.size(); ++i) {
     std::cout << "uint64_t: Prefix sum on this node: " << xulong[i];
     std::cout << " Answer: " << ulong_answer[i] << std::endl;
     if (xulong[i] != ulong_answer[i])
@@ -450,7 +450,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
 
   // comparison between floats after operations needs soft_equiv with a loose
   // tolerance
-  for (int64_t i = 0; i < xfloat.size(); ++i) {
+  for (uint32_t i = 0; i < xfloat.size(); ++i) {
     std::cout << "float: Prefix sum on this node: " << xfloat[i];
     std::cout << " Answer: " << float_answer[i] << std::endl;
     if (!soft_equiv(xfloat[i], float_answer[i], float(1.0e-6)))
@@ -473,7 +473,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  for (int64_t i = 0; i < xdouble.size(); ++i) {
+  for (uint32_t i = 0; i < xdouble.size(); ++i) {
     std::cout << "double: Prefix sum on this node: " << xdouble[i];
     std::cout << " Answer: " << double_answer[i] << std::endl;
     if (!soft_equiv(xdouble[i], double_answer[i]))
