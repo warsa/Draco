@@ -176,6 +176,9 @@ function startCI()
   echo " "
   cmd="$rscriptdir/regression-master.sh ${rflag} -b ${build_type}"
   cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr}"
+  if ! [[ $project == "draco" ]]; then
+    cmd="$cmd &"
+  fi
   echo "$cmd"
   eval "$cmd"
 }
