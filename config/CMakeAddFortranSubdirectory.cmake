@@ -243,12 +243,12 @@ function(cmake_add_fortran_subdirectory subdir)
     if( CMAKE_RUNTIME_OUTPUT_DIRECTORY )
       if( ARGS_VERBOSE )
         message("    set_target_properties(${tgt} PROPERTIES
-        IMPORTED_LOCATION \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}\"
+        IMPORTED_LOCATION \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ep_build_type}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}\"
         IMPORTED_LINK_INTERFACE_LIBRARIES \"${ARGS_DEPENDS}\"
         )    ")
       endif()
       set_target_properties(${tgt} PROPERTIES
-        IMPORTED_LOCATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        IMPORTED_LOCATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${ep_build_type}/lib${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}"
         IMPORTED_LINK_INTERFACE_LANGUAGES "Fortran"
         IMPORTED_LINK_INTERFACE_LIBRARIES "${ARGS_DEPENDS}"
         )

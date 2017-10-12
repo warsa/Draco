@@ -138,8 +138,7 @@ DLL_PUBLIC_c4 int send(const T *buffer, int size, int destination,
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send.
 template <typename T>
-DLL_PUBLIC_c4 int send_custom(const T *buffer, int size, int destination,
-                              int tag);
+int send_custom(const T *buffer, int size, int destination, int tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive.
@@ -150,7 +149,7 @@ DLL_PUBLIC_c4 int receive(T *buffer, int size, int source,
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking receive with a custom MPI type
 template <typename T>
-DLL_PUBLIC_c4 int receive_custom(T *buffer, int size, int source, int tag);
+int receive_custom(T *buffer, int size, int source, int tag);
 
 //---------------------------------------------------------------------------//
 //! Do a point-to-point, blocking send of a user-defined type.
@@ -249,7 +248,7 @@ void send_is(C4_Req &request, T const *buffer, int size, int destination) {
  * \return number of type T objects in the completed message
  */
 template <typename T>
-DLL_PUBLIC_c4 int message_size_custom(C4_Status status, const T &mpi_type);
+int message_size_custom(C4_Status status, const T &mpi_type);
 
 //---------------------------------------------------------------------------//
 /*!
@@ -262,8 +261,8 @@ DLL_PUBLIC_c4 int message_size_custom(C4_Status status, const T &mpi_type);
  * \param[in] tag message tag
  */
 template <typename T>
-DLL_PUBLIC_c4 void send_is_custom(C4_Req &request, T const *buffer, int size,
-                                  int destination, int tag);
+void send_is_custom(C4_Req &request, T const *buffer, int size, int destination,
+                    int tag);
 
 // [2011-05-11 GMR] This declaration should replace the two preceeding ones.
 // However, I expect that PGI-10 doesn't like this syntax for the same reason
@@ -326,8 +325,8 @@ void receive_async(C4_Req &request, T *buffer, int size, int source) {
  * \param[in] tag message tag
  */
 template <typename T>
-DLL_PUBLIC_c4 void receive_async_custom(C4_Req &request, T *buffer, int size,
-                                        int source, int tag);
+void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
+                          int tag);
 
 // [2010-07-22 KT] This declaration should replace the two preceeding ones.
 // However, PGI-10 doesn't like this syntax and issues the warning:

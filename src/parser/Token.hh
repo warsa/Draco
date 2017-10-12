@@ -83,6 +83,9 @@ public:
   //! Construct a Token with specified type, text, and location.
   inline Token(Token_Type ty, string const &tx, string const &loc);
 
+  //! Construct a Token with specified type, text, and location.
+  inline Token(Token_Type ty, string &&tx, string &&loc);
+
   //! Default constructor
   inline Token(/*empty*/) : type_(END), text_(), location_() { /* empty */
   }
@@ -90,7 +93,7 @@ public:
   // ACCESSORS
 
   //! Return the token type.
-  Token_Type type() const { return type_; }
+  Token_Type type() const noexcept { return type_; }
 
   //! Return the token text.
   string const &text() const { return text_; }
@@ -100,6 +103,14 @@ public:
 
   //! Check that the class invariants are satisfied.
   bool check_class_invariant() const;
+
+  // MANIPULATORS
+
+  void swap(Token &src) {
+    std::swap(type_, src.type_);
+    text_.swap(src.text_);
+    location_.swap(src.location_);
+  }
 
 private:
   Token_Type type_; //!< Type of this token
@@ -131,6 +142,34 @@ DLL_PUBLIC_parser bool operator==(Token const &, Token const &);
  */
 inline Token::Token(Token_Type const type, string const &text,
                     string const &location)
+    : type_(type), text_(text), location_(location) {
+  Require(Is_Text_Token(type));
+  Require(type != KEYWORD || Is_Keyword_Text(text.c_str()));
+  Require(type != REAL || Is_Real_Text(text.c_str()));
+  Require(type != INTEGER || Is_Integer_Text(text.c_str()));
+  Require(type != STRING || Is_String_Text(text.c_str()));
+  Require(type != OTHER || Is_Other_Text(text.c_str()));
+
+  Ensure(check_class_invariant());
+  Ensure(this->type() == type);
+  Ensure(this->text() == text);
+  Ensure(this->location() == location);
+}
+
+//-------------------------------------------------------------------------//
+/*!
+ * Move version of previous constructor.
+ *
+ * \param type
+ * Type of the Token.
+ *
+ * \param text
+ * Text of the Token.
+ *
+ * \param location
+ * The token location.
+ */
+inline Token::Token(Token_Type const type, string &&text, string &&location)
     : type_(type), text_(text), location_(location) {
   Require(Is_Text_Token(type));
   Require(type != KEYWORD || Is_Keyword_Text(text.c_str()));

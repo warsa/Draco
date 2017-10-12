@@ -14,6 +14,9 @@ fi
 # unlimit stack and core dump sizes.
 # ulimit -s unlimited
 
+# aliases and bash functions for working with slurm
+source ${DRACO_ENV_DIR}/bashrc/.bashrc_slurm
+
 # Where is the vendor directory
 if [[ ! ${VENDOR_DIR} ]]; then
    if test -d /usr/projects/draco/vendors; then
