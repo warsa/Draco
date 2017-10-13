@@ -32,12 +32,12 @@ void test_metis(rtt_dsxx::UnitTest &ut) {
   //  3 /       \ 9
 
   // Indexes of starting points in adjacent array
-  idx_t xadj[] = {0, 1, 2, 3, 4, 9, 15, 16, 17, 18, 19};
+  idx_t xadj[] = {0, 1, 2, 3, 4, 9, 14, 15, 16, 17, 18};
 
   // Adjacent vertices in consecutive index order
-  // conn. for:     0, 1, 2, 3, 4            , 5,               , 6, 7, 8, 9
-  // index:         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, 14,15,16,17,18
-  idx_t adjncy[] = {4, 4, 4, 4, 0, 1, 2, 3, 5, 4, 6, 7, 8, 9, 10, 5, 5, 5, 5};
+  // conn. for:     0, 1, 2, 3, 4            , 5,            ,6, 7, 8, 9
+  // index:         0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, 14,15,16,17
+  idx_t adjncy[] = {4, 4, 4, 4, 0, 1, 2, 3, 5, 4, 6, 7, 8, 9, 5, 5, 5, 5};
 
   // Weights of vertices
   // if all weights are equal then can be set to NULL
