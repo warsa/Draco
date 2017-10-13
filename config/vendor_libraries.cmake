@@ -551,8 +551,8 @@ macro( setupParMETIS )
       DESCRIPTION "MPI Parallel METIS"
       URL "http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview"
       PURPOSE "ParMETIS is an MPI-based parallel library that implements a
-variety of algorithms for partitioning unstructured graphs, meshes, and for
-computing fill-reducing orderings of sparse matrices." )
+   variety of algorithms for partitioning unstructured graphs, meshes, and for
+   computing fill-reducing orderings of sparse matrices." )
 
   endif()
 
@@ -600,8 +600,8 @@ macro( setupSuperLU_DIST )
       DESCRIPTION "SuperLU_DIST"
       URL " http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
       PURPOSE "SuperLU is a general purpose library for the direct solution of
-large, sparse, nonsymmetric systems of linear equations on high performance
-machines."  )
+   large, sparse, nonsymmetric systems of linear equations on high performance
+   machines."  )
 
   endif()
 
