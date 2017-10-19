@@ -505,6 +505,10 @@ int main(int argc, char *argv[]) {
 
     // noexcept
     tnoexcept(ut);
+
+    // noreturn
+    // called only to keep code coverage good
+    unused(0);
   }
   UT_EPILOG(ut);
 }
