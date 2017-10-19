@@ -34,7 +34,7 @@ pdir=$ddir
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   t[rt]-fe* | t[rt]-login* )
-    environments="intel17env intel17env-knl" ;;
+    environments="intel17env intel1701env intel17env-knl" ;;
 esac
 
 function intel17env()
@@ -48,11 +48,37 @@ run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
-# run module unload intel"
-# run "module load intel/17.0.1 craype-hugepages4M"
+run "module unload intel cray-mpich"
+run "module load intel/17.0.4 cray-mpich/7.6.2"
 run "module load gsl"
 run "module load cmake/3.9.0 numdiff"
-run "module load trilinos superlu-dist metis parmetis"
+run "module load trilinos/12.10.1 superlu-dist metis parmetis"
+run "module load ndi random123 eospac/6.2.4 csk"
+run "module list"
+CC=`which cc`
+CXX=`which CC`
+FC=`which ftn`
+export CRAYPE_LINK_TYPE=dynamic
+export OMP_NUM_THREADS=16
+export TARGET=haswell
+}
+
+function intel1701env()
+{
+run "module load user_contrib friendly-testing"
+run "module unload ndi metis parmetis superlu-dist trilinos csk"
+run "module unload lapack gsl intel"
+run "module unload cmake"
+run "module unload intel gcc"
+run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
+run "module unload papi perftools"
+run "module load PrgEnv-intel"
+run "module unload xt-libsci xt-totalview"
+run "module unload intel cray-mpich"
+run "module load intel/17.0.1 cray-mpich/7.5.2"
+run "module load gsl"
+run "module load cmake/3.9.0 numdiff"
+run "module load trilinos/12.10.1 superlu-dist metis parmetis"
 run "module load ndi random123 eospac/6.2.4 csk"
 run "module list"
 CC=`which cc`
@@ -74,12 +100,12 @@ run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
 run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload xt-libsci xt-totalview"
-# run "module unload intel"
-#run "module load intel/17.0.1 craype-hugepages4M"
+run "module unload intel cray-mpich"
+run "module load intel/17.0.4 cray-mpich/7.6.2"
 run "module swap craype-haswell craype-mic-knl"
 run "module load gsl"
 run "module load cmake/3.9.0 numdiff"
-run "module load trilinos superlu-dist metis parmetis"
+run "module load trilinos/12.10.1 superlu-dist metis parmetis"
 run "module load ndi random123 eospac/6.2.4 csk"
 run "module list"
 CC=`which cc`
@@ -111,8 +137,13 @@ export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 establish_permissions
 
 export source_prefix="/usr/projects/$package/$pdir"
+# use NFS locations until luster is fixed.
 # scratchdir=`selectscratchdir`
-scratchdir=/usr/projects/ccsrad/scratch
+if [[ -d /netscratch/$USER ]]; then
+  scratchdir=/netscratch/$USER/scratch
+else
+  scratchdir=/usr/projects/ccsrad/scratch
+fi
 ppn=`lookupppn`
 
 # =============================================================================
