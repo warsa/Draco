@@ -130,6 +130,12 @@ if [[ -d $REGDIR/cdash ]]; then
   run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
   run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
+if [[ -d /usr/projects/ccsrad/regress/cdash ]]; then
+  echo -e "\nCleaning up old builds."
+  run "cd /usr/projects/ccsrad/regress/cdash"
+  run "find . -maxdepth 3 -mtime +3 -name 'Experimental*-pr*' -type d"
+  run "find . -maxdepth 3 -mtime +3 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
+fi
 
 echo -e "\n--------------------------------------------------------------------------------"
 echo "All done."

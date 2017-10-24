@@ -74,7 +74,7 @@ done
 # sinfo -o "%45n %30b %65f" | cut -b 47-120 | sort | uniq -c
 case $extra_params in
 knl) partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 -p knl" ;;
-*)   partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 " ;;
+*)   partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0" ;;
 esac
 
 # Configure, Build on front end

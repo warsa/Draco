@@ -541,6 +541,14 @@ DLL_PUBLIC_c4 std::string get_processor_name();
  */
 template <typename T> DLL_PUBLIC_c4 T prefix_sum(const T node_value);
 
+/*!
+ * \brief Return the value of the prefix sum at this processor.
+ *
+ * \param buffer Current node's starting buffer address to be prefix summed
+ * \param n number of ojbects of type T in the buffer
+ */
+template <typename T> DLL_PUBLIC_c4 void prefix_sum(T *buffer, const int32_t n);
+
 } // end namespace rtt_c4
 
 //---------------------------------------------------------------------------//

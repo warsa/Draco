@@ -99,6 +99,13 @@ macro( setupLAPACKLibrariesUnix )
         set( MKL_LIBRARY_TYPE "SHARED" )
       endif()
 
+      # should we link against libmkl_gnu_thread.so or libmkl_intel_thread.so
+      if( ${CMAKE_C_COMPILER_ID} MATCHES GNU )
+        set(tlib "mkl_gnu_thread")
+      else()
+        set(tlib "mkl_intel_thread")
+      endif()
+
       if( BLAS_FOUND )
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
@@ -109,7 +116,7 @@ macro( setupLAPACKLibrariesUnix )
         add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas::mkl_core    ${MKL_LIBRARY_TYPE} IMPORTED)
         set_target_properties( blas::mkl_thread PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_intel_thread_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_${tlib}_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
         set_target_properties( blas::mkl_core PROPERTIES
@@ -120,7 +127,7 @@ macro( setupLAPACKLibrariesUnix )
         set_target_properties( blas PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_mkl_intel_thread_LIBRARY};-Wl,--end-group"
+          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_${tlib}_LIBRARY};-Wl,--end-group"
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
@@ -551,8 +558,8 @@ macro( setupParMETIS )
       DESCRIPTION "MPI Parallel METIS"
       URL "http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview"
       PURPOSE "ParMETIS is an MPI-based parallel library that implements a
-variety of algorithms for partitioning unstructured graphs, meshes, and for
-computing fill-reducing orderings of sparse matrices." )
+   variety of algorithms for partitioning unstructured graphs, meshes, and for
+   computing fill-reducing orderings of sparse matrices." )
 
   endif()
 
@@ -600,8 +607,8 @@ macro( setupSuperLU_DIST )
       DESCRIPTION "SuperLU_DIST"
       URL " http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
       PURPOSE "SuperLU is a general purpose library for the direct solution of
-large, sparse, nonsymmetric systems of linear equations on high performance
-machines."  )
+   large, sparse, nonsymmetric systems of linear equations on high performance
+   machines."  )
 
   endif()
 

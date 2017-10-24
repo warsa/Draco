@@ -396,6 +396,16 @@ template <typename T> DLL_PUBLIC_c4 T prefix_sum(const T node_value) {
   return prefix_sum;
 }
 
+//---------------------------------------------------------------------------//
+
+template <typename T>
+DLL_PUBLIC_c4 void prefix_sum(T *buffer, const int32_t n) {
+  Require(buffer != nullptr);
+  Require(n > 0);
+  MPI_Scan(MPI_IN_PLACE, buffer, n, MPI_Traits<T>::element_type(), MPI_SUM,
+           communicator);
+}
+
 } // end namespace rtt_c4
 
 #endif // C4_MPI

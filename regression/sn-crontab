@@ -1,7 +1,7 @@
 # crontab for sn-fey
 
 # Sync git repositories to local FS and run CI tests
-*/15 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
+*/20 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
 
 # Update the run scripts in the regression directory
 01 23 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh
@@ -21,7 +21,7 @@
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-# Intel/17.0.1 and OpenMPI/1.10.5
+# Intel/17.0.4 and OpenMPI/2.1.2
 #------------------------------------------------------------------------------#
 
 01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p "draco jayenne capsaicin"
@@ -32,11 +32,11 @@
 # Special: NR, PerfBench and FullDiagnostics regressions.
 #------------------------------------------------------------------------------#
 
-# intel-17.0.2 + Openmpi-2
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e newtools
+# intel-17.0.4 + Openmpi-2.1.2 (currently the default)
+# 01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e newtools
 
-# gcc-6.1.0 + openmpi-1.10.5
-01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e gcc610
+# gcc-6.4.0 + openmpi-2.1.2
+01 00 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Release -p "draco jayenne" -e gcc640
 
 # Floating point traps, etc.
 01 01 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -e fulldiagnostics -p "draco jayenne capsaicin"
