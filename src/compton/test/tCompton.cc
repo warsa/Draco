@@ -256,16 +256,17 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
   const std::string opac_type = "jayenne";
   const std::string wt_func = "planck";
   const bool induced = false;
+  const bool det_bal = false;
 
   // set the number of angular points to retrieve (legendre or otherwise)
-  const size_t nxi = 3;
+  const size_t nxi = 5;
 
   try {
     // (This call has some output of its own, so we print some newlines around
     // it)
     std::cout << "\n\n";
     compton_test.reset(new rtt_compton::Compton(
-        filename, test_groups, opac_type, wt_func, induced, nxi));
+        filename, test_groups, opac_type, wt_func, induced, det_bal, nxi));
     std::cout << "\n\n";
   } catch (rtt_dsxx::assertion &asrt) {
     FAILMSG("Failed to construct a Compton object!");
