@@ -88,6 +88,16 @@ Compton::Compton(const std::string &filehandle,
               << std::endl;
   }
 
+  // do quick sanity check
+  if (det_bal) {
+    // if we're enforcing detailed balance, we need induced and wt_func to
+    // be set to <0,"wien">||<1,"planck">; these are the only valid cases
+    Insist(((!induced && wt_func == std::string("wien")) ||
+            (induced && wt_func == std::string("planck"))),
+           "Compton error: Detailed balance enforcement (det_bal = 1) \n"
+           "only valid for induced=0 w/wien -OR- induced=1 w/planck!");
+  }
+
   // make a group_data struct to pass to the lib builder:
   multigroup::Group_data grp_data = {multigroup::Library_type::EXISTING,
                                      multigroup::string_to_opac_type(opac_type),
