@@ -15,6 +15,16 @@
 ## Environment
 ##---------------------------------------------------------------------------##
 
+# Because of this next 'exec sg' command, the crontab must escape double quotes
+# to keep space delimited options together.  Something like:
+# 00 06 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin\" -e clang
+
+# switch to group 'ccsrad' and set umask
+if [[ $(id -gn) != ccsrad ]]; then
+  exec sg ccsrad "$0 $*"
+fi
+umask 0007
+
 # Enable job control
 set -m
 
