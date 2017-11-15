@@ -109,7 +109,10 @@ if [[ `fn_exists module` == 0 ]]; then
     }
 fi
 
-run "module load user_contrib friendly-testing"
+run "module load friendly-testing"
+#export ucmf=$HOME/modulefiles
+#run "module use --append $ucmf/`/usr/projects/hpcsoft/sys_name`"
+run "module load user_contrib"
 
 # Clean up old environment
 run "module unload cmake numdiff git"
@@ -119,14 +122,14 @@ run "module unload superlu-dist metis parmetis"
 run "module unload PrgEnv-intel PrgEnv-pgi PrgEnv-cray"
 # Load new environment
 run "module load PrgEnv-intel"
-run "module unload intel"
-run "module load intel/17.0.1"
+#run "module unload intel"
+#run "module load intel/17.0.1"
 #run "module swap cray-mpich cray-mpich/7.4.2"
 run "module unload cray-libsci gcc/6.1.0"
-run "module load craype-hugepages4M"
+#run "module load craype-hugepages4M"
 run "module load cmake/3.9.0 numdiff git"
-run "module load gsl/2.1 random123 eospac/6.2.4 ndi"
-run "module load trilinos/12.8.1 ndi metis parmetis/4.0.3 superlu-dist/4.3"
+run "module load gsl random123 eospac/6.2.4 ndi"
+run "module load trilinos/12.10.1 ndi metis parmetis/4.0.3 superlu-dist"
 run "module use --append ${VENDOR_DIR}-ec/modulefiles"
 run "module load csk"
 
@@ -194,7 +197,8 @@ if [[ ! ${base_dir} ]]; then
     exit 1
   fi
   scratchdir=$scratchdir/$LOGNAME/cdash/tt
-  base_dir=${regdir}/cdash/tt
+  #base_dir=${regdir}/cdash/tt
+  base_dir=/usr/projects/ccsrad/regress/cdash/tt
 fi
 
 echo " "

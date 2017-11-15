@@ -7,7 +7,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
-# Build notes: 
+# Build notes:
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/
 #   https://rtt.lanl.gov/redmine/projects/draco/wiki/Common_Configure_Options
 
@@ -42,7 +42,7 @@ set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/config )
 # The Draco version number.
 #
 set(DRACO_VERSION_MAJOR 6)
-set(DRACO_VERSION_MINOR 22)
+set(DRACO_VERSION_MINOR 23)
 # set(DRACO_VERSION_PATCH 0) # only set this for a release
 include(dracoVersion)
 set_ccs2_software_version( DRACO )

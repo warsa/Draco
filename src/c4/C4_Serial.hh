@@ -126,6 +126,12 @@ template <typename T> DLL_PUBLIC_c4 T prefix_sum(T const node_value) {
 }
 
 //---------------------------------------------------------------------------//
+template <typename T>
+DLL_PUBLIC_c4 void prefix_sum(T * /*buffer*/, const int32_t /*n*/) {
+  /* empty */
+}
+
+//---------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
 //---------------------------------------------------------------------------//
 

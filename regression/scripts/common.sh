@@ -79,8 +79,8 @@ function establish_permissions
         install_group="dacodes"
         install_permissions="g+rwX,o-rwX"
       else
-        install_group="jayenne"
-        install_permissions="g+rwX,o-rwX"
+        install_group="draco"
+        install_permissions="g-rwX,o-rwX"
       fi
       ;;
   esac

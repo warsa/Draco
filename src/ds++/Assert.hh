@@ -169,11 +169,12 @@ public:
 //---------------------------------------------------------------------------//
 
 //! Throw a rtt_dsxx::assertion for Require, Check, Ensure.
-DLL_PUBLIC_dsxx void toss_cookies(std::string const &cond,
-                                  std::string const &file, int const line);
+[[noreturn]] DLL_PUBLIC_dsxx void
+toss_cookies(std::string const &cond, std::string const &file, int const line);
 
-DLL_PUBLIC_dsxx void toss_cookies_ptr(char const *const cond,
-                                      char const *const file, int const line);
+[[noreturn]] DLL_PUBLIC_dsxx void toss_cookies_ptr(char const *const cond,
+                                                   char const *const file,
+                                                   int const line);
 
 //! Throw a rtt_dsxx::assertion if condition fails
 DLL_PUBLIC_dsxx void check_cookies(bool cond, char const *cond_text,
@@ -183,12 +184,16 @@ DLL_PUBLIC_dsxx void check_cookies(bool cond, char const *cond_text,
 DLL_PUBLIC_dsxx void show_cookies(std::string const &cond,
                                   std::string const &file, int const line);
 //! Throw a rtt_dsxx::assertion for Insist.
-DLL_PUBLIC_dsxx void insist(std::string const &cond, std::string const &msg,
-                            std::string const &file, int const line);
+[[noreturn]] DLL_PUBLIC_dsxx void insist(std::string const &cond,
+                                         std::string const &msg,
+                                         std::string const &file,
+                                         int const line);
 
 //! Pointer version of insist
-DLL_PUBLIC_dsxx void insist_ptr(char const *const cond, char const *const msg,
-                                char const *const file, int const line);
+[[noreturn]] DLL_PUBLIC_dsxx void insist_ptr(char const *const cond,
+                                             char const *const msg,
+                                             char const *const file,
+                                             int const line);
 
 //! Check version of insist
 DLL_PUBLIC_dsxx void check_insist(bool cond, char const *const condstr,

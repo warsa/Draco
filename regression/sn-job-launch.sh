@@ -43,7 +43,7 @@ else
   exit 1
 fi
 
-# sanity check
+# sanity checks
 job_launch_sanity_checks
 
 available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
