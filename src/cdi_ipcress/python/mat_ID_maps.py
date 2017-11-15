@@ -41,4 +41,7 @@ mat_ID_to_name[17996] = "dap (diallyl phthalate)"
 mat_ID_to_name[15030] = "dry air"
 mat_ID_to_name[12120] = "dysprosium"
 
+mat_ID_to_name[17603] = "epoxy"
+
+
 mat_ID_to_name[17151] = "water"
