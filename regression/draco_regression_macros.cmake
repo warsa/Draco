@@ -357,6 +357,10 @@ macro( parse_args )
       # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot parse output).
     elseif( $ENV{extra_params} MATCHES "nr" )
       set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
+    elseif( $ENV{extra_params} MATCHES "scalar" )
+      set( DRACO_C4 "DRACO_C4:STRING=SCALAR" )
+    elseif( $ENV{extra_params} MATCHES "static" )
+      set( DRACO_LIBRARY_TYPE "DRACO_LIBRARY_TYPE:STRING=STATIC" )
     endif()
   endif()
 
