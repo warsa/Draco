@@ -12,7 +12,6 @@
 # import block
 ################################################################################
 import ipcress_reader as ip_reader
-from mat_ID_maps import *
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -91,10 +90,10 @@ mgp_valid = ip_reader.check_valid_data(mgp_grid)
 mgs_valid = ip_reader.check_valid_data(mgs_grid)
 mgrt_valid = ip_reader.check_valid_data(mgrt_grid)
 
-name = mat_ID_to_name.get(selected_ID.get(), selected_ID.get())
+name = selected_ID.get()
 print( \
-  "-------------------- BEGIN DATA PRINT FOR {0} (ID: {1}) ---------------------"\
-  .format(name, selected_ID.get()))
+  "-------------------- BEGIN DATA PRINT FOR {0} ---------------------"\
+  .format(name))
 # if valid, interpolate data at target rho and target T
 if (mgr_valid):
   mgr_interp = ip_reader.interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, mgr_grid, \
@@ -109,8 +108,8 @@ if (mgrt_valid):
   mgrt_interp =ip_reader.interpolate_mg_opacity_data(T_grid, rho_grid, hnu_grid, mgrt_grid, \
                 target_rho.get(), target_T.get(), "total rosseland")
 print( \
-  "-------------------- END DATA PRINT FOR {0} (ID: {1}) ---------------------"\
-  .format(name, selected_ID.get()))
+  "-------------------- END DATA PRINT FOR {0} ---------------------"\
+  .format(name))
 
 # plotting data arrays
 opr_data = []  # Rosseland absorption
@@ -205,10 +204,10 @@ def plot_op():
   mgs_valid = ip_reader.check_valid_data(mgs_grid)
   mgrt_valid = ip_reader.check_valid_data(mgrt_grid)
 
-  name = mat_ID_to_name.get(selected_ID.get(), selected_ID.get())
+  name = selected_ID.get()
   print( \
-    "-------------------- BEGIN DATA PRINT FOR {0} (ID: {1}) --------------------"\
-    .format(name, selected_ID.get()))
+    "-------------------- BEGIN DATA PRINT FOR {0} --------------------"\
+    .format(name))
   # if valid, interpolate data at target rho and target T
   if (mgr_valid):
     mgr_interp = ip_reader.interpolate_mg_opacity_data(T_grid, rho_grid, \
@@ -227,9 +226,8 @@ def plot_op():
       hnu_grid, mgrt_grid, target_rho.get(), target_T.get(), \
       "total rosseland")
   print( \
-    "-------------------- END DATA PRINT FOR {0} (ID: {1}) --------------------"\
-    .format(name, selected_ID.get()))
-
+    "-------------------- END DATA PRINT FOR {0} --------------------"\
+    .format(name))
 
   # plotting data arrays
   opr_data = []  # Rosseland absorption
