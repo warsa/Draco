@@ -108,8 +108,11 @@ macro(dbsSetupCompilers)
   check_ipo_supported(RESULT USE_IPO)
 
   # 2017-09-15 KT - eliminate configure warning in Win32 nightly regressions:
-  # "CMake doesn't support IPO for current compiler"
-  if( ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+  #                 "CMake doesn't support IPO for current compiler"
+  # 2017-11-13 KT - This also breaks linking MinGW gfortran libraries into 
+  #                 MSVC applications, so just disable it for all Win32 builds.
+  if( WIN32 )
+  # if( ${CMAKE_GENERATOR} MATCHES "NMake Makefiles" )
     set( USE_IPO OFF CACHE BOOL
       "Enable Interprocedureal Optimization for Release builds." FORCE )
   endif()

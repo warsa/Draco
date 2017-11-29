@@ -87,27 +87,17 @@ run "ulimit -a"
 
 if [[ `fn_exists module` == 1 ]]; then
   echo " "
-  if [[ `declare -f module | grep -c LMOD` == 0 ]]; then
-    die "Found Tcl modules:"
-  else
-    # we have Lmod modules
-    echo "Found Lmod modules:"
-    run "module avail"
-    run "module list"
-    run "module purge"
-    run "module load user_contrib"
-    # eospac, ndi, csk
-    run "module use --append /scratch/vendors/Modules.lmod"
-    run "module list"
-  fi
+  # we have Lmod modules
+  echo "Found Lmod modules:"
+  run "module purge"
+  run "module load user_contrib"
 else
   # The nightly crontabs follow this branch!
   echo " "
   echo "No modules available"
-  echo "Loading Lmod modulefiles..."
-  export MODULEHOME=/usr/share/lmod/lmod
-  source $MODULE_HOME/init/bash || die "Can't find $MODULE_HOME/init/bash."
-  run "module use user_contrib"
+  echo "Trying to setup Lmod modulefiles..."
+  run "source /etc/bashrc"
+  run "module load user_contrib"
 fi
 
 # Load default set of modules
@@ -155,6 +145,14 @@ case $extra_params in
 #    run "module load $dracomodules"
 #    comp=gcc-6.3.0
 #    ;;
+  scalar)
+    run "module load $dracomodules"
+    comp="gcc-scalar"
+    ;;
+  static)
+    run "module load $dracomodules"
+    comp="gcc-staticlink"
+    ;;
   valgrind)
     run "module load $dracomodules valgrind"
     comp=gcc
