@@ -155,6 +155,10 @@ function startCI()
   if ! [[ ${pr} == "develop" ]]; then
     pr=pr${pr}
   fi
+  if [[ ${project} == "draco" ]] && [[ ${extra} == 'vtest' ]]; then
+    # Capsaicin/Jayenne -e vtest uses Draco w/o 'vtest'
+    extra="na"
+  fi
   if [[ ${extra} == 'na' ]]; then
     extra=""
     edash=""
@@ -241,7 +245,9 @@ esac
 echo " "
 case $target in
   # CCS-NET: Release
-  ccscs2*) startCI ${project} Release na $pr ;;
+  ccscs2*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr ;;
 
   # CCS-NET: Valgrind (Debug)
   ccscs6*) startCI ${project} Debug valgrind $pr ;;
@@ -255,12 +261,14 @@ case $target in
   # Snow: Debug
   sn-fe*)
     startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr
     startCI ${project} Debug fulldiagnostics $pr
     ;;
 
   # Trinitite: Release
   tt-fe*)
     startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr
     startCI ${project} Release knl $pr
     ;;
 

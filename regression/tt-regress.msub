@@ -145,7 +145,6 @@ case $extra_params in
 knl)
     run "module swap craype-haswell craype-mic-knl"
     export OMP_NUM_THREADS=17
-    comp="${comp}-knl"
     ;;
 "")
     # no-op
@@ -160,6 +159,9 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
+if [[ $extra_params ]]; then
+  comp=$comp-$extra_params
+fi
 comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab

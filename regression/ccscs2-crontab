@@ -16,9 +16,19 @@
 # -e extra args:
 #    coverage        - build bullseyecoverage data and send it to cdash
 #    clang
+#    scalar          - build w/o MPI.
+#    static          - static linking (default is dynamic/shared libs)
+#    valgrind        - memory testing
+#    vtest           - verification tests (long running tests)
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# gcc-7.2.0, openmpi-2.1.1
 #------------------------------------------------------------------------------#
 
 05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \"draco jayenne capsaicin\"
+
+05 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \" jayenne capsaicin\" -e vtest
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

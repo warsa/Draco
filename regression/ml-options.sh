@@ -13,7 +13,7 @@
 
 # Main Options
 machine_name_long="Moonlight"
-platform_extra_params="fulldiagnostics nr perfbench pgi valgrind"
+platform_extra_params="fulldiagnostics nr perfbench pgi valgrind vtest"
 pem_match=`echo $platform_extra_params | sed -e 's/[ ]/|/g'`
 
 ##---------------------------------------------------------------------------##
