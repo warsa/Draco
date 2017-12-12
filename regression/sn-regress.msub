@@ -111,7 +111,7 @@ case $extra_params in
     # no-op
     ;;
 fulldiagnostics)
-    comp="${comp}-fulldiagnostics"
+    # no-op
     ;;
 gcc610)
     run "module purge &> /dev/null"
@@ -122,7 +122,6 @@ gcc610)
     run "module load cmake/3.9.0 ndi numdiff git"
     run "module load random123 eospac/6.2.4 lapack/3.6.1"
     comp="${LCOMPILER}"
-    # ${LCOMPILERVER}
     echo "comp = $comp"
     ;;
 gcc640)
@@ -134,26 +133,23 @@ gcc640)
     run "module load cmake/3.9.0 ndi numdiff git"
     run "module load random123 eospac/6.2.4"
     comp="${LCOMPILER}"
-    # ${LCOMPILERVER}
     echo "comp = $comp"
     ;;
 newtools)
     run "module purge &> /dev/null"
     run "module list"
     run "module load user_contrib friendly-testing"
-    run "module load intel/18.0.0 openmpi/2.1.2 mkl"
+    run "module load intel/18.0.1 openmpi/2.1.2 mkl"
     run "module load superlu-dist metis parmetis"
-# Can't build suite-sparse (and thus trilinos) due to intel/18 bug.
-#    run "module load trilinos/12.10.1 superlu-dist metis parmetis"
+    run "module load trilinos/12.10.1 superlu-dist metis parmetis"
     run "module load cmake/3.9.0 ndi numdiff git"
     run "module load mkl random123 eospac/6.2.4 csk"
-    comp="${comp}-1800"
     ;;
 nr)
-    comp="${comp}-nr"
+    # no-op
     ;;
 perfbench)
-    comp="${comp}-perfbench"
+    # no-op
     ;;
 *)
     echo "FATAL ERROR"
@@ -165,6 +161,9 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
+if [[ $extra_params ]]; then
+  comp=$comp-$extra_params
+fi
 comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab

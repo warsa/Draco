@@ -79,7 +79,9 @@ export draco_script_dir=`readlink -f $script_dir`
 source $draco_script_dir/common.sh
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+CONFIG_BASE+=" -DCMAKE_VERBOSE_MAKEFILE=ON"
+export CONFIG_BASE
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions

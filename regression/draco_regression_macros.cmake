@@ -357,21 +357,31 @@ macro( parse_args )
     set( compiler_short_name "${compiler_short_name}-$ENV{extra_params}" )
     if( $ENV{extra_params} MATCHES "cuda" )
       set(USE_CUDA ON)
-    elseif( $ENV{extra_params} MATCHES "fulldiagnostics" )
+    endif()
+    if( $ENV{extra_params} MATCHES "fulldiagnostics" )
       set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
-      # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot parse output).
-    elseif( $ENV{extra_params} MATCHES "nr" )
+      # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot
+      # parse output).
+    endif()
+    if( $ENV{extra_params} MATCHES "nr" )
       set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
-    elseif( $ENV{extra_params} MATCHES "scalar" )
+    endif()
+    if( $ENV{extra_params} MATCHES "scalar" )
       set( DRACO_C4 "DRACO_C4:STRING=SCALAR" )
     elseif( $ENV{extra_params} MATCHES "static" )
       set( DRACO_LIBRARY_TYPE "DRACO_LIBRARY_TYPE:STRING=STATIC" )
+    endif()
+    if( $ENV{extra_params} MATCHES "vtest" )
+      string( APPEND CUSTOM_VARS " RUN_VERIFICATION_TESTS:BOOL=ON" )
+    endif()
+    if( ${extra_params} MATCHES "perfbench" )
+      string( APPEND CUSTOM_VARS " ENABLE_PERFBENCH:BOOL=ON" )
     endif()
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
   if( WIN32 )
-    set( CTEST_BUILD_NAME "${CTEST_BUILD_CONFIGURATION}" )
+    set( CTEST_BUILD_NAME "${compiler_short_name}-${CTEST_BUILD_CONFIGURATION}" )
     # if( "$ENV{dirext}" MATCHES "x64" )
     # endif()
   elseif( APPLE ) # OS/X
@@ -428,6 +438,7 @@ CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 ENABLE_DYNAMICANALYSIS      = ${ENABLE_DYNAMICANALYSIS}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
+CUSTOM_VARS                 = ${CUSTOM_VARS}
 ")
   endif()
 endmacro( parse_args )
@@ -481,7 +492,7 @@ macro( find_tools )
 
   if( NOT WIN32 )
     # if MAKECOMMAND is found when using "Visual Studio" as the generator,
-    # the compiler 'cl' will be found to be unable to compile a simple 
+    # the compiler 'cl' will be found to be unable to compile a simple
     # program.
     find_program( MAKECOMMAND NAMES make )
     # No memory check program on Windows for now.
@@ -793,8 +804,9 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "intel-vtest"     "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    string( REPLACE "gcc-vtest"       "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
     if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")
       # If this is jayenne, we might be building a pull request. Replace the PR

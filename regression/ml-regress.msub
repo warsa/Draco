@@ -138,13 +138,13 @@ cuda)
 #     comp="${comp}-cuda"
     ;;
 fulldiagnostics)
-    comp="${comp}-fulldiagnostics"
+    # no-op
     ;;
 nr)
-    comp="${comp}-nr"
+    # no-op
     ;;
 perfbench)
-    comp="${comp}-perfbench"
+    # no-op
     ;;
 pgi)
     run "module list"
@@ -161,6 +161,9 @@ pgi)
     CC=`which pgcc`
     FC=`which pgf90`
     ;;
+vtest)
+    # no-op
+    ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
@@ -171,6 +174,9 @@ esac
 run "module list"
 
 # Use a unique regression folder for each github branch
+if [[ $extra_params ]]; then
+  comp=$comp-$extra_params
+fi
 comp=$comp-$featurebranch
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
