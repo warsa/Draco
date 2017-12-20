@@ -372,10 +372,10 @@ macro( parse_args )
       set( DRACO_LIBRARY_TYPE "DRACO_LIBRARY_TYPE:STRING=STATIC" )
     endif()
     if( $ENV{extra_params} MATCHES "vtest" )
-      string( APPEND CUSTOM_VARS " RUN_VERIFICATION_TESTS:BOOL=ON" )
+      list( APPEND CUSTOM_VARS "RUN_VERIFICATION_TESTS:BOOL=ON" )
     endif()
-    if( ${extra_params} MATCHES "perfbench" )
-      string( APPEND CUSTOM_VARS " ENABLE_PERFBENCH:BOOL=ON" )
+    if( $ENV{extra_params} MATCHES "perfbench" )
+      list( APPEND CUSTOM_VARS "ENABLE_PERFBENCH:BOOL=ON" )
     endif()
   endif()
 
@@ -426,6 +426,9 @@ macro( parse_args )
   if( DEFINED ENV{buildname_append} )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
+
+# Convert CUSTOM_VARS from a list into a multi-line string
+string(REGEX REPLACE ";" "\n" CUSTOM_VARS "${CUSTOM_VARS}")
 
   if( ${drm_verbose} )
     message("
