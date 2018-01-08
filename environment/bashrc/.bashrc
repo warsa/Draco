@@ -178,8 +178,8 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_darwin_fe
       ;;
 
-    # Luna | Moonlight | Pinto | Wolf
-    lu* | ml* | pi* | wf* )
+    # Pinto | Wolf
+    pi* | wf* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 

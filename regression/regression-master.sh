@@ -47,7 +47,6 @@ fi
 export host=`uname -n | sed -e 's/[.].*//g'`
 case $host in
   ccscs*) machine_name_short=ccscs ;;
-  ml*)    machine_name_short=ml ;;
   sn*)    machine_name_short=sn ;;
   tt*)    machine_name_short=tt ;;
   *)
@@ -283,7 +282,7 @@ ifb=0
 
 # The job launch logic spawns a job for each project immediately, but the
 # *-job-launch.sh script will spin until all dependencies (jobids) are met.
-# Thus, the ml-job-launch.sh for milagro will start immediately, but it will not
+# Thus, the sn-job-launch.sh for milagro will start immediately, but it will not
 # do any real work until both draco and clubimc have completed.
 
 # More sanity checks

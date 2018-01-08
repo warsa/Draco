@@ -53,11 +53,6 @@ case ${target} in
     VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
     ;;
-  ml-*)
-    REGDIR=/usr/projects/jayenne/regress
-    keychain=keychain-2.7.1
-    VENDOR_DIR=/usr/projects/draco/vendors
-    ;;
   *)
     REGDIR=/scratch/regress
     ;;
