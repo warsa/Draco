@@ -4,11 +4,11 @@
  * \author Thomas M. Evans
  * \date   Thu Mar 21 11:07:40 2002
  * \brief  Traits classes for MPI types.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef c4_MPI_Traits_hh

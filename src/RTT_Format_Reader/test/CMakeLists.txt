@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 project( RTT_Format_Reader_test CXX )
 
