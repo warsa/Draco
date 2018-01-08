@@ -5,12 +5,9 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
-# History
-# ----------------------------------------
-# 6/13/2016  - IPO settings moved to compilerEnv.cmake
-#              (CMAKE_INTERPROCEDURAL_OPTIMIZATION=ON). As of cmake/3.7, this
-#              only turns on IPO for Intel, so we still add -flto for release
-#              builds.
+# Note: In config/compilerEnv.cmake, the build system sets flags for
+# 1) the language standard (C++14, C99, etc)
+# 2) interprocedural optimization.
 
 # Notes:
 # ----------------------------------------
@@ -20,12 +17,6 @@
 # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 # https://gcc.gnu.org/gcc-5/changes.html
 # http://stackoverflow.com/questions/3375697/useful-gcc-flags-for-c
-
-# Require GCC-4.7 or later
-if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7 )
-  message( FATAL_ERROR "Draco requires GNU compilers v.4.7 or later.
-This requirement is tied to support of the C++11 standard.")
-endif()
 
 #
 # Declare CMake options related to GCC
