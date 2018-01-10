@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( units CXX )

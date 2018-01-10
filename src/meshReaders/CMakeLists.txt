@@ -6,7 +6,6 @@
 # note   Copyright (C) 2010-2012, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( meshReaders CXX )

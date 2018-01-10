@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 project( cdi_analytic_test CXX )
 
