@@ -6,7 +6,6 @@
 # note   Copyright (C) 2016, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
-# $Id$
 #------------------------------------------------------------------------------#
 project( mesh_element_test CXX )
 
