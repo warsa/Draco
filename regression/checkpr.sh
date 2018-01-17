@@ -99,9 +99,9 @@ case $project in
     print_use; exit 1 ;;
 esac
 
-# Restrict the use of ccscs7.
+# Restrict the use of ccscs[27].
 # case $target in
-#   ccscs7*)
+#   ccscs[27]*)
 #     if ! [[ $LOGNAME == "kellyt" ]]; then
 #       echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
 #       exit 1
@@ -248,12 +248,10 @@ case $target in
   ccscs2*)
     startCI ${project} Release na $pr
     startCI ${project} Release vtest $pr ;;
+    startCI ${project} Debug coverage $pr ;;
 
   # CCS-NET: Valgrind (Debug)
   ccscs6*) startCI ${project} Debug valgrind $pr ;;
-
-  # CCS-NET: Coverage (Debug)
-  ccscs7*) startCI ${project} Debug coverage $pr ;;
 
   # Moonlight: Fulldiagnostics (Debug)
   ml-fey*) startCI ${project} Debug na $pr ;;

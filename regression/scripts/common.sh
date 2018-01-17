@@ -72,10 +72,10 @@ function establish_permissions
       ;;
     capsaicin | jayenne)
       # Export controlled sources - limit access
-      if [[ `groups | grep -c ccsrad` = 1 ]]; then
-        install_group="ccsrad"
-        install_permissions="g+rwX,o-rwX"
-      elif [[ `groups | grep -c dacodes` = 1 ]]; then
+      # if [[ `groups | grep -c ccsrad` = 1 ]]; then
+      #   install_group="ccsrad"
+      #   install_permissions="g+rwX,o-rwX"
+      if [[ `groups | grep -c dacodes` = 1 ]]; then
         install_group="dacodes"
         install_permissions="g+rwX,o-rwX"
       else
