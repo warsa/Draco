@@ -17,9 +17,9 @@
 #ifndef rtt_dsxx_dbc_i_hh
 #define rtt_dsxx_dbc_i_hh
 
+#include "Soft_Equivalence.hh"
 #include <algorithm>
 #include <functional>
-#include "Soft_Equivalence.hh"
 
 namespace rtt_dsxx {
 

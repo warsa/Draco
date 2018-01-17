@@ -154,7 +154,6 @@ void draco_walk_directory_tree(std::string const &dirname,
 
     // Close handle
     ::FindClose(hFile);
-
   }
 
   // Perform action on the top level entry

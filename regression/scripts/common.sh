@@ -285,7 +285,7 @@ function lookupppn()
   local target="`uname -n | sed -e s/[.].*//`"
   local ppn=1
   case ${target} in
-    ml* | pi* | wf* | lu* ) ppn=16 ;;
+    pi* | wf* ) ppn=16 ;;
     t[rt]-fe* | t[rt]-login*)
       if [[ $CRAY_CPU_TARGET == "haswell" ]]; then
           ppn=32

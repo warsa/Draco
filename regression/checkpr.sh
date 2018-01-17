@@ -194,7 +194,6 @@ function startCI()
 
 case $target in
   ccscs*) machine_name_short=ccscs ;;
-  ml*) machine_name_short=ml ;;
   sn*) machine_name_short=sn ;;
   tt*) machine_name_short=tt ;;
   darwin*) machine_name_short=darwin ;;
@@ -254,9 +253,6 @@ case $target in
 
   # CCS-NET: Coverage (Debug)
   ccscs7*) startCI ${project} Debug coverage $pr ;;
-
-  # Moonlight: Fulldiagnostics (Debug)
-  ml-fey*) startCI ${project} Debug na $pr ;;
 
   # Snow: Debug
   sn-fe*)
