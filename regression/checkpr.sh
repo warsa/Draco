@@ -194,7 +194,6 @@ function startCI()
 
 case $target in
   ccscs*) machine_name_short=ccscs ;;
-  ml*) machine_name_short=ml ;;
   sn*) machine_name_short=sn ;;
   tt*) machine_name_short=tt ;;
   darwin*) machine_name_short=darwin ;;
