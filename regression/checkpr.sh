@@ -244,10 +244,10 @@ esac
 
 echo " "
 case $target in
-  # CCS-NET: Release
+  # CCS-NET: Release, vtest, coverage
   ccscs2*)
     startCI ${project} Release na $pr
-    startCI ${project} Release vtest $pr ;;
+    startCI ${project} Release vtest $pr
     startCI ${project} Debug coverage $pr ;;
 
   # CCS-NET: Valgrind (Debug)
