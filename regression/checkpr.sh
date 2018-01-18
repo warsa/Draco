@@ -253,9 +253,6 @@ case $target in
   # CCS-NET: Valgrind (Debug)
   ccscs6*) startCI ${project} Debug valgrind $pr ;;
 
-  # Moonlight: Fulldiagnostics (Debug)
-  ml-fey*) startCI ${project} Debug na $pr ;;
-
   # Snow: Debug
   sn-fe*)
     startCI ${project} Release na $pr
