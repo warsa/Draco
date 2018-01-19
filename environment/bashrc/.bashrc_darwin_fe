@@ -53,8 +53,8 @@ if test -n "$MODULESHOME"; then
     module use --append ${VENDOR_DIR}-ec/Modules
     cflavor="gcc-7.1.0"
     mflavor="gcc-7.1.0-openmpi@2.1.0"
-    noflavor="emacs subversion git random123"
-    compflavor="gcc/7.1.0 gsl/2.4-$cflavor cmake/3.10.0-$cflavor \
+    noflavor="emacs subversion git random123 numdiff/5.9.0-gcc-4.8.5"
+    compflavor="gcc/7.1.0 gsl/2.4-$cflavor cmake/3.10.0-gcc-4.8.5 \
 metis/5.1.0-$cflavor"
     mpiflavor="openmpi/2.1.0-$cflavor parmetis/4.0.3-$mflavor \
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
