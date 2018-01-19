@@ -38,6 +38,10 @@ fi
 # ----------------------------------------
 umask 0002
 
+# Set a variable to avoid errors of the form "Assertion failure at psm_ep.c:835:
+# ep->epid !=0". This was suggested by Howard Pritchard via email on 2018 Jan 18.
+export OMPI_MCA_PML=ob1
+
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
 export https_proxy=$http_proxy
