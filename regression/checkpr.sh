@@ -30,7 +30,7 @@ set -m
 # load some common bash functions
 export rscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" )
 if ! [[ -d $rscriptdir ]]; then
-  export rscriptdir="$( cd "$( diname "${BASH_SOURCE[0]}" )" && pwd )"
+  export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 fi
 if [[ -f $rscriptdir/scripts/common.sh ]]; then
   source $rscriptdir/scripts/common.sh
