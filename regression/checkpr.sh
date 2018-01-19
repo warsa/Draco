@@ -243,6 +243,7 @@ esac
 
 echo " "
 case $target in
+
   # CCS-NET: Release
   ccscs2*)
     startCI ${project} Release na $pr
@@ -271,6 +272,19 @@ case $target in
   # Darwin: Disabled
   darwin-fe*)
     # startCI ${project} Release na $pr
+    ;;
+
+  # These cases are not automated checks of PRs.  However, these machines are
+  # supported if this script is started by a developer:
+  ccscs[134]*)
+    startCI ${project} Release na $pr
+    startCI ${project} Debug na $pr ;;
+  ccscs[589]*)
+    startCI ${project} Debug coverage $pr ;;
+  ba-fe* | pi-fe* | wf-fe*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr
+    startCI ${project} Debug fulldiagnostics $pr
     ;;
 
   *) echo "Unknown target machine: target = $target" ; exit 1 ;;
