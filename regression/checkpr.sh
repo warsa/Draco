@@ -28,7 +28,10 @@
 set -m
 
 # load some common bash functions
-export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export rscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" )
+if ! [[ -d $rscriptdir ]]; then
+  export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+fi
 if [[ -f $rscriptdir/scripts/common.sh ]]; then
   source $rscriptdir/scripts/common.sh
 else
@@ -243,6 +246,7 @@ esac
 
 echo " "
 case $target in
+
   # CCS-NET: Release, vtest, coverage
   ccscs2*)
     startCI ${project} Release na $pr
@@ -269,6 +273,19 @@ case $target in
   # Darwin: Disabled
   darwin-fe*)
     # startCI ${project} Release na $pr
+    ;;
+
+  # These cases are not automated checks of PRs.  However, these machines are
+  # supported if this script is started by a developer:
+  ccscs[134]*)
+    startCI ${project} Release na $pr
+    startCI ${project} Debug na $pr ;;
+  ccscs[589]*)
+    startCI ${project} Debug coverage $pr ;;
+  ba-fe* | pi-fe* | wf-fe*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr
+    startCI ${project} Debug fulldiagnostics $pr
     ;;
 
   *) echo "Unknown target machine: target = $target" ; exit 1 ;;
