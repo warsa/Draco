@@ -45,8 +45,8 @@ print_use()
 # fi
 
 mach=`uname -n`
-if test "$mach" != "ccscs7.lanl.gov"; then
-   echo "FATAL ERROR: This script must be run from ccscs7 (or the machine that"
+if test "$mach" != "ccscs2.lanl.gov"; then
+   echo "FATAL ERROR: This script must be run from ccscs2 (or the machine that"
    echo "             has the regression log files)."
    exit 1
 fi
