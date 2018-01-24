@@ -8,9 +8,16 @@ if test -n "$verbose"; then
   echo "In .bashrc_darwin_fe"
 fi
 
+# sfeatures | grep <feature:=knl>
+# salloc -N 1 -p power8+
+# salloc -N 1 -p knl-quad_flat
+
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
+
+# aliases and bash functions for working with slurm
+source ${DRACO_ENV_DIR}/bashrc/.bashrc_slurm
 
 # unlimit stack and core dump sizes.
 ulimit -s unlimited
@@ -49,8 +56,9 @@ if test -n "$MODULESHOME"; then
     # # additional setup for capsaicin
     # module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
   else
-    module use --append ${VENDOR_DIR}/Modules
+    module use --append ${VENDOR_DIR}/user_contrib
     module use --append ${VENDOR_DIR}-ec/Modules
+    module load user_contrib
     cflavor="gcc-7.1.0"
     mflavor="gcc-7.1.0-openmpi@2.1.0"
     noflavor="emacs subversion git random123 numdiff/5.9.0-gcc-4.8.5"
