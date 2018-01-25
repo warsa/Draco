@@ -79,12 +79,16 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
     export CC=`which gcc`
     export FC=`which gfortran`
     export MPIEXEC=`which mpirun`
+
+    # Previously, we used Darwin for nightly regressions with Intel-MPI.  When
+    # Intel-MPI is selected, these variables must be set:
+
     #export CXX=`which mpiicpc`
     #export CC=`which mpiicc`
     #export FC=`which mpiifort`
     #export MPIEXEC=`which mpirun`
 
-    # only for Intel-MPI?
+    # only for Intel-MPI
     #echo "mpd --daemon"
     #mpd --daemon
   }
