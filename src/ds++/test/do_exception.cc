@@ -80,7 +80,7 @@ void run_test(int /*argc*/, char *argv[]) {
   case 0:
     // Should not throw a IEEE floating point exception.
     cout << "- Case zero: this operation should not throw a SIGFPE."
-         << " The result should be 2..." << endl;;
+         << " The result should be 2..." << endl;
     result = 1.0 + zero + sqrt(-neg);
     cout << "  result = " << result << endl;
     break;
