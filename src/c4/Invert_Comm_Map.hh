@@ -5,8 +5,7 @@
  * \date   Mon Nov 19 10:09:10 2007
  * \brief  Implementation of Invert_Comm_Map
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_Invert_Comm_Map_hh
