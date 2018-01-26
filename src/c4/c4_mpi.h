@@ -13,8 +13,10 @@
 
 #include "c4/config.h"
 
-/* defined in ac_vendors.m4, location of <mpi.h> */
+/* defined in config/setupMPI.cmake */
+#ifdef C4_MPI
 #include <mpi.h>
+#endif
 
 #ifndef DRACO_MAX_PROCESSOR_NAME
 #ifdef MPI_MAX_PROCESSOR_NAME
