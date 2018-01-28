@@ -14,15 +14,6 @@ project( diagnostics_test CXX )
 file( GLOB test_sources *.cc )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${PROJECT_SOURCE_DIR}/..   # headers for package
-   ${PROJECT_BINARY_DIR}/..   # config.h
-   )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 add_scalar_tests(

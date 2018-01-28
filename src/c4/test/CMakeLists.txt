@@ -15,16 +15,6 @@ project( c4_test CXX )
 file( GLOB test_sources *.cc )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${PROJECT_SOURCE_DIR}/..   # headers for package
-   ${PROJECT_BINARY_DIR}/..   # config.h
-   )
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
@@ -97,9 +87,7 @@ add_parallel_tests(
   LABEL     "nomemcheck"
   )
 
-
-# The rest of the tests
-
+# The remainder of the tests
 add_parallel_tests(
    SOURCES   "${test_sources}"
    DEPS      Lib_c4
@@ -110,12 +98,12 @@ add_parallel_tests(
 # Python based test runners
 #------------------------------------------------------------------------------#
 if( NOT WIN32 AND NOT APPLE )
-include( ApplicationUnitTest )
-add_app_unit_test(
-  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
-  APP       $<TARGET_FILE_DIR:Exe_xthi>/$<TARGET_FILE_NAME:Exe_xthi>
-  PE_LIST   "1;2"
-  )
+  include( ApplicationUnitTest )
+  add_app_unit_test(
+    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
+    APP       $<TARGET_FILE_DIR:Exe_xthi>/$<TARGET_FILE_NAME:Exe_xthi>
+    PE_LIST   "1;2"
+    )
 endif()
 
 #------------------------------------------------------------------------------#

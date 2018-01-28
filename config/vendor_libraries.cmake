@@ -791,10 +791,6 @@ macro( setVendorVersionDefaults )
     set( VENDOR_DIR ${VENDOR_DIR} CACHE PATH
       "Root directory where CCS-2 3rd party libraries are located."
       FORCE )
-  else()
-    message( "
-WARNING: VENDOR_DIR not defined locally or in user environment,
-individual vendor directories should be defined." )
   endif()
 
   # Import environment variables related to vendors
@@ -871,16 +867,14 @@ macro( setupVendorLibraries )
   # General settings
   #
   setVendorVersionDefaults()
-  if( NOT TARGET blas )
+  if( NOT TARGET lapack )
     setupLAPACKLibrariesUnix()
   endif()
 
   # System specific settings
   if ( UNIX )
 
-    if( NOT MPI_CXX_COMPILER )
-      setupMPILibrariesUnix()
-    endif()
+    setupMPILibrariesUnix()
     setupVendorLibrariesUnix()
 
   elseif( WIN32 )

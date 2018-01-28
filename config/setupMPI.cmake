@@ -358,7 +358,7 @@ macro( setupMPILibrariesUnix )
       endforeach()
 
       # Call the standard CMake FindMPI macro.
-      find_package( MPI QUIET )
+      find_package( MPI QUIET)
 
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
@@ -443,7 +443,7 @@ macro( setupMPILibrariesWindows )
    if( NOT "${DRACO_C4}" STREQUAL "SCALAR" )
 
       message(STATUS "Looking for MPI...")
-      find_package( MPI )
+      find_package( MPI QUIET )
 
       # For MS-MPI 5, mpifptr.h is architecture dependent. Figure out
       # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH

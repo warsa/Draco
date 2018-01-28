@@ -20,15 +20,11 @@ project( FortranChecks CXX )
 file( GLOB Csources *.cc )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-include_directories( ${dsxx_BINARY_DIR} ) # ds++/config.h
-
-# ---------------------------------------------------------------------------- #
 # Build package libraries
 # ---------------------------------------------------------------------------- #
 add_component_library(
   TARGET       Lib_FC_Derived_Type
+  TARGET_DEPS  "Lib_dsxx"
   LIBRARY_NAME FC_Derived_Type
   SOURCES      "${Csources}"
   NOEXPORT )
@@ -37,8 +33,8 @@ set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-# Do not install these libraries.  They are only used for testing the
-# build system.
+# Do not install these libraries. They are only used for testing the build
+# system.
 # install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION lib )
 
 #------------------------------------------------------------------------------#
