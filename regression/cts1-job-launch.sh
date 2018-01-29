@@ -1,6 +1,6 @@
 #!/bin/bash
 ##---------------------------------------------------------------------------##
-## File  : regression/sn-job-launch.sh
+## File  : regression/cts1-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
 ## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
@@ -75,7 +75,7 @@ fi
 # Configure on the front end
 echo "Configure:"
 export REGRESSION_PHASE=c
-cmd="${rscriptdir}/sn-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
+cmd="${rscriptdir}/cts1-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log"
 echo "${cmd}"
 eval "${cmd}"
 
@@ -87,7 +87,7 @@ logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra
 if [[ -f $logfile ]]; then
   rm $logfile
 fi
-cmd="$MSUB ${access_queue} -o ${logfile} -J ${subproj:0:5}-${featurebranch} -t 4:00:00 ${rscriptdir}/sn-regress.msub"
+cmd="$MSUB ${access_queue} -o ${logfile} -J ${subproj:0:5}-${featurebranch} -t 4:00:00 ${rscriptdir}/${machine_class}-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
@@ -106,12 +106,12 @@ echo " "
 echo "Submit:"
 export REGRESSION_PHASE=s
 echo "Jobs done, now submitting ${build_type} results from ${host}."
-cmd="${rscriptdir}/sn-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
+cmd="${rscriptdir}/cts1-regress.msub >& ${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-s.log"
 echo "${cmd}"
 eval "${cmd}"
 
 echo "All done."
 
 ##---------------------------------------------------------------------------##
-## End of sn-job-launch.sh
+## End of ba-job-launch.sh
 ##---------------------------------------------------------------------------##

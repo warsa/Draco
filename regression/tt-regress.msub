@@ -12,6 +12,9 @@ if [[ `which srun 2>/dev/null | grep -c srun` == 0 ]]; then
   source /etc/bash.bashrc.local
 fi
 
+# Allow variable as case condition
+shopt -s extglob
+
 #----------------------------------------------------------------------#
 # The script starts here
 #----------------------------------------------------------------------#
@@ -44,7 +47,7 @@ fi
 
 # Environment setup
 # ----------------------------------------
-umask 0007
+umask 0002
 
 export http_proxy=http://proxyout.lanl.gov:8080
 export HTTP_PROXY=$http_proxy
@@ -58,7 +61,6 @@ export VENDOR_DIR=/usr/projects/draco/vendors
 # gitlab.lanl.gov has an unkown certificate, disable checking
 export GIT_SSL_NO_VERIFY=true
 
-machine=`uname -n`
 case $REGRESSION_PHASE in
   c) ctestparts="Configure" ;;
   b)
@@ -79,10 +81,17 @@ case $REGRESSION_PHASE in
     ;;
 esac
 
+# Host based variables
+# ----------------------------------------
+machine=`uname -n`
+export host=`uname -n | sed -e 's/[.].*//g'`
+platform_extra_params=`echo $platform_extra_params | sed -e 's/ / | /g'`
+source $rscriptdir/tt-options.sh
+
 # Header
 # ----------------------------------------
 echo "==========================================================================="
-echo "Trinitite regression: ${ctestparts} from ${machine}."
+echo "${machine_name_long} regression: ${ctestparts} from ${machine}."
 echo "                      ${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}"
 echo "==========================================================================="
 if [[ ${SLURM_JOB_PARTITION} ]]; then
@@ -136,17 +145,27 @@ comp=CC
 
 # Extra parameters
 case $extra_params in
+"")
+    # no-op
+    ;;
 knl)
     run "module swap craype-haswell craype-mic-knl"
     export OMP_NUM_THREADS=17
     ;;
-"")
+vtest)
     # no-op
+    ;;
+@($pem_match) )
+    # found in tt-options.sh but no rule found here
+    echo "FATAL ERROR"
+    echo "Extra parameter = ${extra_param} requested and known by ${machine_name_short}-options.sh,"
+    echo "but ${0##*/} doesn't know about this option."
+    exit 1
     ;;
 *)
     echo "FATAL ERROR"
     echo "Extra parameter = ${extra_param} requested but is unknown to"
-    echo "the regression system (edit tt-regress.msub)."
+    echo "the regression system (edit ${0##*/})."
     exit 1
     ;;
 esac
@@ -163,10 +182,10 @@ if [[ ${regress_mode} == "on" ]]; then
   run "module load git"
   keychain=keychain-2.8.2
   $VENDOR_DIR/$keychain/keychain $HOME/.ssh/regress_rsa
-  if test -f $HOME/.keychain/$HOSTNAME-sh; then
-    run "source $HOME/.keychain/$HOSTNAME-sh"
+  if test -f $HOME/.keychain/$machine-sh; then
+    run "source $HOME/.keychain/$machine-sh"
   else
-    echo "Error: could not find $HOME/.keychain/$HOSTNAME-sh"
+    echo "Error: could not find $HOME/.keychain/$machine-sh"
   fi
 fi
 
@@ -185,26 +204,26 @@ fi
 # Build type     : Release, Debug
 
 if [[ ! ${dashboard_type} ]]; then
-  dashboard_type=Experimental
+   dashboard_type=Experimental
 fi
 if [[ ! ${base_dir} ]]; then
-  if ! test -d ${scratchdir}; then
-    echo "Fatal Error, scratchdir=${scratchdir} not found.."
-    exit 1
-  fi
-  scratchdir=$scratchdir/$LOGNAME/cdash/tt
-  base_dir=${regdir}/cdash/tt
-  # base_dir=/usr/projects/ccsrad/regress/cdash/tt
+   if ! [[ -d ${scratchdir} ]]; then
+      echo "FATAL ERROR, scratchdir=${scratchdir} not found."
+      echo "  Have the names/locations of scratch space changed?"
+      exit 1
+   fi
+   scratchdir=$scratchdir/$LOGNAME/cdash/${machine_name_short}
+   base_dir=${regdir}/cdash/${machine_name_short}
 fi
 
 echo " "
-echo "tt-regress.msub: dashboard_type = $dashboard_type"
-echo "tt-regress.msub: base_dir       = $base_dir"
-echo "tt-regress.msub: build_type     = $build_type"
-echo "tt-regress.msub: comp           = $comp"
-echo "tt-regress.msub: machine        = $machine"
-echo "tt-regress.msub: subproj        = $subproj"
-echo "tt-regress.msub: regdir         = $regdir"
+echo "${0##*/}: dashboard_type = $dashboard_type"
+echo "${0##*/}: base_dir       = $base_dir"
+echo "${0##*/}: build_type     = $build_type"
+echo "${0##*/}: comp           = $comp"
+echo "${0##*/}: machine        = $machine"
+echo "${0##*/}: subproj        = $subproj"
+echo "${0##*/}: regdir         = $regdir"
 
 #----------------------------------------------------------------------#
 # CTest
@@ -229,8 +248,8 @@ fi
 export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 export scratch_dir=${scratchdir}/${subproj}/${dashboard_type}_${comp}/${build_type}
 
-echo "tt-regress.msub: work_dir       = ${work_dir}"
-echo "tt-regress.msub: scratch_dir    = ${scratch_dir}"
+echo "${0##*/}: work_dir       = ${work_dir}"
+echo "${0##*/}: scratch_dir    = ${scratch_dir}"
 echo " "
 setup_dirs=`echo $ctestparts | grep Configure`
 if [[ ${setup_dirs} ]]; then
@@ -275,10 +294,10 @@ if [[ ${setup_dirs} ]]; then
 fi
 
 # Environment
-#echo " "
-#echo "--------------------(environment)------------------------------"
-#set
-#echo "--------------------(end environment)--------------------------"
+# echo " "
+# echo "--------------------(environment)------------------------------"
+# set
+# echo "--------------------(end environment)--------------------------"
 
 date
 echo " "

@@ -796,26 +796,30 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # Assume that draco_work_dir is parallel to our current location, but only
   # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
-  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
-    ${dep_pkg}_work_dir ${work_dir} )
+  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)"
+    "${dep_pkg}/\\1" ${dep_pkg}_work_dir ${work_dir} )
 
   # If this is a special build, link to the normal Debug/Release Draco files:
+  #
+  # J/C directory       Draco directory
+  # --------------      -----------------
+  # *-nr-*              *-*
+  # *-vtest-*           *-*
+  # *-perfbench-*       *-*
+
   if( "${dep_pkg}" MATCHES "draco" )
-    # coverage  build -> debug   version of Draco
-    # nr        build -> release version of Draco
-    # perfbench build -> release version of Draco
-    # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-vtest"     "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "gcc-vtest"       "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+    # not any ${extraparam} since many map to draco builds that have the same
+    # ${extraparam}.  For example: *-newtools-*.
+    foreach( extraparam nr perfbench vtest )
+      string( REPLACE "-${extraparam}-" "-" ${dep_pkg}_work_dir
+        ${${dep_pkg}_work_dir} )
+    endforeach()
 
     if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
-        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
+        "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
   endif()
 
