@@ -37,7 +37,7 @@ void tstlnsrch(UnitTest &ut) {
   g[0] = 7.2 * fvec[0] - 2.2 * fvec[1];
   g[1] = 3.5 * fvec[0] + 2.7 * fvec[1];
 
-  vector<double> p = { -0.4675753, 1.6190125 };
+  vector<double> p = {-0.4675753, 1.6190125};
 
   double f;
   bool check;
