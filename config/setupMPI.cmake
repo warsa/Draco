@@ -358,7 +358,7 @@ macro( setupMPILibrariesUnix )
       endforeach()
 
       # Call the standard CMake FindMPI macro.
-      find_package( MPI QUIET)
+      find_package( MPI QUIET )
 
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
