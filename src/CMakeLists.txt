@@ -12,17 +12,6 @@ project( draco_src_dir )
 # Provide helper functions used by component CMakeLists.txt files
 include( component_macros )
 
-# Helper macro that only tries to configure a listed package if it
-# exists in the source tree.  For example, when building milagro, the
-# get_draco script only checks out the parts of Draco that are
-# required by milagro.
-macro( add_dir_if_exists package )
-  message( "   ${package}" )
-  if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
-    add_subdirectory( ${package} )
-  endif()
-endmacro()
-
 # Extra 'draco-only' flags (don't pass these to Capsaicin).
 if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )

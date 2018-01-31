@@ -41,8 +41,8 @@ add_component_library(
    LIBRARY_NAME cdi_eospac
    SOURCES      "${sources}"
    VENDOR_LIST "EOSPAC"
-   VENDOR_LIBS "${EOSPAC_LIBRARY}"
-   VENDOR_INCLUDE_DIRS "${EOSPAC_INCLUDE_DIR}" )
+   VENDOR_LIBS "${EOSPAC_LIBRARY}" )
+target_include_directories( Lib_cdi_eospac PUBLIC ${EOSPAC_INCLUDE_DIR} )
 
 add_component_executable(
   TARGET      Exe_QueryEospac
