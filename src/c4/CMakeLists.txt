@@ -37,9 +37,14 @@ if( PAPI_LIBRARY )
   set( c4_extra_VENDORS VENDOR_LIST;PAPI;VENDOR_LIBS;${PAPI_LIBRARY} )
 endif()
 
+set( target_deps Lib_dsxx MPI::MPI_CXX MPI::MPI_C )
+if (TARGET MPI::MPI_Fortran)
+  list(APPEND target_deps MPI::MPI_Fortran )
+endif()
+
 add_component_library(
    TARGET       Lib_c4
-   TARGET_DEPS  Lib_dsxx;MPI::MPI_CXX;MPI::MPI_C;MPI::MPI_Fortran
+   TARGET_DEPS  ${target_deps}
    LIBRARY_NAME c4
    SOURCES      "${sources}"
    ${c4_extra_VENDORS}
