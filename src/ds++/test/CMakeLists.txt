@@ -18,15 +18,6 @@ list( REMOVE_ITEM test_sources
    ${PROJECT_SOURCE_DIR}/do_exception.cc )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${Draco_SOURCE_DIR}/src    # headers for package
-   ${PROJECT_BINARY_DIR}/.. ) # config.h
-
-# ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
@@ -65,28 +56,21 @@ if( draco_isPGI )
    )
 endif()
 
-# ---------------------------------------------------------------------------- #
-# This tests requries python.
-# ---------------------------------------------------------------------------- #
-if( PYTHONINTERP_FOUND )
+# create the do_exception execurtable.
+add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
+target_link_libraries( Exe_do_exception Lib_dsxx )
+set_target_properties( Exe_do_exception PROPERTIES
+  FOLDER dsxx_test
+  OUTPUT_NAME do_exception )
 
-  # create the do_exception execurtable.
-  add_executable( Exe_do_exception ${PROJECT_SOURCE_DIR}/do_exception.cc )
-  target_link_libraries( Exe_do_exception Lib_dsxx )
-  set_target_properties( Exe_do_exception PROPERTIES
-    FOLDER dsxx_test
-    OUTPUT_NAME do_exception )
-
-  include( ApplicationUnitTest )
-  add_app_unit_test(
-    DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/test_fpe_trap.py
-    APP       $<TARGET_FILE_DIR:Exe_do_exception>/$<TARGET_FILE_NAME:Exe_do_exception>
-    # These 4 are: (0) no exceptions, (1) division by zero, (2) sqrt(-1.0) and
-    #              (3) overflow
-    TEST_ARGS "0;1;2;3"
-    LABELS    "nomemcheck")
-
-endif() # PYTHONINTERP_FOUND
+include( ApplicationUnitTest )
+add_app_unit_test(
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/test_fpe_trap.py
+  APP       $<TARGET_FILE_DIR:Exe_do_exception>/$<TARGET_FILE_NAME:Exe_do_exception>
+  # These 4 are: (0) no exceptions, (1) division by zero, (2) sqrt(-1.0) and
+  #              (3) overflow
+  TEST_ARGS "0;1;2;3"
+  LABELS    "nomemcheck")
 
 #------------------------------------------------------------------------------#
 # end ds++/test/CMakeLists.txt

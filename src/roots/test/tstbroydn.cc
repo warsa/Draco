@@ -8,7 +8,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "c4/global.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "roots/broydn.hh"

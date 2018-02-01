@@ -23,10 +23,10 @@ set( ptest_sources
 # ---------------------------------------------------------------------------- #
 # Directories to search for include directives
 # ---------------------------------------------------------------------------- #
-include_directories(
-  ${PROJECT_SOURCE_DIR}      # headers for tests
-  ${Draco_SOURCE_DIR}/src    # headers for ds++
-  )
+# include_directories(
+#   ${PROJECT_SOURCE_DIR}      # headers for tests
+#   ${Draco_SOURCE_DIR}/src    # headers for ds++
+#   )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
