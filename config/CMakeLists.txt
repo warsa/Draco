@@ -34,14 +34,14 @@ if( "${Draco_PACKAGE_LIST}" STREQUAL "" )
    message( FATAL_ERROR
 "Something is wrong with the build system.  Draco_PACKAGE_LIST is empty." )
 endif()
-if( "${Draco_TPL_LIST}" STREQUAL "" )
-   message( FATAL_ERROR
-"Something is wrong with the build system.  Draco_TPL_LIST is empty." )
-endif()
-if( "${Draco_LIBRARIES}" STREQUAL "" )
-   message( FATAL_ERROR
-"Something is wrong with the build system.  Draco_LIBRARIES is empty." )
-endif()
+# if( "${Draco_TPL_LIST}" STREQUAL "" )
+   # message( FATAL_ERROR
+# "Something is wrong with the build system.  Draco_TPL_LIST is empty." )
+# endif()
+# if( "${Draco_LIBRARIES}" STREQUAL "" )
+   # message( FATAL_ERROR
+# "Something is wrong with the build system.  Draco_LIBRARIES is empty." )
+# endif()
 # An empty Draco_TPL_LIBRARIES is now a valid configuration.
 #if( "${Draco_TPL_LIBRARIES}" STREQUAL "" )
 #   message( FATAL_ERROR

@@ -663,17 +663,11 @@ macro( setupVendorLibraries )
 
   # System specific settings
   if ( UNIX )
-
     setupMPILibrariesUnix()
     setupVendorLibrariesUnix()
-
   elseif( WIN32 )
-
-    if( NOT MPI_CXX_COMPILER )
-      setupMPILibrariesWindows()
-    endif()
+    setupMPILibrariesWindows()
     setupVendorLibrariesWindows()
-
   else()
     message( FATAL_ERROR "
 I don't know how to setup global (vendor) libraries for this platform.

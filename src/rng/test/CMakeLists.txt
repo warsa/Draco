@@ -80,7 +80,9 @@ add_component_executable(
   NOEXPORT
   )
 target_include_directories( Exe_time_serial
-  PRIVATE $<BUILD_INTERFACE:${rng_BINARY_DIR}> )
+  PRIVATE 
+    $<BUILD_INTERFACE:${rng_BINARY_DIR}> 
+    ${RANDOM123_INCLUDE_DIR} )
 
 configure_file( ${PROJECT_SOURCE_DIR}/kat_vectors
   ${PROJECT_BINARY_DIR}/kat_vectors COPYONLY )

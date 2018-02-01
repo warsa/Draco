@@ -54,12 +54,11 @@ add_component_library(
    TARGET_DEPS  "Lib_dsxx;GSL::gsl"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"
-   VENDOR_LIST  "Random123"
-   VENDOR_INCLUDE_DIRS "${RANDOM123_INCLUDE_DIR}"
    )
-# generated include directive files (config.h)
 target_include_directories( Lib_rng
-  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
+  PUBLIC 
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> # config.h
+    ${RANDOM123_INCLUDE_DIR} )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
