@@ -43,11 +43,11 @@ if(NOT TARGET Lib_dsxx)
 
   include(CMakeAddFortranSubdirectory)
   get_filename_component( draco_BINARY_DIR ${PROJECT_BINARY_DIR}/../../.. ABSOLUTE )
-  cafs_create_imported_targets( Lib_dsxx       
+  cafs_create_imported_targets( Lib_dsxx
     "rtt_ds++"       "${draco_BINARY_DIR}/src/ds++"       CXX )
-  cafs_create_imported_targets( Lib_quadrature 
+  cafs_create_imported_targets( Lib_quadrature
     "rtt_quadrature" "${draco_BINARY_DIR}/src/quadrature" CXX )
-  cafs_create_imported_targets( Lib_quadrature_test 
+  cafs_create_imported_targets( Lib_quadrature_test
     "rtt_quadrature_test" "${draco_BINARY_DIR}/src/quadrature/test" CXX )
 
   # If we get here, we also need to use the Draco scripts to setup compiler
@@ -95,37 +95,19 @@ set( f90sources
   ${PROJECT_SOURCE_DIR}/../quadrature_interfaces.f90 )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-# if( DEFINED cafs_Draco_TPL_INCLUDE_DIRS )
-  # include_directories( "${cafs_Draco_TPL_INCLUDE_DIRS}" )
-# elseif( DEFINED MPI_Fortran_INCLUDE_PATH )
-  # # Only include directories if mpif.h is found.
-  # set( mpifh_found FALSE )
-  # foreach( dir ${MPI_Fortran_INCLUDE_PATH} )
-    # if( EXISTS ${dir}/mpif.h )
-      # set( mpifh_found TRUE )
-    # endif()
-  # endforeach()
-  # if( mpifh_found )
-    # include_directories( "${MPI_Fortran_INCLUDE_PATH}" )
-  # endif()
-# endif()
-if( "${DRACO_C4}" STREQUAL "MPI" )
-  add_definitions( -DC4_MPI )
-endif()
-
-# ---------------------------------------------------------------------------- #
 # Build library for test directory
 # ---------------------------------------------------------------------------- #
 
 # Xcode: Since cafs_create_imported_targets does not set all of the dependencies
 # between the imported libraries, we need to list them explicitly.
-set(target_deps 
+set(target_deps
     Lib_quadrature_test
     Lib_quadrature
-    Lib_dsxx
-    MPI::MPI_Fortran )
+    Lib_dsxx )
+if( "${DRACO_C4}" STREQUAL "MPI" )
+  add_definitions( -DC4_MPI )
+  list(APPEND target_deps MPI::MPI_Fortran )
+endif()
 
 add_component_library(
   TARGET       Lib_quadrature_ftest

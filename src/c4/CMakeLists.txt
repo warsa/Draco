@@ -37,9 +37,12 @@ if( PAPI_LIBRARY )
   set( c4_extra_VENDORS VENDOR_LIST;PAPI;VENDOR_LIBS;${PAPI_LIBRARY} )
 endif()
 
-set( target_deps Lib_dsxx MPI::MPI_CXX MPI::MPI_C )
-if (TARGET MPI::MPI_Fortran)
-  list(APPEND target_deps MPI::MPI_Fortran )
+set( target_deps Lib_dsxx )
+if ( "${DRACO_C4}" STREQUAL "MPI")
+  list(APPEND target_deps MPI::MPI_CXX MPI::MPI_C )
+  if (TARGET MPI::MPI_Fortran)
+    list(APPEND target_deps MPI::MPI_Fortran )
+  endif()
 endif()
 
 add_component_library(
