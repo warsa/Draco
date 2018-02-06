@@ -592,12 +592,14 @@ macro( setupMPILibrariesWindows )
          ${found_inc_arch} LESS 0 )
          if( IS_DIRECTORY "${mpiincdir}/${arch}")
            list(APPEND mpiincdir "${mpiincdir}/${arch}")
-           set_target_properties(MPI::MPI_Fortran
-             PROPERTIES
-               INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
          endif()
        endif()
      endforeach()
+
+     # Reset the include directories for MPI::MPI_Fortran to pull in the
+     # extra $arch locations (if any)     
+     set_target_properties(MPI::MPI_Fortran
+       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
 
    endif()
 
