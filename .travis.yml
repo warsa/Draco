@@ -13,8 +13,8 @@ services:
 cache:
   ccache: true
   directories:
-    - $HOME/Random123-1.09
-    - $HOME/cmake-3.9.0-Linux-x86_64
+    - $HOME/.sonar
+
 #cache:
 #  - ccache
 
@@ -24,7 +24,7 @@ env:
     - CC=gcc-6
     - CCACHE_CPP2=yes
     - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
-    - COVERAGE=ON
+#    - COVERAGE=ON
     - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
     - CXX=g++-6
     - DISTRO=ubuntu
@@ -35,7 +35,7 @@ env:
     - VENDOR_DIR=${HOME}
     - topdir=/home/travis/build/losalamos/Draco
   matrix:
-    - STYLE=ON
+#    - STYLE=ON
     - WERROR=ON
 
 addons:
@@ -54,22 +54,31 @@ before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
   - pip install --upgrade pip
 #  - pip install --upgrade setuptools
-  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+#  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
   - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
-  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
-#  - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}=\"${!i} -Werror\"; done; fi
+#  - if [[ ${COVERAGE} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS+=\" --coverage\"; done; fi
 
 script:
-  cp -vr docker ${HOME}/docker
-  - ./.travis-run-tests.sh
+  - cp -vr docker ${HOME}/docker
+  - sed -i "1s/fedora/${DISTRO}/" ${HOME}/docker/Dockerfile
+  - cd ../../
+  - mv -v ${TRAVIS_REPO_SLUG} $HOME/docker/git-src
+  - cp -r $HOME/.ccache ${HOME}/docker/ccache
+  - cp -r $HOME/.sonar ${HOME}/docker/sonar
+  - travis_retry timeout 300 docker pull $(sed -n '1s/FROM //p' ${HOME}/docker/Dockerfile)
+#  - ./.travis-run-tests.sh
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
+#  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-6; fi
+  - if [[ ${DOCKERHUB} && ${DOCKER_USERNAME} && ${DOCKER_PASSWORD} && ${TRAVIS_BRANCH} == master && ${TRAVIS_PULL_REQUEST} == false ]]; then
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      if [[ ${CC} == gcc ]]; then docker push "${TRAVIS_REPO_SLUG}:latest"; fi;
+    fi
 
 compiler:
   - gcc-6
