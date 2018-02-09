@@ -37,6 +37,9 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
   // We build the 3-D first, then edit as appropriate.
 
   vector<double> mu, eta, wt;
+  mu.reserve(numOrdinates);
+  eta.reserve(numOrdinates);
+  wt.reserve(numOrdinates);
 
   create_octant_ordinates_(mu, eta, wt);
 
