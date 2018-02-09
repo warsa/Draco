@@ -22,22 +22,30 @@ using namespace std;
 
 //---------------------------------------------------------------------------//
 /*
- * Usage: do_exception test
+ * Usage: 'do_exception <integer_value>'
  *
- * If test is 0, then simple floating point operations are done which should not
- * cause an error.
+ * <integer_value> must be 0, 1, 2 or 3.
  *
- * Otherwise, other test values should cause an exception.  Specifically, valid
- * test values are
+ * If the required argument is 0, then simple floating point operations are done
+ * which should not cause any errors.
  *
- * Otherwise, other test values should cause an exception.
+ * If the provided integral value is 1,2, or 3, then one of the test case listed
+ * below will be run. Each of these test cases should cause an IEEE floating
+ * point exception.
  *
- * Specifically, valid test values are
- *    1: test double division by zero
- *    2: test sqrt(-1)
- *    3: test overflow
+ * Test
+ * case    Description (type of IEEE exception)
+ * ----    --------------------------------------
+ *    1    test double division by zero
+ *    2    test sqrt(-1)
+ *    3    test overflow
  *
- * The file output.dat documents what happened during all tests.
+ * If \c 'DRACO_DIAGNOSTICS && 0100' is non-zero (e.g.: \c DRACO_DIAGNOSTICS=7),
+ * then Draco's fpe_trap shoud convert the IEEE FPE into a C++ exception and
+ * print a stack trace.
+ *
+ * When run through via \c ctest, the output from these tests is captured in the
+ * files \c do_exception_[0-9]+.out and \c do_exception_[0-9]+.err.
  */
 void run_test(int /*argc*/, char *argv[]) {
 
@@ -68,7 +76,8 @@ void run_test(int /*argc*/, char *argv[]) {
   // Certain tests may be optimized away by the compiler, by recogonizing the
   // constants set above and precomputing the results below.  So do something
   // here to hopefully avoid this.  This tricks the optimizer, at least for gnu
-  // and KCC.
+  // and KCC. [2018-02-09 KT -- some web posts hint that marking zero and neg as
+  // 'volitile' may also prevent removal of logic due to optimization.]
 
   if (test < -100) { // this should never happen
     Insist(0, "Something is very wrong.");
