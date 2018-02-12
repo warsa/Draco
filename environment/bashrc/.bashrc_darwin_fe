@@ -41,8 +41,7 @@ if test -n "$MODULESHOME"; then
       x86_64)
         cflavor="gcc-7.1.0"
         mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="emacs subversion git random123 numdiff/5.9.0-gcc-4.8.5 \
-cmake/3.9.4-gcc-4.8.5"
+        noflavor="emacs subversion git random123 numdiff/5.9.0 cmake/3.9.4"
         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
@@ -62,7 +61,7 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
       power*)
         cflavor="gcc-7.1.0"
         mflavor="$cflavor-openmpi@2.1.0"
-        noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4-gcc-4.8.5"
+        noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
