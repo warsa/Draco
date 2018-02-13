@@ -26,11 +26,6 @@ file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( REMOVE_ITEM sources ${PROJECT_SOURCE_DIR}/QueryEospac.cc )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
-endif()
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -40,6 +35,7 @@ add_component_library(
    TARGET_DEPS  Lib_cdi
    LIBRARY_NAME cdi_eospac
    SOURCES      "${sources}"
+   HEADERS      "${headers}"
    VENDOR_LIST "EOSPAC"
    VENDOR_LIBS "${EOSPAC_LIBRARY}" )
 target_include_directories( Lib_cdi_eospac PUBLIC ${EOSPAC_INCLUDE_DIR} )
@@ -48,8 +44,7 @@ add_component_executable(
   TARGET      Exe_QueryEospac
   TARGET_DEPS Lib_cdi_eospac
   SOURCES     ${PROJECT_SOURCE_DIR}/QueryEospac.cc
-  PREFIX       Draco
-  )
+  PREFIX       Draco )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
