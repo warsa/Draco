@@ -179,7 +179,7 @@ template <typename EType> void doit() {
   e5.seed((rtype)99);
   ASSERTEQ(e4, e5);
 
-#if R123_USE_STD_RANDOM
+#ifdef R123_USE_STD_RANDOM
   // Check that we can use an EType with a std::distribution. Obviously, this
   // requires <random>
   uniform_int_distribution<int> dieroller(1, 6);
