@@ -14,6 +14,7 @@
 #ifdef COMPTON_FOUND
 // headers provided in compton CSK_generator include directory
 #include "etemp_interp.hh"
+#include "llnl_interp.hh"
 #include "multigroup_compton_data.hh"
 #endif
 

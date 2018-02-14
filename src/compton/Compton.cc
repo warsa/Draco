@@ -33,16 +33,19 @@ namespace rtt_compton {
  *
  * \param[in] filehandle The name of the Compton multigroup file
  */
-Compton::Compton(const std::string &filehandle) {
+Compton::Compton(const std::string &filehandle, const bool llnl_style) {
 
   // Make a compton file object to read the multigroup data
   compton_file Cfile(false);
-
-  // initialize the electron temperature interpolator with the mg compton data
-  ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+  if (!llnl_style) {
+    // initialize the electron temperature interpolator with the mg compton data
+    ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+  } else {
+    llnli.reset(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+  }
 
   // Make sure the SP exists...
-  Ensure(ei);
+  Ensure(llnli);
 }
 
 //---------------------------------------------------------------------------//
@@ -169,5 +172,44 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
 
   // call the appropriate routine in the electron interp object
   return ei->interpolate_nu_ratio(etemp, limit_grps);
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Interpolate opacity data to a given SCALED electron temperature
+ * (T / m_e)
+ *
+ * This method interpolates MG Compton opacity data to a given electron
+ * temperature. It returns the interpolated values for ALL g, g', and angular
+ * points in the specified multigroup structure.
+ *
+ * \param[in] Tm The UNSCALED electron temperature (temp / electron rest-mass)
+ * \return   freq The UNSCALED frequency (in keV)
+ */
+double Compton::interpolate_erec(const double Tm, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_erec(Tm, freq);
+}
+double Compton::interpolate_sigc(const double Tm, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_sigc(Tm, freq);
+}
+
+double Compton::interpolate_erec(const int64_t cell, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_erec(cell, freq);
+}
+double Compton::interpolate_sigc(const int64_t cell, const double freq) const {
+  // call the appropriate routine in the electron interp object
+  // (unscaled -- it'll be scaled in the library
+  return llnli->interpolate_sigc(cell, freq);
+}
+
+void Compton::interpolate_precycle(const std::vector<double> &Tms,
+                                   const std::vector<double> &dens) const {
+  llnli->preinterp_in_temp(Tms, dens);
 }
 }

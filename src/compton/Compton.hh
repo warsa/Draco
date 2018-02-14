@@ -60,9 +60,12 @@ private:
   //! Shared pointer to an electron interpolation object:
   std::shared_ptr<etemp_interp> ei;
 
+  //! Shared pointer to an llnl interpolation object:
+  std::shared_ptr<llnl_interp> llnli;
+
 public:
   //! Constructor for an existing multigroup library
-  explicit Compton(const std::string &filehandle);
+  Compton(const std::string &filehandle, const bool llnl_style = false);
 
   //! Constructor to build a multigroup library from an existing pointwise file
   Compton(const std::string &file, const std::vector<double> &group_bounds,
@@ -77,6 +80,22 @@ public:
   //! Interpolation of all nu_ratio data to an electron temperature:
   std::vector<std::vector<double>>
   interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
+
+  //! Versions for use with on-the-fly temperature interpolation:
+  //! Interpolation (E)xpected (R)elative (E)nergy (C)hange:
+  double interpolate_erec(const double Tm, const double freq) const;
+  //! Interpolation total sigma_s(Tm, freq):
+  double interpolate_sigc(const double Tm, const double freq) const;
+
+  //! Versions for use with already-interped-in-etemp data:
+  //! Interpolation (E)xpected (R)elative (E)nergy (C)hange:
+  double interpolate_erec(const int64_t cell, const double freq) const;
+  //! Interpolation total sigma_s(Tm, freq):
+  double interpolate_sigc(const int64_t cell, const double freq) const;
+
+  //! Interpolation of CSK data in etemp (stored in CSK for each cell):
+  void interpolate_precycle(const std::vector<double> &Tms,
+                            const std::vector<double> &dens) const;
 
   //! Retrieve group structure for the given library (in kev):
   std::vector<double> get_group_bounds() const {
