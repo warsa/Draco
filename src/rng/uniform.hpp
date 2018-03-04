@@ -71,9 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // use.  We invite comments and improvements.
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define GNUC_VERSION                                                           \
-  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#if (GNUC_VERSION >= 70000)
+#if (RNG_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif

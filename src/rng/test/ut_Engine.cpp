@@ -36,6 +36,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // complaint
 #pragma warning(disable : 4521)
 #endif
+#ifdef __GNUC__
+#if (RNG_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
+// Suppress GCC's "unused variable" warning.
+#if (RNG_GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
+#endif
 
 #include "ut_Engine.hh"
 
@@ -256,6 +265,13 @@ int main(int, char **) {
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
+#endif
+
+#ifdef __GNUC__
+#if (RNG_GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 //---------------------------------------------------------------------------//
