@@ -56,8 +56,8 @@ before_install:
 #  - pip install --upgrade setuptools
 #  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
-install:
-  - travis_wait 30 ./.travis-install-dependencies.sh
+#install:
+#  - travis_wait 30 ./.travis-install-dependencies.sh
 
 before_script:
   - if [[ ${WERROR} ]]; then for i in CC CXX FC; do eval export ${i}_FLAGS=\"-Werror\"; done; fi
