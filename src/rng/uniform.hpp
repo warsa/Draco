@@ -70,6 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // encourage developers to copy it and modify it for their own
 // use.  We invite comments and improvements.
 
+#include "rng/config.h"
+
 #if defined(__GNUC__) && !defined(__clang__)
 #if (RNG_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic push

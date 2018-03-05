@@ -44,6 +44,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     no high-precicision intermediates.  See its own comments for more details.
  */
 
+#include "rng/config.h"
+
 #if (RNG_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
