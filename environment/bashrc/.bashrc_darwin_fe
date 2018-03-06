@@ -58,7 +58,7 @@ numdiff/5.9.0"
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
         ec_mf="ndi eospac/6.2.4"
         ;;
-      power*)
+      power8*)
         cflavor="gcc-7.1.0"
         mflavor="$cflavor-openmpi@2.1.0"
         noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
@@ -67,7 +67,17 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
 superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
         # These aren't built for power architectures?
         # ec_mf="ndi eospac/6.2.4"
-      ;;
+        ;;
+      power9*)
+        cflavor="gcc-7.1.0"
+        mflavor="$cflavor-openmpi@2.1.0"
+        noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
+        compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
+        mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
+superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
+        # These aren't built for power architectures?
+        # ec_mf="ndi eospac/6.2.4"
+        ;;
     esac
     export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
 
