@@ -243,6 +243,7 @@ endmacro()
 #   TARGET_DEPS  "dep1;dep2;..."
 #   PREFIX       "ClubIMC"
 #   SOURCES      "file1.cc;file2.cc;..."
+#   HEADERS      "file1.hh;file2.hh;..."
 #   LIBRARY_NAME_PREFIX "rtt_"
 #   VENDOR_LIST  "MPI;GSL"
 #   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
@@ -271,7 +272,7 @@ macro( add_component_library )
     acl
     "NOEXPORT"
     "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
-    "SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
 
@@ -279,12 +280,21 @@ macro( add_component_library )
   # Defaults:
   #
   # Optional 3rd argument is the library prefix.  The default is "rtt_".
-  if( "${acl_LIBRARY_NAME_PREFIX}x" STREQUAL "x" )
+  if( NOT acl_LIBRARY_NAME_PREFIX )
     set( acl_LIBRARY_NAME_PREFIX "rtt_" )
   endif()
   # Default link language is C++
-  if( "${acl_LINK_LANGUAGE}x" STREQUAL "x" )
+  if( NOT acl_LINK_LANGUAGE )
     set( acl_LINK_LANGUAGE CXX )
+  endif()
+
+  #
+  # Add headers to Visual Studio or Xcode solutions
+  #
+  if( acl_HEADERS )
+    if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+      list( APPEND sources ${headers} )
+    endif()
   endif()
 
   #
@@ -588,7 +598,7 @@ function( copy_dll_link_libraries_to_build_dir target )
     set( old_link_libs ${link_libs} )
     foreach( lib ${link_libs} )
       if( lverbose )
-        # message("\n  examine dependencies for lib           = ${lib}\n")        
+        # message("\n  examine dependencies for lib           = ${lib}\n")
         print_targets_properties("${lib}")
       endif()
       # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual
@@ -607,7 +617,7 @@ function( copy_dll_link_libraries_to_build_dir target )
           list( APPEND link_libs ${link_libs2} )
           list( APPEND link_libs ${link_libs3} )
       endif()
-    endforeach()    
+    endforeach()
     # Loop through all current dependencies, remove static libraries
     #(they do not need to be in the run directory).
     list( REMOVE_DUPLICATES link_libs )
@@ -688,7 +698,7 @@ function( copy_dll_link_libraries_to_build_dir target )
 
     endif()
   endforeach()
-  
+
 endfunction()
 
 #----------------------------------------------------------------------#

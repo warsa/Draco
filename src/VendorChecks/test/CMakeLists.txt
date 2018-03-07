@@ -18,7 +18,7 @@ if( METIS_FOUND )
     DEPS    "Lib_dsxx;METIS::metis" )
 endif()
 
-if( TARGET ParMETIS::parmetis AND TARGET Lib_c4 )
+if( TARGET ParMETIS::parmetis AND ${DRACO_C4} STREQUAL "MPI" )
 
     add_parallel_tests(
       SOURCES "tstParmetis.cc"
