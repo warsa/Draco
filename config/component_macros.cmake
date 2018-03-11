@@ -1125,7 +1125,7 @@ endmacro()
 # knows how to find these files.
 #
 # This allows CMAKE variables to be inserted into the .dcc files (e.g.:
-# @DRACO_VERSION@)
+# @Draco_VERSION@)
 #
 # E.g.: process_autodoc_pages()
 #------------------------------------------------------------------------------#

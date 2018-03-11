@@ -107,7 +107,7 @@ feature_summary(
 message("
 Draco build summary:
 
-Version     : Draco ${DRACO_VERSION_FULL}
+Version     : Draco ${Draco_VERSION_FULL}
 Build type  : ${Draco_BUILD_TYPE}
             : DRACO_DBC_LEVEL   = ${DRACO_DBC_LEVEL}
             : DRACO_DIAGNOSTICS = ${DRACO_DIAGNOSTICS}
