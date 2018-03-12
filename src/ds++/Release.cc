@@ -61,8 +61,8 @@ std::string print_devs(size_t const maxlinelen, std::string const &line_name,
 const std::string release() {
   std::ostringstream pkg_release;
   // Name and version
-  pkg_release << "Draco-" << DRACO_VERSION_MAJOR << "_" << DRACO_VERSION_MINOR
-              << "_" << DRACO_VERSION_PATCH;
+  pkg_release << "Draco-" << Draco_VERSION_MAJOR << "_" << Draco_VERSION_MINOR
+              << "_" << Draco_VERSION_PATCH;
 
   // build date and type
   std::string const build_date(DRACO_BUILD_DATE);
