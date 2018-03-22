@@ -3,9 +3,8 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for cdi_ipcress.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( cdi_ipcress CXX )
@@ -31,21 +30,6 @@ set( headers
    IpcressOdfmgOpacity.hh
 )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # sources
-   ${PROJECT_SOURCE_DIR}/..   # header files
-   ${dsxx_BINARY_DIR}         # ds++/config.h
-)
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -54,7 +38,9 @@ add_component_library(
   TARGET       Lib_cdi_ipcress
   TARGET_DEPS  "Lib_cdi"
   LIBRARY_NAME ${PROJECT_NAME}
+  HEADERS      "${headers}"
   SOURCES      "${sources}" )
+
 
 add_component_executable(
   TARGET      Exe_Ipcress_Interpreter
@@ -68,9 +54,11 @@ add_component_executable(
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 set( CMAKE_INSTALL_DO_STRIP NO )
-install( TARGETS Lib_cdi_ipcress EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Lib_cdi_ipcress EXPORT draco-targets
+  DESTINATION ${DBSCFGDIR}lib )
 install( FILES ${headers} DESTINATION ${DBSCFGDIR}include/cdi_ipcress )
-install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Exe_Ipcress_Interpreter EXPORT draco-targets DESTINATION
+  ${DBSCFGDIR}bin )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -85,3 +73,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+#------------------------------------------------------------------------------#
+# End cdi_ipcress/CMakeLists.txt
+#------------------------------------------------------------------------------#

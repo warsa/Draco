@@ -73,19 +73,6 @@ list( APPEND headers
    ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} ${template_implementations} )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}   # sources
-   ${PROJECT_BINARY_DIR} ) # config.h
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -96,13 +83,21 @@ add_component_library(
    SOURCES      "${sources}"
    )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
+target_include_directories( Lib_dsxx
+  # source directory or install location
+  PUBLIC
+    $<BUILD_INTERFACE:${Draco_SOURCE_DIR}/src>
+    $<INSTALL_INTERFACE:include>
+  # generated include directive files (config.h)
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_dsxx EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/ds++ )
+install( FILES ${headers} ${template_implementations} DESTINATION
+  ${DBSCFGDIR}include/ds++ )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests

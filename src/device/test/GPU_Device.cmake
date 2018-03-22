@@ -1,5 +1,5 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   device/test/CMakeLists.txt
+# file   device/test/CPU_Device.cmake
 # brief  Instructions for building device/test Makefile.
 # note   Copyright (C) 2016-2018 Los Alamos National Security
 #        All rights reserved.
@@ -66,6 +66,11 @@ add_custom_target( device_test_build_cubin_files ALL
 cuda_add_executable( gpu_hello_rt_api_exe
    ${PROJECT_SOURCE_DIR}/gpu_hello_rt_api.cc )
 target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
+target_include_directories( gpu_hello_rt_api_exe
+  # source directory or install location
+  PUBLIC ${CUDA_TOOLKIT_INCLUDE}
+  # generated include directive files (config.h)
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # Binary using Device API and links to libcudahello.
 #   add_executable( gpu_hello_driver_api_exe
@@ -74,8 +79,12 @@ target_link_libraries( gpu_hello_rt_api_exe Lib_dsxx )
 #   target_link_libraries( gpu_hello_driver_api_exe
 #      Lib_device
 #      Lib_dsxx
-#      ${CUDA_CUDA_LIBRARY}
-#      )
+#      ${CUDA_CUDA_LIBRARY} )
+target_include_directories( gpu_hello_driver_api_exe
+  # source directory or install location
+  PUBLIC ${CUDA_TOOLKIT_INCLUDE}
+  # generated include directive files (config.h)
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 # ---------------------------------------------------------------------------- #
 # Register Unit tests
@@ -110,3 +119,7 @@ set( extra_clean_files
 set_directory_properties(
    PROPERTIES
    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files}" )
+
+# ---------------------------------------------------------------------------- #
+# End device/test/GPU_Device.cmake
+# ---------------------------------------------------------------------------- #

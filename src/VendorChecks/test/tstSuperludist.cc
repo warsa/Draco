@@ -18,7 +18,10 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include <sstream>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
 #include <superlu_ddefs.h>
+#pragma GCC diagnostic pop
 #include <vector>
 
 // forward declarations

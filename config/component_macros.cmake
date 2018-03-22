@@ -243,6 +243,7 @@ endmacro()
 #   TARGET_DEPS  "dep1;dep2;..."
 #   PREFIX       "ClubIMC"
 #   SOURCES      "file1.cc;file2.cc;..."
+#   HEADERS      "file1.hh;file2.hh;..."
 #   LIBRARY_NAME_PREFIX "rtt_"
 #   VENDOR_LIST  "MPI;GSL"
 #   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
@@ -271,7 +272,7 @@ macro( add_component_library )
     acl
     "NOEXPORT"
     "PREFIX;TARGET;LIBRARY_NAME;LIBRARY_NAME_PREFIX;LINK_LANGUAGE"
-    "SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
 
@@ -279,12 +280,21 @@ macro( add_component_library )
   # Defaults:
   #
   # Optional 3rd argument is the library prefix.  The default is "rtt_".
-  if( "${acl_LIBRARY_NAME_PREFIX}x" STREQUAL "x" )
+  if( NOT acl_LIBRARY_NAME_PREFIX )
     set( acl_LIBRARY_NAME_PREFIX "rtt_" )
   endif()
   # Default link language is C++
-  if( "${acl_LINK_LANGUAGE}x" STREQUAL "x" )
+  if( NOT acl_LINK_LANGUAGE )
     set( acl_LINK_LANGUAGE CXX )
+  endif()
+
+  #
+  # Add headers to Visual Studio or Xcode solutions
+  #
+  if( acl_HEADERS )
+    if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+      list( APPEND sources ${headers} )
+    endif()
   endif()
 
   #
@@ -544,6 +554,8 @@ endmacro()
 # creates POST_BUILD rules for unit tests and applications to ensure
 # that the most up-to-date versions of all dependencies are in the same
 # directory as the application.
+#
+# Consider replacing this functionality with CMake's BundleUtilities.
 #----------------------------------------------------------------------#
 function( copy_dll_link_libraries_to_build_dir target )
 
@@ -558,6 +570,9 @@ function( copy_dll_link_libraries_to_build_dir target )
   if( "Exe_draco_info_gui_foo" STREQUAL ${target} )
      set(lverbose ON)
   endif()
+  if( lverbose )
+     include(print_target_properties)
+  endif()
 
   # For Win32 with shared libraries, the package dll must be located in the test
   # directory.
@@ -565,9 +580,9 @@ function( copy_dll_link_libraries_to_build_dir target )
   # Discover all library dependencies for this unit test.
   get_target_property( link_libs ${target} LINK_LIBRARIES )
   if( lverbose )
-    message("Debugging dependencies for target ${target}")
+    message("\nDebugging dependencies for target ${target}")
     # "${compname}_${testname}")
-    message("  link_libs = ${link_libs}")
+    message("  Dependencies = ${link_libs}\n")
   endif()
   if( "${link_libs}" MATCHES NOTFOUND )
      return() # nothing to do
@@ -578,39 +593,29 @@ function( copy_dll_link_libraries_to_build_dir target )
   # dependencies.
   while( NOT "${old_link_libs}" STREQUAL "${link_libs}" )
     if(lverbose)
-       message("
-  Found new libraries (old_link_libs != link_libs).  Restarting search loop...")
+       message("Found new libraries (old_link_libs != link_libs).  Restarting search loop...\n")
     endif()
     set( old_link_libs ${link_libs} )
     foreach( lib ${link_libs} )
       if( lverbose )
-        message("  examine dependencies for lib           = ${lib}")
+        # message("\n  examine dependencies for lib           = ${lib}\n")
+        print_targets_properties("${lib}")
       endif()
       # $lib will either be a cmake target (e.g.: Lib_dsxx, Lib_c4) or an actual
       # path to a library (c:\lib\gsl.lib).
-      if( NOT EXISTS ${lib} )
-        # Must be a CMake target... find it's dependencies...
-        # The target may be
-        # 1. A target defined within the current build system (e.g.: Lib_c4), or
-        # 2. an 'imported' targets like GSL::gsl.
-        get_target_property( isimp ${lib} IMPORTED )
-        if(isimp)
-          if( lverbose )
-            message("  This target is IMPORTED")
+      if( NOT EXISTS ${lib} AND TARGET ${lib} )
+          # Must be a CMake target... find it's dependencies...
+          # The target may be
+          # 1. A target defined within the current build system (e.g.: Lib_c4), or
+          # 2. an 'imported' targets like GSL::gsl.
+          get_target_property( isimp ${lib} IMPORTED )
+          if(isimp)
+            get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
+          else()
+            get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
           endif()
-          get_target_property( link_libs2 ${lib} IMPORTED_LINK_INTERFACE_LIBRARIES )
-          # cmake 3.0+, cmp0022 states that INTERFACE_LINK_LIBRARIES
-          # should be used in place of IMPORTED_LINK_INTERFACE_LIBRARIES.
-          get_target_property( link_libs3 ${lib} INTERFACE_LINK_LIBRARIES)
-        else()
-          get_target_property( link_libs2 ${lib} LINK_LIBRARIES )
-        endif()
-        list( APPEND link_libs ${link_libs2} )
-        list( APPEND link_libs ${link_libs3} )
-        if( lverbose )
-          message("    link_libs2                           = ${link_libs2}")
-          message("    link_libs3                           = ${link_libs3}")
-        endif()
+          list( APPEND link_libs ${link_libs2} )
+          list( APPEND link_libs ${link_libs3} )
       endif()
     endforeach()
     # Loop through all current dependencies, remove static libraries
@@ -620,23 +625,35 @@ function( copy_dll_link_libraries_to_build_dir target )
       if( "${lib}" MATCHES "NOTFOUND" )
         # nothing to add so remove from list
         list( REMOVE_ITEM link_libs ${lib} )
+        if( lverbose )
+          message("lib = ${lib} is NOTFOUND --> remove it from the list")
+        endif()
       elseif( "${lib}" MATCHES "[$]<")
         # We have a generator expression.  This routine does not support this, so drop it.
         list( REMOVE_ITEM link_libs ${lib} )
+        if( lverbose )
+          message("lib = ${lib} is a generator expression --> remove it from the list")
+        endif()
       elseif( "${lib}" MATCHES ".[lL]ib$" )
         # We have a path to a static library. Static libraries do not
         # need to be copied.
         list( REMOVE_ITEM link_libs ${lib} )
+        if( lverbose )
+          message("lib = ${lib} is a static lib --> remove it from the list")
+        endif()
         # However, if there is a corresponding dll, we should add it
         # to the list.
         string( REPLACE ".lib" ".dll" dll_lib ${lib} )
         if( ${dll_lib} MATCHES "[.]dll$" AND EXISTS ${dll_lib} )
           list( APPEND link_libs "${dll_lib}" )
+          if( lverbose )
+            message("lib = ${lib} has a dll --> replace it with ${dll_lib}")
+          endif()
         endif()
       endif()
     endforeach()
     if( lverbose )
-      message("  Updated dependencies list: link_libs = ${link_libs}")
+      message("Updated dependencies list: ${link_libs}\n")
     endif()
 
   endwhile()
@@ -656,7 +673,13 @@ function( copy_dll_link_libraries_to_build_dir target )
     if( NOT ${lib} MATCHES "Lib_" )
 
       unset( target_loc )
-      if( EXISTS ${lib} )
+      if( NOT TARGET ${lib})
+        continue()
+      endif()
+      get_property(is_imported TARGET ${lib} PROPERTY IMPORTED )
+      if( is_imported )
+        continue()
+      elseif( EXISTS ${lib} )
         # If $lib is a full path to a library, add it to the list
         set( target_loc ${lib} )
         set( target_gnutoms NOTFOUND )
@@ -1113,6 +1136,17 @@ macro( process_autodoc_pages )
     configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc
       @ONLY )
   endforeach()
+endmacro()
+
+#------------------------------------------------------------------------------#
+# ADD_DIR_IF_EXISTS - A helper macro used for including sub-project directories
+# from src/CMakeLists.
+#------------------------------------------------------------------------------#
+macro( add_dir_if_exists package )
+  if( EXISTS ${PROJECT_SOURCE_DIR}/${package} )
+    message( "   ${package}" )
+    add_subdirectory( ${package} )
+  endif()
 endmacro()
 
 #------------------------------------------------------------------------------#

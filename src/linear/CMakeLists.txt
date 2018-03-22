@@ -1,11 +1,10 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   linear/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for linear.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
-#------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
 project( linear CXX )
@@ -19,22 +18,6 @@ file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 list( REMOVE_ITEM headers ${template_implementations} )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # sources
-   ${PROJECT_BINARY_DIR}      # linear/config.h
-   ${PROJECT_SOURCE_DIR}/..   # c4/ds++ header files
-   ${dsxx_BINARY_DIR}         # ds++/config.h
-)
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -43,6 +26,7 @@ add_component_library(
    TARGET       Lib_linear
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME ${PROJECT_NAME}
+   HEADERS      "${headers}"
    SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
@@ -50,7 +34,8 @@ add_component_library(
 # ---------------------------------------------------------------------------- #
 
 install( TARGETS Lib_linear EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( FILES ${headers} ${template_implementations} DESTINATION ${DBSCFGDIR}include/linear )
+install( FILES ${headers} ${template_implementations} DESTINATION
+  ${DBSCFGDIR}include/linear )
 
 # ---------------------------------------------------------------------------- #
 # Unit tests
@@ -65,3 +50,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+# ---------------------------------------------------------------------------- #
+# End linear/CMakeLists.txt
+# ---------------------------------------------------------------------------- #

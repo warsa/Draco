@@ -12,6 +12,9 @@ project( device_test CXX )
 # ---------------------------------------------------------------------------- #
 
 if( USE_CUDA AND EXISTS "${CUDA_NVCC_EXECUTABLE}" )
-   include( GPU_Device.cmake )
+  include( GPU_Device.cmake )
 endif()
 
+# ---------------------------------------------------------------------------- #
+# End device/test/CMakeLists.txt
+# ---------------------------------------------------------------------------- #
