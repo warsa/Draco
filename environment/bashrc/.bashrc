@@ -147,8 +147,10 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
   # Tell wget to use LANL's www proxy (see
   # trac.lanl.gov/cgi-bin/ctn/trac.cgi/wiki/SelfHelpCenter/ProxyUsage)
   # export http_proxy=http://wpad.lanl.gov/wpad.dat
-  found=`nslookup proxyout.lanl.gov | grep -c Name`
-  if test ${found} == 1; then
+  current_domain=`awk '/^domain/ {print $2}' /etc/resolv.conf`
+#  found=`nslookup proxyout.lanl.gov | grep -c Name`
+  #  if test ${found} == 1; then
+  if [[ ${current_domain} == "lanl.gov" ]]; then
     export http_proxy=http://proxyout.lanl.gov:8080
     export https_proxy=$http_proxy
     export HTTP_PROXY=$http_proxy
