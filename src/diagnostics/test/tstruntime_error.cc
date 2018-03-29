@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/test/tstSwap.cc
+ * \file   diagnostics/test/tstSwap.cc
  * \author Kent Budge
  * \date   Wed Apr 28 09:31:51 2010
- * \brief  Test c4::determinate_swap and c4::indeterminate_swap functions
+ * \brief  Test runtime_error function.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
@@ -20,6 +20,7 @@
 using namespace std;
 using namespace rtt_dsxx;
 using namespace rtt_c4;
+using namespace rtt_diagnostics;
 
 //---------------------------------------------------------------------------//
 // TESTS

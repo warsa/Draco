@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/runtime_check.cc
+ * \file   diagnostics/runtime_check.cc
  * \author Kent Grimmett Budge
  * \date   Wed Mar 28 07:58:48 2018
  * \brief  Member definitions of class runtime_check
@@ -10,10 +10,10 @@
 
 #include <exception>
 
-#include "C4_Functions.hh"
+#include "c4/C4_Functions.hh"
 #include "ds++/DracoStrings.hh"
 
-namespace rtt_dsxx {
+namespace rtt_diagnostics {
 
 //-------------------------------------------------------------------------//
 void runtime_check(bool condition, char const *message) noexcept(false) {
@@ -29,8 +29,8 @@ void runtime_check(bool condition, char const *message) noexcept(false) {
   }
 }
 
-} // end namespace rtt_dsxx
+} // end namespace rtt_diagnostics
 
 //---------------------------------------------------------------------------//
-// end of ds++/runtime_check.cc
+// end of diagnostics/runtime_check.cc
 //---------------------------------------------------------------------------//

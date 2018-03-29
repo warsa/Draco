@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   ds++/runtime_check.hh
+ * \file   diagnostics/runtime_check.hh
  * \author Kent Grimmett Budge
  * \brief  Define runtime_check function
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
@@ -9,10 +9,10 @@
 
 // clang-format off
 
-#ifndef dsxx_runtime_check_hh
-#define dsxx_runtime_check_hh
+#ifndef diagnostics_runtime_check_hh
+#define diagnostics_runtime_check_hh
 
-namespace rtt_dsxx {
+namespace rtt_diagnostics {
 
 //---------------------------------------------------------------------------//
   /*! Parallel synchronous runtime check
@@ -25,7 +25,10 @@ namespace rtt_dsxx {
    * process has died and kill all the others. (Or worse yet, hang waiting for
    * a message that will never arrive.
    *
-   * This function must be called synchronously on all processors.
+   * This function must be called synchronously on all processors. It is
+   * intended for handling of run time errors in production code such as i/o
+   * failures or numerical breakdown that are not particularly a result of a
+   * code defect.
    *
    * \param condition Condition to be tested locally. If this is true on all
    * processors, the function returns normally. If this is false on any
@@ -38,10 +41,10 @@ namespace rtt_dsxx {
    */
   void runtime_check(bool condition, char const *message) noexcept(false);
 
-} // end namespace rtt_dsxx
+} // end namespace rtt_diagnostics
 
-#endif // dsxx_runtime_check_hh
+#endif // diagnostics_runtime_check_hh
 
 //---------------------------------------------------------------------------//
-// end of ds++/runtime_check.hh
+// end of diagnostics/runtime_check.hh
 //---------------------------------------------------------------------------//
