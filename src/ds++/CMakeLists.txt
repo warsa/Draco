@@ -81,6 +81,7 @@ add_component_library(
    TARGET       Lib_dsxx
    LIBRARY_NAME ds++
    SOURCES      "${sources}"
+   HEADERS      "${headers}"
    )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 target_include_directories( Lib_dsxx

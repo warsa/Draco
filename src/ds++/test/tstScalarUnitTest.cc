@@ -295,8 +295,19 @@ void tstPaths(UnitTest &unitTest, char *test) {
   if (testName != std::string("tstScalarUnitTest") + rtt_dsxx::exeExtension)
     ITFAILS;
   if (thisFile != testSourceDir + testName_wo_suffix + std::string(".cc"))
-    ITFAILS;
-
+  {
+      // 2nd chance for case-insensitive file systems
+    std::string lc_thisFile=thisFile;
+      std::transform(lc_thisFile.begin(), lc_thisFile.end(), lc_thisFile.begin(),
+                     ::tolower);
+    std::string lc_gold =
+        testSourceDir + testName_wo_suffix + std::string(".cc");
+      std::transform(lc_gold.begin(), lc_gold.end(), lc_gold.begin(),
+                     ::tolower);
+    if (lc_thisFile != lc_gold)
+      ITFAILS;
+  }
+    
   // CMake should provide cmake_install.cmake at testBinaryInputDir.
   if (!rtt_dsxx::fileExists(testBinaryInputDir +
                             std::string("cmake_install.cmake")))

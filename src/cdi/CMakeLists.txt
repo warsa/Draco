@@ -26,7 +26,7 @@ add_component_library(
    TARGET_DEPS  Lib_dsxx
    LIBRARY_NAME cdi
    HEADERS      "${headers}"
-   SOURCES "${sources}" )
+   SOURCES      "${sources}" )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
