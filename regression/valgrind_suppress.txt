@@ -1334,8 +1334,6 @@
    fun:realloc
    fun:vasprintf
    ...
-   fun:orte_daemon
-   ...
 }
 {
    openmpi211/e0012
