@@ -1227,16 +1227,9 @@
    match-leak-kinds: possible
    fun:calloc
    fun:pmix1_server_register_nspace
-   fun:orte_pmix_server_register_nspace
-   fun:orte_odls_base_default_construct_child_list
-   fun:orte_odls_default_launch_local_procs
-   fun:orte_daemon_recv
-   fun:orte_rml_base_process_msg
-   fun:event_process_active_single_queue
-   fun:event_process_active
-   fun:opal_libevent2022_event_base_loop
+   ...
    fun:orterun
-   fun:main
+   ...
 }
 {
    openmpi/211/e0001
@@ -1294,7 +1287,114 @@
    fun:PMPI_Init
    ...
 }
-
+{
+   openmpi211/e0007
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0008
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:pmix_start_listening
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0009
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_base_component_find
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0010
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_oob_usock_component_set_module
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0011
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:vasprintf
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0012
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:prq_cons
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0013
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:orte_dt_unpack_sig
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0014
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:orte_rml_oob_recv_cancel
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0015
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_oob_usock_peer_recv_connect_ack
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0016
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:orte_daemon
+   fun:main
+}
+{
+   openmpi211/e0017
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:pmix1_server_register_nspace
+   ...
+   fun:orte_daemon
+   ...
+}
 
 #------------------------------------------------------------------------------#
 # Python 2.7
