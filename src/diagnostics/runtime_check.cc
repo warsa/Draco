@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "c4/C4_Functions.hh"
 #include "diagnostics/runtime_check.hh"
+#include "c4/C4_Functions.hh"
 #include "ds++/DracoStrings.hh"
 #include <exception>
 
@@ -24,8 +24,8 @@ void runtime_check(bool condition, char const *message) noexcept(false) {
   if (sum != 0) // some processors failed the condition
   {
     throw std::runtime_error("runtime error detected on " +
-                             rtt_dsxx::to_string(sum) +
-                             " processor(s): " + message);
+                             rtt_dsxx::to_string(sum) + " processor(s): " +
+                             message);
   }
 }
 
