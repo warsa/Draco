@@ -5,15 +5,12 @@
  * \date   Wed Apr 28 09:31:51 2010
  * \brief  Test runtime_error function.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-//---------------------------------------------------------------------------//
-
-#include "../runtime_check.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "c4/swap.hh"
+#include "diagnostics/runtime_check.hh"
 #include "ds++/Release.hh"
 #include <cmath>
 
@@ -29,7 +26,7 @@ using namespace rtt_diagnostics;
 void tstruntime_error(UnitTest &ut) {
   // Test passes
   try {
-    runtime_check(true, "condition successful");
+    rtt_diagnostics::runtime_check(true, "condition successful");
     ut.passes("check true on all processors");
   } catch (...) {
     ut.failure("check true on all processors");
@@ -51,7 +48,6 @@ void tstruntime_error(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {

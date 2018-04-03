@@ -29,6 +29,7 @@
 #   TARGET_DEPS  "dep1;dep2;..."
 #   PREFIX       "ClubIMC"
 #   SOURCES      "file1.cc;file2.cc;..."
+#   HEADERS      "file1.hh;file2.hh;..."
 #   VENDOR_LIST  "MPI;GSL"
 #   VENDOR_LIBS  "${MPI_CXX_LIBRARIES};${GSL_LIBRARIES}"
 #   VENDOR_INCLUDE_DIRS "${MPI_CXX_INCLUDE_DIR};${GSL_INCLUDE_DIR}"
@@ -56,7 +57,7 @@ macro( add_component_executable )
     ace
     "NOEXPORT;NOCOMMANDWINDOW"
     "PREFIX;TARGET;EXE_NAME;LINK_LANGUAGE;FOLDER;PROJECT_LABEL"
-    "SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
+    "HEADERS;SOURCES;TARGET_DEPS;VENDOR_LIST;VENDOR_LIBS;VENDOR_INCLUDE_DIRS"
     ${ARGV}
     )
 
@@ -70,6 +71,15 @@ or the target must be labeled NOEXPORT.")
   # Default link language is C++
   if( "${ace_LINK_LANGUAGE}x" STREQUAL "x" )
     set( ace_LINK_LANGUAGE CXX )
+  endif()
+
+  #
+  # Add headers to Visual Studio or Xcode solutions
+  #
+  if( ace_HEADERS )
+    if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
+      list( APPEND ace_SOURCES ${ace_HEADERS} )
+    endif()
   endif()
 
   if( NOT DEFINED ace_EXE_NAME )
@@ -293,7 +303,7 @@ macro( add_component_library )
   #
   if( acl_HEADERS )
     if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-      list( APPEND sources ${headers} )
+      list( APPEND acl_SOURCES ${acl_HEADERS} )
     endif()
   endif()
 

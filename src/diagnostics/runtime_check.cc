@@ -8,10 +8,10 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <exception>
-
+#include "diagnostics/runtime_check.hh"
 #include "c4/C4_Functions.hh"
 #include "ds++/DracoStrings.hh"
+#include <exception>
 
 namespace rtt_diagnostics {
 
