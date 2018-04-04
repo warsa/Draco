@@ -101,7 +101,7 @@ else
 fi
 
 # Load default set of modules
-dm_core="eospac git ndi python graphviz doxygen ccache numdiff"
+dm_core="eospac git ndi python graphviz doxygen mscgen ccache numdiff"
 dm_gcc="gcc/7.2.0 cmake netlib-lapack gsl metis random123 csk qt"
 dm_openmpi="openmpi parmetis superlu-dist trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"

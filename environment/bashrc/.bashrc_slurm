@@ -35,6 +35,7 @@ case ${-} in
      echo "checkjob [job-id]  - Print information about the specified job-id."
      echo "sreason [job-id]   - Print why job-id is not starting."
      echo "myjobpriorities    - List of all jobs and their priorities."
+     echo "myuseage           - Report total hours used."
      echo -e "\nAll jobs:\n"
      echo "sq        - Show all jobs for all users (running, pending, blocked)."
      echo "sqrun     - Show running jobs for all users"
@@ -79,6 +80,7 @@ case ${-} in
      sprio -h -n -o "$formatstring" $* | sort -r -k 3,3
    }
    alias myjobpriorities='jobpriorities -u $USER'
+   alias myusage='sreport -t Hours cluster AccountUtilizationByUser user=$LOGNAME start=1/1/10 end=`date +"%m/%d/%Y"`'
    function sqqos() {
      local myqos="dev"
      if [ $1 ]; then myqos=$1; fi

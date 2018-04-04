@@ -43,7 +43,7 @@ case ${-} in
    shopt -s cdspell # autocorrect spelling errors on cd command line.
 
    # Prevent creation of core files (ulimit -a to see all limits).
-   ulimit -c 0
+   # ulimit -c 0
 
    ##------------------------------------------------------------------------##
    ## Common aliases
