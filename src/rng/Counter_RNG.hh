@@ -192,12 +192,6 @@ private:
  */
 //===========================================================================//
 class Counter_RNG {
-
-  /* * Counter_RNG_Ref is a friend of Counter_RNG because spawning a new generator
-   * modifies both the parent and the child generator in ways that should not be
-   * exposed through the public interface of Counter_RNG.
-   */
-//  friend class Counter_RNG_Ref;
   friend class Rnd_Control;
 
 public:
