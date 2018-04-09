@@ -16,12 +16,6 @@ fi
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
 
-# aliases and bash functions for working with slurm
-source ${DRACO_ENV_DIR}/bashrc/.bashrc_slurm
-
-# unlimit stack and core dump sizes.
-ulimit -s unlimited
-
 if [[ ! ${VENDOR_DIR} ]]; then
   export VENDOR_DIR=/usr/projects/draco/vendors
   export PATH=$PATH:$VENDOR_DIR/bin

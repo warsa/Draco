@@ -114,6 +114,11 @@ if [[ ${INTERACTIVE} ]]; then
   # Common bash functions and alias definitions
   source ${DRACO_ENV_DIR}/bin/bash_functions.sh
   source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
+
+  # aliases and bash functions for working with slurm
+  if !  [[ `which squeue | grep -c "no squeue"` == 1 ]]; then
+    source ${DRACO_ENV_DIR}/bashrc/.bashrc_slurm
+  fi
 fi
 
 ##---------------------------------------------------------------------------##
@@ -232,11 +237,9 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
 
 fi
 
-if ! [[ ${INTERACTIVE} ]]; then
-  # provide some bash functions (dracoenv, rmdracoenv) for non-interactive
-  # sessions.
-  source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
-fi
+# provide some bash functions (dracoenv, rmdracoenv) for non-interactive
+# sessions.
+source ${DRACO_ENV_DIR}/bashrc/bash_functions2.sh
 
 ##---------------------------------------------------------------------------##
 ## end of .bashrc
