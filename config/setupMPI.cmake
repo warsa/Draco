@@ -452,7 +452,7 @@ macro( setupMPILibrariesWindows )
       list( GET MPI_CXX_LIBRARIES 0 first_cxx_mpi_library )
       if( first_cxx_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
         get_filename_component( MPI_Fortran_INCLUDE_PATH "${first_cxx_mpi_library}" DIRECTORY )
-        string( REPLACE "lib" "Include" MPI_Fortran_INCLUDE_PATH ${MPI_Fortran_INCLUDE_PATH} )
+        string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH ${MPI_Fortran_INCLUDE_PATH} )
         set( MPI_Fortran_INCLUDE_PATH
              "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
              CACHE STRING "Location for MPI include files for Fortran.")

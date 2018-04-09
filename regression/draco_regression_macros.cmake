@@ -461,18 +461,6 @@ macro( find_tools )
     message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
   endif()
 
-  find_program( CTEST_SVN_COMMAND
-     NAMES svn
-     HINTS
-        "C:/Program Files (x86)/CollabNet Subversion"
-        "C:/Program Files (x86)/CollabNet/Subversion Client"
-        # NO_DEFAULT_PATH
-     )
-  set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
-  if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
-    message( FATAL_ERROR "Cound not find cvs executable." )
-  endif()
-
   find_program( CTEST_GIT_COMMAND
      NAMES git
      HINTS
