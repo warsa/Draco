@@ -1393,6 +1393,15 @@
    fun:orte_daemon
    ...
 }
+{
+   openmpi211/e0017
+   Memcheck:Addr8
+   fun:opal_libevent2022_event_del
+   ...
+   fun:ompi_mpi_finalize
+   ...
+}
+
 
 #------------------------------------------------------------------------------#
 # Python 2.7
