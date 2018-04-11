@@ -12,8 +12,8 @@
 # lose a few features, but wouldn't need to maintain this file.
 # Ref. https://cmake.org/cmake/help/v3.10/module/FindDoxygen.html
 
-# Doxygen
-find_package( Doxygen OPTIONAL_COMPONENTS dot mscgen dia )
+# config/vendor_libraries.cmake is responsible for detecting if doxygen is
+# available.
 
 if( DOXYGEN_FOUND )
 

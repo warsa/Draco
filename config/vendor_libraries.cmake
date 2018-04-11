@@ -500,7 +500,7 @@ macro( SetupVendorLibrariesUnix )
   # PYTHON ----------------------------------------------------------------
 
   message( STATUS "Looking for Python...." )
-  find_package(PythonInterp QUIET)
+  find_package(PythonInterp QUIET REQUIRED)
   #  PYTHONINTERP_FOUND - Was the Python executable found
   #  PYTHON_EXECUTABLE  - path to the Python interpreter
   set_package_properties( PythonInterp PROPERTIES
@@ -516,6 +516,16 @@ macro( SetupVendorLibrariesUnix )
 
   # Qt -----------------------------------------------------------------------
   setupQt()
+
+  # Doxygen ------------------------------------------------------------------
+
+  message( STATUS "Looking for Doxygen..." )
+  find_package( Doxygen OPTIONAL_COMPONENTS dot mscgen dia )
+  set_package_properties( Doxygen PROPERTIES
+    DESCRIPTION "Doxygen autodoc generator"
+    TYPE OPTIONAL
+    PURPOSE "Required for building develop HTML documentation."
+    )
 
 endmacro()
 
