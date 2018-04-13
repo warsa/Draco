@@ -47,7 +47,7 @@ macro( setupLAPACKLibrariesUnix )
         set( lapack_FOUND TRUE )
       endif()
     endforeach()
-    message( STATUS "Looking for lapack (netlib)....found ${LAPACK_LIB_DIR}")
+    message( STATUS "Looking for lapack (netlib)....found ${tmp}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:
@@ -61,6 +61,13 @@ macro( setupLAPACKLibrariesUnix )
       else()
         message( FATAL_ERROR "Looking for lapack (netlib)....blas not found")
       endif()
+    else()
+      # ensure lapack --> blas?
+      get_target_property( ilil lapack IMPORTED_LINK_INTERFACE_LIBRARIES )
+      if( NOT "${ilil}" MATCHES "blas" )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas )
+      endif()
     endif()
 
   else()
@@ -68,6 +75,10 @@ macro( setupLAPACKLibrariesUnix )
   endif()
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
+
+  # Debug targets:
+  # include(print_target_properties)
+  # print_targets_properties("lapack;blas")
 
   # Above we tried to find lapack-config.cmake at $LAPACK_LIB_DIR/cmake/lapack.
   # This is a draco supplied version of lapack.  If that search failed, then try
