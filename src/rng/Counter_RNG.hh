@@ -89,9 +89,7 @@ namespace // anonymous
  * Given a pointer to RNG state data, this function generates a 64-bit
  * identifier unique to this generator but not to the specific position of its
  * RNG stream.  In other words, the identifier associated with a given generator
- * will not change as random numbers are generated from it.  However, this
- * insensitivity to the specific stream position also means that repeated
- * spawning will eventually produce two generators with the same identifier.
+ * will not change as random numbers are generated from it.
  *
  * This function simply applies the chosen counter-based RNG to a shuffled
  * version of the RNG seed, stream number, and spawn indicator and then returns
@@ -163,9 +161,6 @@ public:
   //! Return a random double in the open interval (0, 1).
   double ran() const { return _ran(data.access()); }
 
-  //! Spawn a new, independent generator from this reference.
-  inline void spawn(Counter_RNG &new_gen) const;
-
   //! Return the stream number.
   uint64_t get_num() const { return data[2]; }
 
@@ -188,10 +183,6 @@ private:
  * from the Random123 library from D. E. Shaw Research
  * (http://www.deshawresearch.com/resources_random123.html).
  *
- * Counter_RNG_Ref is a friend of Counter_RNG because spawning a new generator
- * modifies both the parent and the child generator in ways that should not be
- * exposed through the public interface of Counter_RNG.
- *
  * Similarly, Rnd_Control is a friend of Counter_RNG because initializing a
  * generator requires access to private data that should not be exposed through
  * the public interface.  Rnd_Control takes no responsibility for instantiating
@@ -201,7 +192,6 @@ private:
  */
 //===========================================================================//
 class Counter_RNG {
-  friend class Counter_RNG_Ref;
   friend class Rnd_Control;
 
 public:
@@ -232,9 +222,6 @@ public:
 
   //! Return a random double in the interval (0, 1).
   double ran() const { return _ran(data); }
-
-  //! Spawn a new, independent generator from this one.
-  void spawn(Counter_RNG &new_gen) const { new_gen._spawn(data); }
 
   //! Return the stream number.
   uint64_t get_num() const { return data[2]; }
@@ -278,19 +265,11 @@ private:
 
   //! Initialize internal state from a seed and stream number.
   inline void initialize(const uint32_t seed, const uint64_t streamnum);
-
-  //! Spawn a new, independent generator from the provided state block.
-  inline void _spawn(ctr_type::value_type *const parent_data);
 };
 
 //---------------------------------------------------------------------------//
 // Implementation
 //---------------------------------------------------------------------------//
-
-//! Spawn a new, independent generator from this reference.
-inline void Counter_RNG_Ref::spawn(Counter_RNG &new_gen) const {
-  new_gen._spawn(data.access());
-}
 
 //---------------------------------------------------------------------------//
 //! Is this Counter_RNG_Ref a reference to rng?
@@ -311,95 +290,8 @@ inline void Counter_RNG::initialize(const uint32_t seed,
   // Low bits of the key; used for the stream number.
   data[2] = streamnum;
 
-  // High bits of the key; used as a spawn counter.
+  // High bits of the key; unused at present
   data[3] = 0;
-}
-
-//---------------------------------------------------------------------------//
-/*! \brief Spawn a new, independent generator from the provided state block.
- *
- * To provide parallel reproducibility independent of the number of ranks or
- * threads, the set of generators used in a calculation must be the same
- * regardless of rank or thread identifier or count.  To provide that level of
- * reproducibility, the SPRNG library of RNGs implemented a binary-tree
- * algorithm for subdividing the set of available generators and creating a new
- * generator from any existing generator without communication.  Counter_RNG
- * adopts the same approach.
- *
- * The current Counter_RNG (Threefry2x64) uses 128-bit keys and therefore
- * provides 2^128 possible generators.  Using a 64-bit stream number to
- * subdivide the key space produces 2^64 families of generators, each with 2^64
- * members.
- *
- * Given 2^M possible generators, arranging them in a binary tree produces a
- * tree of depth M.
- *
- * \verbatim
- *                                      0
- *                                    /   \
- *                                  1       2
- *                                /   \   /   \
- *                                3   4   5   6
- *                               / \ / \ / \ / \
- *
- *                              [...]
- *                                    \
- *                                      N
- *                                    /   \
- *                                 2N+1   2N+2
- * \endverbatim
- *
- * If every root generator has a different stream number, the generators spawned
- * from that root will be independent of the generators spawned from any other
- * root.  With 2^64 possible generators per stream number, each root generator
- * can support 63 spawned generations before any repetition might occur.
- *
- * In addition to providing a fixed number of guaranteed-independent generations
- * from spawning as described above, this implementation tries to maximize the
- * number of independent generators that can be spawned in a row from a single
- * parent by shifting that parent to an unused portion of the key space when it
- * reaches the bottom of the tree.
- *
- * When generator N spawns, this implementation creates a new generator at 2N+2
- * and shifts the parent generator from N to 2N+1.  Spawning repeatedly from the
- * same parent results in a progression down the left side of the tree rooted at
- * N.  When this process runs out of bits (and would lead to overflow, which
- * would lead to generator reuse), the parent and new generators are instead
- * shifted to the first level in the unused subtree below the first spawned
- * child in the previous descent.  This process repeats, each time shifting to
- * subtrees rooted at the first spawned child in the previous descent, until it
- * has iterated through all available subtrees and must wrap back to 0, the
- * original root of the tree.  Starting from node 0, this process provides
- * \f$\sum_{i=1}^{M-1} i = 2016\f$ generators for \f$M = 64\f$.
- */
-inline void Counter_RNG::_spawn(ctr_type::value_type *const parent_data) {
-  // Initialize this generator with the seed and stream number from the parent.
-  uint32_t seed = parent_data[1] >> 32;
-  uint64_t streamnum = parent_data[2];
-  initialize(seed, streamnum);
-
-  ctr_type::value_type next_id = parent_data[3];
-
-  // If the child generator would overflow the key...
-  if (2 * parent_data[3] + 2 < parent_data[3]) {
-    // ... look back up the tree for the parent of the first spawned child; it
-    // will be the first even-numbered node...
-    while (next_id % 2)
-      next_id = (next_id - 1) / 2;
-
-    // ... shift to the right subtree of that original parent...
-    next_id = 2 * next_id + 2;
-
-    // ... and wrap back to 0 if we've run out of subtrees.
-    if (next_id > parent_data[3])
-      next_id = 0;
-  }
-
-  // Shift the parent to the left child.
-  parent_data[3] = 2 * next_id + 1;
-
-  // Shift this generator to the right child.
-  data[3] = parent_data[3] + 1;
 }
 
 } // end namespace rtt_rng
