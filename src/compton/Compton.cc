@@ -40,12 +40,13 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
   if (!llnl_style) {
     // initialize the electron temperature interpolator with the mg compton data
     ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    // Make sure the SP exists...
+    Ensure(ei);
   } else {
     llnli.reset(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    // Make sure the SP exists...
+    Ensure(llnli);
   }
-
-  // Make sure the SP exists...
-  Ensure(llnli);
 }
 
 //---------------------------------------------------------------------------//
