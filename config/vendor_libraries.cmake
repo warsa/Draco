@@ -446,6 +446,32 @@ macro( setupSuperLU_DIST )
 endmacro()
 
 #------------------------------------------------------------------------------
+# Setup Eospac (https://laws.lanl.gov/projects/data/eos.html)
+#------------------------------------------------------------------------------
+macro( setupEOSPAC )
+
+  if( NOT TARGET EOSPAC::eospac )
+    message( STATUS "Looking for EOSPAC..." )
+
+    find_package( EOSPAC QUIET )
+
+    if( EOSPAC_FOUND )
+      message( STATUS "Looking for EOSPAC.....found ${EOSPAC_LIBRARY}" )
+    else()
+      message( STATUS "Looking for EOSPAC.....not found" )
+    endif()
+
+    #===========================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( EOSPAC PROPERTIES
+      DESCRIPTION "Access SESAME thermodynamic and transport data."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the cdi_eospac component." )
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------
 # Setup COMPTON (https://gitlab.lanl.gov/keadyk/CSK_generator)
 #------------------------------------------------------------------------------
 macro( setupCOMPTON )
@@ -481,6 +507,7 @@ macro( SetupVendorLibrariesUnix )
   setupParMETIS()
   setupSuperLU_DIST()
   setupCOMPTON()
+  setupEospac()
 
   # Random123 ----------------------------------------------------------------
   message( STATUS "Looking for Random123...")
