@@ -80,29 +80,12 @@ message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
 
 # Summary
+
 message(" ")
-
-feature_summary(
-  WHAT PACKAGES_FOUND
-  INCLUDE_QUIET_PACKAGES
-  DESCRIPTION "Packages found:")
-
-feature_summary(
-  WHAT PACKAGES_NOT_FOUND
+feature_summary( WHAT ALL
   INCLUDE_QUIET_PACKAGES
   FATAL_ON_MISSING_REQUIRED_PACKAGES
-  DESCRIPTION "Packages missing:")
-
-feature_summary(
-  WHAT ENABLED_FEATURES
-  INCLUDE_QUIET_PACKAGES
-  DESCRIPTION "Enabled features:")
-
-feature_summary(
-  WHAT DISABLED_FEATURES
-  INCLUDE_QUIET_PACKAGES
-#  QUIET_ON_EMPTY # only available for cmake-3.8+
-  DESCRIPTION "Disabled features:")
+  QUIET_ON_EMPTY )
 
 message("
 Draco build summary:
