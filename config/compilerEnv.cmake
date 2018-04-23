@@ -272,7 +272,8 @@ macro(dbsSetupCxx)
   endforeach()
 
   if( NOT CCACHE_CHECK_AVAIL_DONE )
-    set( CCACHE_CHECK_AVAIL_DONE TRUE CACHE BOOL "Have we looked for ccache?")
+    set( CCACHE_CHECK_AVAIL_DONE TRUE CACHE BOOL
+      "Have we looked for ccache/f90cache?")
     mark_as_advanced( CCACHE_CHECK_AVAIL_DONE )
     # From https://crascit.com/2016/04/09/using-ccache-with-cmake/
     message( STATUS "Looking for ccache...")
@@ -302,6 +303,17 @@ macro(dbsSetupCxx)
     else()
       message( STATUS "Looking for ccache... not found.")
     endif()
+
+    # From https://crascit.com/2016/04/09/using-ccache-with-cmake/
+    message( STATUS "Looking for f90cache...")
+    find_program(F90CACHE_PROGRAM f90cache)
+    if(F90CACHE_PROGRAM)
+      message( STATUS "Looking for f90cache... ${F90CACHE_PROGRAM}")
+      set(CMAKE_Fortran_COMPILER_LAUNCHER "${F90CACHE_PROGRAM}")
+    else()
+      message( STATUS "Looking for f90cache... not found.")
+    endif()
+
   endif()
 
 endmacro()
