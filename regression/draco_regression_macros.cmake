@@ -363,8 +363,10 @@ Parsing arguments
   # some variables based on extra_param's value.
   if( DEFINED ENV{extra_params_sort_safe} )
 
-    set( compiler_short_name
-      "${compiler_short_name}-$ENV{extra_params_sort_safe}" )
+    if( NOT "$ENV{extra_params_sort_safe}empty" STREQUAL "empty" )
+      set( compiler_short_name
+        "${compiler_short_name}-$ENV{extra_params_sort_safe}" )
+    endif()
 
     if( $ENV{extra_params_sort_safe} MATCHES "cuda" )
       set(USE_CUDA ON)
