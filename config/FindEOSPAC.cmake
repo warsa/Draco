@@ -96,7 +96,7 @@ endif()
 
 find_library(EOSPAC_LIBRARY
   NAMES ${EOSPAC_LIBRARY_NAME}
-  PATHS ${COMPTON_ROOT_DIR}/lib
+  PATHS ${EOSPAC_ROOT_DIR}/lib
   PATH_SUFFIXES Release Debug
   )
 
@@ -110,7 +110,7 @@ set( EOSPAC_INCLUDE_DIRS ${EOSPAC_INCLUDE_DIR} )
 set( EOSPAC_LIBRARIES ${EOSPAC_LIBRARY} )
 
 # Try to find the version.
-# if( NOT EOSPAC_VERSION )
+if( NOT EOSPAC_VERSION )
 #   if( EXISTS "${EOSPAC_INCLUDE_DIRS}/eospac.h" )
 #     file( STRINGS "${EOSPAC_INCLUDE_DIRS}/eospac.h" eospac_h_major
 #         REGEX "define EOSPAC_VER_MAJOR" )
@@ -122,17 +122,19 @@ set( EOSPAC_LIBRARIES ${EOSPAC_LIBRARY} )
 #     string( REGEX REPLACE ".*([0-9]+)" "\\1" EOSPAC_MINOR ${eospac_h_minor} )
 #     string( REGEX REPLACE ".*([0-9]+)" "\\1" EOSPAC_SUBMINOR ${eospac_h_subminor} )
 #   endif()
-#   # We might also try scraping the directory name for a regex match
-#   # "eospac-X.X.X"
-#   if( NOT EOSPAC_MAJOR )
-#     string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\1"
-#       EOSPAC_MAJOR ${EOSPAC_INCLUDE_DIR} )
-#     string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\2"
-#       EOSPAC_MINOR ${EOSPAC_INCLUDE_DIR} )
-#     string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\3"
-#       EOSPAC_SUBMINOR ${EOSPAC_INCLUDE_DIR} )
-#   endif()
-# endif()
+  # We might also try scraping the directory name for a regex match
+  # "eospac-X.X.X"
+  if( NOT EOSPAC_MAJOR )
+    string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\1"
+      EOSPAC_MAJOR ${EOSPAC_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\2"
+      EOSPAC_MINOR ${EOSPAC_INCLUDE_DIR} )
+    string( REGEX REPLACE ".*eospac-([0-9]+).([0-9]+).([0-9]+).*" "\\3"
+      EOSPAC_SUBMINOR ${EOSPAC_INCLUDE_DIR} )
+    set( EOSPAC_VERSION "${EOSPAC_MAJOR}.${EOSPAC_MINOR}.${EOSPAC_SUBMINOR}")
+  endif()
+  # Another option is `strings libeospac6.a | grep eos_version_name`
+endif()
 
 #=============================================================================
 # handle the QUIETLY and REQUIRED arguments and set EOSPAC_FOUND to TRUE if
