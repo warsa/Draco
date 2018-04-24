@@ -7,25 +7,13 @@
 #        All rights reserved.
 #
 # Try to find MPI in the default locations (look for mpic++ in PATH)
-# This module will set the following variables:
 #
-# MPI_<lang>_FOUND           TRUE if FindMPI found MPI flags for <lang>
-# MPI_<lang>_COMPILER        MPI Compiler wrapper for <lang>
-# MPI_<lang>_COMPILE_FLAGS   Compilation flags for MPI programs
-# MPI_<lang>_INCLUDE_PATH    Include path(s) for MPI header
-# MPI_<lang>_LINK_FLAGS      Linking flags for MPI programs
-# MPI_<lang>_LIBRARIES       All libraries to link MPI programs against
+# See cmake --help-module FindMPI for details on variables set and published
+# targets. Additionally, this module will set the following variables:
 #
-# MPIEXEC                    Executable for running MPI programs
-# MPIEXEC_NUMPROC_FLAG       Flag to pass to MPIEXEC before giving it the
-#                            number of processors to run on
-# MPIEXEC_PREFLAGS           Flags to pass to MPIEXEC directly before the
-#                            executable to run.
-# MPIEXEC_POSTFLAGS          Flags to pass to MPIEXEC after all other flags.
-#
-# DRACO_C4                   MPI|SCALAR
-# C4_SCALAR                  BOOL
-# C4_MPI                     BOOL
+# DRACO_C4   MPI|SCALAR
+# C4_SCALAR  BOOL
+# C4_MPI     BOOL
 #
 #------------------------------------------------------------------------------#
 include( FeatureSummary )
@@ -346,6 +334,48 @@ macro( setupMPILibrariesUnix )
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
 
+      # if the FindMPI.cmake module didn't set the version, then try to do so
+      # here.
+      if( NOT MPI_VERSION )
+
+        # If the language specific MPI version is found, use it.
+        if( MPI_C_VERSION )
+          set( MPI_VERSION ${MPI_C_VERSION} )
+
+        # Otherwise, try 'mpirun --version' and parse the output.
+        else()
+
+          if( NOT CRAY_PE )
+            execute_process( COMMAND ${MPIEXEC} --version
+              OUTPUT_VARIABLE DBS_MPI_VER_OUT
+              ERROR_VARIABLE DBS_MPI_VER_ERR)
+            set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+          endif()
+
+          if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
+            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
+              DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\2"
+              DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\3"
+              DBS_MPI_VER_PATCH ${DBS_MPI_VER} )
+            set( MPI_VERSION
+              "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}.${DBS_MPI_VER_PATCH}" )
+          elseif( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+" )
+            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\1"
+              DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+            string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\2"
+              DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+            set( MPI_VERSION "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}" )
+          endif()
+          foreach( lang C CXX Fortran )
+            set( MPI_${lang}_VERSION ${MPI_VERSION} )
+          endforeach()
+
+        endif()
+      endif()
+
+
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
@@ -428,8 +458,10 @@ macro( setupMPILibrariesWindows )
       # what arch this is and save this path to MPI_Fortran_INCLUDE_PATH
       list( GET MPI_CXX_LIBRARIES 0 first_cxx_mpi_library )
       if( first_cxx_mpi_library AND NOT MPI_Fortran_INCLUDE_PATH )
-        get_filename_component( MPI_Fortran_INCLUDE_PATH "${first_cxx_mpi_library}" DIRECTORY )
-        string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH ${MPI_Fortran_INCLUDE_PATH} )
+        get_filename_component( MPI_Fortran_INCLUDE_PATH
+          "${first_cxx_mpi_library}" DIRECTORY )
+        string( REGEX REPLACE "[Ll]ib" "Include" MPI_Fortran_INCLUDE_PATH
+          ${MPI_Fortran_INCLUDE_PATH} )
         set( MPI_Fortran_INCLUDE_PATH
              "${MPI_CXX_INCLUDE_PATH};${MPI_Fortran_INCLUDE_PATH}"
              CACHE STRING "Location for MPI include files for Fortran.")
@@ -450,9 +482,12 @@ macro( setupMPILibrariesWindows )
         ERROR_STRIP_TRAILING_WHITESPACE
         )
       if( "${DBS_MPI_VER_OUT}" MATCHES "Microsoft MPI Startup Program" )
-          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1" DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2" DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*Version ([0-9.]+).*" "\\1" DBS_MPI_VER
+            "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
+          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\1"
+            DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
+          string( REGEX REPLACE ".*([0-9])[.]([0-9])[.]([0-9]+).*" "\\2"
+            DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
           set( DBS_MPI_VER "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}")
       else()
          set(DBS_MPI_VER "5.0")
@@ -466,7 +501,8 @@ macro( setupMPILibrariesWindows )
         )
 
       # Check flavor and add optional flags
-      if("${MPIEXEC}" MATCHES "Microsoft HPC" OR "${MPIEXEC}" MATCHES "Microsoft MPI")
+      if("${MPIEXEC}" MATCHES "Microsoft HPC" OR
+          "${MPIEXEC}" MATCHES "Microsoft MPI")
          set( MPI_FLAVOR "MicrosoftHPC" CACHE STRING "Flavor of MPI." )
 
          # Use wmic to learn about the current machine
@@ -482,9 +518,12 @@ macro( setupMPILibrariesWindows )
             COMMAND wmic computersystem get NumberOfProcessors
             OUTPUT_VARIABLE MPI_CPUS_PER_NODE
             OUTPUT_STRIP_TRAILING_WHITESPACE )
-         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CORES_PER_CPU ${MPI_CORES_PER_CPU})
-         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPIEXEC_MAX_NUMPROCS ${MPIEXEC_MAX_NUMPROCS})
-         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE})
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CORES_PER_CPU
+           ${MPI_CORES_PER_CPU})
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPIEXEC_MAX_NUMPROCS
+           ${MPIEXEC_MAX_NUMPROCS})
+         string( REGEX REPLACE ".*([0-9]+)" "\\1" MPI_CPUS_PER_NODE
+           ${MPI_CPUS_PER_NODE})
 
          set( MPI_CPUS_PER_NODE ${MPI_CPUS_PER_NODE} CACHE STRING
             "Number of multi-core CPUs per node" FORCE )
