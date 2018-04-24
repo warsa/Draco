@@ -116,7 +116,7 @@ if [[ ${INTERACTIVE} ]]; then
   source ${DRACO_ENV_DIR}/../regression/scripts/common.sh
 
   # aliases and bash functions for working with slurm
-  if !  [[ `which squeue | grep -c "no squeue"` == 1 ]]; then
+  if !  [[ `which squeue 2>&1 | grep -c "no squeue"` == 1 ]]; then
     source ${DRACO_ENV_DIR}/bashrc/.bashrc_slurm
   fi
 fi
