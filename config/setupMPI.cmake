@@ -151,22 +151,8 @@ macro( setupOpenMPI )
 
   set( MPI_FLAVOR "openmpi" CACHE STRING "Flavor of MPI." ) # OpenMPI
 
-  # Find the version of OpenMPI
-
-  if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
-    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
-      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\2"
-      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-  elseif( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+" )
-    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\1"
-      DBS_MPI_VER_MAJOR ${DBS_MPI_VER} )
-    string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+).*" "\\2"
-      DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
-  endif()
-
-  # sanity check, these OpenMPI flags (below) require version >= 1.4
-  if( ${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR} VERSION_LESS 1.8 )
+  # sanity check, these OpenMPI flags (below) require version >= 1.8
+  if( ${MPI_C_VERSION} VERSION_LESS 1.8 )
     message( FATAL_ERROR "OpenMPI version < 1.8 found." )
   endif()
 
@@ -363,22 +349,6 @@ macro( setupMPILibrariesUnix )
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
 
-      # Find the mpirun version (skip this on Cray because this command seems to
-      # occasionally hang).
-      if( NOT CRAY_PE )
-        execute_process( COMMAND ${MPIEXEC} --version
-          OUTPUT_VARIABLE DBS_MPI_VER_OUT
-          ERROR_VARIABLE DBS_MPI_VER_ERR)
-        set( DBS_MPI_VER "${DBS_MPI_VER_OUT}${DBS_MPI_VER_ERR}")
-      endif()
-
-      set_package_properties( MPI PROPERTIES
-        URL "http://www.open-mpi.org/"
-        DESCRIPTION "A High Performance Message Passing Library"
-        TYPE RECOMMENDED
-        PURPOSE "If not available, all Draco components will be built as scalar applications."
-        )
-
       # ---------------------------------------------------------------------- #
       # Check flavor and add optional flags
       #
@@ -428,6 +398,13 @@ The Draco build system doesn't know how to configure the build for
       # Set DRACO_C4 and other variables
       setupDracoMPIVars()
     endif()
+
+    set_package_properties( MPI PROPERTIES
+      URL "http://www.open-mpi.org/"
+      DESCRIPTION "A High Performance Message Passing Library"
+      TYPE RECOMMENDED
+      PURPOSE "If not available, all Draco components will be built as scalar applications."
+      )
 
    mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
 
@@ -597,7 +574,7 @@ macro( setupMPILibrariesWindows )
      endforeach()
 
      # Reset the include directories for MPI::MPI_Fortran to pull in the
-     # extra $arch locations (if any)     
+     # extra $arch locations (if any)
      set_target_properties(MPI::MPI_Fortran
        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
 
