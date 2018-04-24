@@ -101,9 +101,10 @@ fi
 # sinfo -o "%45n %30b %65f" | cut -b 47-120 | sort | uniq -c
 
 # Note that we build on the haswell back-end (even when building code for knl):
-build_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0"
+build_partition_options="-N 1 -t 1:00:00"
+test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0"
 case $extra_params_sort_safe in
-*knl*) partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 -p knl" ;;
+  *knl*) test_partition_options="-N 1 -t 8:00:00 --gres=craynetwork:0 -p knl" ;;
 esac
 
 # When on DST use
@@ -150,7 +151,7 @@ export REGRESSION_PHASE=t
 echo "Test from the back end..."
 echo " "
 logfile=${logdir}/${machine_name_short}-${subproj}-${build_type}${epdash}${extra_params_sort_safe}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
-cmd="$MSUB -o ${logfile} -J ${subproj:0:5}-${featurebranch} ${partition_options} ${rscriptdir}/tt-regress.msub"
+cmd="$MSUB -o ${logfile} -J ${subproj:0:5}-${featurebranch} ${test_partition_options} ${rscriptdir}/tt-regress.msub"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # delete blank lines
