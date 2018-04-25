@@ -80,7 +80,6 @@ macro(dbsSetupCompilers)
     # message(STATUS "Building static libraries.")
     set( MD_or_MT "MD" )
     set( DRACO_SHARED_LIBS 0 )
-    set( DRACO_LIBEXT ".a" )
   elseif( ${DRACO_LIBRARY_TYPE} MATCHES "SHARED" )
     # message(STATUS "Building shared libraries.")
     set( MD_or_MT "MD" )
@@ -88,7 +87,6 @@ macro(dbsSetupCompilers)
     # declspec(dllimport) or declspec(dllexport) for MSVC.
     set( DRACO_SHARED_LIBS 1 )
     mark_as_advanced(DRACO_SHARED_LIBS)
-    set( DRACO_LIBEXT ".so" )
   else()
     message( FATAL_ERROR "DRACO_LIBRARY_TYPE must be set to either STATIC or SHARED.")
   endif()
@@ -118,7 +116,6 @@ macro(dbsSetupCompilers)
   # 2017-11-13 KT - This also breaks linking MinGW gfortran libraries into
   #                 MSVC applications, so just disable it for all Win32 builds.
   if( WIN32 )
-  # if( ${CMAKE_GENERATOR} MATCHES "NMake Makefiles" )
     set( USE_IPO OFF CACHE BOOL
       "Enable Interprocedureal Optimization for Release builds." FORCE )
   endif()
@@ -134,21 +131,15 @@ macro(dbsSetupCxx)
 
   # Deal with compiler wrappers
   if( ${CMAKE_CXX_COMPILER} MATCHES "tau_cxx.sh" )
-    # When using the TAU profiling tool, the actual compiler vendor
-    # is hidden under the tau_cxx.sh script.  Use the following
-    # command to determine the actual compiler flavor before setting
-    # compiler flags (end of this macro).
+    # When using the TAU profiling tool, the actual compiler vendor is hidden
+    # under the tau_cxx.sh script.  Use the following command to determine the
+    # actual compiler flavor before setting compiler flags (end of this macro).
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} -tau:showcompiler
       OUTPUT_VARIABLE my_cxx_compiler )
   else()
     set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
   endif()
-
-  string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\1"
-    DBS_CXX_COMPILER_VER_MAJOR "${CMAKE_CXX_COMPILER_VERSION}" )
-  string( REGEX REPLACE "[^0-9]*([0-9]+).([0-9]+).([0-9]+).*" "\\2"
-    DBS_CXX_COMPILER_VER_MINOR "${CMAKE_CXX_COMPILER_VERSION}" )
 
   # C11 support:
   set( CMAKE_C_STANDARD 11 )
