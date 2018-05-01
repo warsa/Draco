@@ -74,6 +74,8 @@ case ${-} in
    alias ma='module avail'
    alias mls='module list'
    alias mld='module load'
+   alias mul='module unload'
+   alias msh='module show'
 
    # Provide special ls commands if this is a color-xterm or compatible terminal.
    if test "${TERM}" != emacs &&
