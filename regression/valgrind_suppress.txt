@@ -1394,11 +1394,21 @@
    ...
 }
 {
-   openmpi211/e0017
+   openmpi211/e0018
    Memcheck:Addr8
    fun:opal_libevent2022_event_del
    ...
    fun:ompi_mpi_finalize
+   ...
+}
+{
+   openmpi211/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:opal_argv_join
+   ...
+   fun:orte_init
    ...
 }
 
@@ -1527,6 +1537,34 @@
    python/e011
    Memcheck:Cond
    fun:PyObject_Realloc
+   ...
+}
+{
+   python/e012
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython2.7.so.1.0
+   ...
+}
+{
+   python/e013
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ..
+   obj:/usr/lib64/libpython2.7.so.1.0
+   ...
+}
+{
+   python/e014
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ...
+   fun:PyEval_EvalFrameEx
    ...
 }
 
