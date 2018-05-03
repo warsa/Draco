@@ -186,16 +186,16 @@ for project in ${github_projects[@]}; do
   # Store some output into a local file to simplify parsing.
   tmpfiles[${project}]=$(mktemp /var/tmp/$USER/${namespace}_${repo}_repo_sync.XXXXXXXXXX) || die "Failed to create temporary file"
 
-  echo -e "\nCopy ${project}'s git repository to the local file system..."
+  echo -e "\nCopy ${project}'s git repository to the local file system...\n"
   if [[ -d $gitroot/${project}.git ]]; then
     run "cd $gitroot/${project}.git"
-    run "git fetch origin +refs/heads/*:refs/heads/*" &> ${tmpfiles[${project}]}
-    run "git fetch origin +refs/pull/*:refs/pull/*" >> ${tmpfiles[${project}]} 2>&1
+    run "git fetch origin +refs/heads/*:refs/heads/* &> ${tmpfiles[${project}]}"
+    run "git fetch origin +refs/pull/*:refs/pull/* >> ${tmpfiles[${project}]} 2>&1"
     run "cat ${tmpfiles[${project}]}"
     run "git reset --soft"
   else
     run "mkdir -p $gitroot/$namespace; cd $gitroot/$namespace"
-    run "git clone --bare git@github.com:${project}.git ${repo}.git"
+    run "git clone --mirror git@github.com:${project}.git ${repo}.git"
     run "cd ${repo}.git"
     run "git fetch origin +refs/heads/*:refs/heads/*"
     run "git fetch origin +refs/pull/*:refs/pull/*"
@@ -220,12 +220,12 @@ for project in ${gitlab_projects[@]}; do
   if [[ -d $gitroot/${project}.git ]]; then
     run "cd $gitroot/${project}.git"
     run "git fetch origin +refs/heads/*:refs/heads/*"
-    run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*" &> ${tmpfiles[${project}]}
+    run "git fetch origin +refs/merge-requests/*:refs/merge-requests/* &> ${tmpfiles[${project}]}"
     run "cat ${tmpfiles[${project}]}"
     run "git reset --soft"
   else
     run "mkdir -p $gitroot/$namespace; cd $gitroot/$namespace"
-    run "git clone --bare git@gitlab.lanl.gov:${project}.git ${repo}.git"
+    run "git clone --mirror git@gitlab.lanl.gov:${project}.git ${repo}.git"
     run "cd ${repo}.git"
     run "git fetch origin +refs/heads/*:refs/heads/*"
     run "git fetch origin +refs/merge-requests/*:refs/merge-requests/*"
@@ -296,6 +296,7 @@ echo -e "=======================================================================
 # if this is a brand new checkout, then do not run any ci (there might be hundreds).
 if [[ ${no_ci:-no} == yes ]]; then
   dry_run=yes
+  echo "Enable dry_run=yes mode."
 fi
 
 # Github CI ------------------------------------------------------------
@@ -313,7 +314,7 @@ for project in ${github_projects[@]}; do
   fi
 
   case $project in
-    Draco)
+    lanl/Draco)
       # Extract PR number (if any)
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       # remove any duplicates
