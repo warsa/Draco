@@ -100,7 +100,7 @@ fi
 case ${target} in
   ccscs*)
     run "module use /usr/share/lmod/lmod/modulefiles/Core"
-    run "module load user_contrib subversion git"
+    run "module load user_contrib git"
     regdir=/scratch/regress
     gitroot=/ccs/codes/radtran/git.${target}
     VENDOR_DIR=/scratch/vendors
@@ -118,7 +118,7 @@ case ${target} in
     run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/misc"
     run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/mpi"
     run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/tools"
-    run "module load user_contrib subversion git"
+    run "module load user_contrib git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
@@ -127,7 +127,7 @@ case ${target} in
   tt-fey*)
     run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/misc"
     run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/tools"
-    run "module load user_contrib subversion git"
+    run "module load user_contrib git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
     VENDOR_DIR=/usr/projects/draco/vendors
@@ -299,9 +299,12 @@ if [[ ${no_ci:-no} == yes ]]; then
   echo "Enable dry_run=yes mode."
 fi
 
-# Github CI ------------------------------------------------------------
+# CI ------------------------------------------------------------
 
-for project in ${github_projects[@]}; do
+for project in ${git_projects[@]}; do
+
+  namespace=`echo $project | sed -e 's%/.*%%'`
+  repo=`echo $project | sed -e 's%.*/%%'`
 
   # Did we find 'merge' in the repo sync?  If so, then we should reset the
   # last-draco tagfile.
@@ -309,41 +312,28 @@ for project in ${github_projects[@]}; do
 
   echo -e "\n----- ${project} -----\n"
 
-  if [[ `cat ${tmpfiles[${project}]} | grep -c "develop    -> develop"` -gt 0 ]]; then
-    rm_last_build="-t"
-  fi
-
-  case $project in
-    lanl/Draco)
+  case $repo in
+    Draco)
+      if [[ `cat ${tmpfiles[${project}]} | grep -c "develop    -> develop"` -gt 0 ]]; then
+        rm_last_build="-t"
+      fi
       # Extract PR number (if any)
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
-      # remove any duplicates
-      prs=`echo $prs | xargs -n1 | sort -u | xargs`
-      for pr in $prs; do
-        run "$scriptdir/checkpr.sh -r -p ${project} -f $pr $rm_last_build"
-      done
+      ;;
+
+    jayenne | capsaicin)
+      # Extract PR number (if any)
+      prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       ;;
   esac
 
-done
-
-# Gitlab CI ------------------------------------------------------------
-
-for project in ${gitlab_projects[@]}; do
-
-  namespace=`echo $project | sed -e 's%/.*%%'`
-  repo=`echo $project | sed -e 's%.*/%%'`
-
-  echo -e "\n----- ${project} -----\n"
-
-  case $project in
-    jayenne/jayenne | capsaicin/capsaicin)
-      # Extract PR number (if any)
-      prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
+  case $repo in
+    Draco | jayenne | capsaicin )
       # remove any duplicates
       prs=`echo $prs | xargs -n1 | sort -u | xargs`
+      echo "found PRs $prs"
       for pr in $prs; do
-        run "$scriptdir/checkpr.sh -r -p ${repo} -f $pr"
+        run "$scriptdir/checkpr.sh -r -p ${repo} -f $pr $rm_last_build"
       done
       ;;
     *)
