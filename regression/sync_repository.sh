@@ -332,7 +332,6 @@ for project in ${git_projects[@]}; do
       repo_lc=`echo $repo | tr '[:upper:]' '[:lower:]'`
       # remove any duplicates
       prs=`echo $prs | xargs -n1 | sort -u | xargs`
-      echo "found PRs $prs"
       for pr in $prs; do
         run "$scriptdir/checkpr.sh -r -p ${repo_lc} -f $pr $rm_last_build"
       done
