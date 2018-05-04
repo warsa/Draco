@@ -254,9 +254,7 @@ case $target in
       startCI ${project} Release vtest $pr
     fi
     startCI ${project} Debug coverage $pr
-    if ! [[ ${project} == "capsaicin" ]]; then
-      startCI ${project} Debug clang $pr
-    fi
+    startCI ${project} Debug clang $pr
     ;;
 
   # CCS-NET: Valgrind (Debug)

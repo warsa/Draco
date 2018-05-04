@@ -101,9 +101,11 @@ else
 fi
 
 # Load default set of modules
-dm_core="eospac git ndi python graphviz doxygen mscgen ccache numdiff"
-dm_gcc="gcc/7.2.0 cmake netlib-lapack gsl metis random123 csk qt"
-dm_openmpi="openmpi parmetis superlu-dist trilinos"
+dm_core="ccache dia doxygen f90cache git graphviz htop mscgen numdiff random123 \
+ndi"
+dm_gcc="gcc cmake eospac/6.3.1_r20161202150449 gsl metis netlib-lapack python \
+qt"
+dm_openmpi="openmpi csk parmetis valgrind superlu-dist trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
 
 # default compiler
@@ -121,42 +123,34 @@ case $extra_params in
     run "module load $dracomodules"
     ;;
   coverage)
-    run "module load $dracomodules"
     echo "Coverage option selected."
+    run "module load $dracomodules"
     if ! [[ "${build_type}" == "Debug" ]]; then
       die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
     fi
     build_type=Coverage
     # Ccache breaks bullseye coverage!!!
-    run "module unload ccache"
+    run "module unload ccache f90cache"
     run "module load bullseyecoverage"
     CXX=`which g++`
     CC=`which gcc`
     ;;
   clang)
     run "module load $dm_core"
-    run "module load llvm cmake netlib-lapack gsl metis random123 csk"
-    run "module load $dm_openmpi"
+    run "module load llvm cmake eospac/6.3.1_r20161202150449 gsl metis \
+netlib-lapack python"
+    run "module load openmpi csk parmetis superlu-dist trilinos"
+    # csk
     comp=clang
     ;;
-  fulldiagnostics)
-    run "module load $dracomodules"
-    ;;
-#  gcc630)
-#    run "module load $dracomodules"
-#    comp=gcc-6.3.0
-#    ;;
-  scalar)
-    run "module load $dracomodules"
-    ;;
-  static)
+  fulldiagnostidcs | scalar | static)
     run "module load $dracomodules"
     ;;
   valgrind)
-    run "module load $dracomodules valgrind"
     echo "Dynamic Analysis (valgrind) option selected."
+    run "module load $dracomodules"
     if ! [[ "${build_type}" == "Debug" ]]; then
-      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) valgrind."
     fi
     build_type=DynamicAnalysis
     ;;
