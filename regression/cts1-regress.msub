@@ -126,7 +126,7 @@ run "module load user_contrib"
 run "module load intel/17.0.4 openmpi/2.1.2"
 run "module load trilinos/12.10.1 superlu-dist metis parmetis"
 run "module load cmake/3.9.0 ndi numdiff git"
-run "module load mkl random123 eospac/6.2.4"
+run "module load mkl random123 eospac/6.3.0"
 run "module use --append ${VENDOR_DIR}-ec/modulefiles"
 run "module load csk"
 
@@ -159,7 +159,7 @@ for ep in $extra_params; do
       run "module load gcc/6.1.0 openmpi/1.10.5"
       run "module load trilinos/12.8.1 superlu-dist metis parmetis"
       run "module load cmake/3.9.0 ndi numdiff git"
-      run "module load random123 eospac/6.2.4 lapack/3.6.1"
+      run "module load random123 eospac/6.3.0 lapack/3.6.1"
       comp="${LCOMPILER}"
       echo "comp = $comp"
       ;;
@@ -174,7 +174,7 @@ for ep in $extra_params; do
       run "module load gcc/6.4.0 openmpi/2.1.2 mkl"
       run "module load trilinos/12.10.1 superlu-dist metis parmetis"
       run "module load cmake/3.9.0 ndi numdiff git"
-      run "module load random123 eospac/6.2.4"
+      run "module load random123 eospac/6.3.0"
       comp="${LCOMPILER}"
       echo "comp = $comp"
       ;;
@@ -190,7 +190,7 @@ for ep in $extra_params; do
       run "module load superlu-dist metis parmetis"
       run "module load trilinos/12.10.1 superlu-dist metis parmetis"
       run "module load cmake/3.9.0 ndi numdiff git"
-      run "module load mkl random123 eospac/6.2.4 csk"
+      run "module load mkl random123 eospac/6.3.0 csk"
       ;;
     nr)
       # no-op
