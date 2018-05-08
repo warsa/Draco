@@ -18,7 +18,10 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 target="`uname -n | sed -e s/[.].*//`"
 
 # Prevent multiple copies of this script from running at the same time:
-lockfile=/var/tmp/sync_repository_$target.lock
+if ! [[ -d /var/tmp/$USER ]]; then
+  mkdir -p /var/tmp/$USER || exit 2
+fi
+lockfile=/var/tmp/$USER/sync_repository_$target.lock
 [ "${FLOCKER}" != "${lockfile}" ] && exec env FLOCKER="${lockfile}" flock -en "${lockfile}" "${0}" "$@" || :
 
 
