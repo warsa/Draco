@@ -362,29 +362,34 @@ macro(dbsSetupFortran)
       endif()
     endif()
 
-    if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
-        ${my_fc_compiler} MATCHES "pgfortran" )
+    # setup flags
+    if( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "PGI" )
       include( unix-pgf90 )
-    elseif( ${my_fc_compiler} MATCHES "ftn" )
-    if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
+    elseif( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel" )
       include( unix-ifort )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
       include( unix-crayftn )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
       include( unix-gfortran )
     else()
-      message( FATAL_ERROR "I think the C++ comiler is a Cray compiler wrapper,"
-        "but I don't know what compiler is wrapped."
-        "CMAKE_Fortran_COMPILER_ID = ${CMAKE_Fortran_COMPILER_ID}")
-    endif()
-    elseif( ${my_fc_compiler} MATCHES "ifort" )
-      include( unix-ifort )
-    elseif( ${my_fc_compiler} MATCHES "xl" )
-      include( unix-xlf )
-    elseif( ${my_fc_compiler} MATCHES "gfortran" )
-      include( unix-gfortran )
-    else()
-      message( FATAL_ERROR "Build system does not support FC=${my_fc_compiler}" )
+      # missing CMAKE_Fortran_COMPILER_ID? - try to match the the compiler
+      # path+name to a string.
+      if( ${my_fc_compiler} MATCHES "pgf9[05]" OR
+          ${my_fc_compiler} MATCHES "pgfortran" )
+        include( unix-pgf90 )
+      elseif( ${my_fc_compiler} MATCHES "ftn" )
+        message( FATAL_ERROR
+"I think the C++ comiler is a Cray compiler wrapper, but I don't know what "
+"compiler is wrapped.CMAKE_Fortran_COMPILER_ID = ${CMAKE_Fortran_COMPILER_ID}")
+      elseif( ${my_fc_compiler} MATCHES "ifort" )
+        include( unix-ifort )
+      elseif( ${my_fc_compiler} MATCHES "xl" )
+        include( unix-xlf )
+      elseif( ${my_fc_compiler} MATCHES "gfortran" )
+        include( unix-gfortran )
+      else()
+        message(FATAL_ERROR "Build system does not support FC=${my_fc_compiler}")
+      endif()
     endif()
 
     if( _LANGUAGES_ MATCHES "^C$" OR _LANGUAGES_ MATCHES CXX )
