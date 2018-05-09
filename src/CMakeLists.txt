@@ -78,6 +78,7 @@ add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+add_dir_if_exists( mesh )             # needs c4, ds++, mesh_element
 
 # Summary
 
