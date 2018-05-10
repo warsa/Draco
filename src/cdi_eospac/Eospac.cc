@@ -324,7 +324,8 @@ double Eospac::getIonTemperature(     // keV
     double /*Tguess*/) const          // keV
 {
   EOS_INTEGER const returnType = EOS_T_DUic;
-  // EOS_INTEGER const returnType = EOS_T_DUiz; // I think I need the DUic version!
+  // EOS_INTEGER const returnType = EOS_T_DUiz; - I think I need the DUic
+  // version!
   double Te_K = getF(dbl_v1(density), dbl_v1(SpecificIonInternalEnergy),
                      returnType, ETDD_VALUE)[0];
   return Te_K / keV2K(1.0); // Convert from K back to keV.
