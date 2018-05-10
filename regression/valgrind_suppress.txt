@@ -1411,7 +1411,16 @@
    fun:orte_init
    ...
 }
-
+{
+   openmpi/301/e0001
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:pmix_server_commit
+   ...
+   fun:opal_libevent2022_event_base_loop
+   ...
+}
 
 #------------------------------------------------------------------------------#
 # Python 2.7
