@@ -294,11 +294,10 @@
 }
 # after moving to eospac/6.3.1...
 {
-
+  eospac/6.3.1/e001
    Memcheck:Cond
    fun:eos_SearchIndices_XF
-   fun:eos_InverseRationalInterpolateXF
-   fun:_eos_InterpolateRecordType1
+   ...
    fun:eos_InterpolateRecordType1
    fun:eos_InterpolateEosInterpolation
    fun:eos_Interpolate
