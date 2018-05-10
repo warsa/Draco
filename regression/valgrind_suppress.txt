@@ -292,6 +292,18 @@
    fun:eos_CreateTablesEosDataMap
    ...
 }
+# after moving to eospac/6.3.1...
+{
+
+   Memcheck:Cond
+   fun:eos_SearchIndices_XF
+   fun:eos_InverseRationalInterpolateXF
+   fun:_eos_InterpolateRecordType1
+   fun:eos_InterpolateRecordType1
+   fun:eos_InterpolateEosInterpolation
+   fun:eos_Interpolate
+   ...
+}
 
 ## ---------------------------------------------------------------------- ##
 ## Numdiff
@@ -319,7 +331,7 @@
 # ==18912==    by 0x40ABB6: init_mpa_support (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 # ==18912==    by 0x40BC6F: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
-   <insert_a_suppression_name_here>
+   numdiff/e002
    Memcheck:Cond
    ...
    fun:__gmpf_set_str
@@ -328,43 +340,42 @@
    fun:main
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e003
    Memcheck:Value8
    fun:__gmpn_mul_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e004
    Memcheck:Cond
    fun:__gmpn_mul_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e005
    Memcheck:Cond
    ...
    fun:init_mpa_support
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e006
    Memcheck:Value8
    fun:__gmpn_sqr_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e007
    Memcheck:Value8
    fun:__gmpn_sqr_n
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e008
    Memcheck:Cond
    ...
    fun:__gmpn_divrem
    ...
 }
-
 {
    numdiff/lost/04
    Memcheck:Leak
