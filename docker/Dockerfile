@@ -1,4 +1,5 @@
 FROM kellyt/draco-baseline
+
 #see the Dockerfiles branch for source of these
 #https://hub.docker.com/r/kinetictheory/draco-baseline/
 
@@ -37,7 +38,7 @@ RUN ccache -z
 RUN cmake ${COVERAGE:+-DENABLE_COVERAGE_BUILD=ON} -DENABLE_TESTING=ON ..
 RUN ${SONARQUBE:+build-wrapper-linux-x86-64 --out-dir bw-output} make -j2
 RUN ccache -s
-RUN ctest -j 2 --outut-on-failure
+RUN ctest -j 2 --output-on-failure
 
 #RUN make install DESTDIR=${PWD}
 #RUN make doxygen
