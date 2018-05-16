@@ -153,7 +153,10 @@ macro(dbsSetupCxx)
   set( CMAKE_CXX_EXTENSIONS OFF )
   set( CMAKE_C_EXTENSIONS   OFF )
 
+  # Setup compiler flags
   get_filename_component( my_cxx_compiler ${my_cxx_compiler} NAME )
+
+  # If the CMake_<LANG>_COMPILER is a MPI wrapper...
   if( ${my_cxx_compiler} MATCHES "mpicxx" )
     # MPI wrapper
     execute_process( COMMAND ${my_cxx_compiler} --version
@@ -165,45 +168,50 @@ macro(dbsSetupCxx)
       set( my_cxx_compiler icpc )
     endif()
   endif()
-  if( ${my_cxx_compiler} MATCHES "clang" OR
-      ${my_cxx_compiler} MATCHES "llvm")
+
+  # setup flags based on COMPILER_ID...
+  if( "${CMAKE_CXX_COMPILER_ID}" MATCHES "PGI" )
+    include( unix-pgi )
+  elseif( "${CMAKE_CXX_COMPILER_ID}" MATCHES "Intel" )
+    include( unix-intel )
+  elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
+    include( unix-crayCC )
+  elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
     if( APPLE )
       include( apple-clang )
     else()
       include( unix-clang )
     endif()
-  elseif( ${my_cxx_compiler} STREQUAL "pgCC" OR
-      ${my_cxx_compiler} STREQUAL "pgc++" )
-    include( unix-pgi )
-  elseif( ${my_cxx_compiler} MATCHES "CC" )
-    set( CRAY_PE ON CACHE BOOL
-      "Are we building in a Cray Programming Environment?")
-    # override default compiler wrapper flags for linking so that dynamic
-    # libraries are allowed.  This does not prevent us from generating static
-    # libraries if requested with DRACO_LIBRARY_TYPE=STATIC.
-    set( CMAKE_EXE_LINKER_FLAGS "-dynamic" CACHE STRING
-      "Extra flags for linking executables")
-    if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
-      include( unix-intel )
-    elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Cray" )
-      include( unix-crayCC )
-    elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-      include( unix-g++ )
-    else()
-      message( FATAL_ERROR "I think the C++ compiler is a Cray compiler "
-        "wrapper, but I don't know what compiler is wrapped."
-        "CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
-    endif()
-  elseif( ${my_cxx_compiler} MATCHES "cl" )
-    include( windows-cl )
-  elseif( ${my_cxx_compiler} MATCHES "icpc" )
-    include( unix-intel )
-  elseif( ${my_cxx_compiler} MATCHES "xl" )
-    include( unix-xl )
-  elseif( ${my_cxx_compiler} MATCHES "[cg][+x]+" )
+  elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
     include( unix-g++ )
   else()
-    message( FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}" )
+    # missing CMAKE_CXX_COMPILER_ID? - try to match the the compiler path+name
+    # to a string.
+    if( ${my_cxx_compiler} MATCHES "pgCC" OR
+        ${my_cxx_compiler} MATCHES "pgc++" )
+      include( unix-pgi )
+    elseif( ${my_cxx_compiler} MATCHES "CC" )
+      message( FATAL_ERROR
+"I think the C++ compiler is a Cray compiler wrapper, but I don't know what "
+"compiler is wrapped.  CMAKE_CXX_COMPILER_ID = ${CMAKE_CXX_COMPILER_ID}")
+    elseif( ${my_cxx_compiler} MATCHES "cl" )
+      include( windows-cl )
+    elseif( ${my_cxx_compiler} MATCHES "icpc" )
+      include( unix-intel )
+    elseif( ${my_cxx_compiler} MATCHES "xl" )
+      include( unix-xl )
+    elseif( ${my_cxx_compiler} MATCHES "clang" OR
+        ${my_cxx_compiler} MATCHES "llvm" )
+      if( APPLE )
+        include( apple-clang )
+      else()
+        include( unix-clang )
+      endif()
+    elseif( ${my_cxx_compiler} MATCHES "[cg][+x]+" )
+      include( unix-g++ )
+    else()
+      message(FATAL_ERROR "Build system does not support CXX=${my_cxx_compiler}")
+    endif()
   endif()
 
   # To the greatest extent possible, installed versions of packages should
@@ -336,11 +344,10 @@ macro(dbsSetupFortran)
 
   dbsSetupCompilers()
 
-  # Toggle if we should try to build Fortran parts of the project.
-  # This will be set to true if $ENV{FC} points to a working compiler
-  # (e.g.: GNU or Intel compilers with Unix Makefiles) or if the
-  # current project doesn't support Fortran but
-  # CMakeAddFortranSubdirectory can be used.
+  # Toggle if we should try to build Fortran parts of the project.  This will be
+  # set to true if $ENV{FC} points to a working compiler (e.g.: GNU or Intel
+  # compilers with Unix Makefiles) or if the current project doesn't support
+  # Fortran but CMakeAddFortranSubdirectory can be used.
   option( HAVE_Fortran "Should we build Fortran parts of the project?" OFF )
 
   # Is Fortran enabled (it is considered 'optional' for draco)?
@@ -368,7 +375,7 @@ macro(dbsSetupFortran)
     elseif( "${CMAKE_Fortran_COMPILER_ID}" MATCHES "Intel" )
       include( unix-ifort )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray" )
-      include( unix-crayftn )    
+      include( unix-crayftn )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Clang" )
       include( unix-flang )
     elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU" )
@@ -460,95 +467,6 @@ macro( dbsSetupProfilerTools )
     if( ${msf} )
       set( MEMORYCHECK_SUPPRESSIONS_FILE "${msf}" CACHE FILEPATH
       "valgrind warning suppression file." FORCE )
-    endif()
-  endif()
-
-  # ------------------------------------------------------------
-  # Allinea MAP
-  # ------------------------------------------------------------
-  # Note 1: Allinea MAP should work on regular Linux without this setup.
-  # Note 2: I have demonstrated that MAP works under Cray environments only when
-  #    (a) compiling with the compiler option '-dynamic',
-  #    (b) the Allinea sampler libraries are generated on the same filesystem as
-  #        the build, and
-  #    (c) These libraries are linked when generated executables.
-  # Note 3: Linking the allinea sampler libraries into generated executables
-  #        shows up in component_macros near 'add_executable' commands via the
-  #        target_link_libraries command.
-
-  option( USE_ALLINEA_MAP
-    "If Allinea MAP is available, should we link against those libraries?" OFF )
-
-  if( USE_ALLINEA_MAP )
-    # Ref: www.nersc.gov/users/software/performance-and-debugging-tools/MAP
-    if( CRAY_PE )
-      set( platform_cray "--platform=cray")
-    endif()
-    if( NOT DEFINED ENV{ALLINEA_LICENSE_DIR} AND NOT DEFINED ENV{DDT_LICENSE_FILE} )
-      message( FATAL_ERROR "You must load the Allinea module first!")
-    endif()
-    if( "${DRACO_LIBRARY_TYPE}" STREQUAL "STATIC")
-      if( NOT EXISTS ${PROJECT_BINARY_DIR}/allinea-profiler.ld )
-        message( STATUS "Generating allinea-profiler.ld...")
-        # message( "make-profiler-libraries ${platform_cray} --lib-type=static")
-        execute_process(
-          COMMAND make-profiler-libraries ${platform_cray} --lib-type=static
-          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-          OUTPUT_QUIET
-          )
-        message( STATUS "Generating allinea-profiler.ld...done")
-      endif()
-      set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,@${PROJECT_BINARY_DIR}/allinea-profiler.ld")
-
-    elseif( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
-
-      if( NOT EXISTS ${PROJECT_BINARY_DIR}/libmap-sampler.so )
-        message( STATUS "Generating allinea-sampler.so...")
-        # message( "make-profiler-libraries ${platform_cray}")
-        execute_process(
-          COMMAND make-profiler-libraries ${platform_cray}
-          WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-          OUTPUT_QUIET
-          )
-        message( STATUS "Generating allinea-sampler.so...done")
-      endif()
-      find_library( map-sampler-pmpi
-        NAMES map-sampler-pmpi
-        PATHS ${PROJECT_BINARY_DIR}
-        NO_DEFAULT_PATH
-        )
-      find_library( map-sampler
-        NAMES map-sampler
-        PATHS ${PROJECT_BINARY_DIR}
-        NO_DEFAULT_PATH
-        )
-      set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--eh-frame-hdr")
-      # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${PROJECT_BINARY_DIR} -lmap-sampler-pmpi -lmap-sampler -Wl,--eh-frame-hdr -Wl,-rpath=${PROJECT_BINARY_DIR}")
-    endif()
-  endif()
-
-  # ------------------------------------------------------------
-  # DMALLOC with Allinea DDT (Memory debugging)
-  # ------------------------------------------------------------
-  option( USE_ALLINEA_DMALLOC
-    "If Allinea DDT is available, should we link against their dmalloc libraries?" OFF )
-
-  if( USE_ALLINEA_DMALLOC )
-    if( NOT EXISTS $ENV{DDTROOT} )
-      message( FATAL_ERROR "You must load the Allinea module first!")
-    endif()
-    if( "${SITENAME}" STREQUAL "Trinitite" OR "${SITENAME}" STREQUAL "Trinity" )
-      #set( OLD_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} )
-      #set( CMAKE_FIND_LIBRARY_SUFFIXES .a )
-      find_library( ddt-dmalloc
-        NAMES dmallocthcxx
-        PATHS $ENV{DDTROOT}/lib/64
-        NO_DEFAULT_PATH
-        )
-      #set( CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_CMAKE_FIND_LIBRARY_SUFFIXES} )
-      #message("ddt-malloc = ${ddt-malloc}")
-      set( CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -Wl,--undefined=malloc" )
     endif()
   endif()
 

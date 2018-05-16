@@ -737,6 +737,8 @@ message(\"Looking for Draco...\${draco_DIR}\")
 
 # CMake macros that check the system for features like 'gethostname', etc.
 include( platform_checks )
+# Sanity check for Cray Programming Environments
+query_craype()
 # We need to know if OpenMP is available before looking for TPLs like CSK.
 query_openmp_availability()
 

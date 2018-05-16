@@ -70,6 +70,7 @@ message("
 Platform Checks...
 ")
 include( platform_checks )
+query_craype()
 set_draco_uname()
 query_have_gethostname()
 query_have_maxpathlen()
