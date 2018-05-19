@@ -185,12 +185,14 @@ macro(dbsSetupCxx)
       include( unix-clang )
     endif()
   elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
-    include( unix-g++ )
+    include( unix-g++ )  
+  elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC" )
+    include( windows-cl )
   else()
     # missing CMAKE_CXX_COMPILER_ID? - try to match the the compiler path+name
     # to a string.
     if( ${my_cxx_compiler} MATCHES "pgCC" OR
-        ${my_cxx_compiler} MATCHES "pgc++" )
+        ${my_cxx_compiler} MATCHES "pgc[+][+]" )
       include( unix-pgi )
     elseif( ${my_cxx_compiler} MATCHES "CC" )
       message( FATAL_ERROR
