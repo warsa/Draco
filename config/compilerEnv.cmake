@@ -472,6 +472,7 @@ macro( dbsSetupProfilerTools )
       set( MEMORYCHECK_SUPPRESSIONS_FILE "${msf}" CACHE FILEPATH
       "valgrind warning suppression file." FORCE )
     endif()
+    mark_as_advanced( msf )
   endif()
 
 endmacro()
