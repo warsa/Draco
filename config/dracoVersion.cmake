@@ -86,7 +86,7 @@ macro( set_ccs2_software_version PROJNAME )
 
   message( "\n======================================================\n"
     "This is ${PROJNAME} version ${${PROJNAME}_VERSION_FULL}.\n"
-     "======================================================" )
+     "======================================================\n" )
 
   # Support for CPack
   set( CPACK_PACKAGE_VERSION_MAJOR ${${PROJNAME}_VERSION_MAJOR} )

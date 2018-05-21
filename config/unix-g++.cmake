@@ -36,8 +36,6 @@ check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
 check_cxx_compiler_flag( "-Wunused-local-typedefs"   HAS_WUNUSED_LOCAL_TYPEDEFS )
 #check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
 check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" HAS_WZER0_AS_NULL_POINTER_CONSTANT )
-include(platform_checks)
-query_openmp_availability()
 
 # is this bullseye?
 execute_process(
