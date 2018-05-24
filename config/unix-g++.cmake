@@ -180,7 +180,7 @@ set( CMAKE_C_FLAGS_DEBUG          "${CMAKE_C_FLAGS_DEBUG}"          CACHE
 set( CMAKE_C_FLAGS_RELEASE        "${CMAKE_C_FLAGS_RELEASE}"        CACHE 
      STRING "compiler flags" FORCE )
 set( CMAKE_C_FLAGS_MINSIZEREL     "${CMAKE_C_FLAGS_MINSIZEREL}"     CACHE 
-     STRING "compiler flags" FORCE )c
+     STRING "compiler flags" FORCE )
 set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE 
      STRING "compiler flags" FORCE )
 
