@@ -10,6 +10,7 @@
 #include "mesh/Draco_Mesh.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/Release.hh"
+#include <bitset>
 
 using rtt_mesh::Draco_Mesh;
 
@@ -56,7 +57,9 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     // set the number of sides and side flags
     size_t poff = num_xdir + num_ydir; // parallel side offset
     size_t num_sides = 2 * poff;
-    size_t num_flags = 4;
+
+    // set two nodes per each side cell (only possibility in 2D)
+    std::vector<unsigned> side_node_count(num_sides, 2);
 
     // calculate arrays storing data about the sides of the mesh
     std::vector<unsigned> side_set_flag(num_sides);
@@ -69,8 +72,8 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
       side_to_node_linkage[2 * i + 1] = i + 1;
       // top face
       side_set_flag[i + poff] = 3;
-      side_to_node_linkage[2 * (i + poff)] = num_nodes - i;
-      side_to_node_linkage[2 * (i + poff) + 1] = num_nodes - i - 1;
+      side_to_node_linkage[2 * (i + poff)] = num_nodes - 1 - i;
+      side_to_node_linkage[2 * (i + poff) + 1] = num_nodes - 1 - i - 1;
     }
     // ... over left and right faces
     for (size_t j = 0; j < num_ydir; ++j) {
@@ -81,14 +84,38 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
       // left face
       side_set_flag[j + poff + num_xdir] = 4;
       side_to_node_linkage[2 * (j + poff + num_xdir)] =
-          num_nodes - num_xdir * (j + 1) - j;
+          num_nodes - 1 - num_xdir * (j + 1) - j;
       side_to_node_linkage[2 * (j + poff + num_xdir) + 1] =
-          num_nodes - num_xdir * (j + 2) - j - 1;
+          num_nodes - 1 - num_xdir * (j + 2) - (j + 1);
     }
 
+    // set some coordinates
+    std::vector<double> coordinates(dim * num_nodes);
+    // TODO: generalize coordinate generation
+    for (size_t i = 0; i < num_nodes; ++i) {
+      std::bitset<8> b2(i);
+      coordinates[dim * i] = static_cast<double>(b2[0]);
+      coordinates[1 + dim * i] = static_cast<double>(b2[1]);
+    }
+
+    // TODO: eventually remove these print statements
     for (size_t j = 0; j < num_sides; ++j) {
       std::cout << "side_set_flag[" << j << "] = " << side_set_flag[j]
                 << std::endl;
+      std::cout << std::endl;
+      std::cout << "side_to_node_linkage[2 * " << j
+                << "] = " << side_to_node_linkage[2 * j] << std::endl;
+      std::cout << "side_to_node_linkage[2 * " << j
+                << " + 1] = " << side_to_node_linkage[2 * j + 1] << std::endl;
+      std::cout << std::endl;
+    }
+
+    // TODO: eventually remove these print statements
+    for (size_t i = 0; i < num_nodes; ++i) {
+      std::cout << "coordinates[dim * " << i << "] = " << coordinates[dim * i]
+                << std::endl;
+      std::cout << "coordinates[dim * " << i + 1
+                << "] = " << coordinates[1 + dim * i] << std::endl;
     }
 
     // build the mesh
