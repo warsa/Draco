@@ -89,14 +89,21 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
           num_nodes - 1 - num_xdir * (j + 2) - (j + 1);
     }
 
-    // set some coordinates
+    // set some coordinates and global node indices
     std::vector<double> coordinates(dim * num_nodes);
-    // TODO: generalize coordinate generation
-    for (size_t i = 0; i < num_nodes; ++i) {
+    std::vector<unsigned> global_node_number(num_nodes);
+    for (unsigned i = 0; i < num_nodes; ++i) {
+
+      // TODO: generalize coordinate generation
       std::bitset<8> b2(i);
       coordinates[dim * i] = static_cast<double>(b2[0]);
       coordinates[1 + dim * i] = static_cast<double>(b2[1]);
+
+      // TODO: generalize for multi-processing
+      global_node_number[i] = i;
     }
+
+    // set global node indices
 
     // TODO: eventually remove these print statements
     for (size_t j = 0; j < num_sides; ++j) {
@@ -119,7 +126,10 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     }
 
     // build the mesh
-    // mesh(new Draco_Mesh());
+    mesh.reset(new Draco_Mesh(dim, geometry, cell_type, cell_to_node_linkage,
+                              side_set_flag, side_node_count,
+                              side_to_node_linkage, coordinates,
+                              global_node_number));
   }
 
   // successful test output

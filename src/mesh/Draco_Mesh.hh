@@ -49,9 +49,14 @@ private:
   // Geometry enumeration
   Geometry geometry;
 
+  // Number of cells
+  unsigned num_cells;
+
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
   //  Layout cell_to_cell_linkage;
+  // TODO: update this to a full layout class (commented above).
+  std::map<unsigned, std::vector<unsigned>> node_to_cell_map;
 
   // Map of cell+face index pair to vector of node coordinates for the face
   Cell_Face_Pair_Coord_Map cell_face_to_node_coord_map;
@@ -71,6 +76,7 @@ public:
 
   unsigned get_dimension() const { return dimension; }
   Geometry get_geometry() const { return geometry; }
+  unsigned get_num_cells() const { return num_cells; }
   //  const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
 
   // >>> SERVICES
@@ -78,11 +84,15 @@ public:
 private:
   // >>> SUPPORT FUNCTIONS
 
-  //! Calculate the mapping from cell-face pairs to node coordinates
-  void compute_cell_face_to_node_coord_map();
-
   //! Calculate the cell-to-cell linkage (layout)
-  void compute_cell_to_cell_linkage();
+  // TODO: add layout class and complete temporary version of this function.
+  void compute_cell_to_cell_linkage(
+      const std::vector<unsigned> &cell_type,
+      const std::vector<unsigned> &cell_to_node_linkage);
+
+  //! Calculate the mapping from cell-face pairs to node coordinates
+  void
+  compute_cell_face_to_node_coord_map(const std::vector<double> &coordinates);
 };
 
 } // end namespace rtt_mesh
