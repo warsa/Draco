@@ -52,6 +52,9 @@ private:
   // Number of cells
   unsigned num_cells;
 
+  // Number of nodes
+  unsigned num_nodes;
+
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
   //  Layout cell_to_cell_linkage;

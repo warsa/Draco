@@ -9,6 +9,7 @@
 
 #include "Draco_Mesh.hh"
 #include "ds++/Assert.hh"
+#include <iostream>
 
 namespace rtt_mesh {
 
@@ -33,7 +34,6 @@ namespace rtt_mesh {
  * \param[in] global_node_number_ map of local to global node index (vector
  * subscript is local node index and value is global node index; for one
  * process, this is the identity map).
- *
  */
 Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &cell_type_,
@@ -43,7 +43,8 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &side_to_node_linkage_,
                        const std::vector<double> &coordinates_,
                        const std::vector<unsigned> &global_node_number_)
-    : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()) {
+    : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()),
+      num_nodes(global_node_number_.size()) {
 
   // Require(dimension_ <= 3);
   // TODO: generalize mesh generation to 3D (and uncomment requirment above)
@@ -70,6 +71,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_to_node_linkage) {
 
   // STEP 1: create de-serialized map of cell index to node indices
+
   std::map<unsigned, std::vector<unsigned>> cell_to_node_map;
 
   // initialize pointers into cell_to_node_linkage vector
@@ -86,11 +88,58 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
     cn_first += cell_type[cell];
   }
 
-  // STEP 2: invert the cell_to_node_map
-  // TODO: actually invert the map
-  node_to_cell_map = cell_to_node_map;
-
   Check(cell_to_node_map.size() == num_cells);
+
+  // STEP 2: create the node-to-cell map
+
+  // initialize empty vectors for each node key
+  for (unsigned node = 0; node < num_nodes; ++node) {
+    std::vector<unsigned> tmp_vec;
+    node_to_cell_map.insert(std::make_pair(node, tmp_vec));
+  }
+
+  // push cell index to vector for each node
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    for (unsigned node : cell_to_node_map[cell]) {
+      node_to_cell_map[node].push_back(cell);
+    }
+  }
+
+  // STEP 3: identify faces and create cell to face map
+
+  // TODO: global face index?
+  // TODO: extend to 3D
+
+  // identify faces per cell
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+
+    // create a vector of all possible node pairs
+    unsigned nper_cell = cell_to_node_map[cell].size();
+    unsigned num_pairs = nper_cell * (nper_cell - 1) / 2;
+    std::vector<std::vector<unsigned>> vec_node_vec(num_pairs,
+                                                    std::vector<unsigned>(2));
+    // TODO: change type of vec_node_vec?
+    unsigned k = 0;
+    for (unsigned i = 0; i < nper_cell; ++i) {
+      for (unsigned j = i + 1; j < nper_cell; ++j) {
+
+        // set kth pair entry to the size 2 vector of nodes
+        vec_node_vec[k] = {cell_to_node_map[cell][i],
+                           cell_to_node_map[cell][j]};
+
+        // increment k
+        k++;
+      }
+    }
+
+    Check(k == num_pairs);
+
+    // // check if each pair constitutes a face
+    // for (unsigned l = 0; l < num_pairs; ++l) {
+
+    //   // use node-to-cell map to find a common neighbor cell
+    // }
+  }
 }
 
 //---------------------------------------------------------------------------//
@@ -102,7 +151,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
  */
 void Draco_Mesh::compute_cell_face_to_node_coord_map(
     const std::vector<double> &coordinates) {}
-}
+} // end namespace rtt_mesh
 
 //---------------------------------------------------------------------------//
 // end of mesh/Draco_Mesh.cc

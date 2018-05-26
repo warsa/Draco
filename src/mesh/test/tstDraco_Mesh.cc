@@ -26,7 +26,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     // TODO: make mesh data setup a builder and move to separate file.
 
     // set the number of cells and nodes
-    const size_t num_xdir = 1;
+    const size_t num_xdir = 2;
     const size_t num_ydir = 1;
     const size_t num_cells = num_xdir * num_ydir;
     const size_t num_nodes = (num_xdir + 1) * (num_ydir + 1);
