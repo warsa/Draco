@@ -9,6 +9,7 @@
 
 #include "Draco_Mesh.hh"
 #include "ds++/Assert.hh"
+#include <algorithm>
 #include <iostream>
 
 namespace rtt_mesh {
@@ -134,11 +135,34 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
     Check(k == num_pairs);
 
-    // // check if each pair constitutes a face
-    // for (unsigned l = 0; l < num_pairs; ++l) {
+    // check if each pair constitutes a face
+    for (unsigned l = 0; l < num_pairs; ++l) {
 
-    //   // use node-to-cell map to find a common neighbor cell
-    // }
+      // get adjacent cells from node-to-cell map
+      // TODO: add DbC to ensure these are sorted from step 2
+      const std::vector<unsigned> &vert0_cells =
+          node_to_cell_map[vec_node_vec[l][0]];
+      const std::vector<unsigned> &vert1_cells =
+          node_to_cell_map[vec_node_vec[l][1]];
+
+      // find common cells (this should be low-complexity, especially in 3D)
+      // TODO: reserve size for cells_in_common
+      std::vector<unsigned> cells_in_common;
+      std::set_intersection(vert0_cells.begin(), vert0_cells.end(),
+                            vert1_cells.begin(), vert1_cells.end(),
+                            std::back_inserter(cells_in_common));
+
+      // these nodes should have at least cell index "cell" in common
+      Check(cells_in_common.size() >= 1);
+
+      std::cout << std::endl;
+      std::cout << "cell = " << cell << std::endl;
+      std::cout << "vert0 = " << vec_node_vec[l][0] << std::endl;
+      std::cout << "vert1 = " << vec_node_vec[l][1] << std::endl;
+      for (unsigned ll = 0; ll < cells_in_common.size(); ++ll) {
+        std::cout << cells_in_common[ll] << std::endl;
+      }
+    }
   }
 }
 
