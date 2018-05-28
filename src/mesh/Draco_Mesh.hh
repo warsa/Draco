@@ -35,10 +35,13 @@ namespace rtt_mesh {
 class Draco_Mesh {
 public:
   // >>> TYPEDEFS
+  typedef rtt_mesh_element::Geometry Geometry;
+  typedef std::map<unsigned,
+                   std::vector<std::pair<unsigned, std::vector<unsigned>>>>
+      Layout;
   typedef std::map<std::pair<unsigned, unsigned>,
                    std::vector<std::vector<double>>>
       Cell_Face_Pair_Coord_Map;
-  typedef rtt_mesh_element::Geometry Geometry;
 
 private:
   // >>> DATA
@@ -57,9 +60,8 @@ private:
 
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
-  //  Layout cell_to_cell_linkage;
-  // TODO: update this to a full layout class (commented above).
-  std::map<unsigned, std::vector<unsigned>> node_to_cell_map;
+  Layout cell_to_cell_linkage;
+  // TODO: update this to a full layout class.
 
   // Map of cell+face index pair to vector of node coordinates for the face
   Cell_Face_Pair_Coord_Map cell_face_to_node_coord_map;
@@ -80,7 +82,7 @@ public:
   unsigned get_dimension() const { return dimension; }
   Geometry get_geometry() const { return geometry; }
   unsigned get_num_cells() const { return num_cells; }
-  //  const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
+  const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
 
   // >>> SERVICES
 

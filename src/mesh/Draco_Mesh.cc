@@ -93,6 +93,8 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // STEP 2: create a node-to-cell map (inverse of step 1)
 
+  std::map<unsigned, std::vector<unsigned>> node_to_cell_map;
+
   // initialize empty vectors for each node key
   for (unsigned node = 0; node < num_nodes; ++node) {
     std::vector<unsigned> tmp_vec;
@@ -112,11 +114,10 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   // TODO: global face index?
   // TODO: extend to 3D
 
-  std::map<unsigned, std::vector<unsigned>> cell_to_cell_map;
   // initialize empty vectors for each cell key
   for (unsigned cell = 0; cell < num_cells; ++cell) {
-    std::vector<unsigned> tmp_vec;
-    cell_to_cell_map.insert(std::make_pair(cell, tmp_vec));
+    std::vector<std::pair<unsigned, std::vector<unsigned>>> tmp_vec;
+    cell_to_cell_linkage.insert(std::make_pair(cell, tmp_vec));
   }
 
   // identify faces per cell
@@ -168,16 +169,10 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       if (cells_in_common.size() > 1) {
         for (auto oth_cell : cells_in_common) {
           if (oth_cell != cell)
-            cell_to_cell_map[cell].push_back(oth_cell);
+            cell_to_cell_linkage[cell].push_back(
+                std::make_pair(oth_cell, vec_node_vec[l]));
         }
       }
-    }
-
-    // TODO: remove this printout
-    std::cout << std::endl;
-    for (unsigned ll = 0; ll < cell_to_cell_map[cell].size(); ++ll) {
-      std::cout << "cell_to_cell_map[" << cell << "][" << ll
-                << "] = " << cell_to_cell_map[cell][ll] << std::endl;
     }
   }
 }
