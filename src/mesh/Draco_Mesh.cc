@@ -91,7 +91,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   Check(cell_to_node_map.size() == num_cells);
 
-  // STEP 2: create the node-to-cell map
+  // STEP 2: create a node-to-cell map (inverse of step 1)
 
   // initialize empty vectors for each node key
   for (unsigned node = 0; node < num_nodes; ++node) {
@@ -101,15 +101,23 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // push cell index to vector for each node
   for (unsigned cell = 0; cell < num_cells; ++cell) {
-    for (unsigned node : cell_to_node_map[cell]) {
+    for (auto node : cell_to_node_map[cell]) {
       node_to_cell_map[node].push_back(cell);
     }
   }
 
-  // STEP 3: identify faces and create cell to face map
+  // STEP 3: identify faces and create cell to cell map
 
+  // TODO: amend to include side faces
   // TODO: global face index?
   // TODO: extend to 3D
+
+  std::map<unsigned, std::vector<unsigned>> cell_to_cell_map;
+  // initialize empty vectors for each cell key
+  for (unsigned cell = 0; cell < num_cells; ++cell) {
+    std::vector<unsigned> tmp_vec;
+    cell_to_cell_map.insert(std::make_pair(cell, tmp_vec));
+  }
 
   // identify faces per cell
   for (unsigned cell = 0; cell < num_cells; ++cell) {
@@ -155,13 +163,21 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       // these nodes should have at least cell index "cell" in common
       Check(cells_in_common.size() >= 1);
 
-      std::cout << std::endl;
-      std::cout << "cell = " << cell << std::endl;
-      std::cout << "vert0 = " << vec_node_vec[l][0] << std::endl;
-      std::cout << "vert1 = " << vec_node_vec[l][1] << std::endl;
-      for (unsigned ll = 0; ll < cells_in_common.size(); ++ll) {
-        std::cout << cells_in_common[ll] << std::endl;
+      // populate cell-to-cell map
+      // TODO: populate face-to-cell (and inverse) map here?
+      if (cells_in_common.size() > 1) {
+        for (auto oth_cell : cells_in_common) {
+          if (oth_cell != cell)
+            cell_to_cell_map[cell].push_back(oth_cell);
+        }
       }
+    }
+
+    // TODO: remove this printout
+    std::cout << std::endl;
+    for (unsigned ll = 0; ll < cell_to_cell_map[cell].size(); ++ll) {
+      std::cout << "cell_to_cell_map[" << cell << "][" << ll
+                << "] = " << cell_to_cell_map[cell][ll] << std::endl;
     }
   }
 }
