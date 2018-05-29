@@ -95,12 +95,6 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   std::map<unsigned, std::vector<unsigned>> node_to_cell_map;
 
-  // initialize empty vectors for each node key
-  for (unsigned node = 0; node < num_nodes; ++node) {
-    std::vector<unsigned> tmp_vec;
-    node_to_cell_map.insert(std::make_pair(node, tmp_vec));
-  }
-
   // push cell index to vector for each node
   for (unsigned cell = 0; cell < num_cells; ++cell) {
     for (auto node : cell_to_node_map[cell]) {
@@ -112,13 +106,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // TODO: amend to include side faces
   // TODO: global face index?
-  // TODO: extend to 3D
-
-  // initialize empty vectors for each cell key
-  for (unsigned cell = 0; cell < num_cells; ++cell) {
-    std::vector<std::pair<unsigned, std::vector<unsigned>>> tmp_vec;
-    cell_to_cell_linkage.insert(std::make_pair(cell, tmp_vec));
-  }
+  // TODO: extend to 1D, 3D
 
   // identify faces per cell
   for (unsigned cell = 0; cell < num_cells; ++cell) {
