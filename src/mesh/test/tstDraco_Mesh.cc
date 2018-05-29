@@ -139,6 +139,44 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     if (layout.size() != num_cells)
       ITFAILS;
 
+    // check that each cell has the correct neighbors
+    {
+      std::map<unsigned, std::vector<unsigned>> test_cell_map;
+      for (unsigned j = 0; j < num_ydir; ++j) {
+        for (unsigned i = 0; i < num_xdir; ++i) {
+
+          // calculate the cell index
+          unsigned cell = i + j * num_xdir;
+
+          // calculate neighbor cell indices
+          if (i > 0)
+            test_cell_map[cell].push_back(cell - 1);
+          if (i < num_xdir - 1)
+            test_cell_map[cell].push_back(cell + 1);
+          if (j > 0)
+            test_cell_map[cell].push_back(cell - num_xdir);
+          if (j < num_ydir - 1)
+            test_cell_map[cell].push_back(cell + num_xdir);
+        }
+      }
+
+      for (unsigned cell = 0; cell < num_cells; ++cell) {
+
+        // get number of faces per cell in layout
+        const unsigned num_faces = layout.at(cell).size();
+
+        // check that the number of faces per cell is correct
+        if (num_faces != test_cell_map[cell].size())
+          ITFAILS;
+
+        // check that cell neighbors are correct
+        for (unsigned face = 0; face < num_faces; ++face) {
+          if (layout.at(cell)[face].first != test_cell_map[cell][face])
+            ITFAILS;
+        }
+      }
+    }
+
     // TODO: eventually remove this printout
     std::cout << std::endl;
     for (unsigned cell = 0; cell < num_cells; ++cell) {

@@ -108,7 +108,8 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   // TODO: global face index?
   // TODO: extend to 1D, 3D
 
-  // identify faces per cell
+  // identify faces per cell and create cell-to-cell linkage
+  // in 2D, faces will always have 2 nodes
   for (unsigned cell = 0; cell < num_cells; ++cell) {
 
     // create a vector of all possible node pairs
@@ -142,7 +143,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       const std::vector<unsigned> &vert1_cells =
           node_to_cell_map[vec_node_vec[l][1]];
 
-      // find common cells (this should be low-complexity, especially in 3D)
+      // find common cells (set_intersection is low-complexity)
       // TODO: reserve size for cells_in_common
       std::vector<unsigned> cells_in_common;
       std::set_intersection(vert0_cells.begin(), vert0_cells.end(),
