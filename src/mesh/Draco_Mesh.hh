@@ -27,8 +27,17 @@ namespace rtt_mesh {
  * basic services, including access to cell information.  This mesh is based on
  * an unstructured mesh implementation by Kent Budge.
  *
- * The cell_type_ vector (argument to the constructor) is currently taken to
- * be the number of nodes per cell.
+ * Two important features for a fully realized Draco_Mesh are the following:
+ * 1) Layout, which stores cell connectivity and hence the mesh topology.
+ *    a) It has an internal layout containing local cell-to-cell linkage,
+ *    b) and a boundary layout with side and off-process linkage.
+ * 2) Geometry, which implies a metric for distance between points.
+ *
+ * Possibly temporary features:
+ * 1) The cell_type_ vector (argument to the constructor) is currently taken to
+ *    be the number of nodes per cell.
+ * 2) The layout data structure(s) will proabably be moved to a separate class,
+ *    where accessors might be used on a serialized version.
  */
 //===========================================================================//
 
@@ -93,7 +102,9 @@ private:
   // TODO: add layout class and complete temporary version of this function.
   void compute_cell_to_cell_linkage(
       const std::vector<unsigned> &cell_type,
-      const std::vector<unsigned> &cell_to_node_linkage);
+      const std::vector<unsigned> &cell_to_node_linkage,
+      const std::vector<unsigned> &side_node_count,
+      const std::vector<unsigned> &side_to_node_linkage);
 
   //! Calculate the mapping from cell-face pairs to node coordinates
   void

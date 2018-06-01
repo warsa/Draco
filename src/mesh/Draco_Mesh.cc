@@ -52,7 +52,8 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
   Require(dimension_ <= 2);
 
   // build the layout (or linkage) of the mesh
-  compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_);
+  compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_,
+                               side_node_count_, side_to_node_linkage_);
 
   // build the cell-face pair to coordinate list map
   compute_cell_face_to_node_coord_map(coordinates_);
@@ -69,7 +70,9 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
  */
 void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_type,
-    const std::vector<unsigned> &cell_to_node_linkage) {
+    const std::vector<unsigned> &cell_to_node_linkage,
+    const std::vector<unsigned> &side_node_count,
+    const std::vector<unsigned> &side_to_node_linkage) {
 
   // STEP 1: create de-serialized map of cell index to node indices
 
@@ -102,11 +105,40 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
     }
   }
 
-  // STEP 3: identify faces and create cell to cell map
+  // STEP 3: create a node-to-side map
+
+  std::map<unsigned, std::vector<unsigned>> node_to_side_map;
+
+  // get the number of sides
+  const unsigned num_sides = side_node_count.size();
+  Check(dimension == 2 ? side_to_node_linkage.size() == 2 * num_sides : true);
+
+  // TODO: extend to 1D, 3D (merely loop over side_node_count)
+  unsigned node_offset = 0;
+  for (unsigned side = 0; side < num_sides; ++side) {
+
+    // at the relevant node indices increment the side vectors
+    node_to_side_map[side_to_node_linkage[node_offset]].push_back(side);
+    node_to_side_map[side_to_node_linkage[node_offset + 1]].push_back(side);
+
+    // increment offset
+    node_offset += side_node_count[side];
+  }
+
+  Check(node_to_side_map.size() == num_sides);
+
+  // TODO: replace with typedef Draco_Layout::Boundary_Layout
+  std::map<unsigned, std::vector<std::pair<int, std::vector<unsigned>>>>
+      bd_layout;
+
+  // STEP 4: identify faces and create cell to cell map
 
   // TODO: amend to include side faces
   // TODO: global face index?
   // TODO: extend to 1D, 3D
+
+  // TODO: remove this temporary debugging variable
+  unsigned num_sides_check = 0;
 
   // identify faces per cell and create cell-to-cell linkage
   // in 2D, faces will always have 2 nodes
@@ -153,7 +185,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       // these nodes should have at least cell index "cell" in common
       Check(cells_in_common.size() >= 1);
 
-      // populate cell-to-cell map
+      // populate cell-to-cell linkage
       // TODO: populate face-to-cell (and inverse) map here?
       if (cells_in_common.size() > 1) {
         for (auto oth_cell : cells_in_common) {
@@ -162,8 +194,35 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
                 std::make_pair(oth_cell, vec_node_vec[l]));
         }
       }
+
+      // check if this cell pair has a side flag
+      // TODO: add DbC to ensure these are sorted from step 3
+      const std::vector<unsigned> &vert0_sides =
+          node_to_side_map[vec_node_vec[l][0]];
+      const std::vector<unsigned> &vert1_sides =
+          node_to_side_map[vec_node_vec[l][1]];
+
+      // find common sides
+      std::vector<unsigned> sides_in_common;
+      std::set_intersection(vert0_sides.begin(), vert0_sides.end(),
+                            vert1_sides.begin(), vert1_sides.end(),
+                            std::back_inserter(sides_in_common));
+
+      Check(sides_in_common.size() <= 1);
+      if (sides_in_common.size() > 0) {
+
+        // TODO: remove this
+        num_sides_check++;
+      }
+
+      // TODO: add check for ghost face
     }
   }
+
+  std::cout << "num_sides_check = " << num_sides_check << std::endl;
+
+  // STEP 5: instantiate the full layout
+  // TODO: finish Draco_Layout class
 }
 
 //---------------------------------------------------------------------------//
@@ -174,7 +233,9 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
  * (passed from constructor).
  */
 void Draco_Mesh::compute_cell_face_to_node_coord_map(
-    const std::vector<double> &coordinates) {}
+    const std::vector<double> &coordinates) {
+  // TODO: use cell-to-cell linkage data
+}
 } // end namespace rtt_mesh
 
 //---------------------------------------------------------------------------//
