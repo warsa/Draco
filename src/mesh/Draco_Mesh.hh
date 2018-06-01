@@ -37,7 +37,7 @@ namespace rtt_mesh {
  * 1) The cell_type_ vector (argument to the constructor) is currently taken to
  *    be the number of nodes per cell.
  * 2) The layout data structure(s) will proabably be moved to a separate class,
- *    where accessors might be used on a serialized version.
+ *    where accessors might be used on a flattened version.
  */
 //===========================================================================//
 
@@ -48,6 +48,8 @@ public:
   typedef std::map<unsigned,
                    std::vector<std::pair<unsigned, std::vector<unsigned>>>>
       Layout;
+  typedef std::map<unsigned, std::vector<std::pair<int, std::vector<unsigned>>>>
+      Boundary_Layout;
   typedef std::map<std::pair<unsigned, unsigned>,
                    std::vector<std::vector<double>>>
       Cell_Face_Pair_Coord_Map;
@@ -72,6 +74,9 @@ private:
   Layout cell_to_cell_linkage;
   // TODO: update this to a full layout class.
 
+  // Boundary layout of mesh
+  Boundary_Layout cell_to_side_linkage;
+
   // Map of cell+face index pair to vector of node coordinates for the face
   Cell_Face_Pair_Coord_Map cell_face_to_node_coord_map;
 
@@ -92,6 +97,7 @@ public:
   Geometry get_geometry() const { return geometry; }
   unsigned get_num_cells() const { return num_cells; }
   const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
+  const Boundary_Layout &get_cs_linkage() const { return cell_to_side_linkage; }
 
   // >>> SERVICES
 

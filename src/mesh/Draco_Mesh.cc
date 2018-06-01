@@ -127,18 +127,11 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   Check(node_to_side_map.size() == num_sides);
 
-  // TODO: replace with typedef Draco_Layout::Boundary_Layout
-  std::map<unsigned, std::vector<std::pair<int, std::vector<unsigned>>>>
-      bd_layout;
-
   // STEP 4: identify faces and create cell to cell map
 
   // TODO: amend to include side faces
   // TODO: global face index?
   // TODO: extend to 1D, 3D
-
-  // TODO: remove this temporary debugging variable
-  unsigned num_sides_check = 0;
 
   // identify faces per cell and create cell-to-cell linkage
   // in 2D, faces will always have 2 nodes
@@ -210,16 +203,15 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
       Check(sides_in_common.size() <= 1);
       if (sides_in_common.size() > 0) {
-
-        // TODO: remove this
-        num_sides_check++;
+        // populate cell-to-side linkage
+        // TODO: replace with typedef Draco_Layout::Boundary_Layout
+        cell_to_side_linkage[cell].push_back(
+            std::make_pair(sides_in_common[0], vec_node_vec[l]));
       }
 
       // TODO: add check for ghost face
     }
   }
-
-  std::cout << "num_sides_check = " << num_sides_check << std::endl;
 
   // STEP 5: instantiate the full layout
   // TODO: finish Draco_Layout class
