@@ -59,16 +59,15 @@ public:
   void shrink_to_fit() { sb_.shrink_to_fit(); }
 
 private:
-  class mpibuf : public std::streambuf {
+  struct mpibuf : public std::streambuf {
 
-  public:
+    ~mpibuf() { send(); }
+
     void send();
     void shrink_to_fit();
 
-  protected:
     virtual int_type overflow(int_type c);
 
-  private:
     std::vector<char> buffer_;
   };
 

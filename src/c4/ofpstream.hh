@@ -63,6 +63,8 @@ public:
 private:
   struct mpibuf : public std::streambuf {
 
+    ~mpibuf() { send(); }
+
     void send();
     void shrink_to_fit();
 
