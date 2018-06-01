@@ -1,0 +1,70 @@
+//----------------------------------*-C++-*----------------------------------//
+/*!
+ * \file   c4/ofpstream.cc
+ * \author Mike Buksas
+ * \date   Thu May  1 14:42:10 2008
+ * \brief
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved.
+ */
+//---------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------//
+
+#include <iostream>
+
+#include "C4_Functions.hh"
+#include "ofpstream.hh"
+
+namespace rtt_c4 {
+using namespace std;
+
+//---------------------------------------------------------------------------//
+ofpstream::ofpstream(std::string const &filename) : std::ostream(&sb_) {
+  if (rtt_c4::node() == 0) {
+    sb_.out_.open(filename);
+  }
+}
+
+//---------------------------------------------------------------------------//
+void ofpstream::mpibuf::send() {
+  unsigned const pid = rtt_c4::node();
+  if (pid == 0) {
+    buffer_.push_back('\0');
+    out_ << &buffer_[0];
+    buffer_.clear();
+
+    unsigned const pids = rtt_c4::nodes();
+    for (unsigned i = 1; i < pids; ++i) {
+      unsigned N;
+      receive(&N, 1, i);
+      buffer_.resize(N);
+      rtt_c4::receive(&buffer_[0], N, i);
+      buffer_.push_back('\0');
+      out_ << &buffer_[0];
+    }
+  } else {
+    unsigned N = buffer_.size();
+    rtt_c4::send(&N, 1, 0);
+    rtt_c4::send(&buffer_[0], N, 0);
+  }
+  buffer_.clear();
+  out_.flush();
+  rtt_c4::global_barrier();
+}
+
+//---------------------------------------------------------------------------//
+/*virtual*/ ofpstream::mpibuf::int_type
+ofpstream::mpibuf::overflow(int_type c) {
+  buffer_.push_back(c);
+  return c;
+}
+
+//---------------------------------------------------------------------------//
+void ofpstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
+
+} // end namespace rtt_c4
+
+//---------------------------------------------------------------------------//
+// end of ofpstream.cc
+//---------------------------------------------------------------------------//
