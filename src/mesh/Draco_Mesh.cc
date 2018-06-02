@@ -11,6 +11,7 @@
 #include "ds++/Assert.hh"
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 
 namespace rtt_mesh {
 
@@ -45,18 +46,18 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<double> &coordinates_,
                        const std::vector<unsigned> &global_node_number_)
     : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()),
-      num_nodes(global_node_number_.size()) {
+      num_nodes(global_node_number_.size()), side_set_flag(side_set_flag_) {
 
   // Require(dimension_ <= 3);
-  // TODO: generalize mesh generation to 3D (and uncomment requirment above)
-  Require(dimension_ <= 2);
+  // TODO: generalize mesh generation to 1D,3D (and uncomment requirment above)
+  Require(dimension_ == 2);
 
   // build the layout (or linkage) of the mesh
   compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_,
                                side_node_count_, side_to_node_linkage_);
 
   // build the cell-face pair to coordinate list map
-  compute_cell_face_to_node_coord_map(coordinates_);
+  compute_node_coord_vec(coordinates_);
 }
 
 //---------------------------------------------------------------------------//
@@ -73,6 +74,12 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_to_node_linkage,
     const std::vector<unsigned> &side_node_count,
     const std::vector<unsigned> &side_to_node_linkage) {
+
+  Require(cell_type.size() == num_cells);
+  Require(cell_to_node_linkage.size() ==
+          std::accumulate(cell_type.begin(), cell_type.end(), 0u));
+  Require(side_to_node_linkage.size() ==
+          std::accumulate(side_node_count.begin(), side_node_count.end(), 0u));
 
   // STEP 1: create de-serialized map of cell index to node indices
 
@@ -129,7 +136,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // STEP 4: identify faces and create cell to cell map
 
-  // TODO: amend to include side faces
+  // TODO: amend to include ghost faces
   // TODO: global face index?
   // TODO: extend to 1D, 3D
 
@@ -215,6 +222,9 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // STEP 5: instantiate the full layout
   // TODO: finish Draco_Layout class
+
+  Ensure(cell_to_cell_linkage.size() == num_cells);
+  Ensure(cell_to_side_linkage.size() == num_cells);
 }
 
 //---------------------------------------------------------------------------//
@@ -224,9 +234,29 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
  * \param[in] coordinates_ serialized map of node index to coordinate values
  * (passed from constructor).
  */
-void Draco_Mesh::compute_cell_face_to_node_coord_map(
+void Draco_Mesh::compute_node_coord_vec(
     const std::vector<double> &coordinates) {
-  // TODO: use cell-to-cell linkage data
+
+  Require(coordinates.size() == dimension * num_nodes);
+
+  // resize this class's coordinate data member
+  node_coord_vec.resize(num_nodes, std::vector<double>(dimension));
+
+  // de-serialize the vector of node coordinates
+  std::vector<double>::const_iterator ncv_first = coordinates.begin();
+  for (unsigned node = 0; node < num_nodes; ++node) {
+
+    // use the cell_type to create a vector of node indices for this cell
+    std::vector<double> coord_vec(ncv_first, ncv_first + dimension);
+
+    // resize each entry to the number of dimensions
+    node_coord_vec[node] = coord_vec;
+
+    // increment pointer
+    ncv_first += dimension;
+  }
+
+  Ensure(ncv_first == coordinates.end());
 }
 } // end namespace rtt_mesh
 

@@ -50,24 +50,24 @@ public:
       Layout;
   typedef std::map<unsigned, std::vector<std::pair<int, std::vector<unsigned>>>>
       Boundary_Layout;
-  typedef std::map<std::pair<unsigned, unsigned>,
-                   std::vector<std::vector<double>>>
-      Cell_Face_Pair_Coord_Map;
 
 private:
   // >>> DATA
 
   // Dimension
-  unsigned dimension;
+  const unsigned dimension;
 
   // Geometry enumeration
-  Geometry geometry;
+  const Geometry geometry;
 
   // Number of cells
-  unsigned num_cells;
+  const unsigned num_cells;
 
   // Number of nodes
-  unsigned num_nodes;
+  const unsigned num_nodes;
+
+  // Side set flag (can be used for mapping BCs to sides)
+  const std::vector<unsigned> side_set_flag;
 
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
@@ -77,8 +77,8 @@ private:
   // Boundary layout of mesh
   Boundary_Layout cell_to_side_linkage;
 
-  // Map of cell+face index pair to vector of node coordinates for the face
-  Cell_Face_Pair_Coord_Map cell_face_to_node_coord_map;
+  // vector subscripted with node index with coordinate vector
+  std::vector<std::vector<double>> node_coord_vec;
 
 public:
   //! Constructor.
@@ -96,6 +96,7 @@ public:
   unsigned get_dimension() const { return dimension; }
   Geometry get_geometry() const { return geometry; }
   unsigned get_num_cells() const { return num_cells; }
+  unsigned get_num_nodes() const { return num_nodes; }
   const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
   const Boundary_Layout &get_cs_linkage() const { return cell_to_side_linkage; }
 
@@ -112,9 +113,8 @@ private:
       const std::vector<unsigned> &side_node_count,
       const std::vector<unsigned> &side_to_node_linkage);
 
-  //! Calculate the mapping from cell-face pairs to node coordinates
-  void
-  compute_cell_face_to_node_coord_map(const std::vector<double> &coordinates);
+  //! Calculate (merely de-serialize) the vector of node coordinates
+  void compute_node_coord_vec(const std::vector<double> &coordinates);
 };
 
 } // end namespace rtt_mesh
