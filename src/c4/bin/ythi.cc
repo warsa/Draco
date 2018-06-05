@@ -4,7 +4,7 @@
  * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>
  * \date   Wednesday, Aug 09, 2017, 11:45 am
  * \brief  Print MPI rank, thread number and core affinity bindings.
- * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -22,8 +22,6 @@
 #include <sstream>
 #include <thread>
 #include <vector>
-
-size_t YTHI_NUM_WORKERS = 1;
 
 namespace rtt_c4 {
 
@@ -75,6 +73,7 @@ void run_thread(std::atomic<bool> &signal, std::string const &hostname,
 
 //----------------------------------------------------------------------------//
 int main(int argc, char **argv) {
+  size_t YTHI_NUM_WORKERS = 1;
 
   if (argc > 1) {
     YTHI_NUM_WORKERS = std::stoi(argv[1]);
