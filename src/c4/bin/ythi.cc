@@ -1,18 +1,24 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/bin/xthi.cc
- * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>
- * \date   Wednesday, Aug 09, 2017, 11:45 am
+ * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>,
+ *         Tim Kelley <tkelley@lanl.gov.
+ * \date   Tuesday, Jun 05, 2018, 17:12 pm
  * \brief  Print MPI rank, thread number and core affinity bindings.
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
- *         All rights reserved. */
-//---------------------------------------------------------------------------//
-
-/* Rewritten by Tim Kelley to run C++11 std::threads
- * You may override NUM_WORKERS on the compile command line.
- * example:  $ ./ythi 4   # run with 4 worker threads)
- * default is 1 worker thread (over and above the host thread)
+ *         All rights reserved.
+ *
+ * Rewritten by Tim Kelley to run C++11 std::threads You may override
+ * \c NUM_WORKERS on the compile command line.  For example to run with 4 worker
+ * threads:
+ *
+ * \code
+ * $ ./ythi 4
+ * \endcode
+ *
+ * The default is 1 worker thread (over and above the host thread)
  */
+//---------------------------------------------------------------------------//
 
 #include "c4/C4_Functions.hh"
 #include "ds++/SystemCall.hh"
