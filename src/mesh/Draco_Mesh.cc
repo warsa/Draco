@@ -93,7 +93,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
     std::vector<unsigned> node_vec(cn_first, cn_first + cell_type[cell]);
 
     // increment the map with this cell and vector-of-nodes entry
-    cell_to_node_map.insert(std::make_pair(cell, node_vec));
+    cell_to_node_map[cell] = node_vec;
 
     // update the vector pointer
     cn_first += cell_type[cell];

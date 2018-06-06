@@ -48,7 +48,8 @@ public:
   typedef std::map<unsigned,
                    std::vector<std::pair<unsigned, std::vector<unsigned>>>>
       Layout;
-  typedef std::map<unsigned, std::vector<std::pair<int, std::vector<unsigned>>>>
+  typedef std::map<unsigned,
+                   std::vector<std::pair<unsigned, std::vector<unsigned>>>>
       Boundary_Layout;
 
 private:
