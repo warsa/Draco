@@ -1,7 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mesh/Draco_Mesh.cc
- * \date   May 2018
+ * \author Ryan Wollaeger <wollaeger@lanl.gov>
+ * \date   Thursday, Jun 07, 2018, 15:38 pm
  * \brief  Draco_Mesh class implementation file.
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
@@ -46,18 +47,24 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<double> &coordinates_,
                        const std::vector<unsigned> &global_node_number_)
     : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()),
-      num_nodes(global_node_number_.size()), side_set_flag(side_set_flag_) {
+      num_nodes(global_node_number_.size()), side_set_flag(side_set_flag_),
+      node_coord_vec(compute_node_coord_vec(coordinates_)) {
 
   // Require(dimension_ <= 3);
   // TODO: generalize mesh generation to 1D,3D (and uncomment requirment above)
-  Require(dimension_ == 2);
+  Insist(dimension_ == 2, "dimension_ != 2");
+
+  // require some constraints on vector sizes
+  Require(cell_to_node_linkage_.size() ==
+          std::accumulate(cell_type_.begin(), cell_type_.end(), 0u));
+  Require(
+      side_to_node_linkage_.size() ==
+      std::accumulate(side_node_count_.begin(), side_node_count_.end(), 0u));
+  Require(coordinates_.size() == dimension_ * global_node_number_.size());
 
   // build the layout (or linkage) of the mesh
   compute_cell_to_cell_linkage(cell_type_, cell_to_node_linkage_,
                                side_node_count_, side_to_node_linkage_);
-
-  // build the cell-face pair to coordinate list map
-  compute_node_coord_vec(coordinates_);
 }
 
 //---------------------------------------------------------------------------//
@@ -66,8 +73,46 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
 /*!
  * \brief Build the cell-face index map to the corresponding coordinates.
  *
- * \param[in] cell_to_node_linkage serialized map of cell indices to node
- * indices (passed from constructor).
+ * \param[in] coordinates serialized map of node index to coordinate values
+ * (passed from constructor).
+ * \return a vector of vectors of size=dimension of coordinates.
+ */
+std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
+    const std::vector<double> &coordinates) const {
+
+  Require(coordinates.size() == dimension * num_nodes);
+
+  // resize this class's coordinate data member
+  std::vector<std::vector<double>> ret_node_coord_vec(
+      num_nodes, std::vector<double>(dimension));
+
+  // de-serialize the vector of node coordinates
+  std::vector<double>::const_iterator ncv_first = coordinates.begin();
+  for (unsigned node = 0; node < num_nodes; ++node) {
+
+    // use the cell_type to create a vector of node indices for this cell
+    std::vector<double> coord_vec(ncv_first, ncv_first + dimension);
+
+    // resize each entry to the number of dimensions
+    ret_node_coord_vec[node] = coord_vec;
+
+    // increment pointer
+    ncv_first += dimension;
+  }
+
+  Ensure(ncv_first == coordinates.end());
+
+  return ret_node_coord_vec;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Build the cell-face index map to the corresponding coordinates.
+ *
+ * \param[in] cell_type number of vertices per cell.
+ * \param[in] cell_to_node_linkage serial map of cell index to node indices.
+ * \param[in] side_node_count number of verices per side.
+ * \param[in] side_to_node_linkage serial map of side index to node indices.
  */
 void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_type,
@@ -225,38 +270,6 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   Ensure(cell_to_cell_linkage.size() == num_cells);
   Ensure(cell_to_side_linkage.size() == num_cells);
-}
-
-//---------------------------------------------------------------------------//
-/*!
- * \brief Build the cell-face index map to the corresponding coordinates.
- *
- * \param[in] coordinates_ serialized map of node index to coordinate values
- * (passed from constructor).
- */
-void Draco_Mesh::compute_node_coord_vec(
-    const std::vector<double> &coordinates) {
-
-  Require(coordinates.size() == dimension * num_nodes);
-
-  // resize this class's coordinate data member
-  node_coord_vec.resize(num_nodes, std::vector<double>(dimension));
-
-  // de-serialize the vector of node coordinates
-  std::vector<double>::const_iterator ncv_first = coordinates.begin();
-  for (unsigned node = 0; node < num_nodes; ++node) {
-
-    // use the cell_type to create a vector of node indices for this cell
-    std::vector<double> coord_vec(ncv_first, ncv_first + dimension);
-
-    // resize each entry to the number of dimensions
-    node_coord_vec[node] = coord_vec;
-
-    // increment pointer
-    ncv_first += dimension;
-  }
-
-  Ensure(ncv_first == coordinates.end());
 }
 } // end namespace rtt_mesh
 

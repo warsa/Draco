@@ -1,7 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mesh/test/tstDraco_Mesh.cc
- * \date   May 2018
+ * \author Ryan Wollaeger <wollaeger@lanl.gov>
+ * \date   Thursday, Jun 07, 2018, 15:43 pm
  * \brief  Draco_Mesh class unit test.
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */

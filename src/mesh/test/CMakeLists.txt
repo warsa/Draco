@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   mesh/test/CMakeLists.txt
-# author Kelly Thompson <kgt@lanl.gov>
-# date   April 2018
+# author Ryan Wollaeger <wollaeger@lanl.gov>
+# date   Thursday, Jun 07, 2018, 15:44 pm
 # brief  Generate build project files for mesh/test.
 # note   Copyright (C) 2018, Los Alamos National Security, LLC.
 #        All rights reserved.

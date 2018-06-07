@@ -1,7 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   mesh/Draco_Mesh.hh
- * \date   April 2018
+ * \author Ryan Wollaeger <wollaeger@lanl.gov>
+ * \date   Thursday, Jun 07, 2018, 15:38 pm
  * \brief  Draco_Mesh class header file.
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
@@ -70,6 +71,9 @@ private:
   // Side set flag (can be used for mapping BCs to sides)
   const std::vector<unsigned> side_set_flag;
 
+  // vector subscripted with node index with coordinate vector
+  const std::vector<std::vector<double>> node_coord_vec;
+
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
   Layout cell_to_cell_linkage;
@@ -77,9 +81,6 @@ private:
 
   // Boundary layout of mesh
   Boundary_Layout cell_to_side_linkage;
-
-  // vector subscripted with node index with coordinate vector
-  std::vector<std::vector<double>> node_coord_vec;
 
 public:
   //! Constructor.
@@ -106,6 +107,10 @@ public:
 private:
   // >>> SUPPORT FUNCTIONS
 
+  //! Calculate (merely de-serialize) the vector of node coordinates
+  std::vector<std::vector<double>>
+  compute_node_coord_vec(const std::vector<double> &coordinates) const;
+
   //! Calculate the cell-to-cell linkage (layout)
   // TODO: add layout class and complete temporary version of this function.
   void compute_cell_to_cell_linkage(
@@ -113,9 +118,6 @@ private:
       const std::vector<unsigned> &cell_to_node_linkage,
       const std::vector<unsigned> &side_node_count,
       const std::vector<unsigned> &side_to_node_linkage);
-
-  //! Calculate (merely de-serialize) the vector of node coordinates
-  void compute_node_coord_vec(const std::vector<double> &coordinates);
 };
 
 } // end namespace rtt_mesh
