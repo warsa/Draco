@@ -47,6 +47,9 @@ namespace rtt_c4 {
  * blocks of output being generated, then remain there through the rest
  * of the run, unless shrink_to_fit is called.
  *
+ * A stream of this type can be created only after MPI is initialized, and it
+ * must be  destroyed before MPI is shut down.
+ *
  * \example c4/test/tstopstream.cc
  */
 //===========================================================================//
@@ -73,8 +76,6 @@ private:
 
   mpibuf sb_;
 };
-
-extern opstream pout;
 
 } // end namespace rtt_c4
 

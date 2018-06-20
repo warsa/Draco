@@ -19,8 +19,6 @@
 namespace rtt_c4 {
 using namespace std;
 
-opstream pout;
-
 //---------------------------------------------------------------------------//
 void opstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();

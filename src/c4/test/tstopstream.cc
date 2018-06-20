@@ -29,6 +29,8 @@ void tstopstream(UnitTest &ut) {
   if (pid == 0)
     cout << "Start of write:" << endl;
 
+  opstream pout;
+
   pout << "MPI rank " << pid << " reporting ..." << endl;
 
   pout.send();
