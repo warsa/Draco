@@ -49,6 +49,11 @@ namespace rtt_c4 {
  * blocks of output being generated, then remain there through the rest
  * of the run, unless shrink_to_fit is called.
  *
+ * Any output remaining in the buffer when the buffer goes out of scope and is
+ * destroyed will be discarded. The alternative, of doing a final send() as
+ * part of the destructor, risks propagating an exception out of the
+ * destructor, which is bad practice.
+ *
  * A stream of this type can be created only after MPI is initialized, and it
  * must be  destroyed before MPI is shut down.
  *
@@ -68,9 +73,6 @@ public:
 
 private:
   struct mpibuf : public std::streambuf {
-
-    //! Ensure any buffered data is written synchronously destruction.
-    ~mpibuf() { send(); }
 
     DLL_PUBLIC_c4 void send();
     DLL_PUBLIC_c4 void shrink_to_fit();
