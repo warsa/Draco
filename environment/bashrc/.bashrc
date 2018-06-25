@@ -188,7 +188,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       ;;
 
     # Pinto | Wolf
-    pi* | wf* )
+    pi* | wf* | lu* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 
@@ -202,7 +202,7 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta
       ;;
     # trinitite (tt-fey) | trinity (tr-fe)
-    tt-fey* | tt-login* | tr-fe* | tr-login* | nid0* )
+    tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt
       ;;
     # rzuseq
