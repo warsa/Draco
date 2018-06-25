@@ -11,6 +11,7 @@
 #ifndef rtt_mesh_Draco_Mesh_hh
 #define rtt_mesh_Draco_Mesh_hh
 
+#include "ds++/config.h"
 #include "mesh_element/Geometry.hh"
 #include <map>
 #include <vector>
@@ -84,14 +85,14 @@ private:
 
 public:
   //! Constructor.
-  Draco_Mesh(unsigned dimension_, Geometry geometry_,
-             const std::vector<unsigned> &cell_type_,
-             const std::vector<unsigned> &cell_to_node_linkage_,
-             const std::vector<unsigned> &side_set_flag_,
-             const std::vector<unsigned> &side_node_count_,
-             const std::vector<unsigned> &side_to_node_linkage_,
-             const std::vector<double> &coordinates_,
-             const std::vector<unsigned> &global_node_number_);
+  DLL_PUBLIC_mesh Draco_Mesh(unsigned dimension_, Geometry geometry_,
+                             const std::vector<unsigned> &cell_type_,
+                             const std::vector<unsigned> &cell_to_node_linkage_,
+                             const std::vector<unsigned> &side_set_flag_,
+                             const std::vector<unsigned> &side_node_count_,
+                             const std::vector<unsigned> &side_to_node_linkage_,
+                             const std::vector<double> &coordinates_,
+                             const std::vector<unsigned> &global_node_number_);
 
   // >>> ACCESSORS
 
