@@ -1,10 +1,10 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/opstream.cc
- * \author Mike Buksas
- * \date   Thu May  1 14:42:10 2008
- * \brief
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \author Kent G. Budge
+ * \date   Mon Jun 25 12:12:31 MDT 2018
+ * \brief  Define methods of class opstream
+ * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -20,6 +20,12 @@ namespace rtt_c4 {
 using namespace std;
 
 //---------------------------------------------------------------------------//
+/*! Write all buffered data to console.
+ *
+ * Causes all buffered data to be written to console in MPI rank order; that
+ * is, all data from rank 0 is written first, then all data from rank 1, and
+ * so on.
+ */
 void opstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
   if (pid == 0) {
@@ -46,12 +52,36 @@ void opstream::mpibuf::send() {
 }
 
 //---------------------------------------------------------------------------//
+/*! Add the specified character to the buffer.
+ *
+ * For simplicity, opstream is currently implemented by treating every
+ * character write as an overflow which is intercepted and added to the
+ * internal buffer. This is not actually that inefficient for this class,
+ * since it means that when the stream using the buffer wants to insert
+ * data, it checks the buffer's cursor pointer, always finds that it is null,
+ * and and calls overlow intead. These are not expensive operations. Should
+ * we see any evidene this class is taking significant time, which should not
+ * happen for its intended use (synchronizing diagnostic output), we can
+ * reimplement to let the stream do explicitly buffered insertions without
+ * this change affecting any user code -- this interface is all private.
+ *
+ * \param c Next character to add to the internal buffer.
+ *
+ * \return Integer representation of the character just added to the buffer.
+ */
 /*virtual*/ opstream::mpibuf::int_type opstream::mpibuf::overflow(int_type c) {
   buffer_.push_back(c);
   return c;
 }
 
 //---------------------------------------------------------------------------//
+/*! Shrink the buffer to fit the current data.
+ *
+ * This is included for completeness, and also to let a user who is really
+ * concerned about the last byte of storage shrink the buffer of an opstream
+ * that has done some large writes, and which he will be using again later,
+ * but which he does not want tying up any memory in the meanwhile.
+ */
 void opstream::mpibuf::shrink_to_fit() { buffer_.shrink_to_fit(); }
 
 } // end namespace rtt_c4

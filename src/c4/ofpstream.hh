@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/ofpstream.hh
- * \author Mike Buksas
+ * \author Kent G. Budge
  * \brief  Define class ofpstream
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -15,6 +15,8 @@
 
 #include <fstream>
 #include <vector>
+
+#include "c4/config.h"
 
 namespace rtt_c4 {
 
@@ -30,10 +32,10 @@ namespace rtt_c4 {
  * processors*, all output inserted to the stream since the last call to send()
  * is printed to the associated file, by MPI rank. In other words, all output
  * inserted to an instance of ofpstream by rank 0 since the last call to send()
- * is printed to the associated file, then all output inserted to the instance of
- * ofpstream by rank 1 is printed to cout, and so on for all processors. There
- * is no requirement that any processor have actually inserted any output to
- * the stream since the last cal to send(), nor does the output from any
+ * is printed to the associated file, then all output inserted to the instance
+ * of ofpstream by rank 1 is printed to cout, and so on for all processors.
+ * There is no requirement that any processor have actually inserted any output
+ * to the stream since the last cal to send(), nor does the output from any
  * processor have to resemble that from any other processor in any way (though
  * it very often will.)
  *
@@ -55,20 +57,24 @@ namespace rtt_c4 {
 
 class ofpstream : public std::ostream {
 public:
-  ofpstream(std::string const &filename);
+  DLL_PUBLIC_c4 explicit ofpstream(std::string const &filename);
 
+  //! Write all buffered output to the file stream, in MPI rank order.
   void send() { sb_.send(); }
+  //! Shrink the internal buffer to fit the data currently in buffer.
   void shrink_to_fit() { sb_.shrink_to_fit(); }
 
 private:
   struct mpibuf : public std::streambuf {
 
+    //! On destruction, write out any buffered data to the file stream in MPI
+    //! rank order.
     ~mpibuf() { send(); }
 
-    void send();
-    void shrink_to_fit();
+    DLL_PUBLIC_c4 void send();
+    DLL_PUBLIC_c4 void shrink_to_fit();
 
-    virtual int_type overflow(int_type c);
+    DLL_PUBLIC_c4 virtual int_type overflow(int_type c);
 
     std::vector<char> buffer_;
     std::ofstream out_;

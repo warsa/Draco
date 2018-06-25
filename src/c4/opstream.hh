@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/opstream.hh
- * \author Mike Buksas
+ * \author Kent G. Budge
  * \brief  Define class opstream
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -14,6 +14,8 @@
 #define c4_opstream_hh
 
 #include <vector>
+
+#include "c4/config.h"
 
 namespace rtt_c4 {
 
@@ -56,20 +58,24 @@ namespace rtt_c4 {
 
 class opstream : public std::ostream {
 public:
+  //! Create a synchronized stream tied to the console.
   opstream() : std::ostream(&sb_) {}
 
+  //! Send all buffered data synchronously to the console.
   void send() { sb_.send(); }
+  //! Shrink the internal buffer to fit the current buffered data.
   void shrink_to_fit() { sb_.shrink_to_fit(); }
 
 private:
   struct mpibuf : public std::streambuf {
 
+    //! Ensure any buffered data is written synchronously destruction.
     ~mpibuf() { send(); }
 
-    void send();
-    void shrink_to_fit();
+    DLL_PUBLIC_c4 void send();
+    DLL_PUBLIC_c4 void shrink_to_fit();
 
-    virtual int_type overflow(int_type c);
+    DLL_PUBLIC_c4 virtual int_type overflow(int_type c);
 
     std::vector<char> buffer_;
   };
