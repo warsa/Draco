@@ -9,22 +9,22 @@ dist: trusty
 
 env:
   global:
-    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
+#    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
     - CC=gcc-6
     - CCACHE_CPP2=yes
     - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
     - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
     - CXX=g++-6
     - FC=gfortran-6
-    - LAPACK_LIB_DIR=/usr/lib
-    - OMP_NUM_THREADS=4
-    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
-    - VENDOR_DIR=${HOME}
+#    - LAPACK_LIB_DIR=/usr/lib
+#    - OMP_NUM_THREADS=4
+#    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
+#    - VENDOR_DIR=${HOME}
     - topdir=/home/travis/build/losalamos/Draco
     - COVERAGE=ON
   matrix:
     - STYLE=ON
-    - WERROR=ON
+#    - WERROR=ON
 
 addons:
   apt:
@@ -32,17 +32,16 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - ccache
-      - libgsl0-dev
+#      - libgsl0-dev
       - gcc-6
       - g++-6
       - gfortran-6
-      - liblapack-dev
+#      - liblapack-dev
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
   - pip install --upgrade --user pip
-#  - pip install --upgrade setuptools
-  - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
+#  - pip install --upgrade setuptools   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
 install:
   - travis_wait 30 ./.travis-install-dependencies.sh
