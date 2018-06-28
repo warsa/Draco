@@ -104,11 +104,10 @@ void global_barrier() {
 double wall_clock_time() { return MPI_Wtime(); }
 // overloaded function (provide POSIX timer information).
 double wall_clock_time(DRACO_TIME_TYPE &now) {
-// obtain posix timer information and return it to the user via the
-// reference value argument "now".
+// obtain posix timer information and return it to the user via the reference
+// value argument "now".
 #ifdef WIN32
-  // now = time( NULL );
-  time(&now);
+  now = std::chrono::high_resolution_clock::now();
 #else
   times(&now);
 #endif
@@ -117,7 +116,6 @@ double wall_clock_time(DRACO_TIME_TYPE &now) {
 }
 
 //---------------------------------------------------------------------------//
-
 double wall_clock_resolution() { return MPI_Wtick(); }
 
 //---------------------------------------------------------------------------//

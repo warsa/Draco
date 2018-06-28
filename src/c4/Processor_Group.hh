@@ -4,21 +4,18 @@
  * \author Kent Budge
  * \brief  Definition of class Processor_Group
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_Processor_Group_hh
 #define c4_Processor_Group_hh
 
 #include "c4/config.h"
+#include <vector>
 
 #ifdef C4_MPI
 
 #include "c4_mpi.h"
-#include <vector>
 
 namespace rtt_c4 {
 
@@ -34,17 +31,17 @@ namespace rtt_c4 {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_c4 Processor_Group {
+class Processor_Group {
 public:
   // NESTED CLASSES AND TYPEDEFS
 
   // CREATORS
 
   //! Create a Process_Group based on a stride through the ranks.
-  explicit Processor_Group(unsigned const stride);
+  DLL_PUBLIC_c4 explicit Processor_Group(unsigned const stride);
 
   //! Destructor.
-  ~Processor_Group();
+  DLL_PUBLIC_c4 ~Processor_Group();
 
   // ACCESSORS
 
@@ -55,20 +52,22 @@ public:
 
   // SERVICES
 
-  //! Sum a set of values over the group, returning the sum to all
-  //! processors.
+  /*! 
+   * \brief Sum a set of values over the group, returning the sum to all
+   *        processors.
+   */
   template <typename RandomAccessContainer>
-  void sum(RandomAccessContainer &values);
+  DLL_PUBLIC_c4 void sum(RandomAccessContainer &values);
 
   //! Assemble a set of local vectors into global vectors.
   template <typename T>
-  void assemble_vector(std::vector<T> const &local_vector,
-                       std::vector<T> &global_vector) const;
+  DLL_PUBLIC_c4 void assemble_vector(std::vector<T> const &local_vector,
+                                     std::vector<T> &global_vector) const;
 
   //! Assemble a set of local vectors into global vectors.
   template <typename T>
-  void assemble_vector(T const *local_vector, T *global_vector,
-                       unsigned count) const;
+  DLL_PUBLIC_c4 void assemble_vector(T const *local_vector, T *global_vector,
+                                     unsigned count) const;
 
 private:
   // NESTED CLASSES AND TYPEDEFS
@@ -76,10 +75,10 @@ private:
   // IMPLEMENTATION
 
   //! Not implemented
-  Processor_Group(const Processor_Group &rhs);
+  Processor_Group(const Processor_Group &rhs) = delete;
 
   //! Not implemented
-  Processor_Group &operator=(const Processor_Group &rhs);
+  Processor_Group &operator=(const Processor_Group &rhs) = delete;
 
   // DATA
 

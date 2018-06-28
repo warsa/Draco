@@ -4,10 +4,7 @@
  * \author Kent Budge
  * \brief  Define class global_containers
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_global_containers_hh

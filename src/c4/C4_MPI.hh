@@ -58,6 +58,12 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
  * Broadcast the range [first, last) from proc 0 into [result, ...) on all other
  * processors.
  */
+
+// This signature must be exported since it is explicitly instantiated.
+template <typename T>
+DLL_PUBLIC_c4 int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
+
+// This signature is defined in the header so no export is required.
 template <typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator first, ForwardIterator last,
                OutputIterator result) {

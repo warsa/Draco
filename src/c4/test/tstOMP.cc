@@ -8,11 +8,11 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "c4/C4_Functions.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "c4/Timer.hh"
 #include "c4/c4_omp.h"
 #include "c4/gatherv.hh"
-#include "c4/global.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <complex>
