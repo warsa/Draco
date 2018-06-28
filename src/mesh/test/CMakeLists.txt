@@ -12,16 +12,25 @@ project( mesh_test CXX )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB test_sources *.cc )
+# create unit test lists
+set( one_pe_tests ${PROJECT_SOURCE_DIR}/tstDraco_Mesh.cc )
+set( two_pe_tests ${PROJECT_SOURCE_DIR}/tstDraco_Mesh_DD.cc )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
 # ---------------------------------------------------------------------------- #
 
 add_parallel_tests(
-    SOURCES "${test_sources}"
+    SOURCES "${one_pe_tests}"
     PE_LIST "1"
     DEPS    "Lib_c4;Lib_mesh" )
+
+if( NOT ${DRACO_C4} STREQUAL "SCALAR" )
+  add_parallel_tests(
+    SOURCES "${two_pe_tests}"
+    PE_LIST "2"
+    DEPS    "Lib_c4;Lib_mesh" )
+endif()
 
 #------------------------------------------------------------------------------#
 # End mesh/test/CMakeLists.txt
