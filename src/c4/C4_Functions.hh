@@ -19,12 +19,20 @@
 #define c4_C4_Functions_hh
 
 #include "C4_Datatype.hh"
-#include "C4_Req.hh"
 #include "C4_Status.hh"
 #include "C4_Traits.hh"
 #include "C4_sys_times.h"
 
 namespace rtt_c4 {
+
+//----------------------------------------------------------------------------//
+/*! Forward declarations
+ *
+ * We postpone including C4_Req.hh until C4_MPI.i.hh is loaded. This allows the
+ * 'friend' declarations found in class C4_Req to be seen after the 'official'
+ * function declartions (with optional default arguments) are loaded.
+ */
+class C4_Req;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -219,14 +227,14 @@ int message_size_custom(C4_Status status, const T &mpi_type);
 /*!
  * \brief Do a point-to-point, non-blocking send with a MPI custom type
  *
- * \param[in|out] request C4_Req object that will hold MPI request
- * \param[in|out] buffer array of data of type T that has an MPI type
+ * \param[in,out] request C4_Req object that will hold MPI request
+ * \param[in,out] buffer array of data of type T that has an MPI type
  * \param[in] size size of buffer
  * \param[in] destination rank that will receive this message
  * \param[in] tag message tag
  */
 template <typename T>
-void send_is_custom(C4_Req &request, T const *buffer, int size, int destination,
+void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,
                     int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
@@ -251,15 +259,15 @@ DLL_PUBLIC_c4 void receive_async(C4_Req &request, T *buffer, int size,
 /*!
  * \brief Post a non-blocking receive for a message of custom MPI type data
  *
- * \param[in|out] request C4_Req object that will hold MPI request
- * \param[in|out] buffer array of data of type T that has a registered MPI type
+ * \param[in,out] request C4_Req object that will hold MPI request
+ * \param[in,out] buffer array of data of type T that has a registered MPI type
  * \param[in] size size of buffer
  * \param[in] source remote rank sending message to this rank
  * \param[in] tag message tag
  */
 template <typename T>
 void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
-                          int tag);
+                          int tag = C4_Traits<T *>::tag);
 
 //---------------------------------------------------------------------------//
 // BROADCAST
@@ -269,8 +277,8 @@ void receive_async_custom(C4_Req &request, T *buffer, int size, int source,
 /*!
  * \brief Send data from processor 0 to all other processors.
  *
- * These are declared and defined in C4_MPI.hh and in C4_Serial.hh.  I'm (KT) 
- * having trouble with getting the DLL_PUBLIC_c4 to be correct, so delay 
+ * These are declared and defined in C4_MPI.hh and in C4_Serial.hh.  KT is
+ * having trouble with getting the DLL_PUBLIC_c4 to be correct, so delay
  * declaration until the C4_MPI.hh or C4_Serial.hh files are included.
 
 template <typename T>
@@ -318,9 +326,9 @@ template <typename T> DLL_PUBLIC_c4 void global_sum(T &x);
 /*!
  * \brief Do a non-blocking global sum of a scalar variable.
  *
- * \param[in|out] send_buffer scalar value on this processing element
- * \param[in|out] recv_buffer scalar value summed across all ranks
- * \param[in|out] request C4_Requst handle for testing completed message
+ * \param[in,out] send_buffer scalar value on this processing element
+ * \param[in,out] recv_buffer scalar value summed across all ranks
+ * \param[in,out] request C4_Requst handle for testing completed message
  */
 template <typename T>
 DLL_PUBLIC_c4 void global_isum(T &send_buffer, T &recv_buffer, C4_Req &request);

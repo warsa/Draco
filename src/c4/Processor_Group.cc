@@ -7,8 +7,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <iostream>
 #include "c4/config.h"
+#include <iostream>
 
 #ifdef C4_MPI
 

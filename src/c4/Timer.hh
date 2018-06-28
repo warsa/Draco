@@ -338,7 +338,7 @@ double Timer::user_cpu() const {
 #if defined(WIN32)
   using namespace std::chrono;
   duration<double> diff = tms_end - tms_begin;
-  return duration_cast<nanoseconds>(diff).count()/1.0e9;
+  return duration_cast<nanoseconds>(diff).count() / 1.0e9;
 #else
   return (tms_end.tms_utime - tms_begin.tms_utime) /
          static_cast<double>(posix_clock_ticks_per_second);
