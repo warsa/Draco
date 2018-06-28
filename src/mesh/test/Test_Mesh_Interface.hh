@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mesh/test/Test_Mesh_Interface.cc
+ * \file   mesh/test/Test_Mesh_Interface.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Thursday, Jun 07, 2018, 15:43 pm
  * \brief  Helper class for generating test meshes.
@@ -236,3 +236,7 @@ Test_Mesh_Interface::flatten_sn_linkage(const Layout &bd_layout) const {
 } // end namespace rtt_mesh_test
 
 #endif // rtt_mesh_Test_Mesh_Interface_hh
+
+//---------------------------------------------------------------------------//
+// end of mesh/test/Test_Mesh_Interface.hh
+//---------------------------------------------------------------------------//
