@@ -16,7 +16,6 @@
 
 #ifdef C4_MPI
 
-#include "C4_Functions.hh"
 #include "MPI_Traits.hh"
 #include "c4_mpi.h"
 #include "ds++/Assert.hh"

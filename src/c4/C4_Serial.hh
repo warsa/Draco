@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//-----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   c4/C4_Serial.hh
  * \author Thomas M. Evans
@@ -6,7 +6,7 @@
  * \brief  Serial implementation of C4.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #ifndef __c4_C4_Serial_hh__
 #define __c4_C4_Serial_hh__
@@ -22,9 +22,9 @@
 
 namespace rtt_c4 {
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // SETUP FUNCTIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename Comm> void inherit(const Comm & /*comm*/) {}
 
@@ -34,9 +34,9 @@ int create_vector_type(unsigned /*count*/, unsigned /*blocklength*/,
   return C4_SUCCESS;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // BLOCKING SEND/RECEIVE OPERATIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename T>
 int broadcast(T * /*buffer*/, int /*size*/, int /*root*/) {
@@ -44,53 +44,54 @@ int broadcast(T * /*buffer*/, int /*size*/, int /*root*/) {
 }
 
 template <typename ForwardIterator, typename OutputIterator>
-void broadcast(ForwardIterator first, ForwardIterator last,
-               OutputIterator result) { /* empty */
+void broadcast(ForwardIterator /*first*/, ForwardIterator /*last*/,
+               OutputIterator /*result*/) { /* empty */
 }
 
 template <typename ForwardIterator, typename OutputIterator>
-void broadcast(ForwardIterator first, ForwardIterator last,
-               OutputIterator result, OutputIterator result_end) { /* empty */
+void broadcast(ForwardIterator /*first*/, ForwardIterator /*last*/,
+               OutputIterator /*result*/,
+               OutputIterator /*result_end*/) { /* empty */
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int send(const T * /*buffer*/, int /*size*/, int /*destination*/,
          C4_Datatype & /*data_type*/, int /*tag*/) {
   return C4_SUCCESS;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int send_custom(const T * /*buffer*/, int /*size*/, int /*destination*/,
                 int /*tag*/) {
   return C4_SUCCESS;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 void send_is_custom(C4_Req & /* request */, const T * /*buffer*/, int /*size*/,
-                    int /*destination*/, int /* tag*/) {
+                    int /*destination*/, int /* tag = C4_Traits<T *>::tag */) {
   Insist(false, "send_is_custom is not support for C4_SCALAR builds.");
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int receive(T * /*buffer*/, int /*size*/, int /*source*/,
             C4_Datatype & /*data_type*/, int /*tag*/) {
   return C4_SUCCESS;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int receive_custom(T * /*buffer*/, int size, int /*destination*/, int /*tag*/) {
   // expects a size of message returned
   return size;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // NON-BLOCKING SEND/RECEIVE OPERATIONS
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 template <typename T>
 void receive_async_custom(C4_Req &Remember(request), T * /*buffer*/,
@@ -98,7 +99,7 @@ void receive_async_custom(C4_Req &Remember(request), T * /*buffer*/,
   Require(!request.inuse());
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 template <typename T>
 int message_size_custom(C4_Status /*status*/, const T & /*mpi_type*/) {
   int receive_count = 0;
@@ -111,6 +112,6 @@ int message_size_custom(C4_Status /*status*/, const T & /*mpi_type*/) {
 
 #endif // __c4_C4_Serial_hh__
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of c4/C4_Serial.hh
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
