@@ -24,6 +24,8 @@ message(" ")
 message( STATUS "Configuring Level 1 packages --" )
 add_dir_if_exists( ds++ )
 
+if( NOT DEFINED ENV{APPVEYOR} )
+
 # Level 2
 message(" ")
 message( STATUS "Configuring Level 2 packages --" )
@@ -63,6 +65,7 @@ add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4
 add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( timestep )     # needs c4, ds++
+
 if( HAVE_Fortran )
   add_dir_if_exists( FortranChecks )
 endif()
@@ -79,6 +82,8 @@ add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 message(" ")
 message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+
+endif( NOT DEFINED ENV{APPVEYOR} )
 
 # Summary
 
