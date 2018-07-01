@@ -9,27 +9,30 @@ dist: trusty
 
 env:
   global:
-#    - BLAS_blas_LIBRARY=/usr/lib/libblas.a
-    - CC=gcc-7
-    - CCACHE_CPP2=yes
-    - CMAKE=$HOME/cmake-3.9.0-Linux-x86_64/bin/cmake
-    - CTEST=$HOME/cmake-3.9.0-Linux-x86_64/bin/ctest
-    - CXX=g++-7
-    - FC=gfortran-7
-#   - LAPACK_LIB_DIR=/usr/lib
-    - OMP_NUM_THREADS=4
-    - RANDOM123_INC_DIR=$HOME/Random123-1.09/include
-    - VENDOR_DIR=${HOME}
-    - topdir=/home/travis/build/lanl/Draco
-    - COVERAGE=ON
-    - RANDOM123_VER=1.09
-    - CMAKE_VERSION=3.9.0-Linux-x86_64
-    - NUMDIFF_VER=5.8.1
-    - CLANG_FORMAT_VER=6.0
     - DISTRO=trusty
-    - OPENMPI_VER=3.1.0
+    - CCACHE_CPP2=yes
     - GCCVER=7
-  matrix:
+    - CC=gcc-${GCCVER}
+    - CXX=g++-${GCCVER}
+    - FC=gfortran-${GCCVER}
+    - VENDOR_DIR=${HOME}/vendors
+    - CLANG_FORMAT_VER=6.0
+    - GSL_VER=2.4
+    - NUMDIFF_VER=5.8.1
+    - OPENMPI_VER=1.10.5
+    - RANDOM123_VER=1.09
+    - CMAKE_VER=3.9.0-Linux-x86_64
+    - CMAKE=$VENDOR_DIR/cmake-${CMAKE_VER}/bin/cmake
+    - CTEST=$VENDOR_DIR/cmake-${CMAKE_VER}/bin/ctest
+    - RANDOM123_INC_DIR=${VENDOR_DIR}/Random123-1.09/include
+    - GSL_ROOT_DIR=${VENDOR_DIR}/gsl-${GSL_VER}
+    - OMP_NUM_THREADS=4
+    - topdir=/home/travis/build/losalamos/Draco
+    - COVERAGE=ON
+#   - BLAS_blas_LIBRARY=/usr/lib/libblas.a
+#   - LAPACK_LIB_DIR=/usr/lib
+
+matrix:
     - STYLE=ON
     - WERROR=ON
 
@@ -48,6 +51,7 @@ addons:
 
 before_install:
   - mkdir -p ${VENDOR_DIR}/bin & export PATH=${VENDOR_DIR}/bin:$PATH
+  - export PATH=${PATH}:${VENDOR_DIR}/numdiff-${NUMDIFF_VER}/bin:${VENDOR_DIR}/gsl-${GSL_VER}/bin:${VENDOR_DIR}/cmake-${CMAKE_VER}/bin
   - pip install --upgrade --user pip
   - if [[ ${COVERAGE}  ]]; then pip install --user codecov; fi
 
@@ -62,7 +66,7 @@ script:
   - ./.travis-run-tests.sh
 
 after_success:
-  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-7; fi
+  - if [[ ${COVERAGE} ]]; then codecov --gcov-exec gcov-${GCCVER}; fi
 
 cache:
   - ccache
@@ -76,18 +80,18 @@ git:
 
 # output from printenv (2018-06-24)
 # CASHER_DIR=/home/travis/.casher
-# CC=gcc
+# CC=gcc-7
 # CCACHE_CPP2=yes
 # CC_FLAGS=-Werror --coverage
 # CI=true
 # CLANG_FORMAT_VER=6.0
 # CMAKE=/home/travis/cmake-3.9.0-Linux-x86_64/bin/cmake
-# CMAKE_VERSION=3.9.0-Linux-x86_64
+# CMAKE_VER=3.9.0-Linux-x86_64
 # COMPOSER_NO_INTERACTION=1
 # CONTINUOUS_INTEGRATION=true
 # COVERAGE=ON
 # CTEST=/home/travis/cmake-3.9.0-Linux-x86_64/bin/ctest
-# CXX=g++
+# CXX=g++-7
 # CXX_FLAGS=-Werror --coverage
 # DEBIAN_FRONTEND=noninteractive
 # DISTRO=trusty
@@ -187,7 +191,7 @@ git:
 # TRAVIS_UID=2000
 # TZ=UTC
 # USER=travis
-# VENDOR_DIR=/home/travis
+# VENDOR_DIR=/home/travis/vendors
 # WERROR=ON
 # XDG_RUNTIME_DIR=/run/user/2000
 # XDG_SESSION_ID=2
