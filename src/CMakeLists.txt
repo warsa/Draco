@@ -24,19 +24,24 @@ message(" ")
 message( STATUS "Configuring Level 1 packages --" )
 add_dir_if_exists( ds++ )
 
+# For appveyor (Visual Studio) CI on Github, only build ds++ (for now)
 if( NOT DEFINED ENV{APPVEYOR} )
 
 # Level 2
 message(" ")
 message( STATUS "Configuring Level 2 packages --" )
 add_dir_if_exists( c4 )           # needs ds++
+add_dir_if_exists( rng )          # needs ds++
+
+# For travis (gcc) CI on Github, only build ds++, c4 and rng (for now)
+if( NOT DEFINED ENV{TRAVIS} )
+
 add_dir_if_exists( cdi )          # needs ds++
 add_dir_if_exists( compton )      # needs ds++
 add_dir_if_exists( device )       # needs ds++
 add_dir_if_exists( linear )       # needs ds++
 add_dir_if_exists( mesh_element ) # needs ds++
 add_dir_if_exists( ode )          # needs ds++
-add_dir_if_exists( rng )          # needs ds++
 add_dir_if_exists( units )        # needs ds++
 add_dir_if_exists( viz )          # needs ds++
 if( HAVE_Fortran AND
@@ -83,6 +88,7 @@ message(" ")
 message( STATUS "Configuring Level 5 packages --" )
 add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
 
+endif( NOT DEFINED ENV{TRAVIS} )
 endif( NOT DEFINED ENV{APPVEYOR} )
 
 # Summary
