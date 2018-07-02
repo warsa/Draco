@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   c4/Processor_Group.t.hh
+ * \file   c4/Processor_Group.i.hh
  * \author Kent Budge
  * \date   Fri Oct 20 13:49:10 2006
  * \brief  Template method definitions of class Processor_Group
@@ -8,8 +8,8 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#ifndef c4_Processor_Group_t_hh
-#define c4_Processor_Group_t_hh
+#ifndef c4_Processor_Group_i_hh
+#define c4_Processor_Group_i_hh
 
 #include "MPI_Traits.hh"
 #include "Processor_Group.hh"
@@ -69,8 +69,8 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 
 #endif // C4_MPI
 
-#endif // c4_Processor_Group_t_hh
+#endif // c4_Processor_Group_i_hh
 
 //---------------------------------------------------------------------------//
-// end of c4/Processor_Group.t.hh
+// end of c4/Processor_Group.i.hh
 //---------------------------------------------------------------------------//
