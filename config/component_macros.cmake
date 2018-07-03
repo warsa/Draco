@@ -945,6 +945,8 @@ macro( add_parallel_tests )
     ${ARGV}
     )
 
+  set(lverbose OFF)
+
   # Sanity Check
   if( "${addparalleltest_SOURCES}none" STREQUAL "none" )
     message( FATAL_ERROR "You must provide the keyword SOURCES and a list of sources when using the add_parallel_tests macro.  Please see draco/config/component_macros.cmake::add_parallel_tests() for more information." )
