@@ -232,9 +232,6 @@ int message_size_custom(C4_Status status, const T &mpi_type);
  * \param[in] size size of buffer
  * \param[in] destination rank that will receive this message
  * \param[in] tag message tag
- *
- * The message tag has a default argument that must be specified in C4_Req.hh
- * where this function is declared as a friend function of C4_Req.
  */
 template <typename T>
 void send_is_custom(C4_Req &request, const T *buffer, int size, int destination,

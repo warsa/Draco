@@ -57,17 +57,17 @@ public:
    *        processors.
    */
   template <typename RandomAccessContainer>
-  DLL_PUBLIC_c4 void sum(RandomAccessContainer &values);
+  void sum(RandomAccessContainer &values);
 
   //! Assemble a set of local vectors into global vectors.
   template <typename T>
-  DLL_PUBLIC_c4 void assemble_vector(std::vector<T> const &local_vector,
-                                     std::vector<T> &global_vector) const;
+  void assemble_vector(std::vector<T> const &local_vector,
+                       std::vector<T> &global_vector) const;
 
   //! Assemble a set of local vectors into global vectors.
   template <typename T>
-  DLL_PUBLIC_c4 void assemble_vector(T const *local_vector, T *global_vector,
-                                     unsigned count) const;
+  void assemble_vector(T const *local_vector, T *global_vector,
+                       unsigned count) const;
 
 private:
   // NESTED CLASSES AND TYPEDEFS
