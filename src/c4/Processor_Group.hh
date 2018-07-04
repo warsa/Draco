@@ -52,7 +52,7 @@ public:
 
   // SERVICES
 
-  /*! 
+  /*!
    * \brief Sum a set of values over the group, returning the sum to all
    *        processors.
    */
@@ -90,6 +90,8 @@ private:
 } // end namespace rtt_c4
 
 #endif // C4_MPI
+
+#include "Processor_Group.i.hh"
 
 #endif // c4_Processor_Group_hh
 

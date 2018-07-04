@@ -9,16 +9,12 @@
 //---------------------------------------------------------------------------//
 
 #include "C4_Functions.hh"
-#include "C4_sys_times.h"
-#include "c4/config.h"
 #include "ds++/SystemCall.hh"
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
 
 #ifdef C4_SCALAR
-
-
 
 namespace rtt_c4 {
 

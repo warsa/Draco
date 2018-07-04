@@ -11,7 +11,6 @@
 #ifndef c4_C4_MPI_t_hh
 #define c4_C4_MPI_t_hh
 
-#include "c4/config.h"
 #include "C4_Functions.hh"
 #include <vector>
 

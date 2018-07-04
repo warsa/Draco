@@ -8,13 +8,10 @@
 //---------------------------------------------------------------------------//
 
 #include "Timer.hh"
-#include "C4_sys_times.h"
 #include "ds++/XGetopt.hh"
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
-#include <iostream>
-#include <string>
 
 namespace rtt_c4 {
 

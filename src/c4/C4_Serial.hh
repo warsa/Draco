@@ -18,6 +18,7 @@
 #ifdef C4_SCALAR
 
 #include "C4_Functions.hh"
+#include "C4_Req.hh"
 #include "C4_Tags.hh"
 
 namespace rtt_c4 {

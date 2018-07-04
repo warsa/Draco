@@ -14,8 +14,8 @@
 #include <set>
 
 namespace rtt_c4 {
-using std::set;
 using std::map;
+using std::set;
 
 //---------------------------------------------------------------------------//
 /*! Merge local sets into a global set
