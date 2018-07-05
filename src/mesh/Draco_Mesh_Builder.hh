@@ -11,11 +11,8 @@
 #ifndef rtt_mesh_Draco_Mesh_Builder_hh
 #define rtt_mesh_Draco_Mesh_Builder_hh
 
+#include "mesh_element/Geometry.hh"
 #include <memory>
-
-namespace rtt_mesh_element {
-enum Geometry;
-}
 
 namespace rtt_mesh {
 
@@ -44,11 +41,12 @@ private:
 
 public:
   //! Constructor
-  explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
+  DLL_PUBLIC_mesh explicit Draco_Mesh_Builder(std::shared_ptr<FRT> reader_);
 
   // >>> SERVICES
 
-  std::shared_ptr<Draco_Mesh> build_mesh(rtt_mesh_element::Geometry geometry);
+  DLL_PUBLIC_mesh std::shared_ptr<Draco_Mesh>
+  build_mesh(rtt_mesh_element::Geometry geometry);
 };
 
 } // end namespace rtt_mesh
