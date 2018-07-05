@@ -699,6 +699,13 @@ function( copy_dll_link_libraries_to_build_dir target )
         endif()
         continue()
       endif()
+      # TYPE = {STATIC_LIBRARY, MODULE_LIBRARY, SHARED_LIBRARY, 
+      #         INTERFACE_LIBRARY, EXECUTABLE}
+      # We cannot query INTERFACE_LIBRARY targets.
+      get_target_property(lib_type ${lib} TYPE )
+      if( ${lib_type} STREQUAL "INTERFACE_LIBRARY" )
+        continue()
+      endif()
       get_target_property(is_imported ${lib} IMPORTED )
       if( is_imported )
         get_target_property(target_loc ${lib} IMPORTED_LOCATION_RELEASE )
