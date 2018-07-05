@@ -67,7 +67,6 @@ message( STATUS "Configuring Level 3 packages --" )
 add_dir_if_exists( cdi_ipcress )
 add_dir_if_exists( diagnostics )  # needs c4
 add_dir_if_exists( fit )          # needs linear
-add_dir_if_exists( mesh )         # needs c4, ds++, mesh_element
 add_dir_if_exists( meshReaders )  # needs c4
 add_dir_if_exists( min )          # needs linear
 add_dir_if_exists( norms )        # needs c4
@@ -92,9 +91,10 @@ if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
 endif()
 
 # Level 5
+message(" ")
+message( STATUS "Configuring Level 5 packages --" )
+add_dir_if_exists( mesh ) # needs c4, ds++, mesh_element
 if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
-  message(" ")
-  message( STATUS "Configuring Level 5 packages --" )
   add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
 endif()
 
