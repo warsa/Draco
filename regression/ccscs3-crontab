@@ -3,17 +3,11 @@
 # Update the regression scripts.
 01 22 * * 0-6 /scratch/regress/draco/regression/update_regression_scripts.sh
 
-# Send a copy of our repositories to the Red.
-00 01 * * 0-6 /scratch/regress/draco/regression/push_repositories_xf.sh
-
-# Keep a local bare copy of the repo available on the ccs-net.  This is used by Redmine.
+# Keep a local bare copy of the repo available on the ccs-net.
 */20 * * * * /scratch/regress/draco/regression/sync_repository.sh
 
-# Run the metrics report on the first Monday of each month.
-00 05 1-7 * * /home/kellyt/bin/first_monday_of_month_report.sh &> /home/kellyt/logs/first_monday_of_month_report.log
-
 #------------------------------------------------------------------------------#
-# Regressions:
+# Regressions
 # -a build autodoc
 # -r use regress account
 # -b build_type: Release|Debug
@@ -29,14 +23,22 @@
 #------------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------#
-# gcc-8.2.0, openmpi-3.1.0
+# gcc-8.1.0, openmpi-3.1.0
 #------------------------------------------------------------------------------#
 
-05 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p \"draco jayenne capsaicin\"
+01 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -a -r -b Release -d Nightly -p \"draco\"
 
-00 02 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin\" -e coverage
+15 00 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Release -d Nightly -p \"jayenne capsaicin\" -e vtest
 
-30 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin\" -e valgrind
+00 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne\" -e scalar
+
+30 03 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne\" -e static
+
+#------------------------------------------------------------------------------#
+# Clang-6.0.0, openmpi-3.1.0
+#------------------------------------------------------------------------------#
+
+00 04 * * 0-6 /scratch/regress/draco/regression/regression-master.sh -r -b Debug -d Nightly -p \"draco jayenne capsaicin\" -e clang
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command
