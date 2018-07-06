@@ -82,15 +82,12 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
   // generate the cell-to-node linkage
   std::vector<unsigned> cell_to_node_linkage;
   cell_to_node_linkage.reserve(cn_linkage_size);
-  std::vector<unsigned>::const_iterator cn_first = cell_to_node_linkage.begin();
   for (size_t cell = 0; cell < num_cells; ++cell) {
 
     // insert the vector of node indices
     const std::vector<int> cell_nodes = reader->get_cells_nodes(cell);
-    cell_to_node_linkage.insert(cn_first, cell_nodes.begin(), cell_nodes.end());
-
-    // increment iterator
-    cn_first += cell_type[cell];
+    cell_to_node_linkage.insert(cell_to_node_linkage.end(), cell_nodes.begin(),
+                                cell_nodes.end());
   }
 
   // get the number of sides
@@ -124,15 +121,12 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
   // generate the side-to-node linkage
   std::vector<unsigned> side_to_node_linkage;
   side_to_node_linkage.reserve(sn_linkage_size);
-  std::vector<unsigned>::const_iterator sn_first = side_to_node_linkage.begin();
   for (size_t side = 0; side < num_sides; ++side) {
 
     // insert the vector of node indices
     const std::vector<int> side_nodes = reader->get_sides_nodes(side);
-    side_to_node_linkage.insert(sn_first, side_nodes.begin(), side_nodes.end());
-
-    // increment iterator
-    sn_first += side_node_count[side];
+    side_to_node_linkage.insert(side_to_node_linkage.end(), side_nodes.begin(),
+                                side_nodes.end());
   }
 
   // get the number of nodes
