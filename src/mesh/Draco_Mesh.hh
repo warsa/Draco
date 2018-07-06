@@ -32,7 +32,8 @@ namespace rtt_mesh {
  * Two important features for a fully realized Draco_Mesh are the following:
  * 1) Layout, which stores cell connectivity and hence the mesh topology.
  *    a) It has an internal layout containing local cell-to-cell linkage,
- *    b) and a boundary layout with side and off-process linkage.
+ *    b) and a boundary layout with side off-process linkage, and
+ *    c) a ghost layout containing cell-to-ghostd-cell linkage.
  * 2) Geometry, which implies a metric for distance between points.
  *
  * Possibly temporary features:
@@ -112,11 +113,17 @@ public:
   Geometry get_geometry() const { return geometry; }
   unsigned get_num_cells() const { return num_cells; }
   unsigned get_num_nodes() const { return num_nodes; }
+  const std::vector<unsigned> &get_side_set_flag() const {
+    return side_set_flag;
+  }
   const std::vector<unsigned> &get_ghost_cell_numbers() const {
     return ghost_cell_number;
   }
   const std::vector<unsigned> &get_ghost_cell_ranks() const {
     return ghost_cell_rank;
+  }
+  const std::vector<std::vector<double>> &get_node_coord_vec() const {
+    return node_coord_vec;
   }
   const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
   const Layout &get_cs_linkage() const { return cell_to_side_linkage; }

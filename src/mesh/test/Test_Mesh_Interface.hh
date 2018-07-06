@@ -13,7 +13,6 @@
 
 #include "mesh/Draco_Mesh.hh"
 #include <algorithm>
-#include <bitset>
 
 namespace rtt_mesh_test {
 
@@ -133,14 +132,22 @@ Test_Mesh_Interface::Test_Mesh_Interface(
         num_nodes - 1 - num_xdir * (j + 2) - (j + 1);
   }
 
-  // set some coordinates and global node indices
-  coordinates.resize(dim * num_nodes);
-  for (unsigned i = 0; i < num_nodes; ++i) {
+  // set uniform coordinate increments
+  double dx = 1.0;
+  double dy = 1.0;
 
-    // TODO: generalize coordinate generation
-    std::bitset<8> b2(i);
-    coordinates[dim * i] = xdir_offset_ + static_cast<double>(b2[0]);
-    coordinates[1 + dim * i] = ydir_offset_ + static_cast<double>(b2[1]);
+  // generate some coordinates and global node indices
+  coordinates.resize(dim * num_nodes);
+  for (size_t j = 0; j < num_ydir + 1; ++j) {
+    for (size_t i = 0; i < num_xdir + 1; ++i) {
+
+      // get a serial cell index
+      size_t node = i + (num_xdir + 1) * j;
+
+      // TODO: generalize coordinate generation
+      coordinates[dim * node] = xdir_offset_ + i * dx;
+      coordinates[1 + dim * node] = ydir_offset_ + j * dy;
+    }
   }
 
   if (global_node_number.size() == 0) {

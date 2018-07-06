@@ -146,7 +146,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     std::vector<unsigned> test_sn_linkage =
         mesh_iface.flatten_sn_linkage(bd_layout);
 
-    // check that cn_linkage is a permutation of the original cell-node linkage
+    // check that sn_linkage is a permutation of the original side-node linkage
     std::vector<unsigned>::const_iterator sn_first =
         side_to_node_linkage.begin();
     std::vector<unsigned>::const_iterator test_sn_first =
