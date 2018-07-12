@@ -16,6 +16,7 @@ include( component_macros )
 if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
   if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.0 )
     toggle_compiler_flag( TRUE "-Wfloat-equal -Wunused-macros" "CXX;C" "DEBUG")
+    # toggle_compiler_flag( TRUE "-Winline" "CXX;C" "RELEASE")
   endif()
 endif()
 

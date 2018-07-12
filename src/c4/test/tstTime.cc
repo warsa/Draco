@@ -19,17 +19,17 @@
 //---------------------------------------------------------------------------//
 
 void wall_clock_test(rtt_dsxx::UnitTest &ut) {
-  using std::endl;
   using std::cout;
+  using std::endl;
   using std::ostringstream;
   using std::set;
   using std::string;
 
-  using rtt_dsxx::soft_equiv;
-  using rtt_c4::wall_clock_time;
-  using rtt_c4::wall_clock_resolution;
-  using rtt_c4::Timer;
   using rtt_c4::Global_Timer;
+  using rtt_c4::Timer;
+  using rtt_c4::wall_clock_resolution;
+  using rtt_c4::wall_clock_time;
+  using rtt_dsxx::soft_equiv;
 
   Global_Timer do_timer("do_timer");
   Global_Timer do_not_timer("do_not_timer");
