@@ -12,6 +12,7 @@
 #include "Draco_Mesh_Builder.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
+#include <iostream>
 
 namespace rtt_mesh {
 
@@ -155,8 +156,9 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
                                                 side_to_node_linkage.end()));
   Ensure(*cn_minmax.first >= 0);
   Ensure(*cn_minmax.second < num_nodes);
-  Ensure(*sn_minmax.first >= 0);
-  Ensure(*sn_minmax.second < num_nodes);
+  Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.first >= 0 : true);
+  Ensure(side_to_node_linkage.size() > 0 ? *sn_minmax.second < num_nodes
+                                         : true);
 
   // >>> CONSTRUCT THE MESH
 

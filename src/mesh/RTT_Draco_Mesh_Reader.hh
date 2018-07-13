@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   mesh/RTT_Draco_Mesh_Reader.cc
+ * \file   mesh/RTT_Draco_Mesh_Reader.hh
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Friday, Jul 13, 2018, 08:38 am
  * \brief  RTT_Draco_Mesh_Reader header file.
@@ -11,6 +11,7 @@
 #ifndef rtt_mesh_RTT_Draco_Mesh_Reader_hh
 #define rtt_mesh_RTT_Draco_Mesh_Reader_hh
 
+#include "Draco_Mesh_Reader.hh"
 #include "RTT_Format_Reader/RTT_Format_Reader.hh"
 
 namespace rtt_mesh {
@@ -23,7 +24,7 @@ namespace rtt_mesh {
  */
 //===========================================================================//
 
-class RTT_Draco_Mesh_Reader {
+class RTT_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 private:
   // >>> DATA
 

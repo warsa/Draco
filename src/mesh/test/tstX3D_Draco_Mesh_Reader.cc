@@ -8,16 +8,20 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
+#include "mesh/Draco_Mesh.hh"
+#include "mesh/Draco_Mesh_Builder.hh"
 #include "mesh/X3D_Draco_Mesh_Reader.hh"
 #include "c4/ParallelUnitTest.hh"
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <iterator>
+// #include <fstream>
+// #include <iomanip>
+// #include <iostream>
+// #include <iterator>
 
+using rtt_mesh::Draco_Mesh;
+using rtt_mesh::Draco_Mesh_Builder;
 using rtt_mesh::X3D_Draco_Mesh_Reader;
 
 //---------------------------------------------------------------------------//
@@ -79,6 +83,25 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   if (x3d_reader->get_sidetype(0) != 0)
     ITFAILS;
   if (x3d_reader->get_sideflag(0) != 0)
+    ITFAILS;
+
+  // >>> BUILD A MESH
+
+  // use Cartesian geometry
+  const Draco_Mesh::Geometry geometry = Draco_Mesh::Geometry::CARTESIAN;
+
+  // instantiate a mesh builder and build the mesh
+  Draco_Mesh_Builder<X3D_Draco_Mesh_Reader> mesh_builder(x3d_reader);
+  std::shared_ptr<Draco_Mesh> mesh = mesh_builder.build_mesh(geometry);
+
+  // check that the scalar data is correct
+  if (mesh->get_dimension() != 2)
+    ITFAILS;
+  if (mesh->get_geometry() != geometry)
+    ITFAILS;
+  if (mesh->get_num_cells() != 1)
+    ITFAILS;
+  if (mesh->get_num_nodes() != 4)
     ITFAILS;
 
   // successful test output

@@ -11,6 +11,7 @@
 #ifndef rtt_mesh_X3D_Draco_Mesh_Reader_hh
 #define rtt_mesh_X3D_Draco_Mesh_Reader_hh
 
+#include "Draco_Mesh_Reader.hh"
 #include "ds++/Assert.hh"
 #include "ds++/config.h"
 #include <map>
@@ -38,7 +39,7 @@ namespace rtt_mesh {
  */
 //===========================================================================//
 
-class X3D_Draco_Mesh_Reader {
+class X3D_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 public:
   // >>> TYPEDEFS
   typedef std::pair<std::string, std::vector<std::string>> Parsed_Element;
