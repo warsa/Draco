@@ -41,7 +41,7 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
   // >>> CHECK HEADER DATA
 
-  if (x3d_reader->get_process() != 1)
+  if (x3d_reader->get_process() != 0)
     ITFAILS;
 
   if (x3d_reader->get_numdim() != 2)

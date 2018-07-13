@@ -32,6 +32,9 @@ namespace rtt_mesh {
  * \todo: Boundary condition data is evidently parsed separately in X3D, so
  * meshes generated from this reader will not have side flag data (which ids
  * boundary conditions.
+ *
+ * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge
+ * as an alternative.
  */
 //===========================================================================//
 
@@ -73,7 +76,7 @@ public:
   // >>> ACCESSORS
 
   // header data
-  unsigned get_process() const { return x3d_header_map.at("process")[0]; }
+  unsigned get_process() const { return x3d_header_map.at("process")[0] - 1; }
   unsigned get_numdim() const { return x3d_header_map.at("numdim")[0]; }
   unsigned get_numcells() const { return x3d_header_map.at("elements")[0]; }
   unsigned get_numnodes() const { return x3d_header_map.at("nodes")[0]; }

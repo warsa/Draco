@@ -13,21 +13,6 @@
 namespace rtt_mesh {
 
 //---------------------------------------------------------------------------//
-// CONSTRUCTOR
-//---------------------------------------------------------------------------//
-/*!
- * \brief X3D_Draco_Mesh_Reader constructor.
- *
- * \param[in] filename_ name of file to be parsed
- */
-X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(std::string filename_)
-    : filename(filename_) {
-  // check for valid file name
-  Insist(filename_.size() > 0, "No file name supplied.");
-  // \todo add more filename criteria?
-}
-
-//---------------------------------------------------------------------------//
 // PRIVATE FUNCTIONS
 //---------------------------------------------------------------------------//
 /*!
