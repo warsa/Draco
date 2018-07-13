@@ -3,7 +3,7 @@
  * \file   mesh/test/tstDraco_Mesh_Builder.cc
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Sunday, Jul 01, 2018, 18:21 pm
- * \brief  Draco_Mesh class unit test.
+ * \brief  Draco_Mesh_Builder class unit test.
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
