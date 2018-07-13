@@ -15,10 +15,6 @@
 #include "ds++/DracoStrings.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
-// #include <fstream>
-// #include <iomanip>
-// #include <iostream>
-// #include <iterator>
 
 using rtt_mesh::Draco_Mesh;
 using rtt_mesh::Draco_Mesh_Builder;
@@ -103,6 +99,25 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     ITFAILS;
   if (mesh->get_num_nodes() != 4)
     ITFAILS;
+
+  // check that layout is correct (empty for one cell, no side or ghost data)
+  // \todo: get Draco_Mesh_Builder to set side data if not provided by reader(?)
+  if ((mesh->get_cc_linkage()).size() > 0)
+    ITFAILS;
+  if ((mesh->get_cs_linkage()).size() > 0)
+    ITFAILS;
+  if ((mesh->get_cg_linkage()).size() > 0)
+    ITFAILS;
+
+  // check that we have the node coordinates
+  const std::vector<std::vector<double>> &mesh_coords =
+      mesh->get_node_coord_vec();
+  for (int node = 0; node < 4; ++node) {
+    if (!rtt_dsxx::soft_equiv(mesh_coords[node][0], test_coords[node][0]))
+      ITFAILS;
+    if (!rtt_dsxx::soft_equiv(mesh_coords[node][1], test_coords[node][1]))
+      ITFAILS;
+  }
 
   // successful test output
   if (ut.numFails == 0)
