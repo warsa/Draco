@@ -28,13 +28,13 @@ class RTT_Draco_Mesh_Reader : public Draco_Mesh_Reader {
 private:
   // >>> DATA
 
-  std::string filename;
+  const std::string filename;
 
   std::shared_ptr<rtt_RTT_Format_Reader::RTT_Format_Reader> rtt_reader;
 
 public:
   //! Constructor
-  explicit RTT_Draco_Mesh_Reader(std::string filename_);
+  DLL_PUBLIC_mesh explicit RTT_Draco_Mesh_Reader(const std::string filename_);
 
   // >>> SERVICES
 

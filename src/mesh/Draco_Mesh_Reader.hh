@@ -11,6 +11,7 @@
 #ifndef rtt_mesh_Draco_Mesh_Reader_hh
 #define rtt_mesh_Draco_Mesh_Reader_hh
 
+#include <cstddef>
 #include <vector>
 
 namespace rtt_mesh {

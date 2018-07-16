@@ -23,11 +23,10 @@ namespace rtt_mesh {
  *
  * \param[in] filename_ name of file to be parsed
  */
-X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(std::string filename_)
+X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(const std::string filename_)
     : filename(filename_) {
   // check for valid file name
   Insist(filename_.size() > 0, "No file name supplied.");
-  // \todo add more filename criteria?
 }
 
 //---------------------------------------------------------------------------//
@@ -45,7 +44,7 @@ void X3D_Draco_Mesh_Reader::read_mesh() {
   std::ifstream x3dfile(filename.c_str());
 
   // file must exist and be readable
-  Check(x3dfile.good());
+  Insist(x3dfile.is_open(), "Failed to find or open specified X3D mesh file.");
 
   // STEP 2: parse file token stream into an initial vector of string pairs
 

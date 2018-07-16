@@ -49,7 +49,7 @@ private:
   // >>> DATA
 
   //! File name
-  std::string filename;
+  const std::string filename;
 
   //! Vector of all parsed key-value data pairs (includes valueless delimiters)
   Parsed_Elements parsed_pairs;
@@ -68,7 +68,7 @@ private:
 
 public:
   //! Constructor
-  explicit X3D_Draco_Mesh_Reader(std::string filename_);
+  DLL_PUBLIC_mesh explicit X3D_Draco_Mesh_Reader(const std::string filename_);
 
   // >>> SERVICES
 
@@ -108,7 +108,7 @@ private:
                                                    size_t start = 0);
 
   template <typename KT, typename VT>
-  std::map<KT, std::vector<VT>> map_x3d_block(std::string block_name,
+  std::map<KT, std::vector<VT>> map_x3d_block(const std::string &block_name,
                                               int &dist);
 
   template <typename KT> KT convert_key(const std::string &skey);
