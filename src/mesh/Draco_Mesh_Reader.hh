@@ -27,7 +27,9 @@ namespace rtt_mesh {
 class Draco_Mesh_Reader {
 public:
   //! Virtual destructor
-  virtual ~Draco_Mesh_Reader() = 0;
+  virtual ~Draco_Mesh_Reader() {
+    // this can not evidently be pure
+  }
 
   // >>> ACCESSORS
 
