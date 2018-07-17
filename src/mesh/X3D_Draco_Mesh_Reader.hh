@@ -30,6 +30,9 @@ namespace rtt_mesh {
  * form that is compatible to the Draco_Mesh_Builder class.  The parsing of the
  * file stream to the map follows work by Kendra Keady on a parsing framework.
  *
+ * For a description of the X3D mesh file layout, see:
+ * https://xcp-confluence.lanl.gov/display/SIMC/Ingen->Flag+Data+Transfer
+ *
  * \todo: Boundary condition data is evidently parsed separately in X3D, so
  * meshes generated from this reader will not have side flag data (which ids
  * boundary conditions.

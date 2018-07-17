@@ -26,6 +26,9 @@ namespace rtt_mesh {
 
 class Draco_Mesh_Reader {
 public:
+  //! Virtual destructor
+  virtual ~Draco_Mesh_Reader() = 0;
+
   // >>> ACCESSORS
 
   virtual unsigned get_numdim() const = 0;
