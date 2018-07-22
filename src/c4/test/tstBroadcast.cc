@@ -9,16 +9,15 @@
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
-#include "c4/global.hh"
 #include "ds++/Release.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include <sstream>
 
 using namespace std;
 
+using rtt_c4::broadcast;
 using rtt_c4::C4_Req;
 using rtt_c4::C4_Traits;
-using rtt_c4::broadcast;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//
@@ -161,7 +160,6 @@ void test_loop(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
