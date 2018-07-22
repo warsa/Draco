@@ -146,8 +146,10 @@ macro( setupOpenMPI )
 
   # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
   # MPIEXEC_POSTFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" )
-    set(runasroot "--allow-run-as-root")
+  # . --oversubscribe is only available for openmpi version >= 3.0
+  # . -H localhost,localhost,localhost,localhost might work for older versions.
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
+    set(runasroot "--allow-run-as-root --oversubscribe")
   endif()
 
   # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
