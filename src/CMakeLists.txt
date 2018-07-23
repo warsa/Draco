@@ -46,12 +46,9 @@ endif()
 #  - For appveyor (Visual Studio) CI on Github, omit packages that need special
 #    libraries like CSK, lapack, metis, parmetis or cuda. Also omit packages
 #    that require Fortran.
-#  - For travis (gcc) CI on Github, omit packages that need special
-#    libraries like CSK, lapack, metis, parmetis or cuda. Also omit packages
-#    that require Fortran.
-if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
-  add_dir_if_exists( compton )      # needs ds++
+if( NOT DEFINED ENV{APPVEYOR} )
   add_dir_if_exists( device )       # needs ds++
+  add_dir_if_exists( compton )      # needs ds++
   if( HAVE_Fortran AND
       ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
       NOT CMAKE_C_COMPILER MATCHES clang )
@@ -74,7 +71,8 @@ add_dir_if_exists( norms )        # needs c4
 add_dir_if_exists( parser )       # needs units, c4
 add_dir_if_exists( roots )        # needs linear
 add_dir_if_exists( timestep )     # needs c4, ds++
-if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
+
+if( NOT DEFINED ENV{APPVEYOR} )
   add_dir_if_exists( VendorChecks ) # needs c4
   if( HAVE_Fortran )
     add_dir_if_exists( FortranChecks )
@@ -88,15 +86,15 @@ add_dir_if_exists( special_functions ) # needs roots, units, ode
 add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
-  add_dir_if_exists( cdi_eospac )        # needs parser, ode, cdi
+  add_dir_if_exists( cdi_eospac )      # needs parser, ode, cdi
 endif()
 
 # Level 5
-message(" ")
-message( STATUS "Configuring Level 5 packages --" )
-add_dir_if_exists( mesh ) # needs c4, ds++, mesh_element, parser
-if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
-  add_dir_if_exists( quadrature )       # needs mesh_element, parser, special_functions
+if( NOT DEFINED ENV{APPVEYOR} )
+  message(" ")
+  message( STATUS "Configuring Level 5 packages --" )
+  add_dir_if_exists( quadrature )   # needs mesh_element, parser, special_functions
+  add_dir_if_exists( mesh )         # needs c4, ds++, mesh_element
 endif()
 
 # Summary
