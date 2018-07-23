@@ -45,22 +45,22 @@ services:
 # Travis Environment:
 #
 # HOME=/home/travis
-# PWD=/home/travis/build/KineticTheory/ci-docker-demo
+# PWD=/home/travis/build/lanl/Draco
 #     (starting directory for Travis, sources are here)
 #
 # Docker Environment:
 #
 # - The docker image mounts the PR sources (/home/travis/build/lanl/Draco) as
-#   /home/travis/ci-docker-demo.
+#   /home/travis/Draco
 # - The vneodrs are at /vendors/spack
 # - Spack is already in the environment
 #------------------------------------------------------------------------------#
 
 env:
   global:
-    - BUILD_DIR=/home/travis/ci-docker-demo/build
-    - SOURCE_DIR=/home/travis/ci-docker-demo
-    - T_SOURCE_DIR=/home/travis/build/KineticTheory/ci-docker-demo
+    - BUILD_DIR=/home/travis/Draco/build
+    - SOURCE_DIR=/home/travis/Draco
+    - T_SOURCE_DIR=/home/travis/build/lanl/Draco
     - VENDOR_DIR=/vendors
   matrix:
   - STYLE=ON

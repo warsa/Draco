@@ -12,7 +12,7 @@
 # preliminaries and environment
 set -e
 
-cd ${SOURCE_DIR:-/home/travis/ci-docker-demo}
+cd ${SOURCE_DIR:-/home/travis/Draco}
 source regression/scripts/common.sh
 
 if [[ ${STYLE} ]]; then
