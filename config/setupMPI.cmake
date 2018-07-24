@@ -146,8 +146,10 @@ macro( setupOpenMPI )
 
   # Setting mpi_paffinity_alone to 0 allows parallel ctest to work correctly.
   # MPIEXEC_POSTFLAGS only affects MPI-only tests (and not MPI+OpenMP tests).
-  if( "$ENV{GITLAB_CI}" STREQUAL "true" )
-    set(runasroot "--allow-run-as-root")
+  # . --oversubscribe is only available for openmpi version >= 3.0
+  # . -H localhost,localhost,localhost,localhost might work for older versions.
+  if( "$ENV{GITLAB_CI}" STREQUAL "true" OR "$ENV{TRAVIS}" STREQUAL "true")
+    set(runasroot "--allow-run-as-root --oversubscribe")
   endif()
 
   # This flag also shows up in jayenne/pkg_tools/run_milagro_test.py and
@@ -410,7 +412,8 @@ macro( setupMPILibrariesUnix )
          message( FATAL_ERROR "
 The Draco build system doesn't know how to configure the build for
   MPIEXEC     = ${MPIEXEC}
-  DBS_MPI_VER = ${DBS_MPI_VER}")
+  DBS_MPI_VER = ${DBS_MPI_VER}
+  CRAY_PE     = ${CRAY_PE}")
       endif()
 
       # Mark some of the variables created by the above logic as 'advanced' so

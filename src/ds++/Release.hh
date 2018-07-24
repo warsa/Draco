@@ -44,7 +44,7 @@ DLL_PUBLIC_dsxx std::string print_devs(size_t const maxlinelen,
                                        std::string const &line_name,
                                        mmdevs const &devs);
 
-} // end of rtt_ds++
+} // namespace rtt_dsxx
 
 //! This version can be called by Fortran and wraps the C++ version.
 extern "C" DLL_PUBLIC_dsxx void ec_release(char *release_string, size_t maxlen);
