@@ -20,8 +20,8 @@
 namespace rtt_dsxx {
 
 // Typedefs
-typedef std::multimap<size_t, std::string, std::greater<int>> mmdevs;
-typedef std::pair<size_t, std::string> fomdev;
+typedef std::multimap<int, std::string, std::greater<int>> mmdevs;
+typedef std::pair<int, std::string> fomdev;
 
 //! Query package for the release number.
 DLL_PUBLIC_dsxx const std::string release();
