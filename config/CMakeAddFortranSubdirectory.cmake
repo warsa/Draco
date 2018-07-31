@@ -65,6 +65,7 @@ function(_setup_cafs_config_and_build source_dir build_dir)
       gfortran
     PATHS
       c:/MinGW/bin
+      c:/msys64/mingw64/bin
     )
   if( NOT EXISTS ${CAFS_Fortran_COMPILER} )
     message(FATAL_ERROR
