@@ -181,7 +181,7 @@ function(cmake_add_fortran_subdirectory subdir)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
   if(NOT ARGS_NO_EXTERNAL_INSTALL)
     message("
--- The external_project ${ARGS_PROJECT} will be installed to to the location
+-- The external_project ${ARGS_PROJECT} will be installed to the location
    specified by CMAKE_INSTALL_PREFIX. This install location should be set via
    the values provided by cmake_add_fortran_subdirectory's
    CMAKE_COMMAND_LINE parameter.
