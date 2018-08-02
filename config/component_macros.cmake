@@ -230,7 +230,7 @@ or the target must be labeled NOEXPORT.")
   # If Win32, copy dll files into binary directory.
   copy_dll_link_libraries_to_build_dir( ${ace_TARGET} )
 
-endmacro()
+endmacro( add_component_executable )
 
 #------------------------------------------------------------------------------
 # replacement for built in command 'add_library'
@@ -752,7 +752,7 @@ function( copy_dll_link_libraries_to_build_dir target )
     endif()
   endforeach()
   unset( lverbose )
-endfunction()
+endfunction( copy_dll_link_libraries_to_build_dir )
 
 #----------------------------------------------------------------------#
 # add_scalar_tests
@@ -1046,13 +1046,6 @@ macro( add_parallel_tests )
       ${test_lib_target_name}
       ${addparalleltest_DEPS}
       )
-    # Extra dependencies for profiling tools
-    # if( USE_ALLINEA_MAP AND "${DRACO_LIBRARY_TYPE}" STREQUAL "SHARED")
-    #   target_link_libraries( Ut_${compname}_${testname}_exe ${map-sampler-pmpi} ${map-sampler} )
-    # endif()
-    # if( USE_ALLINEA_DMALLOC )
-    #   target_link_libraries( Ut_${compname}_${testname}_exe ${ddt-dmalloc} )
-    # endif()
 
     # Special post-build options for Win32 platforms
     # ------------------------------------------------------------
