@@ -53,6 +53,7 @@ set build_type=Debug
 set script_name=Draco_Win32.cmake
 set script_dir=%base_dir%\draco\regression
 set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
+set DRACO_DIR=%work_dir%\target
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -68,7 +69,7 @@ echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%cte
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log 2>&1
 
 rem goto :done
-goto :dracorelease
+rem goto :dracorelease
 
 rem -------------------------------------------------------------------------------------------
 :jayennedebug
@@ -104,6 +105,7 @@ set build_type=Release
 set script_name=Draco_Win32.cmake
 set script_dir=%base_dir%\draco\regression
 set work_dir=%base_dir%\cdash\%subproj%\%dashboard_type%_%comp%\%build_type%
+set DRACO_DIR=%work_dir%\target
 
 rem navigate to the workdir
 if not exist %work_dir% mkdir %work_dir%
@@ -121,7 +123,7 @@ echo "ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%cte
 ctest -VV -S %script_dir%\%script_name%,%dashboard_type%,%build_type%,%ctestparts% > %base_dir%\logs\draco-%build_type%-cbts.log 2>&1
 
 rem release builds are failing so stop here.
-goto :done
+rem goto :done
 
 REM rem --------------------------------------------------------------------------
 :jayennerelease
