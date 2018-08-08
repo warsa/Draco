@@ -84,7 +84,7 @@ macro( set_defaults )
 Setting defaults
 ----------------------------------------\n")
 
-  # Prerequisits:
+  # Prerequisites:
   #
   # This setup assumes that the project work_dir will contain 3 subdirectories:
   # source, build and target.  See how CMAKE_SOURCE_DIRECTORY,
