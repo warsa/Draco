@@ -323,6 +323,7 @@ macro( add_component_library )
     OUTPUT_NAME ${acl_LIBRARY_NAME_PREFIX}${acl_LIBRARY_NAME}
     FOLDER      ${folder_name}
     INTERPROCEDURAL_OPTIMIZATION_RELEASE;${USE_IPO}
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
     )
 
   #
