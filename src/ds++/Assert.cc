@@ -33,7 +33,11 @@ std::string assertion::build_message(std::string const &cond,
   std::ostringstream myMessage;
   myMessage << "Assertion: " << cond << ", failed in " << file << ", line "
             << line << "." << std::endl;
+#ifdef DRACO_DIAGNOSTICS_LEVEL_2
   return print_stacktrace(myMessage.str());
+#else
+  return myMessage.str();
+#endif
 }
 
 //----------------------------------------------------------------------------//
