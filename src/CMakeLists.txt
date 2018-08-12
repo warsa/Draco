@@ -49,9 +49,7 @@ endif()
 if( NOT DEFINED ENV{APPVEYOR} )
   add_dir_if_exists( device )       # needs ds++
   add_dir_if_exists( compton )      # needs ds++
-  if( HAVE_Fortran AND
-      ${CMAKE_GENERATOR} MATCHES "Unix Makefiles" AND
-      NOT CMAKE_C_COMPILER MATCHES clang )
+  if( HAVE_Fortran )
     add_dir_if_exists( lapack_wrap )  # needs ds++
   endif()
   if( Grace_FOUND )
