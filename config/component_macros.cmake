@@ -502,7 +502,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
     string( REPLACE " " ";" mpiexec_omp_postflags_list "${MPIEXEC_OMP_POSTFLAGS}" )
     add_test(
       NAME    ${targetname}
-      COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${mpiexec_omp_postflags_list}
               ${command}
               ${cmdarg}
@@ -510,7 +510,7 @@ macro( register_parallel_test targetname numPE command cmd_args )
   else()
     add_test(
       NAME    ${targetname}
-      COMMAND ${RUN_CMD} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
+      COMMAND ${RUN_CMD} ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${numPE}
               ${MPIRUN_POSTFLAGS}
               ${command}
               ${cmdarg}
@@ -798,10 +798,10 @@ macro( add_scalar_tests test_sources )
   # Special Cases:
   # ------------------------------------------------------------
   # On some platforms (Trinity), even scalar tests must be run underneath
-  # MPIEXEC (aprun):
+  # MPIEXEC_EXECUTABLE (aprun):
   separate_arguments(MPIEXEC_POSTFLAGS)
-  if( "${MPIEXEC}" MATCHES "srun" )
-    set( RUN_CMD ${MPIEXEC} ${MPIEXEC_POSTFLAGS} -n 1 )
+  if( "${MPIEXEC_EXECUTABLE}" MATCHES "srun" )
+    set( RUN_CMD ${MPIEXEC_EXECUTABLE} ${MPIEXEC_POSTFLAGS} -n 1 )
   else()
     unset( RUN_CMD )
   endif()
@@ -812,7 +812,7 @@ macro( add_scalar_tests test_sources )
     # This is a special case for Cray environments. For application unit tests,
     # the main test runs on the 'login' node (1 rank only) and the real test is
     # run under 'aprun'.  So we do not prefix the test command with 'aprun'.
-    if( "${MPIEXEC}" MATCHES "aprun" )
+    if( "${MPIEXEC_EXECUTABLE}" MATCHES "aprun" )
       unset( RUN_CMD )
     endif()
 
