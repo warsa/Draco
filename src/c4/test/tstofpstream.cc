@@ -57,11 +57,6 @@ void tstofpstream_bin(UnitTest &ut) {
     out.send();
 
     out.shrink_to_fit();
-
-    out << "MPI rank " << pid << " reporting a second time ..." << endl;
-
-    out.shrink_to_fit();
-    out.send();
   }
 
   // Read file on head rank, check for correct conversion and ordering
