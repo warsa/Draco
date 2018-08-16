@@ -140,7 +140,7 @@ if( CAFS_Fortran_COMPILER )
 endif()
 if( "${DRACO_C4}" STREQUAL "MPI" )
   message(
-  "mpirun cmd  : ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
+  "mpirun cmd  : ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} N ${MPIEXEC_POSTFLAGS}")
 endif()
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 ")

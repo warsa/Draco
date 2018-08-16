@@ -132,7 +132,7 @@ class UnitTest:
   re_project_source_dir = re.compile("PROJECT_SOURCE_DIR=([^\s]*)")
   re_test_name = re.compile("TESTNAME=([^\s]*)")
   re_numPE = re.compile("numPE=([^\s]*)")
-  re_mpiexec = re.compile("MPIEXEC=([^\s]*)")
+  re_mpiexec = re.compile("MPIEXEC_EXECUTABLE=([^\s]*)")
   re_mpi_cores_per_cpu = re.compile("MPI_CORES_PER_CPU=([^\s]*)")
   re_draco_info = re.compile("DRACO_INFO=([^\s]*)")
   re_gdiff = re.compile("GDIFF=([^\s]*)")
@@ -238,7 +238,7 @@ class UnitTest:
         "PROJECT_BINARY_DIR":self.project_binary_dir, \
         "PROJECT_SOURCE_DIR":self.project_source_dir, "TESTNAME":self.testname, \
         "numPE":self.numPE, "MPI_CORES_PER_CPU":self.mpi_cores_per_cpu, \
-        "MPIEXEC":self.mpiexec, "DRACO_INFO":self.draco_info, \
+        "MPIEXEC_EXECUTABLE":self.mpiexec, "DRACO_INFO":self.draco_info, \
         "RUN_CMD":self.run_cmd, "ARGVALUE":self.arg_value, \
         "WORKDIR":self.workdir, \
         "CMAKE_HOST_SYSTEM_PROCESSOR":self.host_system_processor}
