@@ -324,6 +324,67 @@ macro(dbsSetupCxx)
 
   endif()
 
+#------------------------------------------------------------------------------#
+# Enable extra static analyzers checks for C++ (if available)
+#
+# Ref: https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/
+#------------------------------------------------------------------------------#
+
+if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
+  find_program( CMAKE_CXX_CLANG_TIDY clang-tidy )
+  if( EXISTS "${CMAKE_CXX_CLANG_TIDY}" AND
+      NOT "${CMAKE_CXX_CLANG_TIDY}" MATCHES "[-]checks[=]" )
+    # https://clang.llvm.org/extra/clang-tidy/
+    set( CMAKE_CXX_CLANG_TIDY "${CMAKE_CXX_CLANG_TIDY};-checks=mpi-*,bugprone-*,performance-*"
+      CACHE STRING "Run clang-tidy on each source file before compile." FORCE)
+    message(STATUS "Enabling static analysis option: ${CMAKE_CXX_CLANG_TIDY}")
+  else()
+    unset( CMAKE_CXX_CLANG_TIDY )
+    unset( CMAKE_CXX_CLANG_TIDY CACHE )
+  endif()
+
+  find_program( CMAKE_CXX_INCLUDE_WHAT_YOU_USE iwyu )
+  if( EXISTS ${CMAKE_CXX_INCLUDE_WHAT_YOU_USE} AND
+      NOT "${CMAKE_CXX_INCLUDE_WHAT_YOU_USE}" MATCHES "Xiwyu" )
+    # https://github.com/include-what-you-use/include-what-you-use/blob/master/README.md
+    set( CMAKE_CXX_INCLUDE_WHAT_YOU_USE
+      "${CMAKE_CXX_INCLUDE_WHAT_YOU_USE};-Xiwyu;--transitive_includes_only"
+      CACHE STRING "Run iwyu on each source file before compile.")
+    message(STATUS "Enabling static analysis option: ${CMAKE_CXX_INCLUDE_WHAT_YOU_USE}")
+  else()
+    unset( CMAKE_CXX_INCLUDE_WHAT_YOU_USE )
+    unset( CMAKE_CXX_INCLUDE_WHAT_YOU_USE CACHE )
+  endif()
+endif()
+
+find_program( CMAKE_CXX_CPPCHECK cppcheck )
+if( EXISTS "${CMAKE_CXX_CPPCHECK}" AND
+    NOT "${CMAKE_CXX_CPPCHECK}" MATCHES "-std=" )
+  # http://cppcheck.sourceforge.net/
+  set( CMAKE_CXX_CPPCHECK "${CMAKE_CXX_CPPCHECK};--std=c++14"
+    CACHE STRING "Run cppcheck on each source file before compile." FORCE)
+  message(STATUS "Enabling static analysis option: ${CMAKE_CXX_CPPCHECK}")
+else()
+  unset( CMAKE_CXX_CPPCHECK )
+  unset( CMAKE_CXX_CPPCHECK CACHE )
+endif()
+
+find_program( CMAKE_CXX_CPPLINT cpplint )
+if( EXISTS ${CMAKE_CXX_CPPLINT} AND
+    NOT "${CMAKE_CXX_CPPLINT}" MATCHES "linelength" )
+  # https://github.com/cpplint/cpplint
+  set( CMAKE_CXX_CPPLINT "${CMAKE_CXX_CPPLINT};--linelength=81"
+    CACHE STRING "Run cpplint on each source file before compile.")
+  message(STATUS "Enabling static analysis option: ${CMAKE_CXX_CPPLINT}")
+else()
+  unset( CMAKE_CXX_CPPLINT )
+  unset( CMAKE_CXX_CPPLINT CACHE )
+endif()
+
+# https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/
+option( CMAKE_CXX_LINK_WHAT_YOU_USE "Report if extra libraries are linked."
+  TRUE )
+
 endmacro()
 
 #------------------------------------------------------------------------------#
