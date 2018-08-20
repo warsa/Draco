@@ -903,8 +903,8 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   std::vector<size_t> nnodes;
   std::vector<size_t> nsides;
   std::vector<std::vector<int>> side_types;
-  std::vector<std::vector<std::vector<size_t>>> sides;
-  std::vector<std::vector<std::vector<size_t>>> ordered_sides;
+  std::vector<std::vector<std::vector<unsigned>>> sides;
+  std::vector<std::vector<std::vector<unsigned>>> ordered_sides;
 
   switch (meshtype) {
   case DEFINED:
@@ -1219,7 +1219,7 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   bool all_passed = true;
   std::vector<std::vector<double>> coords(
       mesh.get_dims_nnodes(), std::vector<double>(mesh.get_dims_ndim(), 0.0));
-  std::vector<int> parents(mesh.get_dims_nnodes());
+  std::vector<size_t> parents(mesh.get_dims_nnodes());
   std::vector<std::vector<int>> flags(mesh.get_dims_nnodes());
 
   switch (meshtype) {
@@ -1317,8 +1317,8 @@ bool check_sides(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Exercise the sides accessor functions for this mesh.
   bool all_passed = true;
   std::vector<int> sideType;
-  std::vector<std::vector<int>> nodes;
-  std::vector<std::vector<int>> flags;
+  std::vector<std::vector<unsigned>> nodes;
+  std::vector<std::vector<unsigned>> flags;
 
   switch (meshtype) {
   case DEFINED:
@@ -1419,8 +1419,8 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Exercise the cells functions for this mesh.
   bool all_passed = true;
   std::vector<int> cellType;
-  std::vector<std::vector<int>> nodes;
-  std::vector<std::vector<int>> flags;
+  std::vector<std::vector<unsigned>> nodes;
+  std::vector<std::vector<unsigned>> flags;
 
   switch (meshtype) {
   case DEFINED:

@@ -16,6 +16,13 @@
 
 namespace rtt_mesh {
 
+// helper function for safe conversion of types during initialization list 
+// processing.
+unsigned safe_convert_from_size_t(size_t const in_) {
+  Check(in_ < UINT_MAX);
+  return static_cast<unsigned>(in_);
+}
+
 //---------------------------------------------------------------------------//
 // CONSTRUCTOR
 //---------------------------------------------------------------------------//
@@ -56,8 +63,10 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
                        const std::vector<unsigned> &ghost_cell_to_node_linkage_,
                        const std::vector<unsigned> &ghost_cell_number_,
                        const std::vector<unsigned> &ghost_cell_rank_)
-    : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()),
-      num_nodes(global_node_number_.size()), side_set_flag(side_set_flag_),
+    : dimension(dimension_), geometry(geometry_),
+      num_cells(safe_convert_from_size_t(cell_type_.size())),
+      num_nodes(safe_convert_from_size_t(global_node_number_.size())),
+      side_set_flag(side_set_flag_),
       ghost_cell_number(ghost_cell_number_), ghost_cell_rank(ghost_cell_rank_),
       node_coord_vec(compute_node_coord_vec(coordinates_)) {
 
@@ -157,7 +166,8 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   std::map<unsigned, std::vector<unsigned>> node_to_side_map =
       compute_node_indx_map(side_node_count, side_to_node_linkage);
 
-  Remember(const unsigned num_sides = side_node_count.size());
+  Remember(const unsigned num_sides =
+               safe_convert_from_size_t(side_node_count.size()));
   Check(dimension == 2 ? side_to_node_linkage.size() == 2 * num_sides : true);
   Check(node_to_side_map.size() == num_sides);
 
@@ -298,7 +308,7 @@ std::map<unsigned, std::vector<unsigned>> Draco_Mesh::compute_node_indx_map(
 
   // push node index to vector for each node
   unsigned node_offset = 0;
-  const unsigned num_indxs = indx_type.size();
+  const size_t num_indxs = indx_type.size();
   for (unsigned indx = 0; indx < num_indxs; ++indx) {
 
     // push the indx onto indx vectors for each node

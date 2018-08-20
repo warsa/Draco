@@ -233,7 +233,7 @@ QIM Galerkin_Ordinate_Space::quadrature_interpolation_model() const {
  * Galerkin augments.
  */
 vector<double> Galerkin_Ordinate_Space::D() const {
-  unsigned const number_of_ordinates = ordinates().size();
+  size_t const number_of_ordinates = ordinates().size();
   unsigned const number_of_moments = this->number_of_moments();
 
   vector<double> Result(number_of_ordinates * number_of_moments);
@@ -252,9 +252,9 @@ vector<double> Galerkin_Ordinate_Space::D() const {
  * Galerkin augments.
  */
 vector<double> Galerkin_Ordinate_Space::M() const {
-  unsigned const number_of_ordinates = ordinates().size();
+  size_t const number_of_ordinates = ordinates().size();
   unsigned const number_of_moments = this->number_of_moments();
-  unsigned const total_number_of_moments = this->moments().size();
+  size_t const total_number_of_moments = this->moments().size();
 
   vector<double> Result(number_of_ordinates * number_of_moments);
 
@@ -272,7 +272,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
   rtt_mesh_element::Geometry const geometry(this->geometry());
 
   vector<Ordinate> &ordinates(this->ordinates());
-  unsigned const numOrdinates(ordinates.size());
+  size_t const numOrdinates(ordinates.size());
 
   vector<Ordinate> cartesian_ordinates;
   vector<unsigned> indexes;
@@ -288,8 +288,8 @@ void Galerkin_Ordinate_Space::compute_operators() {
       indexes.push_back(0);
   }
 
-  unsigned const numCartesianOrdinates(cartesian_ordinates.size());
-  unsigned const numMoments(this->moments().size());
+  size_t const numCartesianOrdinates(cartesian_ordinates.size());
+  size_t const numMoments(this->moments().size());
 
   // create Cartesian SN operators
   vector<double> cartesian_M_SN(compute_M_SN(cartesian_ordinates));
@@ -304,8 +304,11 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // ------------------------------------------------------------------------
 
     cartesian_M.swap(cartesian_M_SN);
-    cartesian_D =
-        compute_inverse(numMoments, numCartesianOrdinates, cartesian_M);
+    Check(numMoments < UINT_MAX);
+    Check(numCartesianOrdinates < UINT_MAX);
+    cartesian_D = compute_inverse(static_cast<unsigned>(numMoments),
+                                  static_cast<unsigned>(numCartesianOrdinates),
+                                  cartesian_M);
 
     // set cartesian_ordinate weights to the first row of D
 
@@ -329,9 +332,12 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // first get new ordinate weights from the usual GQ method, needed to
     // accurately integrate all moments
 
-    // compute a D matrix by inverting M
-    vector<double> temp_D(
-        compute_inverse(numMoments, numCartesianOrdinates, cartesian_M_SN));
+    // compute a D matrix by inverting 
+    Check(numMoments < UINT_MAX);
+    Check(numCartesianOrdinates < UINT_MAX);
+    vector<double> temp_D(compute_inverse(
+        static_cast<unsigned>(numMoments),
+        static_cast<unsigned>(numCartesianOrdinates), cartesian_M_SN));
 
     // set cartesian_ordinate weights to the first row of D
 
@@ -361,8 +367,11 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // -------------------------------------------------------------------------
 
     cartesian_D = compute_D_SN(cartesian_ordinates, temp_M);
+    Check(numMoments < UINT_MAX);
+    Check(numCartesianOrdinates < UINT_MAX);
     cartesian_M =
-        compute_inverse(numCartesianOrdinates, numMoments, cartesian_D);
+        compute_inverse(static_cast<unsigned>(numCartesianOrdinates),
+                        static_cast<unsigned>(numMoments), cartesian_D);
   } else
     Insist(false, "Could not identify Galerkin Quadrature method.");
 
@@ -375,7 +384,10 @@ void Galerkin_Ordinate_Space::compute_operators() {
          // directions then store
   {
     M_ = augment_M(indexes, cartesian_M);
-    D_ = augment_D(indexes, numCartesianOrdinates, cartesian_D);
+
+    Check(numCartesianOrdinates < UINT_MAX);
+    D_ = augment_D(indexes, static_cast<unsigned>(numCartesianOrdinates),
+                   cartesian_D);
   }
 
   /*
@@ -417,9 +429,9 @@ Galerkin_Ordinate_Space::augment_D(vector<unsigned> const &indexes,
                                    unsigned const numCartesianOrdinates,
                                    vector<double> const &D) {
   vector<Ordinate> const &ordinates(this->ordinates());
-  unsigned const numOrdinates(ordinates.size());
+  size_t const numOrdinates(ordinates.size());
 
-  unsigned const numMoments(this->moments().size());
+  size_t const numMoments(this->moments().size());
 
   Check(indexes.size() == numOrdinates);
 
@@ -444,10 +456,10 @@ Galerkin_Ordinate_Space::augment_M(vector<unsigned> const &indexes,
   using rtt_sf::Ylm;
 
   vector<Ordinate> const &ordinates(this->ordinates());
-  unsigned const numOrdinates(ordinates.size());
+  size_t const numOrdinates(ordinates.size());
 
   vector<Moment> const &n2lk(this->moments());
-  unsigned const numMoments(n2lk.size());
+  size_t const numMoments(n2lk.size());
 
   double const sumwt(norm());
 
@@ -486,8 +498,8 @@ Galerkin_Ordinate_Space::compute_M_SN(vector<Ordinate> const &ordinates) {
   unsigned const dim(dimension());
 
   vector<Moment> const &n2lk(moments());
-  unsigned const numMoments(n2lk.size());
-  unsigned const numOrdinates(ordinates.size());
+  size_t const numMoments(n2lk.size());
+  size_t const numOrdinates(ordinates.size());
   double const sumwt(norm());
 
   // resize the M matrix.
@@ -576,8 +588,8 @@ Galerkin_Ordinate_Space::compute_D_SN(vector<Ordinate> const &ordinates,
                        "expression for D requires that M be available.");
 
   vector<Moment> const &n2lk = this->moments();
-  unsigned const numMoments = n2lk.size();
-  unsigned const numOrdinates = ordinates.size();
+  size_t const numMoments = n2lk.size();
+  size_t const numOrdinates = ordinates.size();
 
   // ---------------------------------------------------
   // Create diagonal matrix of quadrature weights
@@ -609,8 +621,8 @@ Galerkin_Ordinate_Space::compute_D_SN(vector<Ordinate> const &ordinates,
 
   return D;
 }
-//----------------------------------------------------------------------------//
 
+//----------------------------------------------------------------------------//
 vector<double>
 Galerkin_Ordinate_Space::compute_inverse(unsigned const m, unsigned const n,
                                          vector<double> const &Ain) {

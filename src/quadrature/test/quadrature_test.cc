@@ -18,12 +18,12 @@ namespace rtt_quadrature {
 using namespace std;
 using namespace rtt_parser;
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void test_either(UnitTest &ut,
                  std::shared_ptr<Ordinate_Space> const &ordinate_space,
                  Quadrature &quadrature, unsigned const expansion_order) {
   vector<Ordinate> const &ordinates = ordinate_space->ordinates();
-  unsigned const number_of_ordinates = ordinates.size();
+  size_t const number_of_ordinates = ordinates.size();
 
   rtt_mesh_element::Geometry const geometry = ordinate_space->geometry();
   unsigned const dimension = ordinate_space->dimension();
@@ -62,13 +62,16 @@ void test_either(UnitTest &ut,
       FAILMSG("first angles is NOT correct");
     }
 
-    if (ordinate_space->bookkeeping_coefficient(number_of_ordinates - 1) <=
-        0.0) {
+    Check(number_of_ordinates < UINT_MAX);
+    if (ordinate_space->bookkeeping_coefficient(
+            static_cast<unsigned>(number_of_ordinates - 1)) <= 0.0) {
       FAILMSG("bookkeeping coefficient is NOT plausible");
     }
 
-    ordinate_space->psi_coefficient(number_of_ordinates - 1);
-    ordinate_space->source_coefficient(number_of_ordinates - 1);
+    ordinate_space->psi_coefficient(
+        static_cast<unsigned>(number_of_ordinates - 1));
+    ordinate_space->source_coefficient(
+        static_cast<unsigned>(number_of_ordinates - 1));
     // check that throws no exception
   } else if (geometry == rtt_mesh_element::AXISYMMETRIC) {
     if ((dimension > 1 && first_angles.size() == number_of_levels) ||
@@ -78,13 +81,15 @@ void test_either(UnitTest &ut,
       FAILMSG("first angles is NOT correct");
     }
 
-    if (ordinate_space->bookkeeping_coefficient(number_of_ordinates - 1) <=
-        0.0) {
+    if (ordinate_space->bookkeeping_coefficient(
+            static_cast<unsigned>(number_of_ordinates - 1)) <= 0.0) {
       FAILMSG("bookkeeping coefficient is NOT plausible");
     }
 
-    ordinate_space->psi_coefficient(number_of_ordinates - 1);
-    ordinate_space->source_coefficient(number_of_ordinates - 1);
+    ordinate_space->psi_coefficient(
+        static_cast<unsigned>(number_of_ordinates - 1));
+    ordinate_space->source_coefficient(
+        static_cast<unsigned>(number_of_ordinates - 1));
     // check that throws no exception
 
     vector<unsigned> const &levels = ordinate_space->levels();
@@ -191,7 +196,7 @@ void test_either(UnitTest &ut,
   // See if count matches class
 
   unsigned L = quadrature.number_of_levels();
-  unsigned N = ordinate_space->ordinates().size();
+  size_t N = ordinate_space->ordinates().size();
   switch (quadrature.quadrature_class()) {
   case TRIANGLE_QUADRATURE:
     if (dimension == 1) {
@@ -224,7 +229,7 @@ void test_either(UnitTest &ut,
 
   {
     vector<Ordinate> const &ordinates = ordinate_space->ordinates();
-    unsigned const N = ordinates.size();
+    size_t const N = ordinates.size();
     double J = 0.0;
     double Fx = 0.0, Fy = 0.0, Fz = 0.0;
     double Fx2 = 0.0, Fy2 = 0.0, Fz2 = 0.0;
@@ -372,7 +377,7 @@ void test_no_axis(UnitTest &ut, Quadrature &quadrature,
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
                rtt_mesh_element::Geometry const geometry,
                unsigned const expansion_order,
@@ -396,7 +401,7 @@ void test_axis(UnitTest &ut, Quadrature &quadrature, unsigned const dimension,
   test_either(ut, ordinate_space, quadrature, expansion_order);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 
   if (quadrature.quadrature_class() != INTERVAL_QUADRATURE) {
@@ -410,7 +415,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
                                        Ordinate_Set::LEVEL_ORDERED);
 
     vector<Ordinate> const &ordinates = ordinate_set->ordinates();
-    unsigned const N = ordinates.size();
+    size_t const N = ordinates.size();
 
     double test_int8 = 0.0;
     double test_int6 = 0.0;
@@ -461,7 +466,7 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
   cout << "Testing quadrature " << quadrature.name() << endl;
   cout << "  Parse name: " << quadrature.parse_name() << endl;
@@ -731,11 +736,11 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 
 } // end namespace rtt_quadrature
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // This test gets called FROM Fortran to ensure that we can successfully create
 // and assign data into a "quadrature_data" type.  See
 // ftest/tstquadrature_interfaces.f90
-// ----------------------------------------------------------------------------//
+// --------------------------------------------------------------------------//
 extern "C" DLL_PUBLIC_quadrature_test void
 rtt_test_quadrature_interfaces(const quadrature_data &quad, int &error_code) {
   using rtt_dsxx::soft_equiv;

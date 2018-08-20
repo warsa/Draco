@@ -23,7 +23,7 @@ using namespace rtt_RTT_Format_Reader;
 class is_cell {
 public:
   //! Construct the predicate for a specified dimensionality.
-  is_cell(unsigned const dimensionality) : dimensionality(dimensionality) {}
+  is_cell(size_t const dimensionality) : dimensionality(dimensionality) {}
 
   //! Returns \c true if the specified type index has the predicate
   //! dimensionality; \c false otherwise.
@@ -33,13 +33,12 @@ public:
   }
 
 private:
-  unsigned dimensionality;
+  size_t dimensionality;
 };
 
 //---------------------------------------------------------------------------//
 // TESTS
 //---------------------------------------------------------------------------//
-
 void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
   vector<string> filenames = {"rttquad5.mesh", "rttquad9.mesh", "rttquad.mesh"};
@@ -52,7 +51,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
     m << "Read mesh file " << filename << std::endl;
     ut.passes(m.str());
 
-    unsigned const ndim = mesh->get_dims_ndim();
+    size_t const ndim = mesh->get_dims_ndim();
     if (ndim != 2) {
       FAILMSG("Unexpected dimension.");
     }
@@ -89,11 +88,11 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
       // the full dimensionality of the mesh; we assume side types have one
       // less than the full dimensionality of the mesh.
 
-      unsigned const ndim = mesh->get_dims_ndim();
+      size_t const ndim = mesh->get_dims_ndim();
       vector<Element_Definition::Element_Type> const element_types(
           mesh->get_element_types());
-      vector<vector<int>> const element_nodes(mesh->get_element_nodes());
-      map<string, set<int>> element_sets(mesh->get_element_sets());
+      vector<vector<unsigned>> const element_nodes(mesh->get_element_nodes());
+      map<string, set<unsigned>> element_sets(mesh->get_element_sets());
       vector<shared_ptr<Element_Definition>> const element_defs(
           mesh->get_element_defs());
 
@@ -108,9 +107,9 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         element_defs[j]->print(cout);
       }
 
-      unsigned const ncells =
+      auto const ncells =
           count_if(element_types.begin(), element_types.end(), is_cell(ndim));
-      unsigned const mcells = mesh->get_dims_ncells();
+      size_t const mcells = mesh->get_dims_ncells();
       if (ncells != mcells) {
         FAILMSG("Unexpected number of cells.");
       } else {
@@ -119,9 +118,10 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
                   << std::endl;
       }
 
+      Check(element_types.size() - ncells < UINT_MAX);
       unsigned const nsides =
-          static_cast<unsigned>(element_types.size()) - ncells;
-      unsigned const msides = mesh->get_dims_nsides();
+          static_cast<unsigned>(element_types.size() - ncells);
+      size_t const msides = mesh->get_dims_nsides();
       if (nsides != msides) {
         FAILMSG("Unexpected number of sides.");
       } else {
@@ -130,7 +130,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
                   << std::endl;
       }
 
-      for (map<string, set<int>>::const_iterator it = element_sets.begin();
+      for (map<string, set<unsigned>>::const_iterator it = element_sets.begin();
            it != element_sets.end(); ++it) {
         // See if this is a side or cell flag.
 

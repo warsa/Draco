@@ -339,7 +339,7 @@ void multigroup_opacity_test(rtt_dsxx::UnitTest &ut) {
   vdensity[1] = 2.0;     // g/cc
 
   // The dummy opacity object should have 3 groups.  Check it.
-  int ng = spDmgO->getNumGroupBoundaries() - 1;
+  size_t ng = spDmgO->getNumGroupBoundaries() - 1;
   if (ng == 3) {
     ostringstream message;
     message << "Correct number of groups found for "
@@ -512,7 +512,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   vdensity[1] = 2.0;     // g/cc
 
   // The dummy opacity object should have 3 groups.  Check it.
-  int numGroups = spDumOdfmgOpacity->getNumGroupBoundaries() - 1;
+  size_t numGroups = spDumOdfmgOpacity->getNumGroupBoundaries() - 1;
   if (numGroups == 3) {
     ostringstream message;
     message << "Correct number of groups found for "
@@ -526,7 +526,7 @@ void odfmg_opacity_test(rtt_dsxx::UnitTest &ut) {
   }
 
   // The dummy opacity object should have 4 bands.  Check it.
-  int numBands = spDumOdfmgOpacity->getNumBands();
+  size_t numBands = spDumOdfmgOpacity->getNumBands();
   if (numBands == 4) {
     ostringstream message;
     message << "Correct number of groups found for "

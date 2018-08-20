@@ -36,7 +36,7 @@ static void t1(rtt_dsxx::UnitTest &ut) {
   std::cout << "t1 test: ";
   try {
     throw std::runtime_error("hello1");
-  } catch (rtt_dsxx::assertion const &a) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
     FAILMSG("rtt_dsxx::assertion caught.");
   } catch (...) {
     PASSMSG("runtime_error exception caught");
@@ -78,9 +78,9 @@ static void t3(rtt_dsxx::UnitTest &ut) {
   std::cout << "t3 test: ";
   try {
     throw "hello";
-  } catch (rtt_dsxx::assertion const &a) {
+  } catch (rtt_dsxx::assertion const & /*error*/) {
     FAILMSG("Should not have caught an rtt_dsxx::assertion");
-  } catch (const char *msg) {
+  } catch (const char * /*message*/) {
     PASSMSG("Caught a const char* exception.");
   } catch (...) {
     FAILMSG("Failed to catch a const char* exception.");

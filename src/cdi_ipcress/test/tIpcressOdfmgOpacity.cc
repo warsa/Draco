@@ -302,8 +302,8 @@ bool checkData(rtt_dsxx::ScalarUnitTest &ut, SP_Goo spGandOpacity) {
   double const temperature = benchmarkData::temp;
   double const density = benchmarkData::dens;
 
-  int const numBands = spGandOpacity->getNumBands();
-  int const numGroups = spGandOpacity->getNumGroups();
+  size_t const numBands = spGandOpacity->getNumBands();
+  size_t const numGroups = spGandOpacity->getNumGroups();
 
   bool hasNotFailed = true;
 

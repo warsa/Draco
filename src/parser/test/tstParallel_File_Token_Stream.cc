@@ -260,7 +260,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       FAILMSG(errmsg.str());
       // Token token = tokens.shift();
       // if (token.type()!=ERROR) ITFAILS;
-    } catch (std::invalid_argument const &a) {
+    } catch (std::invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "Parallel_File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"

@@ -375,8 +375,8 @@ void askTempDens(double &temperature, double &density, bool is_unittest) {
 void analyzeData(SP_Goo spGandOpacity) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   const vec_d temperatures = spGandOpacity->getTemperatureGrid();
   const vec_d densities = spGandOpacity->getDensityGrid();
@@ -404,8 +404,8 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
                        double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
   const rtt_cdi::Model model = spGandOpacity->getModelType();
 
   cout << "=============================================" << endl;
@@ -433,7 +433,7 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
 
     // harmonic average for rosseland
     if (model == rtt_cdi::ROSSELAND) {
-      for (int band = numBands - 1; band >= 0; band--) {
+      for (size_t band = numBands - 1; band >= 0; band--) {
         collapsedOpacity += bandWidths[band] / multiBandOpacities[group][band];
       }
       if (!rtt_dsxx::soft_equiv(collapsedOpacity, 0.0))
@@ -453,8 +453,8 @@ void collapseOpacities(SP_Goo spGandOpacity, double temperature,
 void printTable(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   cout << "Temperature:\t" << temperature << "\tDensity:\t" << density << endl;
 
@@ -493,8 +493,8 @@ void printTable(SP_Goo spGandOpacity, double temperature, double density) {
 void printCData(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   cout << "=============================================" << endl;
   cout << "Printing data at " << temperature << " keV, "
@@ -564,8 +564,8 @@ void printCData(SP_Goo spGandOpacity, double temperature, double density) {
 void printData(SP_Goo spGandOpacity, double temperature, double density) {
   Require(spGandOpacity);
 
-  const int numBands = spGandOpacity->getNumBands();
-  const int numGroups = spGandOpacity->getNumGroups();
+  const size_t numBands = spGandOpacity->getNumBands();
+  const size_t numGroups = spGandOpacity->getNumGroups();
 
   const vec_d groupBoundaries = spGandOpacity->getGroupBoundaries();
   const vec_d bandBoundaries = spGandOpacity->getBandBoundaries();

@@ -34,12 +34,14 @@ public:
   }
 
   //! Construct with pointer to sizes
-  Index_Set(unsigned const *const dimensions) : array_size(0) {
+  explicit Index_Set(unsigned const *const dimensions) : array_size(0) {
     set_size(dimensions);
   }
 
   //! Construct with all dimensions equal
-  Index_Set(const unsigned dimension) : array_size(0) { set_size(dimension); }
+  explicit Index_Set(const unsigned dimension) : array_size(0) {
+    set_size(dimension);
+  }
 
   //! Destructor
   virtual ~Index_Set() { /* ... */
@@ -64,14 +66,14 @@ public:
 
   template <typename IT> bool indices_in_range(IT indices) const;
 
-  int get_size() const { return array_size; }
+  unsigned get_size() const { return array_size; }
   int min_of_index() const { return OFFSET; }
   int max_of_index() const { return OFFSET + array_size - 1; }
   int limit_of_index(const bool positive) const {
     return positive ? max_of_index() : min_of_index();
   }
 
-  int get_size(const int d) const {
+  unsigned get_size(const unsigned d) const {
     Check(dimension_okay(d));
     return dimensions[d];
   }

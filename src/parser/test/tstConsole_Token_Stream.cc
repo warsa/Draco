@@ -5,10 +5,7 @@
  * \date   Wed May 19 11:26:15 MDT 2004
  * \brief  Unit tests for Console_Token_Stream class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -97,7 +94,7 @@ void tstConsole_Token_Stream(rtt_dsxx::UnitTest &ut) {
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
       FAILMSG("Syntax error NOT correctly thrown");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("Syntax error correctly thrown and caught");
     }
 

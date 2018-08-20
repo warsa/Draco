@@ -795,8 +795,8 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   const vector<double> cvdensity = vdensity;
   const vector<double> cvtemperature = vtemperature;
 
-  int nt = cvtemperature.size();
-  int nd = cvdensity.size();
+  size_t nt = cvtemperature.size();
+  size_t nd = cvdensity.size();
 
   // Here is the reference solution
   vtabulatedGrayOpacity.resize(nt);
@@ -936,7 +936,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
           string("analyticOpacities.ipcress."));
 
   // Here is the reference solution
-  int ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;
+  size_t ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;
   vector<double> vtabulatedOpacity(ng * nt);
 
   for (int i = 0; i < nt; ++i)

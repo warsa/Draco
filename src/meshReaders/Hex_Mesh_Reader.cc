@@ -45,7 +45,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 
   // Read the point coordinates data.
   point_coords.resize(npoints);
-  for (int i = 0; i < npoints; i++) {
+  for (unsigned i = 0; i < npoints; i++) {
     point_coords[i].resize(ndim);
     if (ndim == 1)
       meshfile >> point_coords[i][0];
@@ -60,7 +60,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 
   // Read in the mesh connectivity.
   ipar.resize(ncells);
-  for (int i = 0; i < ncells; i++) {
+  for (unsigned i = 0; i < ncells; i++) {
     ipar[i].resize(nvrtx);
     if (ndim == 1)
       meshfile >> ipar[i][0] >> ipar[i][1];
@@ -77,7 +77,7 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 
   // Read in the mesh interior-region data.
   imat_index.resize(ncells);
-  for (int i = 0; i < ncells; i++)
+  for (unsigned i = 0; i < ncells; i++)
     meshfile >> imat_index[i];
 
   // Read in the mesh vacuum boundary data.
@@ -117,10 +117,10 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
 
   // Load a default node set which contains all the nodes in the mesh.
 
-  std::set<int> stmp;
-  for (int i = 0; i < npoints; ++i)
+  std::set<unsigned> stmp;
+  for (unsigned i = 0; i < npoints; ++i)
     stmp.insert(i);
-  typedef std::map<std::string, std::set<int>> resultT;
+  typedef std::map<std::string, std::set<unsigned>> resultT;
   node_sets.insert(resultT::value_type("Interior", stmp));
 
   // Check the results
@@ -131,9 +131,8 @@ Hex_Mesh_Reader::Hex_Mesh_Reader(std::string filename)
  * Returns all the ndim-dimensional interior elements as well as the 
  * (ndim-1) dimensional vacuum and
  * reflective boundary face elements
- *
  */
-std::vector<std::vector<int>> Hex_Mesh_Reader::get_element_nodes() const {
+std::vector<std::vector<unsigned>> Hex_Mesh_Reader::get_element_nodes() const {
   // Collate the interior, vacuum, and reflective mesh elements into
   // one vector. Note that the order is important as we will rely
   // on it later to output the element set data.
@@ -142,8 +141,8 @@ std::vector<std::vector<int>> Hex_Mesh_Reader::get_element_nodes() const {
   // changed so that the work done here is done in the constructor.
   // This would be more efficient if this is going to be
   // used repetively.
-  std::vector<std::vector<int>> result;
-  for (int i = 0; i < ncells; i++)
+  std::vector<std::vector<unsigned>> result;
+  for (unsigned i = 0; i < ncells; i++)
     result.push_back(ipar[i]);
   for (int i = 0; i < nvb_faces; i++)
     result.push_back(ipar_vb[i]);
@@ -178,7 +177,7 @@ Hex_Mesh_Reader::get_element_types() const {
     Insist(false, "Dimension index out of range!");
   }
   std::vector<Element_Definition::Element_Type> tmp;
-  for (int i = 0; i < ncells; i++)
+  for (unsigned i = 0; i < ncells; i++)
     tmp.push_back(d1);
   for (int i = 0; i < nvb_faces + nrb_faces; i++)
     tmp.push_back(d2);
@@ -212,34 +211,33 @@ Hex_Mesh_Reader::get_unique_element_types() const {
   return tmp;
 }
 /*!
- * There is no provision for naming element sets in the Hex 
- * format. The following default names are provided for the sets
- * found on the mesh file: 
+ * There is no provision for naming element sets in the Hex format. The 
+ * following default names are provided for the sets found on the mesh file: 
  * <ul>
  *   <li> "Interior" -- All the ndim-dimensional cells in the problem.
  *   <li> "Interior_Region_x" - Interior cells with integer flag "x".
- *   <li> "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary faces.
+ *   <li> "Vacumm_Boundary" -- All the (ndim-1)dimensional vacuum boundary
+*         faces.
  *   <li> "Vacuum_Boundary_Region_x" -- Vacuum boundary faces with
- *         flag integer "x"
- *   <li> "Reflective_Boundary" -- All the (ndim-1) dimensional reflective boundary
- *         faces.
+ *        flag integer "x"
+ *   <li> "Reflective_Boundary" -- All the (ndim-1) dimensional reflective 
+ *        boundary faces.
  * </ul>
- *
  */
-std::map<std::string, std::set<int>> Hex_Mesh_Reader::get_element_sets() const {
-  // Alternatively, the private data of the class could be
-  // changed so that the work done here is done in the constructor.
-  // This would be more efficient if this is going to be
-  // used repetively.
-  typedef std::map<std::string, std::set<int>> resultT;
+std::map<std::string, std::set<unsigned>>
+Hex_Mesh_Reader::get_element_sets() const {
+  // Alternatively, the private data of the class could be changed so that the 
+  // work done here is done in the constructor. This would be more efficient 
+  // if this is going to be used repetively.
+  typedef std::map<std::string, std::set<unsigned>> resultT;
   resultT result;
   std::vector<int> tmp;
   std::set<int> rgn_index;
-  std::set<int> stmp;
+  std::set<unsigned> stmp;
 
   // Create a set that flags all interior cells.
   stmp.clear();
-  for (int i = 0; i < ncells; i++)
+  for (unsigned i = 0; i < ncells; i++)
     stmp.insert(i);
   result.insert(resultT::value_type("Interior", stmp));
 
@@ -253,7 +251,7 @@ std::map<std::string, std::set<int>> Hex_Mesh_Reader::get_element_sets() const {
     std::ostringstream os_chdum("");
     os_chdum << "Interior_Region_" << *i;
     stmp.clear();
-    for (int j = 0; j < ncells; j++)
+    for (unsigned j = 0; j < ncells; j++)
       if (imat_index[j] == *i)
         stmp.insert(j);
     result.insert(resultT::value_type(os_chdum.str(), stmp));
@@ -263,7 +261,7 @@ std::map<std::string, std::set<int>> Hex_Mesh_Reader::get_element_sets() const {
     // Create a vacuum boundary set. Note that this depends on
     // the elements being stored in a specific order.
     stmp.clear();
-    for (int i = ncells; i < ncells + nvb_faces; i++)
+    for (unsigned i = ncells; i < ncells + nvb_faces; i++)
       stmp.insert(i);
     result.insert(resultT::value_type("Vacuum_Boundary", stmp));
 
@@ -291,7 +289,8 @@ std::map<std::string, std::set<int>> Hex_Mesh_Reader::get_element_sets() const {
   // the elements being stored in a specific order.
   if (nrb_faces > 0) {
     stmp.clear();
-    for (int i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces; i++)
+    for (unsigned i = ncells + nvb_faces; i < ncells + nvb_faces + nrb_faces;
+         i++)
       stmp.insert(i);
     result.insert(resultT::value_type("Reflective_Boundary", stmp));
   }
@@ -301,7 +300,6 @@ std::map<std::string, std::set<int>> Hex_Mesh_Reader::get_element_sets() const {
 
 /*!
  * Checks the internal consistancy of the Hex_Mesh_Reader private data.
- *
  */
 bool Hex_Mesh_Reader::invariant() const {
   bool ldum = check_dims() &&
@@ -312,7 +310,7 @@ bool Hex_Mesh_Reader::invariant() const {
               (ipar_vb.size() == static_cast<size_t>(nvb_faces)) &&
               (ipar_rb.size() == static_cast<size_t>(nrb_faces));
 
-  for (int i = 0; i < ncells; ++i) {
+  for (unsigned i = 0; i < ncells; ++i) {
     ldum = ldum && ipar[i].size() == static_cast<size_t>(nvrtx);
     for (int j = 0; j < nvrtx; ++j)
       ldum = ldum && ipar[i][j] >= 0 && ipar[i][j] < npoints;

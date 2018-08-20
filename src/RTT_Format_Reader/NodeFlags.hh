@@ -46,60 +46,64 @@ private:
 
 public:
   /*!
- * \brief Validates the specified node flag type and number.
- * \param flagtype Node flag type number.
- * \param flag Flag number.
- * \return The existance of the node flag type and number.
- */
+   * \brief Validates the specified node flag type and number.
+   * \param flagtype Node flag type number.
+   * \param flag Flag number.
+   * \return The existance of the node flag type and number.
+   */
   bool allowed_flag(int flagtype, int flag) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     return flagTypes[flagtype]->allowed_flag(flag);
   }
+
   /*!
- * \brief Returns the name of specified node flag type.
- * \param flagtype Node flag type number.
- * \return The node flag type name.
- */
-  string get_flag_type(int flagtype) const {
+   * \brief Returns the name of specified node flag type.
+   * \param flagtype Node flag type number.
+   * \return The node flag type name.
+   */
+  string get_flag_type(size_t flagtype) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     return flagTypes[flagtype]->getFlagType();
   }
 
   int get_flag_type_index(string &desired_flag_type) const;
+
   /*!
- * \brief Returns the node flag number associated with the specified node flag
- *        type and node flag index.
- * \param flagtype Node flag type number.
- * \param flag_index Node flag index.
- * \return The node flag number.
- */
-  int get_flag_number(int flagtype, int flag_index) const {
+   * \brief Returns the node flag number associated with the specified node flag
+   *        type and node flag index.
+   * \param flagtype Node flag type number.
+   * \param flag_index Node flag index.
+   * \return The node flag number.
+   */
+  int get_flag_number(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,
            "Invalid node flag number index number!");
     return flagTypes[flagtype]->getFlagNumber(flag_index);
   }
+
   /*!
- * \brief Returns the number of node flags for the specified node flag type.
- * \param flagtype Node flag type number.
- * \return The number of node flags.
- */
-  int get_flag_size(int flagtype) const {
+   * \brief Returns the number of node flags for the specified node flag type.
+   * \param flagtype Node flag type number.
+   * \return The number of node flags.
+   */
+  int get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     return flagTypes[flagtype]->getFlagSize();
   }
+
   /*!
- * \brief Returns the node flag name associated with the specified node flag
- *        type and node flag type index.
- * \param flagtype Node flag type number.
- * \param flag_index Node flag index.
- * \return The node flag name.
- */
-  string get_flag_name(int flagtype, int flag_index) const {
+   * \brief Returns the node flag name associated with the specified node flag
+   *        type and node flag type index.
+   * \param flagtype Node flag type number.
+   * \param flag_index Node flag index.
+   * \return The node flag name.
+   */
+  string get_flag_name(size_t flagtype, size_t flag_index) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     Insist(flag_index <= flagTypes[flagtype]->getFlagSize() - 1,

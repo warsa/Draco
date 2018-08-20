@@ -6,8 +6,7 @@
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC. 
- *         All rights reserved. 
- */
+ *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
 #include "Element_Definition.hh"
@@ -92,10 +91,10 @@ Element_Definition::Element_Definition(Element_Type const &type_)
 
 //---------------------------------------------------------------------------//
 Element_Definition::Element_Definition(
-    std::string name_, size_t dimension_, size_t number_of_nodes_,
-    size_t number_of_sides_, std::vector<Element_Definition> const &elem_defs_,
-    std::vector<int> const &side_type_,
-    std::vector<std::vector<size_t>> const &side_nodes_)
+    std::string name_, unsigned dimension_, unsigned number_of_nodes_,
+    unsigned number_of_sides_, std::vector<Element_Definition> const &elem_defs_,
+    std::vector<unsigned> const &side_type_,
+    std::vector<std::vector<unsigned>> const &side_nodes_)
     : name(name_), type((dimension_ == 2) ? POLYGON : POLYHEDRON),
       dimension(dimension_), number_of_nodes(number_of_nodes_),
       number_of_sides(number_of_sides_), elem_defs(elem_defs_),
@@ -185,7 +184,7 @@ void Element_Definition::construct_node() {
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_bar() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 1;
   number_of_sides = 2;
   tmp.clear();
@@ -213,7 +212,7 @@ void Element_Definition::construct_bar() {
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_tri() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 2;
   number_of_sides = 3;
   tmp.clear();
@@ -252,7 +251,7 @@ void Element_Definition::construct_tri() {
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_quad() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 2;
   number_of_sides = 4;
   tmp.clear();
@@ -291,7 +290,7 @@ void Element_Definition::construct_quad() {
       side_type.push_back(0);
 
     // One BAR_3 side (add midpoint nodes)
-    for (size_t i = 3; i < number_of_sides; i++) {
+    for (unsigned i = 3; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 3 + number_of_sides);
     }
@@ -313,7 +312,7 @@ void Element_Definition::construct_quad() {
       side_type.push_back(0);
 
     // Two BAR_3 sides (add midpoint nodes)
-    for (size_t i = 2; i < number_of_sides; i++) {
+    for (unsigned i = 2; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 2 + number_of_sides);
     }
@@ -357,7 +356,7 @@ void Element_Definition::construct_quad() {
       side_type.push_back(0);
 
     // Three BAR_3 sides (add midpoint nodes)
-    for (size_t i = 1; i < number_of_sides; i++) {
+    for (unsigned i = 1; i < number_of_sides; i++) {
       side_type.push_back(1);
       side_nodes[i].push_back(i - 1 + number_of_sides);
     }
@@ -460,7 +459,7 @@ void Element_Definition::construct_pentagon()
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_pentagon() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 2;
   number_of_sides = 5;
   tmp.clear();
@@ -495,9 +494,8 @@ void Element_Definition::construct_pentagon() {
 }
 
 //---------------------------------------------------------------------------//
-
 void Element_Definition::construct_tetra() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 3;
   number_of_sides = 4;
   tmp.clear();
@@ -556,7 +554,7 @@ void Element_Definition::construct_tetra() {
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_pyra() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 3;
   number_of_sides = 5;
   tmp.clear();
@@ -627,9 +625,8 @@ void Element_Definition::construct_pyra() {
 }
 
 //---------------------------------------------------------------------------//
-
 void Element_Definition::construct_penta() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 3;
   number_of_sides = 5;
   tmp.clear();
@@ -723,7 +720,7 @@ void Element_Definition::construct_penta() {
 //---------------------------------------------------------------------------//
 
 void Element_Definition::construct_hexa() {
-  std::vector<size_t> tmp;
+  std::vector<unsigned> tmp;
   dimension = 3;
   number_of_sides = 6;
   tmp.clear();
@@ -806,7 +803,7 @@ void Element_Definition::construct_hexa() {
       name = "HEXA_27";
       number_of_nodes = 27;
       elem_defs.push_back(Element_Definition(QUAD_9));
-      for (size_t i = 0; i < number_of_sides; i++)
+      for (unsigned i = 0; i < number_of_sides; i++)
         side_nodes[i].push_back(i + 20);
       break;
     default:
@@ -822,7 +819,6 @@ void Element_Definition::construct_hexa() {
 }
 
 //---------------------------------------------------------------------------//
-
 std::ostream &Element_Definition::print(std::ostream &os_out) const {
   os_out << "Element Type   : " << get_type() << std::endl;
   os_out << "Element Name   : " << get_name() << std::endl;
@@ -832,13 +828,13 @@ std::ostream &Element_Definition::print(std::ostream &os_out) const {
   os_out << std::endl;
   if (get_number_of_sides() != 0) {
     os_out << "Side Types     : ";
-    for (size_t j = 0; j < get_number_of_sides(); j++)
+    for (unsigned j = 0; j < get_number_of_sides(); j++)
       os_out << get_side_type(j).get_name() << " ";
     os_out << std::endl;
 
-    std::vector<size_t> tmp;
+    std::vector<unsigned> tmp;
     os_out << "Side Nodes     : " << std::endl;
-    for (size_t j = 0; j < get_number_of_sides(); j++) {
+    for (unsigned j = 0; j < get_number_of_sides(); j++) {
       tmp = get_side_nodes(j);
       os_out << "  "
              << "side# " << j << " -    ";

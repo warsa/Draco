@@ -5,10 +5,7 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Dims class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_Dims_hh__
@@ -147,7 +144,7 @@ public:
  * \param i Node flag type number.
  * \return The number of node flags.
  */
-  int get_nnode_flags(int i) const { return nnode_flags[i]; }
+  int get_nnode_flags(size_t i) const { return nnode_flags[i]; }
   /*!
  * \brief Returns the number of node data fields.
  * \return The number of node data fields.
@@ -171,7 +168,7 @@ public:
  * \param i Side type number.
  * \return The side type index.
  */
-  int get_side_types(int i) const { return side_types[i]; }
+  int get_side_types(size_t i) const { return side_types[i]; }
   /*!
  * \brief Returns the number of side flag types.
  * \return The number of side flag types.
@@ -182,7 +179,7 @@ public:
  * \param i Side flag type number.
  * \return The number of side flags.
  */
-  int get_nside_flags(int i) const { return nside_flags[i]; }
+  int get_nside_flags(size_t i) const { return nside_flags[i]; }
   /*!
  * \brief Returns the number of side data fields.
  * \return The number of side data fields.
@@ -206,7 +203,7 @@ public:
  * \param i Cell type number.
  * \return The cell type index.
  */
-  int get_cell_types(int i) const { return cell_types[i]; }
+  int get_cell_types(size_t i) const { return cell_types[i]; }
   /*!
  * \brief Returns the number of cell flag types.
  * \return The number of cell flag types.
@@ -217,7 +214,7 @@ public:
  * \param i Cell flag type number.
  * \return The number of cell flags.
  */
-  int get_ncell_flags(int i) const { return ncell_flags[i]; }
+  int get_ncell_flags(size_t i) const { return ncell_flags[i]; }
   /*!
  * \brief Returns the number of cell data fields.
  * \return The number of cell data fields.
@@ -229,7 +226,7 @@ public:
  * \param sidetype Side type number.
  * \return The existance of the side type.
  */
-  bool allowed_side_type(int sidetype) const {
+  bool allowed_side_type(size_t sidetype) const {
     return side_types.end() !=
            std::find(side_types.begin(), side_types.end(), sidetype);
   }
@@ -238,7 +235,7 @@ public:
  * \param celltype Cell type number.
  * \return The existance of the cell type.
  */
-  bool allowed_cell_type(int celltype) const {
+  bool allowed_cell_type(size_t celltype) const {
     return cell_types.end() !=
            std::find(cell_types.begin(), cell_types.end(), celltype);
   }

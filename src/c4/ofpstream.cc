@@ -5,10 +5,7 @@
  * \date   Mon Jun 25 11:36:43 MDT 2018
  * \brief  Define methods of class ofpstream
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include <iostream>
@@ -58,7 +55,9 @@ void ofpstream::mpibuf::send() {
       out_ << &buffer_[0];
     }
   } else {
-    unsigned N = buffer_.size();
+
+    Check(buffer_.size() < UINT_MAX);
+    unsigned N = static_cast<unsigned>(buffer_.size());
     rtt_c4::send(&N, 1, 0);
     rtt_c4::send(&buffer_[0], N, 0);
   }

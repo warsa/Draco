@@ -5,10 +5,7 @@
  * \date   Mon Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellFlags clas
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.s.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CellFlags.hh"
@@ -50,7 +47,9 @@ void CellFlags::readFlagTypes(ifstream &meshfile) {
     Insist(static_cast<size_t>(flagTypeNum) == i + 1,
            "Invalid mesh file: cell flag type out of order");
     Check(i < flagTypes.size());
-    flagTypes[i].reset(new Flags(dims.get_ncell_flags(i), dummyString));
+    Check(i < INT_MAX);
+    flagTypes[i].reset(
+        new Flags(dims.get_ncell_flags(static_cast<int>(i)), dummyString));
     std::getline(meshfile, dummyString);
     flagTypes[i]->readFlags(meshfile);
   }

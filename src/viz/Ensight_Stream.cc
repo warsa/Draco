@@ -5,10 +5,7 @@
  * \date   Mon Nov 15 10:03:51 2004
  * \brief  Ensight_Stream implementation file.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Ensight_Stream.hh"
@@ -140,8 +137,7 @@ Ensight_Stream &Ensight_Stream::operator<<(const int i) {
 Ensight_Stream &Ensight_Stream::operator<<(const std::size_t i) {
   Require(d_stream.is_open());
 
-  int j(i);
-  Check(j >= 0);
+  size_t const j(i);
   *this << j;
 
   Ensure(d_stream.good());

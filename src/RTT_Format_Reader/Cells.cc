@@ -67,7 +67,8 @@ void Cells::readData(ifstream &meshfile) {
          ++j) {
       Check(j < flags[i].size());
       meshfile >> flags[i][j];
-      Insist(cellFlags.allowed_flag(j, flags[i][j]),
+      Check(j < INT_MAX);
+      Insist(cellFlags.allowed_flag(static_cast<int>(j), flags[i][j]),
              "Invalid mesh file: illegal cell flag");
     }
     std::getline(meshfile, dummyString);
@@ -91,7 +92,7 @@ void Cells::readEndKeyword(ifstream &meshfile) {
  *        definition (e.g., CYGNUS).
  */
 void Cells::redefineCells() {
-  vector_int temp_nodes;
+  vector_uint temp_nodes;
   for (int ct = 0; ct < dims.get_ncell_types(); ct++) {
     int this_cell_type = dims.get_cell_types(ct);
     vector_int node_map(cellDefs.get_node_map(this_cell_type));

@@ -42,8 +42,8 @@ class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
   std::string meshfile_name;
   static std::string keyword() { return "cic19_hex_mesh"; }
   std::string version;
-  int npoints;
-  int ncells;
+  unsigned npoints;
+  unsigned ncells;
   int nvrtx;
   int nvrpf;
   int ndim;
@@ -51,13 +51,13 @@ class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
   int nrb_faces;
   int nmat;
   std::vector<std::vector<double>> point_coords;
-  std::vector<std::vector<int>> ipar;
+  std::vector<std::vector<unsigned>> ipar;
   std::vector<int> imat_index;
   std::vector<int> irgn_vb_index;
-  std::vector<std::vector<int>> ipar_vb;
-  std::vector<std::vector<int>> ipar_rb;
+  std::vector<std::vector<unsigned>> ipar_vb;
+  std::vector<std::vector<unsigned>> ipar_rb;
 
-  std::map<std::string, std::set<int>> node_sets;
+  std::map<std::string, std::set<unsigned>> node_sets;
 
 public:
   // CREATORS
@@ -90,7 +90,7 @@ public:
    * The Hex mesh format has no provision for flagging nodes.  This method
    * therefore always returns a map with one entry which contains all the nodes.
    */
-  std::map<std::string, std::set<int>> get_node_sets() const {
+  std::map<std::string, std::set<unsigned>> get_node_sets() const {
     return node_sets;
   }
 
@@ -100,11 +100,11 @@ public:
    */
   std::string get_title() const { return "Untitled -- CIC-19 Hex Mesh"; }
 
-  std::vector<std::vector<int>> get_element_nodes(void) const;
+  std::vector<std::vector<unsigned>> get_element_nodes(void) const;
 
   bool invariant() const;
 
-  std::map<std::string, std::set<int>> get_element_sets() const;
+  std::map<std::string, std::set<unsigned>> get_element_sets() const;
 
   std::vector<rtt_mesh_element::Element_Definition::Element_Type>
   get_element_types() const;

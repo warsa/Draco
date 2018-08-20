@@ -5,10 +5,7 @@
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Header file for the RTT Element_Definition class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __mesh_element_Element_Definition_hh__
@@ -199,12 +196,12 @@ private:
 
   std::string name;
   Element_Type type;
-  size_t dimension;
-  size_t number_of_nodes;
-  size_t number_of_sides;
+  unsigned dimension;
+  unsigned number_of_nodes;
+  unsigned number_of_sides;
   std::vector<Element_Definition> elem_defs;
-  std::vector<int> side_type;
-  std::vector<std::vector<size_t>> side_nodes;
+  std::vector<unsigned> side_type;
+  std::vector<std::vector<unsigned>> side_nodes;
 
 public:
   // CREATORS
@@ -282,11 +279,11 @@ public:
      *
      * \post <code> get_side_nodes(i)==side_nodes_[i]  </code>
      */
-  Element_Definition(std::string name_, size_t dimension_,
-                     size_t number_of_nodes_, size_t number_of_sides_,
+  Element_Definition(std::string name_, unsigned dimension_,
+                     unsigned number_of_nodes_, unsigned number_of_sides_,
                      std::vector<Element_Definition> const &elem_defs_,
-                     std::vector<int> const &side_type_,
-                     std::vector<std::vector<size_t>> const &side_nodes_);
+                     std::vector<unsigned> const &side_type_,
+                     std::vector<std::vector<unsigned>> const &side_nodes_);
 
   // MANIPULATORS
 
@@ -388,7 +385,7 @@ public:
      *
      * Note that there is no valid side number for a "NODE" element.
      */
-  std::vector<size_t> get_side_nodes(unsigned const side_number) const {
+  std::vector<unsigned> get_side_nodes(unsigned const side_number) const {
     Insist(side_number < side_nodes.size(), "Side index out of range!");
     return side_nodes[side_number];
   }
@@ -406,7 +403,7 @@ public:
     std::vector<std::vector<unsigned>> face_nodes(side_nodes.size());
 
     for (unsigned s = 0; s < face_nodes.size(); ++s) {
-      std::vector<size_t> nodes(get_side_nodes(s));
+      std::vector<unsigned> nodes(get_side_nodes(s));
       face_nodes[s].resize(nodes.size());
 
       for (unsigned n = 0; n < nodes.size(); ++n)

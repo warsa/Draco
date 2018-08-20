@@ -5,10 +5,7 @@
  * \date   Feb 18 2003
  * \brief  Unit tests for String_Token_Stream class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -114,7 +111,7 @@ void tstString_Token_Stream(UnitTest &ut) {
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
       FAILMSG("Syntax error NOT correctly thrown");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("Syntax error correctly thrown and caught");
     }
     if (tokens.error_count() != 1) {
@@ -253,8 +250,7 @@ void tstString_Token_Stream(UnitTest &ut) {
       ITFAILS;
   }
 
-  //---------------------------------------------------------------------------//
-
+  //-------------------------------------------------------------------------//
   {
 
     // Build path for the input file "scanner_recovery.inp"
@@ -380,7 +376,6 @@ void tstString_Token_Stream(UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

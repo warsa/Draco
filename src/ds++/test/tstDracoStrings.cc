@@ -112,7 +112,7 @@ void test_parse_number(UnitTest &ut) {
   try {
     parse_number<int>(case4);
     FAILMSG("Failed to capture invalid_argument given to stoi.");
-  } catch (std::invalid_argument &e) {
+  } catch (std::invalid_argument & /*error*/) {
     PASSMSG("invalid_argument givent to stox(str).");
   } catch (...) {
     FAILMSG("Failed to capture invalid_argument given to stoi.");
@@ -121,7 +121,7 @@ void test_parse_number(UnitTest &ut) {
   try {
     parse_number<int>(string("5000000000000"));
     FAILMSG("Failed to capture out_of_range given to stoi.");
-  } catch (std::out_of_range &e) {
+  } catch (std::out_of_range & /*error*/) {
     PASSMSG("invalid_argument givent to stox(str).");
   } catch (...) {
     FAILMSG("Failed to capture out_of_range given to stoi.");

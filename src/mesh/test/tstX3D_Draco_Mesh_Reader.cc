@@ -60,7 +60,7 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   if (x3d_reader->get_celltype(0) != 4)
     ITFAILS;
 
-  std::vector<int> test_cellnodes = {0, 1, 2, 3};
+  std::vector<unsigned> test_cellnodes = {0, 1, 2, 3};
   if (x3d_reader->get_cellnodes(0) != test_cellnodes)
     ITFAILS;
 
@@ -78,7 +78,7 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   if (x3d_reader->get_numsides() != 4)
     ITFAILS;
 
-  std::vector<std::vector<int>> test_sidenodes = {
+  std::vector<std::vector<unsigned>> test_sidenodes = {
       {0, 1}, {1, 3}, {2, 3}, {0, 2}};
 
   // check each side's data

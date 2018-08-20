@@ -845,7 +845,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
     bool caught = false;
     try {
       CDI::integrateRosselandSpectrum(0, 1.0);
-    } catch (const rtt_dsxx::assertion &error) {
+    } catch (const rtt_dsxx::assertion & /*error*/) {
       PASSMSG("Caught illegal Rosseland calculation exception:");
       caught = true;
     }
@@ -858,7 +858,7 @@ void test_rosseland_integration(rtt_dsxx::UnitTest &ut) {
     double P, R;
     try {
       CDI::integrate_Rosseland_Planckian_Spectrum(0, 1.0, P, R);
-    } catch (const rtt_dsxx::assertion &error) {
+    } catch (const rtt_dsxx::assertion &/*error*/) {
       PASSMSG(string("Caught illegal Rosseland and Planckian ") +
               "calculation exception:");
       caught = true;

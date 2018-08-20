@@ -1,12 +1,11 @@
-//----------------------------------*-C++-*--------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   RTT_Format_Reader/CellDefs.cc
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Implementation file for RTT_Format_Reader/CellDefs class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "CellDefs.hh"
@@ -77,8 +76,8 @@ void CellDefs::readEndKeyword(ifstream &meshfile) {
  *        definitions.
  */
 void CellDefs::redefineCellDefs(
-    vector_vector_int const &cell_side_types,
-    std::vector<std::vector<std::vector<size_t>>> const &cell_ordered_sides) {
+    vector_vector_uint const &cell_side_types,
+    std::vector<vector_vector_uint> const &cell_ordered_sides) {
   Insist(cell_side_types.size() == static_cast<size_t>(dims.get_ncell_defs()),
          "Error in supplied cell redefinition side types data.");
   Insist(cell_ordered_sides.size() ==
@@ -125,11 +124,11 @@ void CellDef::readDef(ifstream &meshfile) {
   int side;
   for (unsigned i = 0; i < nsides; ++i) {
     Check(i < side_types.size());
-    int numb_nodes = cellDefs.get_cell_def(side_types[i]).get_nnodes();
+    size_t numb_nodes = cellDefs.get_cell_def(side_types[i]).get_nnodes();
     Check(i < ordered_sides.size());
     ordered_sides[i].resize(numb_nodes);
     Check(i < sides.size());
-    for (size_t j = 0; j < static_cast<size_t>(numb_nodes); ++j) {
+    for (size_t j = 0; j < numb_nodes; ++j) {
       meshfile >> side;
       --side;
       sides[i].push_back(side);
@@ -149,8 +148,8 @@ void CellDef::readDef(ifstream &meshfile) {
  * \param dimension Topological dimension of the cells in the mesh.
  */
 void CellDef::redefineCellDef(
-    vector_int const &new_side_types,
-    std::vector<std::vector<size_t>> const &new_ordered_sides, int const ndim) {
+    vector_uint const &new_side_types,
+    vector_vector_uint const &new_ordered_sides, int const ndim) {
   Insist(new_side_types.size() == nsides, "New side types input error");
   Insist(new_ordered_sides.size() == nsides, "New ordered sides input error");
 
@@ -161,11 +160,15 @@ void CellDef::redefineCellDef(
   if (name == "point") {
     node_map[0] = 0;
   } else if (name == "line" || name == "bar2") {
-    node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
-    node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
+    Check(new_ordered_sides[0][0] < INT_MAX);
+    node_map[ordered_sides[0][0]] = static_cast<int>(new_ordered_sides[0][0]);
+    Check(new_ordered_sides[1][0] < INT_MAX);
+    node_map[ordered_sides[1][0]] = static_cast<int>(new_ordered_sides[1][0]);
   } else if (name == "line_qdr" || name == "bar3") {
-    node_map[ordered_sides[0][0]] = new_ordered_sides[0][0];
-    node_map[ordered_sides[1][0]] = new_ordered_sides[1][0];
+    Check(new_ordered_sides[0][0] < INT_MAX);
+    node_map[ordered_sides[0][0]] = static_cast<int>(new_ordered_sides[0][0]);
+    Check(new_ordered_sides[1][0] < INT_MAX);
+    node_map[ordered_sides[1][0]] = static_cast<int>(new_ordered_sides[1][0]);
     // kgb (060307): I'm guessing BTA never thought about how to map
     // internal nodes, so it's not clear how to proceed here.  My best
     // guess is we find the node not in each map.
@@ -212,7 +215,8 @@ void CellDef::redefineCellDef(
                "Edge error for old two dimensional cell definition.");
       }
       old_node = ordered_sides[old_side][1];
-      node_map[old_node] = new_node;
+      Check(new_node < INT_MAX);
+      node_map[old_node] = static_cast<int>(new_node);
     }
   } else if (name == "triangle_qdr" || name == "tri6") {
     // Arbitrarily assign the first node in the old and the new cell
@@ -242,9 +246,12 @@ void CellDef::redefineCellDef(
                "Edge error for old two dimensional cell definition.");
       }
       old_node = ordered_sides[old_side][1];
-      node_map[old_node] = new_node;
-      int new_mid_node = new_ordered_sides[new_side][2];
-      int old_mid_node = ordered_sides[old_side][2];
+      Check(new_node < INT_MAX);
+      node_map[old_node] = static_cast<int>(new_node);
+      Check(new_ordered_sides[new_side][2] < INT_MAX);
+      int new_mid_node = static_cast<int>(new_ordered_sides[new_side][2]);
+      Check(new_ordered_sides[old_side][2] < INT_MAX);
+      int old_mid_node = static_cast<int>(ordered_sides[old_side][2]);
       node_map[old_mid_node] = new_mid_node;
     }
   } else if (name == "tetrahedron") {
@@ -272,8 +279,11 @@ void CellDef::redefineCellDef(
              "Side error for old tetrahedron cell definition.");
     }
     // Now just apply the right-hand rule.
-    for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
-      node_map[ordered_sides[old_side][n]] = new_ordered_sides[new_side][n];
+    for (size_t n = 0; n < ordered_sides[old_side].size(); n++) {
+      Check(new_ordered_sides[new_side][n] < INT_MAX);
+      node_map[ordered_sides[old_side][n]] =
+          static_cast<int>(new_ordered_sides[new_side][n]);
+    }
   } else if (name == "quad_pyr") {
     // Find the side that is the quad. The transformed cell may be rotated
     // about the outward normal of this face relative to the input cell
@@ -296,16 +306,23 @@ void CellDef::redefineCellDef(
     int old_node = 0;
     for (size_t n = 0; n < nnodes; n++) {
       if (std::count(new_ordered_sides[new_side].begin(),
-                     new_ordered_sides[new_side].end(), n) == 0)
-        new_node = n;
+                     new_ordered_sides[new_side].end(), n) == 0) {
+        Check(n < INT_MAX);
+        new_node = static_cast<int>(n);
+      }
       if (std::count(ordered_sides[old_side].begin(),
-                     ordered_sides[old_side].end(), n) == 0)
-        old_node = n;
+                     ordered_sides[old_side].end(), n) == 0) {
+        Check(n < INT_MAX);
+        old_node = static_cast<int>(n);
+      }
     }
     node_map[old_node] = new_node;
     // Now just apply the right-hand rule to the quad side.
-    for (size_t n = 0; n < ordered_sides[old_side].size(); n++)
-      node_map[ordered_sides[old_side][n]] = new_ordered_sides[new_side][n];
+    for (size_t n = 0; n < ordered_sides[old_side].size(); n++) {
+      Check(new_ordered_sides[new_side][n] < INT_MAX);
+      node_map[ordered_sides[old_side][n]] =
+          static_cast<int>(new_ordered_sides[new_side][n]);
+    }
   } else if (name == "tri_prism") {
     // Find the one quad side definition that does not contain the first
     // node. The transformed cell may be rotated about the outward normal
@@ -329,8 +346,11 @@ void CellDef::redefineCellDef(
              "Quad side error for old tri-prism cell definition.");
     }
     // Apply the right-hand rule to this quad.
-    for (size_t n = 0; n < ordered_sides[old_quad].size(); n++)
-      node_map[ordered_sides[old_quad][n]] = new_ordered_sides[new_quad][n];
+    for (size_t n = 0; n < ordered_sides[old_quad].size(); n++) {
+      Check(new_ordered_sides[new_quad][n] < INT_MAX);
+      node_map[ordered_sides[old_quad][n]] =
+          static_cast<int>(new_ordered_sides[new_quad][n]);
+      }
     // Equate the two remaining triangle nodes. Find the first node.
     size_t old_tri = 0;
     while (ordered_sides[old_tri].size() != 3 ||
@@ -368,8 +388,9 @@ void CellDef::redefineCellDef(
       Insist(new_node < new_ordered_sides[new_tri].size(),
              "Node error for new tri-prism cell definition.");
     }
+    Check(new_ordered_sides[new_tri][new_node] < INT_MAX);
     node_map[ordered_sides[old_tri][old_node]] =
-        new_ordered_sides[new_tri][new_node];
+        static_cast<int>(new_ordered_sides[new_tri][new_node]);
     // The node that is neither in the previous quad or triangle is all
     // that is left.
     for (size_t n = 0; n < nnodes; n++) {
@@ -385,7 +406,8 @@ void CellDef::redefineCellDef(
                      ordered_sides[old_tri].end(), n) == 0)
         old_node = n;
     }
-    node_map[old_node] = new_node;
+    Check(new_node < INT_MAX);
+    node_map[old_node] = static_cast<int>(new_node);
   } else if (name == "hexahedron") {
     // Arbitrarily assign the first quad and the associated nodes in the
     // old and the new cell definitions to be the same. This assumption is
@@ -397,8 +419,9 @@ void CellDef::redefineCellDef(
     vector_int new_node_count(nnodes, 0);
     vector_int old_node_count(nnodes, 0);
     for (size_t n = 0; n < ordered_sides[quad].size(); n++) {
-      int new_node = new_ordered_sides[quad][n];
-      int old_node = ordered_sides[quad][n];
+      Check(new_ordered_sides[quad][n] < INT_MAX);
+      int new_node = static_cast<int>(new_ordered_sides[quad][n]);
+      size_t old_node = ordered_sides[quad][n];
       node_map[old_node] = new_node;
       for (size_t s = 0; s < nsides; s++) {
         if (std::count(new_ordered_sides[s].begin(), new_ordered_sides[s].end(),
@@ -414,9 +437,11 @@ void CellDef::redefineCellDef(
       // The node located diagonally across the hexahedron relative to
       // the first node will have a count of zero from the previous loop.
       for (size_t c = 0; c < nnodes; c++) {
-        if (new_node_count[c] == 0)
-          new_node = c;
-        if (old_node_count[c] == 0)
+        if (new_node_count[c] == 0) {
+          Check(c < INT_MAX);
+          new_node = static_cast<int>(c);
+        }
+        if (old_node_count[c] == 0) 
           old_node = c;
       }
       node_map[old_node] = new_node;
@@ -454,7 +479,8 @@ void CellDef::redefineCellDef(
                  "Edge error for old two dimensional cell definition.");
         }
         old_node = ordered_sides[old_side][1];
-        node_map[old_node] = new_node;
+        Check(new_node < INT_MAX);
+        node_map[old_node] = static_cast<int>(new_node);
       }
     } else if (ndim == 3) // POLYHEDRON
     {

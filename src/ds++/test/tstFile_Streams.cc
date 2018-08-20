@@ -43,7 +43,7 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
     f << i;
 
     // here's how you write strings:
-    int ssize = s.size();
+    size_t ssize = s.size();
     f << ssize;
     for (int k = 0; k < ssize; k++)
       f << s[k];

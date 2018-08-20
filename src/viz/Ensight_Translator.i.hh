@@ -224,7 +224,7 @@ void Ensight_Translator::ensight_dump(
         find(rgn_numbers.begin(), rgn_numbers.end(), parts_list[i]);
 
     if (find_location_c != rgn_numbers.end()) {
-      int index = find_location_c - rgn_numbers.begin();
+      auto index = find_location_c - rgn_numbers.begin();
       part_names.push_back(rgn_name[index]);
     } else if (find_location_c == rgn_numbers.end()) {
       Insist(0, "Didn't supply a region name!");
@@ -255,9 +255,10 @@ void Ensight_Translator::ensight_dump(
     Check(find_location != parts_list.end());
     Check(iel_type[i] < static_cast<int>(d_num_cell_types));
 
-    int ipart = find_location - parts_list.begin();
+    auto ipart = find_location - parts_list.begin();
 
-    cells_of_type[ipart][iel_type[i]].push_back(i);
+    Check(i < INT_MAX);
+    cells_of_type[ipart][iel_type[i]].push_back(static_cast<int>(i));
 
     int n_local_vertices = d_vrtx_cnt[iel_type[i]];
 
@@ -270,11 +271,15 @@ void Ensight_Translator::ensight_dump(
   sf_int g_cell_indices(ncells);
   sf_int g_vrtx_indices(nvertices);
 
-  for (size_t i = 0; i < ncells; ++i)
-    g_cell_indices[i] = i;
+  for (size_t i = 0; i < ncells; ++i) {
+    Check(i < INT_MAX);
+    g_cell_indices[i] = static_cast<int>(i);
+  }
 
-  for (size_t i = 0; i < nvertices; ++i)
-    g_vrtx_indices[i] = i;
+  for (size_t i = 0; i < nvertices; ++i) {
+    Check(i < INT_MAX);
+    g_vrtx_indices[i] = static_cast<int>(i);
+  }
 
   // >>> WRITE OUT DATA TO DIRECTORIES
 
@@ -289,14 +294,16 @@ void Ensight_Translator::ensight_dump(
       vertices.push_back(*iv);
 
     // write the geometry data
-    write_geom(ipart + 1, part_names[ipart], ipar, pt_coor,
+    Check(ipart + 1 < INT_MAX);
+    write_geom(static_cast<int>(ipart + 1), part_names[ipart], ipar, pt_coor,
                cells_of_type[ipart], vertices, g_vrtx_indices, g_cell_indices);
 
     // write the vertex data
-    write_vrtx_data(ipart + 1, vrtx_data, vertices);
+    write_vrtx_data(static_cast<int>(ipart + 1), vrtx_data, vertices);
 
     // write out the cell data
-    write_cell_data(ipart + 1, cell_data, cells_of_type[ipart]);
+    write_cell_data(static_cast<int>(ipart + 1), cell_data,
+                    cells_of_type[ipart]);
   }
 
   close();
@@ -380,186 +387,189 @@ void Ensight_Translator::write_part(int part_num, const std_string &part_name,
 
   for (size_t i = 0; i < ncells; ++i) {
     Check(iel_type[i] < static_cast<int>(d_num_cell_types));
-    cells_of_type[iel_type[i]].push_back(i);
+    Check(i < INT_MAX);
+    cells_of_type[iel_type[i]].push_back(static_cast<int>(i));
   }
 
   // All vertices are output in this case.
   sf_int vertices(nvertices);
-  for (size_t i = 0; i < nvertices; ++i)
-    vertices[i] = i;
+  for (size_t i = 0; i < nvertices; ++i) {
+    Check(i < INT_MAX);
+    vertices[i] = static_cast<int>(i);
+    }
 
-  // >>> WRITE OUT DATA TO DIRECTORIES
+    // >>> WRITE OUT DATA TO DIRECTORIES
 
-  // write the geometry data
-  write_geom(part_num, part_name, ipar, pt_coor, cells_of_type, vertices,
-             g_vrtx_indices, g_cell_indices);
+    // write the geometry data
+    write_geom(part_num, part_name, ipar, pt_coor, cells_of_type, vertices,
+               g_vrtx_indices, g_cell_indices);
 
-  // write the vertex data
-  write_vrtx_data(part_num, vrtx_data, vertices);
+    // write the vertex data
+    write_vrtx_data(part_num, vrtx_data, vertices);
 
-  // write out the cell data
-  write_cell_data(part_num, cell_data, cells_of_type);
-}
+    // write out the cell data
+    write_cell_data(part_num, cell_data, cells_of_type);
+  }
 
 //---------------------------------------------------------------------------//
 // ENSIGHT DATA OUTPUT FUNCTIONS (PRIVATE)
 //---------------------------------------------------------------------------//
+
 /*!
  * \brief Write out data to ensight geometry file.
  */
-template <typename IVF, typename FVF, typename ISF>
-void Ensight_Translator::write_geom(const int part_num,
-                                    const std_string &part_name,
-                                    const rtt_viz::Viz_Traits<IVF> &ipar,
-                                    const rtt_viz::Viz_Traits<FVF> &pt_coor,
-                                    const sf2_int &cells_of_type,
-                                    const sf_int &vertices,
-                                    const ISF &g_vrtx_indices,
-                                    const ISF &g_cell_indices) {
-  // Return if the geometry is static and we've already dumped the
-  // geometry.
-  if (d_static_geom && d_dump_times.size() > 1) {
-    return;
-  }
-
-  Insist(d_geom_out.is_open(),
-         "Geometry file not open.  Must call open() before write_part().");
-
-  size_t ndim = pt_coor.ncols(0);
-  size_t nvertices = vertices.size();
-
-  // output part number and names
-  d_geom_out << "part" << endl;
-  d_geom_out << part_num << endl;
-  d_geom_out << part_name << endl;
-  d_geom_out << "coordinates" << endl;
-  d_geom_out << nvertices << endl; // #vertices in this part
-
-  // output the global vertex indices and form ens_vertex.
-  // Enight demands that vertices be numbered from 1 to the number of
-  // vertices *for this part* (nvertices).  Argghhh.
-  // ens_vertex maps our local vertex index to a vertex in [1,nvertices].
-
-  std::map<int, int> ens_vertex;
-  for (size_t i = 0; i < nvertices; ++i) {
-    d_geom_out << g_vrtx_indices[vertices[i]] << endl;
-
-    // add 1 because ipar and Ensight demand indices that start at 1.
-    ens_vertex[vertices[i] + 1] = i + 1;
-  }
-
-  // output the coordinates
-  for (size_t idim = 0; idim < ndim; idim++)
-    for (size_t i = 0; i < nvertices; ++i)
-      d_geom_out << pt_coor(vertices[i], idim) << endl;
-
-  // ensight expects coordinates for three dimensions, so fill any
-  // remaining dimensions with zeroes
-  double zero = 0.0;
-  for (size_t idim = ndim; idim < 3; idim++)
-    for (size_t i = 0; i < nvertices; ++i)
-      d_geom_out << zero << endl;
-
-  // for each cell type, dump the local vertex indices for each cell.
-  for (unsigned type = 0; type < d_num_cell_types; type++) {
-    const sf_int &c = cells_of_type[type];
-    const size_t num_elem = c.size();
-
-    if (num_elem > 0) {
-      d_geom_out << d_cell_names[type] << endl;
-      d_geom_out << num_elem << endl;
-
-      for (size_t i = 0; i < num_elem; ++i)
-        d_geom_out << g_cell_indices[c[i]] << endl;
-
-      for (size_t i = 0; i < num_elem; ++i) {
-        Check(static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]);
-        for (int j = 0; j < d_vrtx_cnt[type]; j++)
-          d_geom_out << ens_vertex[ipar(c[i], j)];
-        d_geom_out << endl;
-      }
+  template <typename IVF, typename FVF, typename ISF>
+  void Ensight_Translator::write_geom(
+      const int part_num, const std_string &part_name,
+      const rtt_viz::Viz_Traits<IVF> &ipar,
+      const rtt_viz::Viz_Traits<FVF> &pt_coor, const sf2_int &cells_of_type,
+      const sf_int &vertices, const ISF &g_vrtx_indices,
+      const ISF &g_cell_indices) {
+    // Return if the geometry is static and we've already dumped the
+    // geometry.
+    if (d_static_geom && d_dump_times.size() > 1) {
+      return;
     }
-  } // done looping over cell types
-}
+
+    Insist(d_geom_out.is_open(),
+           "Geometry file not open.  Must call open() before write_part().");
+
+    size_t ndim = pt_coor.ncols(0);
+    size_t nvertices = vertices.size();
+
+    // output part number and names
+    d_geom_out << "part" << endl;
+    d_geom_out << part_num << endl;
+    d_geom_out << part_name << endl;
+    d_geom_out << "coordinates" << endl;
+    d_geom_out << nvertices << endl; // #vertices in this part
+
+    // output the global vertex indices and form ens_vertex.
+    // Enight demands that vertices be numbered from 1 to the number of
+    // vertices *for this part* (nvertices).  Argghhh.
+    // ens_vertex maps our local vertex index to a vertex in [1,nvertices].
+
+    std::map<int, int> ens_vertex;
+    for (size_t i = 0; i < nvertices; ++i) {
+      d_geom_out << g_vrtx_indices[vertices[i]] << endl;
+
+      // add 1 because ipar and Ensight demand indices that start at 1.
+      Check(i + 1 < INT_MAX);
+      ens_vertex[vertices[i] + 1] = static_cast<int>(i + 1);
+    }
+
+    // output the coordinates
+    for (size_t idim = 0; idim < ndim; idim++)
+      for (size_t i = 0; i < nvertices; ++i)
+        d_geom_out << pt_coor(vertices[i], idim) << endl;
+
+    // ensight expects coordinates for three dimensions, so fill any
+    // remaining dimensions with zeroes
+    double zero = 0.0;
+    for (size_t idim = ndim; idim < 3; idim++)
+      for (size_t i = 0; i < nvertices; ++i)
+        d_geom_out << zero << endl;
+
+    // for each cell type, dump the local vertex indices for each cell.
+    for (unsigned type = 0; type < d_num_cell_types; type++) {
+      const sf_int &c = cells_of_type[type];
+      const size_t num_elem = c.size();
+
+      if (num_elem > 0) {
+        d_geom_out << d_cell_names[type] << endl;
+        d_geom_out << num_elem << endl;
+
+        for (size_t i = 0; i < num_elem; ++i)
+          d_geom_out << g_cell_indices[c[i]] << endl;
+
+        for (size_t i = 0; i < num_elem; ++i) {
+          Check(static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]);
+          for (int j = 0; j < d_vrtx_cnt[type]; j++)
+            d_geom_out << ens_vertex[ipar(c[i], j)];
+          d_geom_out << endl;
+        }
+      }
+    } // done looping over cell types
+  }
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Write out data to ensight vertex data.
  */
-template <typename FVF>
-void Ensight_Translator::write_vrtx_data(
-    const int part_num, const rtt_viz::Viz_Traits<FVF> &vrtx_data,
-    const sf_int &vertices) {
-  if (vrtx_data.nrows() == 0)
-    return;
+  template <typename FVF>
+  void Ensight_Translator::write_vrtx_data(
+      const int part_num, const rtt_viz::Viz_Traits<FVF> &vrtx_data,
+      const sf_int &vertices) {
+    if (vrtx_data.nrows() == 0)
+      return;
 
-  size_t nvertices = vertices.size();
-  size_t ndata = vrtx_data.ncols(0);
+    size_t nvertices = vertices.size();
+    size_t ndata = vrtx_data.ncols(0);
 
-  std::string err = "Vertex data files not open."
-                    "  Must call open() before write_part().";
-  Insist(d_vertex_out.size() == static_cast<size_t>(ndata), err.c_str());
+    std::string err = "Vertex data files not open."
+                      "  Must call open() before write_part().";
+    Insist(d_vertex_out.size() == static_cast<size_t>(ndata), err.c_str());
 
-  // loop over all vertex data fields and write out data for each field
-  for (size_t nvd = 0; nvd < ndata; nvd++) {
-    Ensight_Stream &vout = *d_vertex_out[nvd];
+    // loop over all vertex data fields and write out data for each field
+    for (size_t nvd = 0; nvd < ndata; nvd++) {
+      Ensight_Stream &vout = *d_vertex_out[nvd];
 
-    Insist(vout.is_open(), err.c_str());
+      Insist(vout.is_open(), err.c_str());
 
-    vout << "part" << endl;
-    vout << part_num << endl;
-    vout << "coordinates" << endl;
+      vout << "part" << endl;
+      vout << part_num << endl;
+      vout << "coordinates" << endl;
 
-    for (size_t i = 0; i < nvertices; ++i)
-      vout << vrtx_data(vertices[i], nvd) << endl;
+      for (size_t i = 0; i < nvertices; ++i)
+        vout << vrtx_data(vertices[i], nvd) << endl;
+    }
   }
-}
 
 //---------------------------------------------------------------------------//
 /*!
  * \brief Write out data to ensight cell data.
  */
-template <typename FVF>
-void Ensight_Translator::write_cell_data(
-    const int part_num, const rtt_viz::Viz_Traits<FVF> &cell_data,
-    const sf2_int &cells_of_type) {
-  if (cell_data.nrows() == 0)
-    return;
+  template <typename FVF>
+  void Ensight_Translator::write_cell_data(
+      const int part_num, const rtt_viz::Viz_Traits<FVF> &cell_data,
+      const sf2_int &cells_of_type) {
+    if (cell_data.nrows() == 0)
+      return;
 
-  int ndata = cell_data.ncols(0);
+    size_t const ndata = cell_data.ncols(0);
 
-  std::string err = "Cell data files not open."
-                    "  Must call open() before write_part().";
+    std::string err = "Cell data files not open."
+                      "  Must call open() before write_part().";
 
-  Insist(d_cell_out.size() == static_cast<size_t>(ndata), err.c_str());
+    Insist(d_cell_out.size() == static_cast<size_t>(ndata), err.c_str());
 
-  // loop over all cell data fields and write out data for each field
-  for (int ncd = 0; ncd < ndata; ncd++) {
-    Ensight_Stream &cellout = *d_cell_out[ncd];
+    // loop over all cell data fields and write out data for each field
+    for (size_t ncd = 0; ncd < ndata; ncd++) {
+      Ensight_Stream &cellout = *d_cell_out[ncd];
 
-    Insist(cellout.is_open(), err.c_str());
+      Insist(cellout.is_open(), err.c_str());
 
-    cellout << "part" << endl;
-    cellout << part_num << endl;
+      cellout << "part" << endl;
+      cellout << part_num << endl;
 
-    // loop over ensight cell types
-    for (unsigned type = 0; type < d_num_cell_types; type++) {
-      const sf_int &c = cells_of_type[type];
+      // loop over ensight cell types
+      for (unsigned type = 0; type < d_num_cell_types; type++) {
+        const sf_int &c = cells_of_type[type];
 
-      size_t num_elem = c.size();
+        size_t num_elem = c.size();
 
-      // print out data if there are cells of this type
-      if (num_elem > 0) {
-        // printout cell-type name
-        cellout << d_cell_names[type] << endl;
+        // print out data if there are cells of this type
+        if (num_elem > 0) {
+          // printout cell-type name
+          cellout << d_cell_names[type] << endl;
 
-        // print out data
-        for (size_t i = 0; i < num_elem; ++i)
-          cellout << cell_data(c[i], ncd) << endl;
+          // print out data
+          for (size_t i = 0; i < num_elem; ++i)
+            cellout << cell_data(c[i], ncd) << endl;
+        }
       }
     }
   }
-}
 
 } // namespace rtt_viz
 

@@ -129,9 +129,9 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
   vec3_d p_pt_coor(nrgn);
   vec2_i p_iel_type(nrgn);
 
-  for (int i = 0; i < nrgn; i++) {
-    int p_ncells = g_cell_indices[i].size();
-    int p_nvert = g_vrtx_indices[i].size();
+  for (size_t i = 0; i < nrgn; i++) {
+    size_t p_ncells = g_cell_indices[i].size();
+    size_t p_nvert = g_vrtx_indices[i].size();
     p_ipar[i].resize(p_ncells, vec_i(nhexvert));
     p_vrtx_data[i].resize(p_nvert, vec_d(ndata, 5.0));
     p_cell_data[i].resize(p_ncells, vec_d(ndata, 10.));
@@ -157,7 +157,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
             find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
 
         Require(f != g_vrtx_indices[i].end());
-        p_ipar[i][j][k] = f - g_vrtx_indices[i].begin() + 1;
+        p_ipar[i][j][k] = static_cast<int>(f - g_vrtx_indices[i].begin() + 1);
       }
     }
   }

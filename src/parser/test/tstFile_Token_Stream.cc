@@ -5,10 +5,7 @@
  * \date   Feb 18 2003
  * \brief  Unit tests for File_Token_Stream class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -121,19 +118,19 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
       FAILMSG("Syntax error NOT correctly thrown");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("Syntax error correctly thrown and caught");
     }
     try {
       tokens.check_syntax(true, "dummy syntax error");
       PASSMSG("Syntax error correctly checked");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       FAILMSG("Syntax error NOT correctly checked");
     }
     try {
       tokens.check_syntax(false, "dummy syntax error");
       FAILMSG("Syntax error NOT correctly checked");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("Syntax error correctly checked");
     }
     if (tokens.error_count() != 2) {
@@ -231,7 +228,8 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
+    if (token.type() != STRING || token.text() != 
+        "\"manifest \\\"string\\\"\"")
       ITFAILS;
 
     token = tokens.shift();
@@ -279,7 +277,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -302,7 +300,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -325,7 +323,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
              << "\tThe constructor should throw an exception if the requested\n"
              << "\tfile can not be opened." << endl;
       FAILMSG(errmsg.str());
-    } catch (invalid_argument const &a) {
+    } catch (invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -339,8 +337,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  //---------------------------------------------------------------------------//
-
+  //-------------------------------------------------------------------------//
   {
     // Build path for the input file "scanner_recovery.inp"
     string const inputFile2(ut.getTestSourcePath() +
@@ -356,7 +353,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
           << "\tunbalanced quotes were read from the input\n"
           << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
       FAILMSG(msg.str());
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & msg) {
       // cout << msg.what() << endl;
       // exception = true;
       string errmsg = msg.what();
@@ -397,7 +394,6 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {

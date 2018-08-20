@@ -5,10 +5,7 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/Flags class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_Flags_hh__
@@ -46,36 +43,40 @@ public:
 
 public:
   /*!
- * \brief Validates the specified flag index.
- * \param flag Flag index.
- * \return The existance of the flag.
- */
-  bool allowed_flag(int flag) const {
+   * \brief Validates the specified flag index.
+   * \param flag Flag index.
+   * \return The existance of the flag.
+   */
+  bool allowed_flag(size_t flag) const {
     return flag_nums.end() !=
            std::find(flag_nums.begin(), flag_nums.end(), flag);
   }
+
   /*!
- * \brief Returns the name of specified flag type
- * \param flagtype Flag type number.
- * \return The Flag type name.
- */
+   * \brief Returns the name of specified flag type
+   * \param flagtype Flag type number.
+   * \return The Flag type name.
+   */
   string getFlagType() const { return name; }
+
   /*!
- * \brief Returns the flag number associated with the specified flag index.
- * \param flag_index Flag index.
- * \return The Flag number.
- */
-  int getFlagNumber(int flag) const { return flag_nums[flag]; }
+   * \brief Returns the flag number associated with the specified flag index.
+   * \param flag_index Flag index.
+   * \return The Flag number.
+   */
+  int getFlagNumber(size_t flag) const { return flag_nums[flag]; }
+
   /*!
- * \brief Returns the flag name associated with the specified index.
- * \param flag_index Flag index.
- * \return The flag name.
- */
-  string getFlagName(int flag) const { return flag_names[flag]; }
+   * \brief Returns the flag name associated with the specified index.
+   * \param flag_index Flag index.
+   * \return The flag name.
+   */
+  string getFlagName(size_t flag) const { return flag_names[flag]; }
+
   /*!
- * \brief Returns the number of flags.
- * \return The number of flags.
- */
+   * \brief Returns the number of flags.
+   * \return The number of flags.
+   */
   int getFlagSize() const { return nflags; }
 };
 

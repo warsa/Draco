@@ -46,7 +46,8 @@ Processor_Group::Processor_Group(unsigned const stride)
       ranks.push_back(i);
     }
   }
-  size_ = ranks.size();
+  Check(ranks.size() < UINT_MAX);
+  size_ = static_cast<unsigned>(ranks.size());
   flag = MPI_Group_incl(parent_group, size_, &ranks[0], &group_);
 
   flag = MPI_Comm_create(MPI_COMM_WORLD, group_, &comm_);

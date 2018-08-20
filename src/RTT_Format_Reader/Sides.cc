@@ -88,7 +88,7 @@ void Sides::readEndKeyword(ifstream &meshfile) {
  *        definition (e.g., CYGNUS).
  */
 void Sides::redefineSides() {
-  vector_int temp_nodes;
+  vector_uint temp_nodes;
   for (int st = 0; st < dims.get_nside_types(); st++) {
     int this_side_type = dims.get_side_types(st);
     vector_int node_map(cellDefs.get_node_map(this_side_type));

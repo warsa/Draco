@@ -5,10 +5,7 @@
  * \date   Wed Jun 7 10:33:26 2000
  * \brief  Header file for RTT_Format_Reader/CellDataIDs class.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __RTT_Format_Reader_CellDataIDs_hh__
@@ -51,21 +48,22 @@ private:
 
 public:
   /*!
- * \brief Returns the specified cell_data_id nam.
- * \param id_numb cell_data_id index number.
- * \return The cell_data_id name.
- */
-  string get_data_id_name(int id_numb) const {
+   * \brief Returns the specified cell_data_id nam.
+   * \param id_numb cell_data_id index number.
+   * \return The cell_data_id name.
+   */
+  string get_data_id_name(size_t id_numb) const {
     Insist(id_numb <= dims.get_ncell_data() - 1,
            "Invalid cell data id number!");
     return names[id_numb];
   }
+
   /*!
- * \brief Returns the units associated with the specified cell_data_id.
- * \param id_numb cell_data_id index number.
- * \return The cell_data_id units.
- */
-  string get_data_id_units(int id_numb) const {
+   * \brief Returns the units associated with the specified cell_data_id.
+   * \param id_numb cell_data_id index number.
+   * \return The cell_data_id units.
+   */
+  string get_data_id_units(size_t id_numb) const {
     Insist(id_numb <= dims.get_ncell_data() - 1,
            "Invalid cell data id number!");
     return units[id_numb];

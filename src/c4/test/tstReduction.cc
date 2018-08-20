@@ -58,10 +58,10 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // test longs for blocking and non-blocking sums
-  long xlong = rtt_c4::node() + 10000000000;
+  long xlong = rtt_c4::node() + (long)10000000000;
   global_sum(xlong);
 
-  long xlong_send = rtt_c4::node() + 10000000000;
+  long xlong_send = rtt_c4::node() + (long)10000000000;
   long xlong_recv = 0;
   C4_Req long_request;
   global_isum(xlong_send, xlong_recv, long_request);
@@ -69,7 +69,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
 
   long long_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
-    long_answer += i + 10000000000;
+    long_answer += i + (long)10000000000;
 
   if (xlong != long_answer)
     ITFAILS;
@@ -295,13 +295,13 @@ void test_prefix_sum(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // test floats
-  float xfloat = static_cast<float>(rtt_c4::node()) + 0.01;
+  float xfloat = static_cast<float>(rtt_c4::node() + 0.01);
   float xfloat_prefix_sum = prefix_sum(xfloat);
 
   float float_answer = 0.0;
   for (int i = 0; i < rtt_c4::nodes(); i++) {
     if (i <= rtt_c4::node() || i == 0)
-      float_answer += static_cast<float>(i) + 0.01;
+      float_answer += static_cast<float>(i + 0.01);
   }
 
   std::cout << "float: Prefix sum on this node: " << xfloat_prefix_sum;
@@ -435,7 +435,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   // test floats
   vector<float> xfloat(array_size, 0);
   for (int32_t i = 0; i < array_size; ++i)
-    xfloat[i] = rtt_c4::node() * 9.99 + i;
+    xfloat[i] = static_cast<float>(rtt_c4::node() * 9.99 + i);
 
   prefix_sum(&xfloat[0], array_size);
 
@@ -443,7 +443,7 @@ void test_array_prefix_sum(rtt_dsxx::UnitTest &ut) {
   for (int32_t i = 0; i < array_size; ++i) {
     for (int32_t r = 0; r < rtt_c4::nodes(); ++r) {
       if (r <= rtt_c4::node())
-        float_answer[i] += r * 9.99 + i;
+        float_answer[i] += static_cast<float>(r * 9.99 + i);
     }
   }
 
