@@ -36,35 +36,43 @@ extern "C" void catch_sigfpe(int sig, siginfo_t *psSiginfo,
   std::string error_type;
 
   if (sig != SIGFPE) {
-    error_type = "Floating point exception problem.";
+    error_type = "FATAL ERROR: Floating point exception problem.";
   } else {
     switch (psSiginfo->si_code) {
     case FPE_INTDIV:
-      error_type = "SIGFPE (Integer divide by zero)";
+      error_type =
+          "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer divide by zero)";
       break;
     case FPE_INTOVF:
-      error_type = "SIGFPE (Integer overflow)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Integer overflow)";
       break;
     case FPE_FLTDIV:
-      error_type = "SIGFPE (Floating point divide by zero)";
+      error_type =
+          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point divide by zero)";
       break;
     case FPE_FLTOVF:
-      error_type = "SIGFPE (Floating point overflow)";
+      error_type =
+          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point overflow)";
       break;
     case FPE_FLTUND:
-      error_type = "SIGFPE (Floating point underflow)";
+      error_type =
+          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point underflow)";
       break;
     case FPE_FLTRES:
-      error_type = "SIGFPE (Floating point inexact result)";
+      error_type =
+          "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point inexact result)";
       break;
     case FPE_FLTINV:
-      error_type = "SIGFPE (Invalid floating point operation)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Invalid floating point "
+                   "operation)";
       break;
     case FPE_FLTSUB:
-      error_type = "SIGFPE (Floating point subscript out of range)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Floating point "
+                   "subscript out of range)";
       break;
     default:
-      error_type = "SIGFPE (Unknown floating point exception)";
+      error_type = "FATAL ERROR (SIGNAL) Caught SIGFPE (Unknown floating point "
+                   "exception)";
       break;
     }
   }
