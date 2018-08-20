@@ -59,7 +59,8 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
     : dimension(dimension_), geometry(geometry_), num_cells(cell_type_.size()),
       num_nodes(global_node_number_.size()), side_set_flag(side_set_flag_),
       ghost_cell_number(ghost_cell_number_), ghost_cell_rank(ghost_cell_rank_),
-      node_coord_vec(compute_node_coord_vec(coordinates_)) {
+      node_coord_vec(compute_node_coord_vec(coordinates_)),
+      cell_type(cell_type_), cell_to_node_linkage(cell_to_node_linkage_) {
 
   // Require(dimension_ <= 3);
   // \todo: generalize mesh generation to 1D,3D (and uncomment requirment above)
