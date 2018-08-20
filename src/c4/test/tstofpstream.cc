@@ -50,7 +50,7 @@ void tstofpstream_bin(UnitTest &ut) {
 
   // Binary write rank ids to file using ofpstream:
   {
-    ofpstream out("tstofpstream.bin", std::ofstream::binary);
+    ofpstream out("tstofpstream_bin.txt", std::ofstream::binary);
 
     out.write(reinterpret_cast<const char *>(&pid), sizeof(int));
 
@@ -61,7 +61,7 @@ void tstofpstream_bin(UnitTest &ut) {
 
   // Read file on head rank, check for correct conversion and ordering
   if (pid == 0) {
-    ifstream in("tstofpstream.bin", std::ofstream::binary);
+    ifstream in("tstofpstream_bin.txt", std::ofstream::binary);
     int this_pid;
     for (int a = 0; a < rtt_c4::nodes(); a++) {
       in.read(reinterpret_cast<char *>(&this_pid), sizeof(int));

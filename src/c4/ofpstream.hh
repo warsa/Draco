@@ -83,9 +83,6 @@ private:
     std::vector<char> buffer_;
     ios_base::openmode mode_;
     std::ofstream out_;
-
-    explicit mpibuf(ios_base::openmode const mode)
-        : buffer_(), mode_(mode){/* Empty */};
   };
 
   mpibuf sb_;
