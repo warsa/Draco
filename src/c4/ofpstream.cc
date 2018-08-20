@@ -27,10 +27,13 @@ using namespace std;
  *
  * \param filename Name of the file to which synchronized output is to be
  * written.
+ * \param (optional) mode File write mode (ascii/binary)-- defaults to ascii
  */
-ofpstream::ofpstream(std::string const &filename) : std::ostream(&sb_) {
+ofpstream::ofpstream(std::string const &filename, ios_base::openmode const mode)
+    : std::ostream(&sb_) {
+  sb_.mode_ = mode;
   if (rtt_c4::node() == 0) {
-    sb_.out_.open(filename);
+    sb_.out_.open(filename, mode);
   }
 }
 
@@ -44,18 +47,25 @@ ofpstream::ofpstream(std::string const &filename) : std::ostream(&sb_) {
 void ofpstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
   if (pid == 0) {
-    buffer_.push_back('\0');
-    out_ << &buffer_[0];
+    if (mode_ == ios_base::binary)
+      out_.write(&buffer_[0], buffer_.size());
+    else {
+      buffer_.push_back('\0');
+      out_ << &buffer_[0];
+    }
     buffer_.clear();
-
     unsigned const pids = rtt_c4::nodes();
     for (unsigned i = 1; i < pids; ++i) {
       unsigned N;
       receive(&N, 1, i);
       buffer_.resize(N);
       rtt_c4::receive(&buffer_[0], N, i);
-      buffer_.push_back('\0');
-      out_ << &buffer_[0];
+      if (mode_ == ios_base::binary)
+        out_.write(&buffer_[0], buffer_.size());
+      else {
+        buffer_.push_back('\0');
+        out_ << &buffer_[0];
+      }
     }
   } else {
     unsigned N = buffer_.size();
