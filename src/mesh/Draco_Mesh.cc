@@ -16,7 +16,7 @@
 
 namespace rtt_mesh {
 
-// helper function for safe conversion of types during initialization list 
+// helper function for safe conversion of types during initialization list
 // processing.
 unsigned safe_convert_from_size_t(size_t const in_) {
   Check(in_ < UINT_MAX);
@@ -66,9 +66,10 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
     : dimension(dimension_), geometry(geometry_),
       num_cells(safe_convert_from_size_t(cell_type_.size())),
       num_nodes(safe_convert_from_size_t(global_node_number_.size())),
-      side_set_flag(side_set_flag_),
-      ghost_cell_number(ghost_cell_number_), ghost_cell_rank(ghost_cell_rank_),
-      node_coord_vec(compute_node_coord_vec(coordinates_)) {
+      side_set_flag(side_set_flag_), ghost_cell_number(ghost_cell_number_),
+      ghost_cell_rank(ghost_cell_rank_),
+      node_coord_vec(compute_node_coord_vec(coordinates_)),
+      cell_type(cell_type_), cell_to_node_linkage(cell_to_node_linkage_) {
 
   // Require(dimension_ <= 3);
   // \todo: generalize mesh generation to 1D,3D (and uncomment requirment above)

@@ -108,10 +108,11 @@ template <typename EType> void doit() {
   EType ess(dummyss);
   assert(ess != e);
 
-  rtype r1 = e();
-  rtype r2 = e();
+  rngRemember(rtype r1 = e());
+  rngRemember(rtype r2 = e());
+  rngRemember(rtype r3 = e());
+
   assert(r1 != r2);
-  rtype r3 = e();
   assert(r3 != r2 && r3 != r1);
 
   // We've elsewhere confirmed that the underlying bijections actually "work",
@@ -130,7 +131,7 @@ template <typename EType> void doit() {
     ctype rb = b(c1, k);
     for (typename ctype::reverse_iterator p = rb.rbegin(); p != rb.rend();
          ++p) {
-      rtype re = e();
+      rngRemember(rtype re = e());
       assert(*p == re);
     }
   }
@@ -233,6 +234,7 @@ template <typename EType> void doit() {
   cout << " OK" << endl;
 }
 
+//----------------------------------------------------------------------------//
 int main(int, char **) {
 #if R123_USE_PHILOX_64BIT
   doit<Engine<Philox2x64>>();
