@@ -81,6 +81,7 @@ dbsSetupCompilers()
 dbsSetupCxx()
 dbsSetupFortran()
 dbsSetupProfilerTools()
+dbsSetupStaticAnalyzers()
 
 # Find any globally required libraries
 include( FeatureSummary )
