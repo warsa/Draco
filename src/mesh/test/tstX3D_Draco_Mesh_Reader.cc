@@ -103,6 +103,7 @@ void read_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   return;
 }
 
+//----------------------------------------------------------------------------//
 // Parse and build an X3D file format and compare to reference mesh
 void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
@@ -215,7 +216,6 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
