@@ -12,6 +12,7 @@
 #include "ds++/DracoStrings.hh"
 #include <fstream>
 #include <iostream>
+#include <set>
 
 namespace rtt_mesh {
 
@@ -173,6 +174,8 @@ std::vector<int> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
   // calculate number of nodes for this cell
   std::vector<int> node_indexes;
 
+  // track unique node entries with a set
+  std::set<int> node_index_set;
   for (size_t i = 1; i <= num_faces; ++i) {
 
     // get the face index, which will by key for face-to-node map
@@ -182,13 +185,11 @@ std::vector<int> X3D_Draco_Mesh_Reader::get_cellnodes(size_t cell) const {
     std::vector<int> tmp_vec = get_facenodes(face);
 
     // insert into the cell vector
-    node_indexes.insert(node_indexes.end(), tmp_vec.begin(), tmp_vec.end());
+    for (auto j : tmp_vec) {
+      if (node_index_set.insert(j).second)
+        node_indexes.push_back(j);
+    }
   }
-
-  // reduce return vector to unique node entries
-  std::sort(node_indexes.begin(), node_indexes.end());
-  node_indexes.erase(std::unique(node_indexes.begin(), node_indexes.end()),
-                     node_indexes.end());
 
   // substract 1 to get base 0 nodes
   for (size_t i = 0; i < node_indexes.size(); ++i)

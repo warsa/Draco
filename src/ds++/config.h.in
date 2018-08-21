@@ -131,6 +131,7 @@
  * - Bit 1, (010), activates Level 2 (some performance impact and possible
  *                                    intrusive output, rtt_memory trackin is
  *                                    activated.)
+ *                 and a stack trace will be added to DbC messages.
  * - Bit 2, (100), activates Level 3 (includes fpe_trap diagnostics)
  * .
  * The following integer settings activate Levels in the following way:
