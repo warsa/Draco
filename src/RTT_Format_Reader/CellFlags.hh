@@ -20,10 +20,14 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
+ * \class CellFlags
  * \brief Controls parsing, storing, and accessing the data specific to the
  *        cell flags block of the mesh file.
  */
+//============================================================================//
 class CellFlags {
   // typedefs
   typedef std::ifstream ifstream;
@@ -33,7 +37,7 @@ class CellFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  CellFlags(const Dims &dims_)
+  explicit CellFlags(const Dims &dims_)
       : dims(dims_), flagTypes(dims.get_ncell_flag_types()) {}
   ~CellFlags() {}
 
@@ -91,7 +95,7 @@ public:
    * \param flagtype Cell flag type number.
    * \return The number of cell flags.
    */
-  int get_flag_size(size_t flagtype) const {
+  size_t get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_ncell_flag_types() - 1,
            "Invalid cell flag type number!");
     return flagTypes[flagtype]->getFlagSize();

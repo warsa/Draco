@@ -42,10 +42,10 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::ifstream ifstream;
   typedef std::string string;
-  typedef std::set<int> set_int;
+  //  typedef std::set<int> set_int;
   typedef std::vector<int> vector_int;
-  typedef std::vector<std::vector<int>> vector_vector_int;
-  typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
+  //  typedef std::vector<std::vector<int>> vector_vector_int;
+  //  typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
   typedef std::vector<double> vector_dbl;
   typedef std::vector<std::vector<double>> vector_vector_dbl;
   typedef std::vector<string> vector_str;
@@ -79,7 +79,8 @@ public:
    */
 
   //! Destructor
-  ~RTT_Format_Reader() {/*empty*/}
+  ~RTT_Format_Reader() { /*empty*/
+  }
 
   // ACCESSORS
 
@@ -168,7 +169,10 @@ public:
    * \brief Returns the number of spatial dimensions.
    * \return The number of spatial dimensions.
    */
-  unsigned get_dims_ndim() const { return dims.get_ndim(); }
+  unsigned get_dims_ndim() const {
+    Check(dims.get_ndim() < UINT_MAX);
+    return static_cast<unsigned>(dims.get_ndim());
+  }
 
   /*!
    * \brief Returns the number of topological dimensions.
@@ -373,7 +377,7 @@ public:
    * \param flagtype Side flag type number.
    * \return The number of side flags.
    */
-  int get_side_flags_flag_size(size_t flagtype) const {
+  size_t get_side_flags_flag_size(size_t flagtype) const {
     return spSideFlags->get_flag_size(flagtype);
   }
 
@@ -678,7 +682,7 @@ public:
    * \param node_numb Side-node index number.
    * \return The side node number.
    */
-  int get_sides_nodes(size_t side_numb, size_t node_numb) const {
+  unsigned get_sides_nodes(size_t side_numb, size_t node_numb) const {
     return spSides->get_nodes(side_numb, node_numb);
   }
 
@@ -688,7 +692,7 @@ public:
    * \param flag_numb Side flag number.
    * \return The side flag.
    */
-  int get_sides_flags(size_t side_numb, size_t flag_numb) const {
+  unsigned get_sides_flags(size_t side_numb, size_t flag_numb) const {
     return spSides->get_flags(side_numb, flag_numb);
   }
 
@@ -725,7 +729,7 @@ public:
    * \param node_numb Cell-node index number.
    * \return The node number.
    */
-  int get_cells_nodes(size_t cell_numb, size_t node_numb) const {
+  unsigned get_cells_nodes(size_t cell_numb, size_t node_numb) const {
     return spCells->get_nodes(cell_numb, node_numb);
   }
 
@@ -828,9 +832,8 @@ private:
   void readEndKeyword(ifstream &meshfile);
 
 public:
-  void reformatData(
-      vector_vector_uint const &cell_side_types_,
-      std::vector<vector_vector_uint> const &cell_ordered_sides_);
+  void reformatData(vector_vector_uint const &cell_side_types_,
+                    std::vector<vector_vector_uint> const &cell_ordered_sides_);
 };
 
 } // end namespace rtt_RTT_Format_Reader

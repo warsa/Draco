@@ -44,12 +44,12 @@ class DLL_PUBLIC_meshReaders Hex_Mesh_Reader
   std::string version;
   unsigned npoints;
   unsigned ncells;
-  int nvrtx;
-  int nvrpf;
-  int ndim;
-  int nvb_faces;
-  int nrb_faces;
-  int nmat;
+  unsigned nvrtx;
+  unsigned nvrpf;
+  unsigned ndim;
+  unsigned nvb_faces;
+  unsigned nrb_faces;
+  unsigned nmat;
   std::vector<std::vector<double>> point_coords;
   std::vector<std::vector<unsigned>> ipar;
   std::vector<int> imat_index;
@@ -64,18 +64,11 @@ public:
 
   explicit Hex_Mesh_Reader(std::string filename);
 
-  // Defaulted Hex_Mesh_Reader(const Hex_Mesh_Reader &rhs);
-  // Defaulted ~Hex_Mesh_Reader();
-
   // MANIPULATORS
-
-  // Defaulted Hex_Mesh_Reader& operator=(const Hex_Mesh_Reader &rhs);
 
   // ACCESSORS
 
-  /*!
-   *  Returns the point coordinates.
-   */
+  //! Returns the point coordinates.
   std::vector<std::vector<double>> get_node_coords() const {
     return point_coords;
   }

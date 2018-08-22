@@ -86,7 +86,7 @@ public:
    * \param flagtype Side flag type number.
    * \return The number of side flags.
    */
-  int get_flag_size(size_t flagtype) const {
+  size_t get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_nside_flag_types() - 1,
            "Invalid side flag type number!");
     return flagTypes[flagtype]->getFlagSize();

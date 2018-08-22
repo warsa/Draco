@@ -15,6 +15,7 @@ namespace rtt_RTT_Format_Reader {
 
 using rtt_mesh_element::Element_Definition;
 
+//----------------------------------------------------------------------------//
 /*!
  * \brief Transforms the RTT_Format data to the CGNS format.
  */
@@ -123,12 +124,12 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
         int side_type(cell_definition->get_side_types(s));
 
-        // check to see if this side type has already been added to the 
+        // check to see if this side type has already been added to the
         // elem_defs list of sides
         std::vector<int>::iterator sit(std::find(
             unique_side_types.begin(), unique_side_types.end(), side_type));
         if (sit == unique_side_types.end()) {
-          // not yet added for this polyhedron, so create a new element of 
+          // not yet added for this polyhedron, so create a new element of
           // this type push it onto the list
           Element_Definition elem_def(*cell_definitions[side_type]);
           elem_defs.push_back(elem_def);
@@ -136,7 +137,7 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
         }
       }
 
-      // Now create the index into the unique element definitions for each 
+      // Now create the index into the unique element definitions for each
       // side_type
       std::vector<unsigned> side_types;
       for (unsigned s = 0; s < cell_definition->get_nsides(); ++s) {
@@ -184,14 +185,16 @@ void RTT_Mesh_Reader::transform2CGNS(void) {
     element_defs.push_back(cell_definitions[rttMesh->get_cells_type(c)]);
   }
 }
+
+//----------------------------------------------------------------------------//
 /*!
- * \brief Returns the node numbers associated with each element (i.e., sides
- *        and cells).
+ * \brief Returns the node numbers associated with each element (i.e., sides and
+ *        cells).
  * \return The node numbers.
  */
 RTT_Mesh_Reader::vector_vector_uint RTT_Mesh_Reader::get_element_nodes() const {
   vector_vector_uint element_nodes(rttMesh->get_dims_nsides() +
-                                  rttMesh->get_dims_ncells());
+                                   rttMesh->get_dims_ncells());
 
   for (size_t i = 0; i < rttMesh->get_dims_nsides(); i++)
     element_nodes[i] = rttMesh->get_sides_nodes(i);
@@ -203,13 +206,16 @@ RTT_Mesh_Reader::vector_vector_uint RTT_Mesh_Reader::get_element_nodes() const {
 
   return element_nodes;
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Returns the nodes associated with each node_flag_type_name and
  *        node_flag_name combination.
  * \return The nodes associated with each node_flag_type_name/node_flag_name
  *         combination.
  */
-std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_node_sets() const {
+std::map<std::string, std::set<unsigned>>
+RTT_Mesh_Reader::get_node_sets() const {
   std::map<string, set_uint> node_sets;
   string flag_types_and_names;
 
@@ -232,14 +238,17 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_node_sets() const
   }
   return node_sets;
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Returns the elements (i.e., sides and cells) associated with each
- *        flag_type_name and flag_name combination for the sides and cells
- *        read from the mesh file data.
+ *        flag_type_name and flag_name combination for the sides and cells read
+ *        from the mesh file data.
  * \return The elements associated with each flag_type_name/flag_name
  *         combination.
  */
-std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() const {
+std::map<std::string, std::set<unsigned>>
+RTT_Mesh_Reader::get_element_sets() const {
   std::map<string, set_uint> element_sets;
   string flag_types_and_names;
 
@@ -251,7 +260,7 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() co
       flag_types_and_names = rttMesh->get_side_flags_flag_type(type);
       flag_types_and_names.append("/");
       flag_types_and_names += rttMesh->get_side_flags_flag_name(type, flag);
-      int flag_number = rttMesh->get_side_flags_flag_number(type, flag);
+      unsigned flag_number = rttMesh->get_side_flags_flag_number(type, flag);
       // loop over the sides.
       for (unsigned side = 0; side < rttMesh->get_dims_nsides(); side++) {
         if (flag_number == rttMesh->get_sides_flags(side, type))
@@ -276,7 +285,7 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() co
         if (flag_number == rttMesh->get_cells_flags(cell, type)) {
           Check(cell + nsides < UINT_MAX);
           cell_flags.insert(static_cast<unsigned>(cell + nsides));
-          }
+        }
       }
       // Allow the possibility that the cells could have identical flags
       // as the sides.
@@ -294,6 +303,8 @@ std::map<std::string, std::set<unsigned>> RTT_Mesh_Reader::get_element_sets() co
 
   return element_sets;
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Performs a basic sanity check on the mesh file data.
  * \return Acceptablity of the mesh file data.

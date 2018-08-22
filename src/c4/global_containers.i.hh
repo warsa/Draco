@@ -45,7 +45,8 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
 
   // Flatten the sets
   Check(local_set.size() < UINT_MAX);
-  unsigned const number_of_local_elements = static_cast<unsigned>(local_set.size());
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_set.size());
   vector<ElementType> local_elements;
   local_elements.resize(number_of_local_elements);
   copy(local_set.begin(), local_set.end(), local_elements.begin());

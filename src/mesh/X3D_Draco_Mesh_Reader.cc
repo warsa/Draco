@@ -247,12 +247,14 @@ X3D_Draco_Mesh_Reader::convert_key<std::string>(const std::string &skey) {
  *
  * \return vector of int node indices
  */
-std::vector<unsigned> X3D_Draco_Mesh_Reader::get_facenodes(int face) const {
+std::vector<unsigned> X3D_Draco_Mesh_Reader::get_facenodes(size_t face) const {
 
   Require(face <= x3d_header_map.at("faces")[0]);
+  Check(face < INT_MAX);
 
   // number of nodes is first value after face index in x3d file
-  const std::vector<int> &face_data = x3d_facenode_map.at(face);
+  const std::vector<int> &face_data =
+      x3d_facenode_map.at(static_cast<int>(face));
   const size_t num_nodes = face_data[0];
 
   // return vector

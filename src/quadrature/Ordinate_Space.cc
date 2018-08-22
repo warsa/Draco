@@ -8,7 +8,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-
 // Vendor software
 #include "Ordinate_Space.hh"
 #include "special_functions/Ylm.hh"
@@ -93,7 +92,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
       double const wt = ordinates[a].wt();
       if (!rtt_dsxx::soft_equiv(wt, 0.0) ||
           (rtt_dsxx::soft_equiv(wt, 0.0) && mu > 0))
-      // Not a starting ordinate.  Use Morel's recurrence relations to 
+      // Not a starting ordinate.  Use Morel's recurrence relations to
       // determine the next ordinate derivative coefficient.
       {
         Check(a > 0);
@@ -239,7 +238,7 @@ void Ordinate_Space::compute_angle_operator_coefficients_() {
     if (this->dimension() == 2 && this->ordering() == LEVEL_ORDERED) {
       // NEW: organize quadratures for 2D into levels, even for Cartesian
       // coordinates, but do not compute angular derivative approximation
-      // coefficients For our purposes here, the use of the first_angles_ 
+      // coefficients For our purposes here, the use of the first_angles_
       // vector is different from the use for axisymmetric coordinates; it is
       //  used to record find the index into the first ordinate on each level
 
@@ -451,7 +450,7 @@ bool Ordinate_Space::check_class_invariants() const {
     if (number_of_levels_ < levels)
       return false;
 
-    // Check that the angle derivative coefficient arrays have the correct 
+    // Check that the angle derivative coefficient arrays have the correct
     // size.
     return is_dependent_.size() == number_of_ordinates &&
            alpha_.size() == number_of_ordinates &&
@@ -468,8 +467,8 @@ void Ordinate_Space::compute_reflection_maps_() {
   reflect_eta_.resize(number_of_ordinates);
   reflect_xi_.resize(number_of_ordinates);
 
-  // Since the ordinate set will likely never number more than a few hundred, 
-  // we go ahead and do the simpleminded quadratic search to match the 
+  // Since the ordinate set will likely never number more than a few hundred,
+  // we go ahead and do the simpleminded quadratic search to match the
   // ordinates up.
 
   for (unsigned a = 0; a + 1 < number_of_ordinates; ++a) {
@@ -589,7 +588,7 @@ void Ordinate_Space::flux_to_moment(unsigned flux_map[3],
   }
   // In 2-D and 3-D the polar axis is aligned with the second coordinate axis
   // and the mu axis is aligned with the first coordinate. Thus the x flux
-  // corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0) harmonic, 
+  // corresponds to the -Y(1,1) harmonic, the y flux to the Y(1,0) harmonic,
   // and the z flux to the -Y(1,-1) harmonic.
   else if (dimension() == 2) {
     flux_map[0] = 1;

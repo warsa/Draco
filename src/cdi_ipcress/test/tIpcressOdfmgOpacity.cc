@@ -332,7 +332,7 @@ bool checkData(rtt_dsxx::ScalarUnitTest &ut, SP_Goo spGandOpacity) {
 
   // test group boundaries
   vec_d const groupBoundaries = spGandOpacity->getGroupBoundaries();
-  for (int group = 0; group < numGroups; group++) {
+  for (size_t group = 0; group < numGroups; group++) {
     if (!soft_equiv(groupBoundaries[group],
                     benchmarkData::groupBoundaries[group])) {
       itFails = true;
@@ -352,7 +352,7 @@ bool checkData(rtt_dsxx::ScalarUnitTest &ut, SP_Goo spGandOpacity) {
 
   itFails = false;
 
-  for (int band = 0; band < numBands; band++) {
+  for (size_t band = 0; band < numBands; band++) {
     if (!soft_equiv(bandBoundaries[band],
                     benchmarkData::bandBoundaries[band])) {
       itFails = true;
@@ -372,8 +372,8 @@ bool checkData(rtt_dsxx::ScalarUnitTest &ut, SP_Goo spGandOpacity) {
 
   itFails = false;
 
-  for (int group = 0; group < numGroups; group++) {
-    for (int band = 0; band < numBands; band++) {
+  for (size_t group = 0; group < numGroups; group++) {
+    for (size_t band = 0; band < numBands; band++) {
       if (!soft_equiv(multiBandOpacities[group][band],
                       benchmarkData::opacities[group][band])) {
         cout << "Mismatch in opacity for group " << group + 1 << "band "

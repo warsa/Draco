@@ -332,7 +332,7 @@ void Galerkin_Ordinate_Space::compute_operators() {
     // first get new ordinate weights from the usual GQ method, needed to
     // accurately integrate all moments
 
-    // compute a D matrix by inverting 
+    // compute a D matrix by inverting
     Check(numMoments < UINT_MAX);
     Check(numCartesianOrdinates < UINT_MAX);
     vector<double> temp_D(compute_inverse(

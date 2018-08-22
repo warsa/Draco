@@ -45,8 +45,7 @@ void powell(RandomContainer &p, RandomContainer &xi, double const ftol,
   unsigned const ITMAX = iter;
   double const TINY = 1.0e-25;
 
-  
-  Check(p.size() < UINT_MAX);   
+  Check(p.size() < UINT_MAX);
   unsigned const n = static_cast<unsigned>(p.size());
   vector<double> pt(n), ptt(n), xit(n);
 

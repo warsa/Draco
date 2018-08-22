@@ -11,8 +11,8 @@
 #ifndef rtt_mesh_test_Test_Mesh_Interface_hh
 #define rtt_mesh_test_Test_Mesh_Interface_hh
 
-#include "mesh/Draco_Mesh.hh"
 #include "ds++/Assert.hh"
+#include "mesh/Draco_Mesh.hh"
 #include <algorithm>
 
 namespace rtt_mesh_test {
@@ -129,7 +129,7 @@ Test_Mesh_Interface::Test_Mesh_Interface(
   // ... over left and right faces
   for (size_t j = 0; j < num_ydir; ++j) {
     // right face
-    side_set_flag[j + poff + num_xdir] = 2;
+    side_set_flag[j + num_xdir] = 2;
     Check(num_xdir * (j + 2) + j + 1 < UINT_MAX);
     side_to_node_linkage[2 * (j + num_xdir)] =
         static_cast<unsigned>(num_xdir * (j + 1) + j);

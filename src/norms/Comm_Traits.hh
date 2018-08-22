@@ -33,14 +33,20 @@ namespace rtt_norms {
  */
 //===========================================================================//
 
-template <class Index_t> class Comm_Traits {
+template <typename Index_t> class Comm_Traits {
   // The default implementation of Comm_Traits assumes that Index_t is
   // supported as an argument type to c4's send/receive.
 
 public:
-  static void send(const Index_t x, const size_t n) { rtt_c4::send(&x, 1, n); }
+  static void send(const Index_t x, const size_t n) {
+    Check(n < INT_MAX);
+    rtt_c4::send(&x, 1, static_cast<int>(n));
+  }
 
-  static void receive(Index_t &x, const size_t n) { rtt_c4::receive(&x, 1, n); }
+  static void receive(Index_t &x, const size_t n) {
+    Check(n < INT_MAX);
+    rtt_c4::receive(&x, 1, static_cast<int>(n));
+  }
 };
 
 //---------------------------------------------------------------------------//

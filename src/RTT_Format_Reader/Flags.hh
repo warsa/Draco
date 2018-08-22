@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/Flags.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -18,24 +18,29 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
- * \brief Controls parsing, storing, and accessing the data contained in the 
+ * \class Flags
+ * \brief Controls parsing, storing, and accessing the data contained in the
  *        node, side, and cell flag blocks of the mesh file.
  */
+//============================================================================//
 class Flags {
+
   // typedefs
   typedef std::ifstream ifstream;
   typedef std::string string;
   typedef std::vector<string> vector_str;
   typedef std::vector<int> vector_int;
 
-  int nflags;
+  size_t nflags;
   string name;
   vector_int flag_nums;
   vector_str flag_names;
 
 public:
-  Flags(int nflags_, const string &name_)
+  Flags(size_t nflags_, const string &name_)
       : nflags(nflags_), name(name_), flag_nums(nflags), flag_names(nflags) {}
   ~Flags() {}
 
@@ -77,7 +82,7 @@ public:
    * \brief Returns the number of flags.
    * \return The number of flags.
    */
-  int getFlagSize() const { return nflags; }
+  size_t getFlagSize() const { return nflags; }
 };
 
 } // end namespace rtt_RTT_Format_Reader

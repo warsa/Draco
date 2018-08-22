@@ -20,10 +20,14 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
+ * \class NodeFlags
  * \brief Controls parsing, storing, and accessing the data specific to the
  *        node flags block of the mesh file.
  */
+//============================================================================//
 class NodeFlags {
   // typedefs
   typedef std::ifstream ifstream;
@@ -33,7 +37,7 @@ class NodeFlags {
   std::vector<std::shared_ptr<Flags>> flagTypes;
 
 public:
-  NodeFlags(const Dims &dims_)
+  explicit NodeFlags(const Dims &dims_)
       : dims(dims_), flagTypes(dims.get_nnode_flag_types()) {}
   ~NodeFlags() {}
 
@@ -51,7 +55,7 @@ public:
    * \param flag Flag number.
    * \return The existance of the node flag type and number.
    */
-  bool allowed_flag(int flagtype, int flag) const {
+  bool allowed_flag(size_t flagtype, int flag) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     return flagTypes[flagtype]->allowed_flag(flag);
@@ -90,7 +94,7 @@ public:
    * \param flagtype Node flag type number.
    * \return The number of node flags.
    */
-  int get_flag_size(size_t flagtype) const {
+  size_t get_flag_size(size_t flagtype) const {
     Insist(flagtype <= dims.get_nnode_flag_types() - 1,
            "Invalid node flag type number!");
     return flagTypes[flagtype]->getFlagSize();

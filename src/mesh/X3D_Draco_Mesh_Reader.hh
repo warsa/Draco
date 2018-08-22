@@ -34,11 +34,11 @@ namespace rtt_mesh {
  * https://xcp-confluence.lanl.gov/display/SIMC/Ingen->Flag+Data+Transfer
  *
  * \todo: Boundary condition data is evidently parsed separately in X3D, so
- * meshes generated from this reader will not have side flag data (which ids
- * boundary conditions.
+ *        meshes generated from this reader will not have side flag data (which
+ *        ids boundary conditions.
  *
  * \todo: Consider using the Class_Parse_Table formalism developed by Kent Budge
- * as an alternative.
+ *        as an alternative.
  */
 //===========================================================================//
 
@@ -93,7 +93,7 @@ public:
     return static_cast<unsigned>(x3d_header_map.at("process")[0] - 1);
   }
   unsigned get_numdim() const {
-    Check(x3d_header_map.at("numdim")[0]<UINT_MAX);
+    Check(x3d_header_map.at("numdim")[0] < UINT_MAX);
     return static_cast<unsigned>(x3d_header_map.at("numdim")[0]);
   }
   size_t get_numcells() const { return x3d_header_map.at("elements")[0]; }
@@ -135,7 +135,7 @@ private:
 
   template <typename KT> KT convert_key(const std::string &skey);
 
-  std::vector<unsigned> get_facenodes(int face) const;
+  std::vector<unsigned> get_facenodes(size_t face) const;
 
   void read_bdy_files();
 };

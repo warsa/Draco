@@ -228,8 +228,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       ITFAILS;
 
     token = tokens.shift();
-    if (token.type() != STRING || token.text() != 
-        "\"manifest \\\"string\\\"\"")
+    if (token.type() != STRING || token.text() != "\"manifest \\\"string\\\"\"")
       ITFAILS;
 
     token = tokens.shift();
@@ -353,7 +352,7 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
           << "\tunbalanced quotes were read from the input\n"
           << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
       FAILMSG(msg.str());
-    } catch (const Syntax_Error & msg) {
+    } catch (const Syntax_Error &msg) {
       // cout << msg.what() << endl;
       // exception = true;
       string errmsg = msg.what();

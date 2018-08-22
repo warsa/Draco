@@ -92,7 +92,8 @@ Element_Definition::Element_Definition(Element_Type const &type_)
 //---------------------------------------------------------------------------//
 Element_Definition::Element_Definition(
     std::string name_, unsigned dimension_, unsigned number_of_nodes_,
-    unsigned number_of_sides_, std::vector<Element_Definition> const &elem_defs_,
+    unsigned number_of_sides_,
+    std::vector<Element_Definition> const &elem_defs_,
     std::vector<unsigned> const &side_type_,
     std::vector<std::vector<unsigned>> const &side_nodes_)
     : name(name_), type((dimension_ == 2) ? POLYGON : POLYHEDRON),

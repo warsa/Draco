@@ -57,7 +57,7 @@ public:
            "Invalid node data id number!");
     return names[id_numb];
   }
- 
+
   /*!
    * \brief Returns the units associated with the specified node_data_id.
    * \param id_numb node_data_id index number.

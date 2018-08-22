@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*--------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/CellFlags.cc
  * \author B.T. Adams
  * \date   Mon Jun 7 10:33:26 2000
@@ -11,9 +11,11 @@
 #include "CellFlags.hh"
 
 namespace rtt_RTT_Format_Reader {
+
+//----------------------------------------------------------------------------//
 /*!
- * \brief Parses the cell_flags data block of the mesh file via calls to 
- *        private member functions.
+ * \brief Parses the cell_flags data block of the mesh file via calls to private
+ *        member functions.
  * \param meshfile Mesh file name.
  */
 void CellFlags::readCellFlags(ifstream &meshfile) {
@@ -21,6 +23,8 @@ void CellFlags::readCellFlags(ifstream &meshfile) {
   readFlagTypes(meshfile);
   readEndKeyword(meshfile);
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -33,6 +37,8 @@ void CellFlags::readKeyword(ifstream &meshfile) {
          "Invalid mesh file: cell_flags block missing");
   std::getline(meshfile, dummyString);
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the cell_flags block data.
  * \param meshfile Mesh file name.
@@ -54,6 +60,8 @@ void CellFlags::readFlagTypes(ifstream &meshfile) {
     flagTypes[i]->readFlags(meshfile);
   }
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Reads and validates the end_cell_flags block keyword.
  * \param meshfile Mesh file name.
@@ -66,6 +74,8 @@ void CellFlags::readEndKeyword(ifstream &meshfile) {
          "Invalid mesh file: cell_flags block missing end");
   std::getline(meshfile, dummyString); // read and discard blank line.
 }
+
+//----------------------------------------------------------------------------//
 /*!
  * \brief Returns the index to the cell flag type that contains the specified
  *        string.
@@ -74,10 +84,12 @@ void CellFlags::readEndKeyword(ifstream &meshfile) {
  */
 int CellFlags::get_flag_type_index(string &desired_flag_type) const {
   int flag_type_index = -1;
-  for (int f = 0; f < dims.get_ncell_flag_types(); f++) {
+  for (size_t f = 0; f < dims.get_ncell_flag_types(); f++) {
     string flag_type = flagTypes[f]->getFlagType();
-    if (flag_type == desired_flag_type)
-      flag_type_index = f;
+    if (flag_type == desired_flag_type) {
+      Check(f < INT_MAX);
+      flag_type_index = static_cast<int>(f);
+    }
   }
   return flag_type_index;
 }

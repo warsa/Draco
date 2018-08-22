@@ -294,8 +294,10 @@ bool test_bar_2(rtt_dsxx::UnitTest &ut,
   const int size = 1;
   int s0[size] = {0};
   int s1[size] = {1};
-  ldum = ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
-  ldum = ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;
@@ -325,8 +327,10 @@ bool test_bar_3(rtt_dsxx::UnitTest &ut,
   const int size = 1;
   int s0[size] = {0};
   int s1[size] = {1};
-  ldum = ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
-  ldum = ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(0) == vector<unsigned>(s0, s0 + size));
+  ldum =
+      ldum && (elem_def.get_side_nodes(1) == vector<unsigned>(s1, s1 + size));
   if (ldum) {
     ostringstream message;
     message << ename << " Element OK." << endl;

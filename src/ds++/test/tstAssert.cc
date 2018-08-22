@@ -467,7 +467,7 @@ void t_catch_bad_alloc(rtt_dsxx::UnitTest &ut) {
     std::bad_alloc exception;
     throw exception;
     FAILMSG("failed to catch std::bad_alloc exception.");
-  } catch (std::bad_alloc &e) {
+  } catch (std::bad_alloc & /*err*/) {
     PASSMSG("caught a manually thrown std::bad_alloc exception.");
     std::cout << rtt_dsxx::print_stacktrace("Caught a std::bad_alloc")
               << std::endl;

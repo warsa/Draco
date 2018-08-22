@@ -266,7 +266,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   caught = false;
   try {
     spCDI_Analytic->gray(rtt_cdi::ANALYTIC, a);
-  } catch (const rtt_dsxx::assertion &/*excpt*/) {
+  } catch (const rtt_dsxx::assertion & /*excpt*/) {
     PASSMSG("Good, caught illegal accessor to CDI-gray().");
     caught = true;
   }

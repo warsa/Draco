@@ -45,7 +45,7 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
     // here's how you write strings:
     size_t ssize = s.size();
     f << ssize;
-    for (int k = 0; k < ssize; k++)
+    for (size_t k = 0; k < ssize; k++)
       f << s[k];
 
     f << x << bf << bt;
@@ -67,12 +67,12 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
       ITFAILS;
 
     // here's how you read strings:
-    int ssize;
+    size_t ssize;
     f >> ssize;
-    if (ssize != int(s.size()))
+    if (ssize != s.size())
       ITFAILS;
     s_in.resize(ssize);
-    for (int k = 0; k < ssize; k++)
+    for (size_t k = 0; k < ssize; k++)
       f >> s_in[k];
 
     if (s != s_in)

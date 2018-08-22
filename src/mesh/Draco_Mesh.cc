@@ -33,21 +33,21 @@ unsigned safe_convert_from_size_t(size_t const in_) {
  * \param[in] geometry_ enumerator of possible coordinate system geometries
  * \param[in] cell_type_ number of vertices for each cell
  * \param[in] cell_to_node_linkage_ serialized map of cell indices to node
- * indices.
+ *               indices.
  * \param[in] side_set_flag_ map of side indices (per cell) to side flag (global
- * index for a side).
+ *               index for a side).
  * \param[in] side_node_count_ number of nodes per each cell on a side of
- * the mesh.
+ *               the mesh.
  * \param[in] side_to_node_linkage_ serialized map of side indices (per side
- * cell) to node indices.
+ *               cell) to node indices.
  * \param[in] coordinates_ serialized map of node index to coordinate values.
  * \param[in] global_node_number_ map of local to global node index (vector
- * subscript is local node index and value is global node index; for one
- * process, this is the identity map).
+ *               subscript is local node index and value is global node index;
+ *               for one process, this is the identity map).
  * \param[in] ghost_cell_type_ number of vertices corresponding to each ghost
- * cell (1 in 1D, 2 in 2D, arbitrary in 3D).
+ *               cell (1 in 1D, 2 in 2D, arbitrary in 3D).
  * \param[in] ghost_cell_to_node_linkage_ serialized map of index into vector of
- * ghost cells to local index of ghost nodes.
+ *               ghost cells to local index of ghost nodes.
  * \param[in] ghost_cell_number_ cell index local to other processor.
  * \param[in] ghost_cell_rank_ rank of each ghost cell.
  */
@@ -103,7 +103,7 @@ Draco_Mesh::Draco_Mesh(unsigned dimension_, Geometry geometry_,
  * \brief Build the cell-face index map to the corresponding coordinates.
  *
  * \param[in] coordinates serialized map of node index to coordinate values
- * (passed from constructor).
+ *               (passed from constructor).
  * \return a vector of vectors of size=dimension of coordinates.
  */
 std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
@@ -167,7 +167,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
   std::map<unsigned, std::vector<unsigned>> node_to_side_map =
       compute_node_indx_map(side_node_count, side_to_node_linkage);
 
-  Remember(const unsigned num_sides =
+  Remember(const size_t num_sides =
                safe_convert_from_size_t(side_node_count.size()));
   Check(dimension == 2 ? side_to_node_linkage.size() == 2 * num_sides : true);
   Check(node_to_side_map.size() == num_sides);

@@ -127,8 +127,8 @@ Token Text_Token_Stream::fill_() {
           c = peek_(ci);
         }
         if (!no_nonbreaking_ws_) {
-          // Replace any nonbreaking whitespace after the identifier with a 
-          // single space, but ONLY if the identifier is followed by another 
+          // Replace any nonbreaking whitespace after the identifier with a
+          // single space, but ONLY if the identifier is followed by another
           // identifer.
           while (is_nb_whitespace(c)) {
             ci++;

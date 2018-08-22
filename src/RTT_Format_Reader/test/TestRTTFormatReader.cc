@@ -21,7 +21,6 @@ using namespace std;
 using namespace rtt_dsxx;
 
 //---------------------------------------------------------------------------//
-
 map<Meshes, bool> Dims_validated;
 
 //---------------------------------------------------------------------------//
@@ -1279,9 +1278,12 @@ bool check_nodes(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   }
   // Check the node parents.
   bool got_nodes_parents = true;
-  for (size_t i = 0; i < mesh.get_dims_nnodes(); i++)
-    if (parents[i] != mesh.get_nodes_parents(i))
+  for (size_t i = 0; i < mesh.get_dims_nnodes(); i++) {
+    Check(mesh.get_nodes_parents(i) >= 0);
+    Check(parents[i] < INT_MAX);
+    if (static_cast<int>(parents[i]) != mesh.get_nodes_parents(i))
       got_nodes_parents = false;
+  }
   if (!got_nodes_parents) {
     FAILMSG("Nodes parents not obtained.");
     all_passed = false;
@@ -1482,9 +1484,12 @@ bool check_cells(RTT_Format_Reader const &mesh, Meshes const &meshtype,
   // Check the cell flags.
   bool got_cells_flags = true;
   for (size_t i = 0; i < mesh.get_dims_ncells(); i++) {
-    for (size_t f = 0; f < mesh.get_dims_ncell_flag_types(); f++)
-      if (flags[i][f] != mesh.get_cells_flags(i, f))
+    for (size_t f = 0; f < mesh.get_dims_ncell_flag_types(); f++) {
+      Check(mesh.get_cells_flags(i, f) >= 0);
+      Check(flags[i][f] < INT_MAX);
+      if (static_cast<int>(flags[i][f]) != mesh.get_cells_flags(i, f))
         got_cells_flags = false;
+    }
   }
   if (!got_cells_flags) {
     FAILMSG("Cell flags not obtained.");

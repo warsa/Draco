@@ -29,7 +29,6 @@ class CellDefs;
  * \brief Controls parsing, storing, and accessing the data contained in the
  *        cell definition block of the mesh file.
  */
-//---------------------------------------------------------------------------//
 class CellDef {
   /* TYPEDEFS */
 
@@ -68,7 +67,7 @@ public:
   void readDef(ifstream &meshfile);
   void redefineCellDef(vector_uint const &new_side_types_,
                        vector_vector_uint const &new_ordered_sides,
-                       int const ndim);
+                       size_t const ndim);
 
 public:
   /*!
@@ -99,9 +98,7 @@ public:
 
   vector_uint get_all_side_types() const { return side_types; }
   vector_vector_uint get_all_sides() const { return sides; }
-  vector_vector_uint get_all_ordered_sides() const {
-    return ordered_sides;
-  }
+  vector_vector_uint get_all_ordered_sides() const { return ordered_sides; }
 
   /*!
    * \brief Returns the side definition of the specified side index of this
@@ -164,9 +161,9 @@ public:
   }
 
   void readCellDefs(ifstream &meshfile);
-  void redefineCellDefs(vector_vector_uint const &cell_side_types,
-                        std::vector<vector_vector_uint> const
-                            &cell_ordered_sides);
+  void
+  redefineCellDefs(vector_vector_uint const &cell_side_types,
+                   std::vector<vector_vector_uint> const &cell_ordered_sides);
 
 private:
   void readKeyword(ifstream &meshfile);
@@ -250,7 +247,7 @@ public:
    * \brief Returns the number of unique cell type definitions.
    * \return The number of cell definitions.
    */
-   //    int get_ncell_defs() const { return dims.get_ncell_defs(); }
+  //    int get_ncell_defs() const { return dims.get_ncell_defs(); }
 
   /*!
    * \brief Returns the status of the flag indicating that the cell

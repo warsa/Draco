@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! 
+/*!
  * \file   RTT_Format_Reader/CellDataIDs.hh
  * \author B.T. Adams
  * \date   Wed Jun 7 10:33:26 2000
@@ -19,10 +19,14 @@
 #include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
- * \brief Controls parsing, storing, and accessing the data specific to the 
+ * \class CellDataIDs
+ * \brief Controls parsing, storing, and accessing the data specific to the
  *        cell data ids block of the mesh file.
  */
+//============================================================================//
 class CellDataIDs {
   // typedefs
   typedef std::ifstream ifstream;
@@ -34,7 +38,7 @@ class CellDataIDs {
   vector_str units;
 
 public:
-  CellDataIDs(const Dims &dims_)
+  explicit CellDataIDs(const Dims &dims_)
       : dims(dims_), names(dims.get_ncell_data()),
         units(dims.get_ncell_data()) {}
   ~CellDataIDs() {}

@@ -25,8 +25,9 @@ public:
   //! Construct the predicate for a specified dimensionality.
   is_cell(size_t const dimensionality) : dimensionality(dimensionality) {}
 
-  //! Returns \c true if the specified type index has the predicate
-  //! dimensionality; \c false otherwise.
+  /*! \brief Returns \c true if the specified type index has the predicate
+   *         dimensionality; \c false otherwise.
+   */
   bool operator()(Element_Definition::Element_Type const type) {
     return (static_cast<unsigned>(Element_Definition(type).get_dimension()) ==
             dimensionality);
@@ -64,8 +65,7 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
     }
   }
 
-  //-------------------------------------------------------------------------------------------------------------------------------//
-
+  //--------------------------------------------------------------------------//
   // Read polyhedron mesh file - this is the mesh that is of most interest in
   // this test
   {
@@ -83,10 +83,10 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
 
       // Investigate and report on the mesh
 
-      // The element types begins with side types, followed by cell types.
-      // We can distinguish these by their dimensionality. Cell types have
-      // the full dimensionality of the mesh; we assume side types have one
-      // less than the full dimensionality of the mesh.
+      // The element types begins with side types, followed by cell types.  We
+      // can distinguish these by their dimensionality. Cell types have the full
+      // dimensionality of the mesh; we assume side types have one less than the
+      // full dimensionality of the mesh.
 
       size_t const ndim = mesh->get_dims_ndim();
       vector<Element_Definition::Element_Type> const element_types(
@@ -107,10 +107,14 @@ void test_polyhedron(rtt_dsxx::UnitTest &ut) {
         element_defs[j]->print(cout);
       }
 
+      // typeof(auto) =
+      // iterator_traits<vector<Element_Definition::Element_Type>>::difference_type
       auto const ncells =
           count_if(element_types.begin(), element_types.end(), is_cell(ndim));
       size_t const mcells = mesh->get_dims_ncells();
-      if (ncells != mcells) {
+      Check(ncells >= 0);
+      Check(mcells < INT_MAX);
+      if (static_cast<size_t>(ncells) != mcells) {
         FAILMSG("Unexpected number of cells.");
       } else {
         PASSMSG("Correct number of cells.");
