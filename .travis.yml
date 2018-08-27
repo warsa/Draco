@@ -16,7 +16,7 @@ services:
 #------------------------------------------------------------------------------#
 # Notes: Build docker container before running this script:
 #
-# 1. cd to direcotry contataining Dockerfile.
+# 1. cd to directory contataining Dockerfile.
 # 2. Build the docker container.  This can take an hour or more.  If you are
 #    starting from scratch, you will need to change the first line of the
 #    Dockerfile so that it starts from 'ubuntu' instead of 'draco-travis-ci'
@@ -52,7 +52,7 @@ services:
 #
 # - The docker image mounts the PR sources (/home/travis/build/lanl/Draco) as
 #   /home/travis/Draco
-# - The vneodrs are at /vendors/spack
+# - The vendors are at /vendors/spack
 # - Spack is already in the environment
 #------------------------------------------------------------------------------#
 

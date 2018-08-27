@@ -33,9 +33,10 @@ case ${-} in
 
     # Turn on checkwinsize
     shopt -s checkwinsize # autocorrect window size
-    shopt -s cdspell # autocorrect spelling errors on cd command line.
-    shopt -s histappend # append to the history file, don't overwrite it
-    shopt -s direxpand
+    shopt -s cdspell      # autocorrect spelling errors on cd command line.
+    shopt -s histappend   # append to the history file, don't overwrite it
+    # shopt -s direxpand  # Doesn't work on toss22 machines. Move this command to
+                          # .bashrc_toss3 and .bashrc_tt
 
     # don't put duplicate lines or lines starting with space in the history. See
     # bash(1) for more options
