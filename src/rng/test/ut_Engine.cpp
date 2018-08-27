@@ -37,9 +37,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma warning(disable : 4521)
 #endif
 #ifdef __GNUC__
-#if (RNG_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
+#if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused variable" warning.
-#if (RNG_GNUC_VERSION >= 40600)
+#if (DBS_GNUC_VERSION >= 40600)
 #pragma GCC diagnostic push
 #endif
 #pragma GCC diagnostic ignored "-Wunused-variable"
@@ -270,7 +270,7 @@ int main(int, char **) {
 #endif
 
 #ifdef __GNUC__
-#if (RNG_GNUC_VERSION >= 40600)
+#if (DBS_GNUC_VERSION >= 40600)
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
 #endif
