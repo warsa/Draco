@@ -100,7 +100,7 @@ namespace rtt_dsxx {
 #ifdef __GNUC__
 
 #define prefetch_cache_line(addr, for_write, temporality)                      \
-  __builtin_prefetch(addr, for_write, temporality)
+  pre __builtin_prefetch(addr, for_write, temporality)
 
 #else
 // not __GNUC__
@@ -112,7 +112,11 @@ namespace rtt_dsxx {
 
 //! Number of bytes (char) on a cache line.
 
-unsigned const CACHE_LINE_CHAR = 32U; // correct for Haswell
+#ifdef draco_isKNL
+unsigned const CACHE_LINE_CHAR = 64U;
+#else
+unsigned const CACHE_LINE_CHAR = 32U; // correct for Haswell; assumed for other
+#endif
 
 //! Number of ints in a cache line.
 
