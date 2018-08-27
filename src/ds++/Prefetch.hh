@@ -120,15 +120,15 @@ unsigned const CACHE_LINE_CHAR = 32U; // correct for Haswell; assumed for other
 
 //! Number of ints in a cache line.
 
-unsigned const CACHE_LINE_INT = CACHE_LINE_CHAR * sizeof(int);
+unsigned const CACHE_LINE_INT = CACHE_LINE_CHAR / sizeof(int);
 
 //! Number of long ints in a cache line.
 
-unsigned const CACHE_LINE_LONG = CACHE_LINE_CHAR * sizeof(long);
+unsigned const CACHE_LINE_LONG = CACHE_LINE_CHAR / sizeof(long);
 
 //! Number of double precision values in a cache line.
 
-unsigned const CACHE_LINE_DOUBLE = CACHE_LINE_CHAR * sizeof(double);
+unsigned const CACHE_LINE_DOUBLE = CACHE_LINE_CHAR / sizeof(double);
 
 } // namespace rtt_dsxx
 
