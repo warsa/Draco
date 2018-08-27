@@ -100,7 +100,7 @@ namespace rtt_dsxx {
 #ifdef __GNUC__
 
 #define prefetch_cache_line(addr, for_write, temporality)                      \
-  pre __builtin_prefetch(addr, for_write, temporality)
+  __builtin_prefetch(addr, for_write, temporality)
 
 #else
 // not __GNUC__
