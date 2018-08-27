@@ -505,6 +505,11 @@ macro( setupSuperLU_DIST )
       message( STATUS "Looking for SuperLU_DIST.....not found" )
     endif()
 
+    if( ${SuperLU_DIST_VERSION} VERSION_GREATER 5.2.9 )
+      message( FATAL_ERROR "The API change in SuperLU_DIST 5.3+ is not yet
+      supported by Draco. Please use a version of SuperLU_DIST prior to 5.3.")
+    endif()
+
     #===========================================================================
     # Include some information that can be printed by the build system.
     set_package_properties( SuperLU_DIST PROPERTIES

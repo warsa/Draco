@@ -66,11 +66,11 @@ case ${-} in
    function sq() {
      local stop=0; local hluser="$USER"; local squeue_args=""
      local OPTIND;
-     while getopts ":hr:u:" opt; do
+     while getopts ":A:hj:n:p:R:r:u:" opt; do
        case $opt in
          h) echo "Usage: sq [-h] [-r <moniker>] [-u <moniker>]"; stop=1 ;;
          r) hluser=$OPTARG ;;
-         u) squeue_args="-u $OPTARG" ;;
+         A|j|n|p|R|u) squeue_args+=" ${opt} $OPTARG" ;;
        esac
      done
      shift $((OPTIND-1))
