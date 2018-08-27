@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wfloat-equal"
-#if (RNG_GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
 #endif

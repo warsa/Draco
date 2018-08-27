@@ -33,6 +33,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
    else()
       set( FPETRAP_DARWIN_INTEL 1 )
    endif()
+
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
    set( FPETRAP_WINDOWS_X86 1 )
 endif()
@@ -52,6 +53,11 @@ set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 # Provide an enum from CMAKE_CXX_COMPILER_VERSION
 string( REPLACE "." "" CMAKE_CXX_COMPILER_VERSION_ENUM
   ${CMAKE_CXX_COMPILER_VERSION} )
+
+# Is this a KNL
+if( CRAY_PE AND "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
+  set( draco_isKNL ON )
+endif()
 
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )

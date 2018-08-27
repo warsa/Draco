@@ -32,6 +32,21 @@
 #define Draco_VERSION_PATCH "@Draco_VERSION_PATCH@"
 
 /* System Type */
+
+/*
+ * Commonly defined CPP symbols:
+ *
+ * __GNUC__
+ * __clang__
+ * __ICC
+ * NVCC
+ * APPLE
+ * _MSC_FULL_VER, _MSC_VER
+ * _WIN32
+ * __CYGWIN__
+ */
+
+#cmakedefine CMAKE_C_COMPILER_ID @CMAKE_C_COMPILER_ID@
 #cmakedefine MSVC @MSVC@
 #cmakedefine MSVC_IDE @MSVC_IDE@
 #cmakedefine MSVC_VERSION @MSVC_VERSION@
@@ -43,10 +58,16 @@
 #cmakedefine draco_isLinux_with_aprun
 #cmakedefine draco_isCatamount
 #cmakedefine draco_isPGI
+#cmakedefine draco_isKNL
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
 #cmakedefine HAVE_CUDA @HAVE_CUDA@
 #cmakedefine APPLE @APPLE@
 #cmakedefine SITENAME "@SITENAME@"
+
+#ifdef __GNUC__
+#define DBS_GNUC_VERSION \
+  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* Platform checks */
