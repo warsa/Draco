@@ -273,7 +273,7 @@ void Ensight_Translator::ensight_dump(
 
   open(icycle, time, dt);
 
-  for (size_t ipart = 0; ipart < part_names.size(); ipart++) {
+  for (uint32_t ipart = 0; ipart < part_names.size(); ipart++) {
     // Load vertices_of_part into a vector.
     set_int &v = vertices_of_part[ipart];
     sf_int vertices;

@@ -69,7 +69,8 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
   if (total_size != p.size())
     ITFAILS;
 
-  vector<char> buffer(p.size());
+  Check(p.size() < UINT_MAX);
+  vector<char> buffer(static_cast<unsigned>(p.size()));
 
   // Pack into buffer.
 

@@ -58,10 +58,16 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   // test longs for blocking and non-blocking sums
-  long xlong = rtt_c4::node() + 10000000000L;
+  long const max_long(std::numeric_limits<long>::max());
+  int64_t const ten_billion(10000000000L); // 1e10 > MAX_INT
+  int32_t const one_billion(1000000000L);  // 1e9 < MAX_INT
+
+  long xlong =
+      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   global_sum(xlong);
 
-  long xlong_send = rtt_c4::node() + 10000000000L;
+  long xlong_send =
+      rtt_c4::node() + (max_long > ten_billion ? ten_billion : one_billion);
   long xlong_recv = 0;
   C4_Req long_request;
   global_isum(xlong_send, xlong_recv, long_request);
@@ -69,7 +75,7 @@ void elemental_reduction(rtt_dsxx::UnitTest &ut) {
 
   long long_answer = 0;
   for (int i = 0; i < rtt_c4::nodes(); i++)
-    long_answer += i + 10000000000L;
+    long_answer += i + (max_long > ten_billion ? ten_billion : one_billion);
 
   if (xlong != long_answer)
     ITFAILS;

@@ -545,7 +545,7 @@ void pack_data(FT const &field, std::vector<char> &packed) {
   Require(packed.empty());
 
   // determine the size of the field
-  Check(field.size() < std::numeric_limits<int>::max());
+  Check(field.size() < INT_MAX);
   int const field_size = static_cast<int>(field.size());
 
   // determine the number of bytes in the field

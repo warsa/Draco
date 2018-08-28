@@ -110,7 +110,7 @@ void Ensight_Stream::close() {
 
 //---------------------------------------------------------------------------//
 //! Output for ints.
-Ensight_Stream &Ensight_Stream::operator<<(const int i) {
+Ensight_Stream &Ensight_Stream::operator<<(const int32_t i) {
   Require(d_stream.is_open());
 
   if (d_binary)
@@ -125,25 +125,40 @@ Ensight_Stream &Ensight_Stream::operator<<(const int i) {
 
 //---------------------------------------------------------------------------//
 /*
- * \brief Output for uin32_t.
+ * \brief Output for unsigned
  *
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
  */
-Ensight_Stream &Ensight_Stream::operator<<(const uint32_t i) {
+Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
   Check(i < INT_MAX);
   int const j = static_cast<int>(i);
   *this << j;
   return *this;
 }
+
 //---------------------------------------------------------------------------//
-/*!
- * \brief Output for size_t.
+/*
+ * \brief Output for int64_t.
  *
  * This is a convience function.  It simply casts to int.  Ensight does not
  * support output of unsigned ints.
  */
-Ensight_Stream &Ensight_Stream::operator<<(const std::size_t i) {
+Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
+  Check(i < INT_MAX && i > -1*INT_MAX);
+  int const j = static_cast<int>(i);
+  *this << j;
+  return *this;
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Output for uint64_t.
+ *
+ * This is a convience function.  It simply casts to int.  Ensight does not
+ * support output of unsigned ints.
+ */
+Ensight_Stream &Ensight_Stream::operator<<(const uint64_t i) {
   Check(i < INT_MAX);
   int const j = static_cast<int>(i);
   *this << j;
