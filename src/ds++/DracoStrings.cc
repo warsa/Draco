@@ -22,6 +22,11 @@ namespace rtt_dsxx {
 template <> auto parse_number_impl<int>(std::string const &str) -> int {
   return std::stoi(str);
 }
+template <>
+auto parse_number_impl<unsigned long long>(std::string const &str)
+    -> unsigned long long {
+  return std::stoull(str);
+}
 template <> auto parse_number_impl<long>(std::string const &str) -> long {
   return std::stol(str);
 }

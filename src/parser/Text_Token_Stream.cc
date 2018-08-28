@@ -1,14 +1,11 @@
-//----------------------------------*-C++-*-----------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   Text_Token_Stream.cc
  * \author Kent G. Budge
  * \brief  Contains definitions of all Text_Token_Stream member functions.
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
+ *         All rights reserved. */
+//---------------------------------------------------------------------------//
 
 #include "Text_Token_Stream.hh"
 #include <cstring>
@@ -18,7 +15,7 @@
 namespace rtt_parser {
 using namespace std;
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // Helper function to allow a string && argument to take over storage of a
 // string.
 static string give(string &source) {
@@ -27,13 +24,13 @@ static string give(string &source) {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 char const default_ws_string[] = "=:;,";
 
 set<char> const Text_Token_Stream::default_whitespace(
     default_ws_string, default_ws_string + sizeof(default_ws_string));
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the specified set of breaking
  * whitespace characters.
@@ -65,7 +62,6 @@ set<char> const Text_Token_Stream::default_whitespace(
  * nonbreaking whitespace separating each identifier within a keyword is
  * replaced by a single space character.
  */
-
 Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
                                      bool const no_nonbreaking_ws)
     : buffer_(), whitespace_(ws), line_(1),
@@ -76,7 +72,7 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
   Ensure(this->no_nonbreaking_ws() == no_nonbreaking_ws);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Constructs a Text_Token_Stream with the default set of breaking
  * whitespace characters. See the previous constructor documentation for a
@@ -85,7 +81,6 @@ Text_Token_Stream::Text_Token_Stream(set<char> const &ws,
  * The default whitespace characters are contained in the set
  * \c Text_Token_Stream::default_whitespace.
  */
-
 Text_Token_Stream::Text_Token_Stream(void)
     : buffer_(), whitespace_(default_whitespace), line_(1),
       no_nonbreaking_ws_(false) {
@@ -95,13 +90,12 @@ Text_Token_Stream::Text_Token_Stream(void)
   Ensure(!no_nonbreaking_ws());
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * \brief Scan the next token from the character stream. The character stream is
- * accessed via the fill_character_buffer, error, and end functions, which are
- * pure virtual functions.
+ * \brief Scan the next token from the character stream. The character stream 
+ * is accessed via the fill_character_buffer, error, and end functions, which 
+ * are pure virtual functions.
  */
-
 Token Text_Token_Stream::fill_() {
   eat_whitespace_();
 
@@ -133,9 +127,9 @@ Token Text_Token_Stream::fill_() {
           c = peek_(ci);
         }
         if (!no_nonbreaking_ws_) {
-          // Replace any nonbreaking whitespace after the identifier
-          // with a single space, but ONLY if the identifier is
-          // followed by another identifer.
+          // Replace any nonbreaking whitespace after the identifier with a
+          // single space, but ONLY if the identifier is followed by another
+          // identifer.
           while (is_nb_whitespace(c)) {
             ci++;
             c = peek_(ci);
@@ -158,9 +152,9 @@ Token Text_Token_Stream::fill_() {
           c = peek_();
         }
         if (!no_nonbreaking_ws_) {
-          // Replace any nonbreaking whitespace after the identifier
-          // with a single space, but ONLY if the identifier is
-          // followed by another identifer.
+          // Replace any nonbreaking whitespace after the identifier with a
+          // single space, but ONLY if the identifier is followed by another
+          // identifer.
           while (is_nb_whitespace(c)) {
             pop_char_();
             c = peek_();
@@ -331,23 +325,21 @@ Token Text_Token_Stream::fill_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
- * \brief This function searches for the argument character in its internal list
- * of whitespace characters.
+ * \brief This function searches for the argument character in its internal 
+ *        list of whitespace characters.
  *
- * \param c
- * Character to be checked against the whitespace list.
+ * \param c Character to be checked against the whitespace list.
  *
  * \return \c true if and only if the character is found in the internal
- * whitespace list.
+ *         whitespace list.
  */
-
 bool Text_Token_Stream::is_whitespace(char const c) const {
   return isspace(c) || whitespace_.count(c);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief This function searches for the argument character in the
  * Token_Stream's internal list of nonbreaking whitespace characters.
@@ -358,12 +350,11 @@ bool Text_Token_Stream::is_whitespace(char const c) const {
  * nonbreaking whitespace list, and is \e not found in the breaking whitespace
  * list..
  */
-
 bool Text_Token_Stream::is_nb_whitespace(char const c) const {
   return !whitespace_.count(c) && (c == ' ' || c == '\t');
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -374,7 +365,6 @@ bool Text_Token_Stream::is_nb_whitespace(char const c) const {
  *
  * \return The next character in the buffer.
  */
-
 char Text_Token_Stream::pop_char_() {
   Remember(unsigned const old_line = line_);
 
@@ -388,13 +378,12 @@ char Text_Token_Stream::pop_char_() {
   return Result;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a floating literal.
  *
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_floating_literal_() {
   unsigned pos = 0;
   if (scan_fractional_constant_(pos) > 0) {
@@ -409,13 +398,12 @@ unsigned Text_Token_Stream::scan_floating_literal_() {
   }
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a digit sequence.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos) {
   unsigned const old_pos = pos;
   while (isdigit(peek_(pos)))
@@ -423,13 +411,12 @@ unsigned Text_Token_Stream::scan_digit_sequence_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an exponent part.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos) {
   unsigned const old_pos = pos;
   char c = peek_(pos);
@@ -445,13 +432,12 @@ unsigned Text_Token_Stream::scan_exponent_part_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan a fractional constant.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos) {
   unsigned const old_pos = pos;
   if (scan_digit_sequence_(pos) > 0) {
@@ -470,13 +456,12 @@ unsigned Text_Token_Stream::scan_fractional_constant_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan an integer literal.
  *
  * \return length of scanned literal; 0 if no literal could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_integer_literal_() {
   unsigned pos = 0;
   if (scan_decimal_literal_(pos) > 0) {
@@ -488,13 +473,12 @@ unsigned Text_Token_Stream::scan_integer_literal_() {
   return pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan decimal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos) {
   unsigned const old_pos = pos;
   char c = peek_(pos);
@@ -507,13 +491,12 @@ unsigned Text_Token_Stream::scan_decimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan hexadecimal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos) {
   unsigned old_pos = pos;
   if (peek_(pos) == '0') {
@@ -537,13 +520,12 @@ unsigned Text_Token_Stream::scan_hexadecimal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \brief Try to scan octal literal.
  *
  * \return length of scanned text; 0 if no text could be scanned.
  */
-
 unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
   unsigned old_pos = pos;
   char c = peek_(pos);
@@ -556,7 +538,7 @@ unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
   return pos - old_pos;
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * An internal buffer is used to implement unlimited lookahead, necessary for
  * scanning numbers (which have a quite complex regular expression.)  This
@@ -564,12 +546,10 @@ unsigned Text_Token_Stream::scan_octal_literal_(unsigned &pos) {
  * fill_character_buffer() if necessary to ensure that there is a sufficient
  * number of characters in the buffer.
  *
- * \param pos
- * Position at which to peek.
+ * \param pos Position at which to peek.
  *
  * \return The character at \c buffer[pos].
  */
-
 char Text_Token_Stream::peek_(unsigned const pos) {
   while (buffer_.size() <= pos) {
     fill_character_buffer_();
@@ -579,13 +559,12 @@ char Text_Token_Stream::peek_(unsigned const pos) {
   return buffer_[pos];
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * This function flushes the Text_Token_Stream's internal buffers, so that
  * scanning resumes at the beginning of the file stream.  It is normally called
  * by its overriding version in children of Text_Token_Stream.
  */
-
 void Text_Token_Stream::rewind() {
   buffer_.clear();
   line_ = 1;
@@ -596,15 +575,16 @@ void Text_Token_Stream::rewind() {
   Ensure(error_count() == 0);
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Text_Token_Stream::check_class_invariants() const { return line_ > 0; }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * This function skips past any whitespace present at the cursor position,
  * leaving the cursor at the first non-whitespace character following the
  * initial cursor position.
  */
+
 /* private */
 void Text_Token_Stream::eat_whitespace_() {
   for (;;) {
@@ -641,7 +621,7 @@ void Text_Token_Stream::eat_whitespace_() {
   // private member function -- no invariant check
 }
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \func Text_Token_Stream::location
  *
@@ -653,13 +633,13 @@ void Text_Token_Stream::eat_whitespace_() {
  * currently scanning tokens.
  */
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * \param c Character to be pushed onto the back of the character queue.
  */
-
 void Text_Token_Stream::character_push_back_(char const c) {
-  Remember(unsigned const old_buffer__size = buffer_.size());
+  Remember(unsigned const old_buffer__size =
+               static_cast<unsigned>(buffer_.size()));
 
   buffer_.push_back(c);
 
@@ -670,6 +650,6 @@ void Text_Token_Stream::character_push_back_(char const c) {
 
 } // end namespace rtt_parser
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // end of Text_Token_Stream.cc
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//

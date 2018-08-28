@@ -59,7 +59,7 @@ void ipcress_file_read(std::string const &op_data_file) {
   std::shared_ptr<IpcressFile> spGF;
   try {
     spGF.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
-  } catch (rtt_dsxx::assertion const &excpt) {
+  } catch (rtt_dsxx::assertion const & /*excpt*/) {
     std::cerr << "Error: Can't open file " << op_data_file << ". Aborting"
               << endl;
     throw;

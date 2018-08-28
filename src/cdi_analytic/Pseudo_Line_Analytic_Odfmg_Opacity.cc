@@ -33,7 +33,7 @@ void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(
     double const Tref) {
   // Precalculate basic opacities
 
-  unsigned const number_of_groups = groups.size() - 1U;
+  size_t const number_of_groups = groups.size() - 1;
   unsigned const N = qpoints_;
   baseline_.resize(N * number_of_groups);
 
@@ -42,7 +42,7 @@ void Pseudo_Line_Analytic_Odfmg_Opacity::precalculate(
 #endif
 
   double g1 = groups[0];
-  for (unsigned g = 0; g < number_of_groups; ++g) {
+  for (size_t g = 0; g < number_of_groups; ++g) {
     double const g0 = g1;
     g1 = groups[g + 1];
     double const delt = (g1 - g0) / N;
@@ -130,15 +130,14 @@ Pseudo_Line_Analytic_Odfmg_Opacity::Pseudo_Line_Analytic_Odfmg_Opacity(
  * \param temperature material temperature in keV
  * \param density material density in g/cm^3
  * \return group opacities (coefficients) in cm^2/g
- *
  */
 std::vector<std::vector<double>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
                                                double /* rho */) const {
   sf_double const &group_bounds = this->getGroupBoundaries();
   sf_double const &bands = this->getBandBoundaries();
-  unsigned const number_of_groups = group_bounds.size() - 1U;
-  unsigned const bands_per_group = bands.size() - 1U;
+  size_t const number_of_groups = group_bounds.size() - 1U;
+  size_t const bands_per_group = bands.size() - 1U;
   vector<vector<double>> Result(number_of_groups,
                                 vector<double>(bands_per_group));
 
@@ -166,16 +165,16 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
       }
     } else {
       Check(bands_per_group == 1);
-      for (unsigned g = 0; g < number_of_groups; ++g) {
+      for (size_t g = 0; g < number_of_groups; ++g) {
         Result[g][0] = Tf * baseline_[g].first;
       }
     }
     break;
 
   case ROSSELAND:
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double b1 = bands[0];
-      for (unsigned b = 0; b < bands_per_group; ++b) {
+      for (size_t b = 0; b < bands_per_group; ++b) {
         double const b0 = b1;
         b1 = bands[b + 1];
         double t = 0.0, w = 0.0;
@@ -200,9 +199,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double T,
     break;
 
   case PLANCK:
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double b1 = bands[0];
-      for (unsigned b = 0; b < bands_per_group; ++b) {
+      for (size_t b = 0; b < bands_per_group; ++b) {
         double const b0 = b1;
         b1 = bands[b + 1];
         double t = 0.0, w = 0.0;

@@ -795,12 +795,12 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   const vector<double> cvdensity = vdensity;
   const vector<double> cvtemperature = vtemperature;
 
-  int nt = cvtemperature.size();
-  int nd = cvdensity.size();
+  size_t nt = cvtemperature.size();
+  size_t nd = cvdensity.size();
 
   // Here is the reference solution
   vtabulatedGrayOpacity.resize(nt);
-  for (int i = 0; i < nt; ++i)
+  for (size_t i = 0; i < nt; ++i)
     vtabulatedGrayOpacity[i] = cvdensity[i] * pow(cvtemperature[i], 4);
 
   // Here is the solution from Ipcress
@@ -855,7 +855,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   graOp.resize(nt);
   vtabulatedGrayOpacity.resize(nt);
-  for (int it = 0; it < nt; ++it)
+  for (size_t it = 0; it < nt; ++it)
     vtabulatedGrayOpacity[it] = density * pow(vtemperature[it], 4);
 
   spGGOp_Analytic_ra->getOpacity(cvtemperature.begin(), cvtemperature.end(),
@@ -883,7 +883,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
 
   graOp.resize(nd);
   vtabulatedGrayOpacity.resize(nd);
-  for (int id = 0; id < nd; ++id)
+  for (size_t id = 0; id < nd; ++id)
     vtabulatedGrayOpacity[id] = vdensity[id] * pow(temperature, 4);
 
   spGGOp_Analytic_ra->getOpacity(temperature, cvdensity.begin(),
@@ -936,11 +936,11 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
           string("analyticOpacities.ipcress."));
 
   // Here is the reference solution
-  int ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;
+  size_t ng = spGMGOp_Analytic_ra->getNumGroupBoundaries() - 1;
   vector<double> vtabulatedOpacity(ng * nt);
 
-  for (int i = 0; i < nt; ++i)
-    for (int ig = 0; ig < ng; ++ig)
+  for (size_t i = 0; i < nt; ++i)
+    for (size_t ig = 0; ig < ng; ++ig)
       vtabulatedOpacity[i * ng + ig] = cvdensity[i] * pow(cvtemperature[i], 4);
 
   // Here is the solution from Ipcress
@@ -971,7 +971,7 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   // --------------------------------------- //
 
   // clear old data
-  for (int i = 0; i < nt * ng; ++i)
+  for (size_t i = 0; i < nt * ng; ++i)
     mgOp[i] = 0.0;
 
   // use Ipcress to obtain new data
@@ -1002,12 +1002,12 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   // ------------------------------------------------ //
 
   // clear old data
-  for (int i = 0; i < nt * ng; ++i)
+  for (size_t i = 0; i < nt * ng; ++i)
     mgOp[i] = 0.0;
 
   // Calculate the reference solution.
-  for (int it = 0; it < nt; ++it)
-    for (int ig = 0; ig < ng; ++ig)
+  for (size_t it = 0; it < nt; ++it)
+    for (size_t ig = 0; ig < ng; ++ig)
       vtabulatedOpacity[it * ng + ig] = density * pow(vtemperature[it], 4);
 
   // Obtain new solution
@@ -1037,12 +1037,12 @@ void check_ipcress_stl_accessors(rtt_dsxx::ScalarUnitTest &ut) {
   // ------------------------------------------ //
 
   // clear old data
-  for (int i = 0; i < nd * ng; ++i)
+  for (size_t i = 0; i < nd * ng; ++i)
     mgOp[i] = 0.0;
 
   // Calculate the reference solution.
-  for (int id = 0; id < nd; ++id)
-    for (int ig = 0; ig < ng; ++ig)
+  for (size_t id = 0; id < nd; ++id)
+    for (size_t ig = 0; ig < ng; ++ig)
       vtabulatedOpacity[id * ng + ig] = vdensity[id] * pow(temperature, 4);
 
   // Obtain new solution
@@ -1235,11 +1235,11 @@ void mg_opacity_packing_test(rtt_dsxx::ScalarUnitTest &ut) {
 
   // Setup the test problem.
 
-  int ng = 12;
+  size_t ng(12);
   vector<double> tabulatedMGOpacity(ng);
   double temperature = 0.4; // keV
   double density = 0.22;    // g/cm^3
-  for (int ig = 0; ig < ng; ++ig)
+  for (size_t ig = 0; ig < ng; ++ig)
     tabulatedMGOpacity[ig] = density * pow(temperature, 4); // cm^2/g
 
   // If this test fails then stop testing.

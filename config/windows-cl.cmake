@@ -59,7 +59,7 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # - /std:c++14 (should be added by cmake in compilerEnv.cmake)
   # - /showIncludes
   # - /FC
-  set( CMAKE_C_FLAGS "/W3 /Gy /fp:precise /arch:AVX2 /DWIN32 /D_WINDOWS /MP${numproc} /wd4251" )
+  set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /arch:AVX2 /DWIN32 /D_WINDOWS /MP /wd4251" )
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /DDEBUG /D_DEBUG" )
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )
@@ -113,28 +113,33 @@ endif()
 #
 
 # Locate a Windows sockets library (required!)
+if( CMAKE_CL_64 )
+  set( winsock_suffix_dir "x64")
+else()
+  set( winsock_suffix_dir "x86")
+endif()
 foreach( lib ws2_32;wsock32;winsock32;mswsock32 )
   if( NOT Lib_win_winsock )
     find_library( winsock_lib_${lib} ${lib} )
     find_library( winsock_lib_${lib}
       NAMES ${lib}
       HINTS "C:/Windows/System32"
-            "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/um/x86" )
+            "C:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/um/${winsock_suffix_dir}" )
     set( Lib_win_winsock "${winsock_lib_${lib}}" CACHE FILEPATH
       "Windows sockets library.")
   endif()
 endforeach()
 
-# Extra logic for 64-bit builds under Visual Studio
-# if( EXISTS "${Lib_win_winsock}" AND CMAKE_CL_64 )
-#   string(REPLACE "um/x86" "um/x64" Lib_win64_winsock "${Lib_win_winsock}" )
-#   if( EXISTS "${Lib_win64_winsock}" )
-#     set( Lib_win_winsock "${Lib_win64_winsock}")
-#   endif()
-# endif()
-
+# winsock is a required dependency.
 if( NOT Lib_win_winsock )
   message( FATAL_ERROR "Could not find library wsock32, mswsock32 or ws2_32!" )
+endif()
+
+# Extra logic to ensure correct winsock is found.
+if( "${Lib_win_winsock}" MATCHES "um/x86" AND CMAKE_CL_64 )
+  message( FATAL_ERROR "Found 32-bit winsock (${Lib_win_winsock} but targeting x64 architecture. Ensure that cmake is run from the x64 Visual Studio Command Prompt." )
+elseif( "${Lib_win_winsock}" MATCHES "um/x64" AND NOT CMAKE_CL_64 )
+  message( FATAL_ERROR "Found 64-bit winsock (${Lib_win_winsock} but targeting x86 architecture. Ensure that cmake is run from the x86 Visual Studio Command Prompt." )
 endif()
 
 #------------------------------------------------------------------------------#

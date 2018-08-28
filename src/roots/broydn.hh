@@ -71,7 +71,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
   using namespace rtt_linear;
   using namespace rtt_roots;
 
-  const unsigned n = x.size();
+  Check(x.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(x.size());
 
   vector<Field> c(n);
   vector<Field> d(n);
@@ -308,7 +309,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
   using namespace rtt_linear;
   using namespace rtt_roots;
 
-  const unsigned n = x.size();
+  Check(x.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(x.size());
 
   vector<Field> c(n);
   vector<Field> d(n);

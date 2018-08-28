@@ -40,12 +40,12 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
 
   create_octant_ordinates_(mu, eta, wt);
 
-  unsigned const octantOrdinates = mu.size();
+  size_t const octantOrdinates = mu.size();
   Check(octantOrdinates > 0);
   Check(eta.size() == octantOrdinates);
   Check(wt.size() == octantOrdinates);
 
-  unsigned numOrdinates = octantOrdinates * 8;
+  size_t numOrdinates = octantOrdinates * 8;
   mu.resize(numOrdinates);
   eta.resize(numOrdinates);
   wt.resize(numOrdinates);
@@ -53,7 +53,7 @@ vector<Ordinate> Octant_Quadrature::create_ordinates_(
   // Evaluate mu and eta for octants 2-4
   for (size_t octant = 2; octant <= 4; ++octant)
     for (size_t n = 0; n <= octantOrdinates - 1; ++n) {
-      unsigned const m = (octant - 1) * octantOrdinates + n;
+      size_t const m = (octant - 1) * octantOrdinates + n;
       Check(m < mu.size() && m < eta.size() && m < wt.size());
       switch (octant) {
       case 2:

@@ -31,11 +31,6 @@ namespace rtt_RTT_Format_Reader {
  *    so none of the RTT_Format_Reader class public accessor functions are
  *    accessible.
  */
-//
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
 class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
@@ -47,6 +42,11 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Mesh_Reader
   typedef std::vector<std::vector<int>> vector_vector_int;
   typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
   typedef std::vector<std::vector<double>> vector_vector_dbl;
+  typedef std::set<unsigned> set_uint;
+  typedef std::vector<unsigned> vector_uint;
+  typedef std::vector<std::vector<unsigned>> vector_vector_uint;
+  typedef std::vector<std::vector<std::vector<unsigned>>>
+      vector_vector_vector_uint;
 
   // DATA
 
@@ -98,11 +98,11 @@ public:
  */
   virtual size_t get_dims_ndim() const { return rttMesh->get_dims_ndim(); }
 
-  int get_dims_ncells() const { return rttMesh->get_dims_ncells(); }
+  size_t get_dims_ncells() const { return rttMesh->get_dims_ncells(); }
 
-  int get_dims_nsides() const { return rttMesh->get_dims_nsides(); }
+  size_t get_dims_nsides() const { return rttMesh->get_dims_nsides(); }
 
-  virtual vector_vector_int get_element_nodes() const;
+  virtual vector_vector_uint get_element_nodes() const;
   /*!
  * \brief Returns the element (i.e., sides and cells) types (e.g., TRI_3 and
  *        TETRA_4).
@@ -128,9 +128,9 @@ public:
     return unique_element_types;
   }
 
-  virtual std::map<string, set_int> get_node_sets() const;
+  virtual std::map<string, set_uint> get_node_sets() const;
 
-  virtual std::map<string, set_int> get_element_sets() const;
+  virtual std::map<string, set_uint> get_element_sets() const;
   /*!
  * \brief Returns the mesh file title.
  * \return Mesh file title.

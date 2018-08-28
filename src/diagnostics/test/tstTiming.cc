@@ -256,7 +256,7 @@ void test_macros(rtt_dsxx::UnitTest &ut) {
     cout.precision(4);
     cout.setf(ios::fixed, ios::floatfield);
 
-    for (int i = 0, N = keys.size(); i < N; ++i) {
+    for (size_t i = 0, N = keys.size(); i < N; ++i) {
       double fraction = D::timer_value(keys[i]) / total;
       cout << setw(15) << keys[i] << setw(15) << fraction << endl;
     }

@@ -126,7 +126,7 @@ sf_double
 Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
                                                    double /*rho*/) const {
   sf_double const &group_bounds = this->getGroupBoundaries();
-  unsigned const number_of_groups = group_bounds.size() - 1U;
+  size_t const number_of_groups = group_bounds.size() - 1;
   sf_double Result(number_of_groups, 0.0);
 
   double line_width = this->line_width();
@@ -134,7 +134,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
   switch (averaging_) {
   case NONE: {
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double const g0 = g1;
       g1 = group_bounds[g + 1];
       double const nu = 0.5 * (g0 + g1);
@@ -147,7 +147,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
     PLRW_Functor wfunctor(T);
 
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       double const g0 = g1;
       g1 = group_bounds[g + 1];
       double eps = 1e-5;
@@ -182,7 +182,7 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
 
   case PLANCK: {
     double g1 = group_bounds[0];
-    for (unsigned g = 0; g < number_of_groups; ++g) {
+    for (size_t g = 0; g < number_of_groups; ++g) {
       PLP_Functor pfunctor(this, T);
       PLPW_Functor wfunctor(T);
 
@@ -228,10 +228,10 @@ Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(double T,
 //---------------------------------------------------------------------------//
 vf_double Pseudo_Line_Analytic_MultigroupOpacity::getOpacity(sf_double const &T,
                                                              double rho) const {
-  unsigned const n = T.size();
+  size_t const n = T.size();
   vf_double Result(n);
 
-  for (unsigned i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     double const Ti = T[i];
     Result[i] = getOpacity(Ti, rho);
   }

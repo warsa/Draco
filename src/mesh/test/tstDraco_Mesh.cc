@@ -96,7 +96,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
     for (unsigned cell = 0; cell < mesh_iface.num_cells; ++cell) {
 
       // get number of faces per cell in layout
-      const unsigned num_faces = layout.at(cell).size();
+      const size_t num_faces = layout.at(cell).size();
 
       // check that the number of faces per cell is correct
       if (num_faces != test_cell_map[cell].size())

@@ -4,8 +4,7 @@
  * \author Kent Budge
  * \brief  Definition of class Halton_Subrandom_Generator
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rng_Halton_Subrandom_Generator_hh

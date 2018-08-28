@@ -97,9 +97,10 @@ macro( setupLAPACKLibraries )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
         set( lapack_FOUND TRUE )
+        set( lapack_loc ${tmp} )
       endif()
     endforeach()
-    message( STATUS "Looking for lapack (netlib)....found ${tmp}")
+    message( STATUS "Looking for lapack (netlib)....found ${lapack_loc}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:

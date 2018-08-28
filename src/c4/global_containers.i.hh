@@ -5,10 +5,7 @@
  * \date   Mon Mar 24 09:26:31 2008
  * \brief  Member definitions of class global_containers
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef c4_global_containers_i_hh
@@ -47,7 +44,9 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
     return;
 
   // Flatten the sets
-  unsigned const number_of_local_elements = local_set.size();
+  Check(local_set.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_set.size());
   vector<ElementType> local_elements;
   local_elements.resize(number_of_local_elements);
   copy(local_set.begin(), local_set.end(), local_elements.begin());
@@ -59,14 +58,16 @@ template <class ElementType> void global_merge(set<ElementType> &local_set) {
   if (rtt_c4::node() == 0) {
     Check(global_elements.size() == number_of_processors);
     for (unsigned p = 1; p < number_of_processors; ++p) {
-      unsigned const count = global_elements[p].size();
+      Check(global_elements[p].size() < UINT_MAX);
+      unsigned const count = static_cast<unsigned>(global_elements[p].size());
       for (unsigned i = 0; i < count; ++i) {
         local_set.insert(global_elements[p][i]);
       }
     }
   }
 
-  unsigned number_of_elements = local_set.size();
+  Check(local_set.size() < UINT_MAX);
+  unsigned number_of_elements = static_cast<unsigned>(local_set.size());
   broadcast(&number_of_elements, 1, 0);
 
   local_elements.resize(number_of_elements);
@@ -94,7 +95,9 @@ void global_merge(map<IndexType, ElementType> &local_map) {
     return;
 
   // Flatten the maps
-  unsigned const number_of_local_elements = local_map.size();
+  Check(local_map.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_map.size());
   vector<IndexType> local_indices(number_of_local_elements);
   vector<ElementType> local_elements(number_of_local_elements);
   unsigned j;
@@ -122,7 +125,9 @@ void global_merge(map<IndexType, ElementType> &local_map) {
     for (unsigned p = 1; p < number_of_processors; ++p) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<ElementType> const &other_elements = global_elements[p];
-      unsigned const number_of_other_elements = other_index.size();
+      Check(other_index.size() < UINT_MAX);
+      unsigned const number_of_other_elements =
+          static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
       for (unsigned i = 0; i < number_of_other_elements; ++i) {
         local_map.insert(
@@ -136,7 +141,8 @@ void global_merge(map<IndexType, ElementType> &local_map) {
         //local_map[index] = other_elements[i];
       }
     }
-    number_of_elements = local_map.size();
+    Check(local_map.size() < UINT_MAX);
+    number_of_elements = static_cast<unsigned>(local_map.size());
     index.resize(number_of_elements);
     elements.resize(number_of_elements);
 
@@ -181,7 +187,9 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
 
   // Flatten the maps, promoting the bool elements to int so they will play
   // well with C4.
-  unsigned const number_of_local_elements = local_map.size();
+  Check(local_map.size() < UINT_MAX);
+  unsigned const number_of_local_elements =
+      static_cast<unsigned>(local_map.size());
   vector<IndexType> local_indices(number_of_local_elements);
   vector<int> local_elements(number_of_local_elements);
   unsigned j;
@@ -209,7 +217,9 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
     for (unsigned p = 1; p < number_of_processors; ++p) {
       vector<IndexType> const &other_index = global_indices[p];
       vector<int> const &other_elements = global_elements[p];
-      unsigned const number_of_other_elements = other_index.size();
+      Check(other_index.size() < UINT_MAX);
+      unsigned const number_of_other_elements =
+          static_cast<unsigned>(other_index.size());
       Check(other_index.size() == other_elements.size());
       for (unsigned i = 0; i < number_of_other_elements; ++i) {
         IndexType const &index = other_index[i];
@@ -221,7 +231,8 @@ template <class IndexType> void global_merge(map<IndexType, bool> &local_map) {
         local_map[index] = other_elements[i];
       }
     }
-    number_of_elements = local_map.size();
+    Check(local_map.size() < UINT_MAX);
+    number_of_elements = static_cast<unsigned>(local_map.size());
     index.resize(number_of_elements);
     elements.resize(number_of_elements);
 
