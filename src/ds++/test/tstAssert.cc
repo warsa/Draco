@@ -507,7 +507,6 @@ int unused(int i) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try { // >>> UNIT TESTS

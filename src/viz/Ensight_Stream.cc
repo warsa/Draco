@@ -145,7 +145,7 @@ Ensight_Stream &Ensight_Stream::operator<<(const unsigned i) {
  * support output of unsigned ints.
  */
 Ensight_Stream &Ensight_Stream::operator<<(const int64_t i) {
-  Check(i < INT_MAX && i > -1*INT_MAX);
+  Check(i < INT_MAX && i > -1 * INT_MAX);
   int const j = static_cast<int>(i);
   *this << j;
   return *this;
