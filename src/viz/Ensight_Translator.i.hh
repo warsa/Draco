@@ -421,7 +421,7 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
   d_geom_out << part_num << endl;
   d_geom_out << part_name << endl;
   d_geom_out << "coordinates" << endl;
-  d_geom_out << nvertices << endl; // #vertices in this part
+  d_geom_out << int(nvertices) << endl; // #vertices in this part
 
   // output the global vertex indices and form ens_vertex.  Enight demands that
   // vertices be numbered from 1 to the number of vertices *for this part*
@@ -456,7 +456,7 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
 
     if (num_elem > 0) {
       d_geom_out << d_cell_names[type] << endl;
-      d_geom_out << num_elem << endl;
+      d_geom_out << int(num_elem) << endl;
 
       for (size_t i = 0; i < num_elem; ++i)
         d_geom_out << g_cell_indices[c[i]] << endl;
