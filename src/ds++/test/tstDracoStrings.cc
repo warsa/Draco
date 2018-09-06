@@ -102,6 +102,10 @@ void test_parse_number(UnitTest &ut) {
   FAIL_IF_NOT(parse_number<int>(case1) == 1);
   FAIL_IF_NOT(parse_number<long>(case1) == 1l);
   FAIL_IF_NOT(parse_number<unsigned long>(case1) == 1ul);
+  FAIL_IF_NOT(parse_number<int32_t>(case1) == 1);
+  FAIL_IF_NOT(parse_number<int64_t>(case1) == 1l);
+  FAIL_IF_NOT(parse_number<uint32_t>(case1) == 1u);
+  FAIL_IF_NOT(parse_number<uint64_t>(case1) == 1ul);
   FAIL_IF_NOT(soft_equiv(parse_number<float>(case1), 1.0f, feps));
   FAIL_IF_NOT(soft_equiv(parse_number<double>(case1), 1.0, deps));
 
