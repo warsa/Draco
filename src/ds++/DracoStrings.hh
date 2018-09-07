@@ -100,9 +100,26 @@ template <>
 auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t;
 template <>
 auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
+
+// I'm having trouble finding a generic solution for an issue where some
+// compilers require separate specialization for 'long' and 'int64_t'
+// (i.e. Visual Studio) while for other compilers these types are identical.
+// So, I'm using some info pulled from <stdint.h> on Linux.
+//
+// On Linux, it appears that long == 'int64_t' if Linux is 64-bit
+// (__WORDSIZE == 64).
+//
+// If we are using Visual Studio, we need these defintions. I expect that they
+// will be needed for 32-bit Linux as well, but I can't test that.
+// Might need to add "|| (defined(__GNUC__) && __WORDSIZE != 64)"
+#if defined(WIN32)
+
 template <> auto parse_number_impl<long>(std::string const &str) -> long;
 template <>
 auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
+
+#endif
+
 template <> auto parse_number_impl<float>(std::string const &str) -> float;
 template <> auto parse_number_impl<double>(std::string const &str) -> double;
 

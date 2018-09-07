@@ -33,6 +33,10 @@ template <>
 auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t {
   return std::stoull(str); // use stoull or stul?
 }
+
+// See notes in DracoStrings.hh about this CPP block
+#if defined(WIN32)
+
 template <> auto parse_number_impl<long>(std::string const &str) -> long {
   return std::stol(str); // use stoull or stul?
 }
@@ -40,6 +44,7 @@ template <>
 auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long {
   return std::stoul(str); // use stoull or stul?
 }
+#endif
 
 template <> auto parse_number_impl<float>(std::string const &str) -> float {
   return std::stof(str);
