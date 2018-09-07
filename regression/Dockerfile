@@ -36,7 +36,7 @@ RUN echo "tzdata tzdata/Areas select US" > /tmp/preseed.txt; \
     apt-get install -y tzdata
 
 ## Basic admin tools
-RUN apt-get -y install apt-utils autoconf python software-properties-common
+RUN apt-get -y install apt-utils autoconf python software-properties-common flex bison
 
 ## Basic developer tools
 RUN apt-get -y install build-essential ca-certificates coreutils ccache curl doxygen environment-modules gcc-7 g++-7 gfortran-7 git grace graphviz python-pip tar tcl tk unzip vim wget

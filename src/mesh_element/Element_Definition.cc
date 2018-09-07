@@ -5,7 +5,7 @@
  * \date   Fri Feb 25 10:03:18 2000
  * \brief  Provides some descriptive information for the
  *         standard mesh elements.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC. 
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
@@ -39,7 +39,8 @@ Element_Definition::Element_Definition(Element_Type const &type_)
 
   case QUAD_4:
   case QUAD_5:
-  // Note: see Element_Definition.hh for the distinction between 6/6a and 6o elements.
+  // Note: see Element_Definition.hh for the distinction between 6/6a and 6o
+  // elements.
   case QUAD_6:
   case QUAD_6a:
   case QUAD_6o:
@@ -100,7 +101,7 @@ Element_Definition::Element_Definition(
       dimension(dimension_), number_of_nodes(number_of_nodes_),
       number_of_sides(number_of_sides_), elem_defs(elem_defs_),
       side_type(side_type_), side_nodes(side_nodes_) {
-  //---------------------------------------------------------------------------//
+  //--------------------------------------------------------------------------//
   // Check input first, before any modifications
   Require(number_of_nodes_ > 0);
 
