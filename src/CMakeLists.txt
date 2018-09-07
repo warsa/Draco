@@ -51,7 +51,7 @@ endif()
 #    that require Fortran.
 if( NOT DEFINED ENV{APPVEYOR} )
   add_dir_if_exists( device )       # needs ds++
-  add_dir_if_exists( compton )      # needs ds++
+  add_dir_if_exists( compton )      # needs c4, CSK
   if( HAVE_Fortran )
     add_dir_if_exists( lapack_wrap )  # needs ds++
   endif()
@@ -83,20 +83,20 @@ endif()
 # Level 4
 message(" ")
 message( STATUS "Configuring Level 4 packages --" )
-add_dir_if_exists( special_functions ) # needs roots, units, ode
-add_dir_if_exists( cdi_analytic )      # needs parser, ode, cdi
+add_dir_if_exists( special_functions ) # needs roots, units, GSL
+add_dir_if_exists( cdi_analytic )      # needs parser, roots, ode, cdi
 add_dir_if_exists( RTT_Format_Reader)  # needs meshReaders
 if( NOT DEFINED ENV{APPVEYOR} AND NOT DEFINED ENV{TRAVIS} )
   add_dir_if_exists( cdi_eospac )      # needs parser, ode, cdi
 endif()
 
 # Level 5
+message(" ")
+message( STATUS "Configuring Level 5 packages --" )
 if( NOT DEFINED ENV{APPVEYOR} )
-  message(" ")
-  message( STATUS "Configuring Level 5 packages --" )
-  add_dir_if_exists( quadrature )   # needs mesh_element, parser, special_functions
-  add_dir_if_exists( mesh )         # needs c4, ds++, mesh_element
+  add_dir_if_exists( quadrature ) # needs mesh_element, parser, special_functions
 endif()
+add_dir_if_exists( mesh )         # needs c4, ds++, mesh_element
 
 # Summary
 

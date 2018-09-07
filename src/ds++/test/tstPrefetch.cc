@@ -6,12 +6,12 @@
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 
-#include <cmath>
-#include <iostream>
-
 #include "ds++/Prefetch.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include <cmath>
+#include <iostream>
 
 using namespace std;
 using namespace rtt_dsxx;
@@ -22,17 +22,24 @@ using namespace rtt_dsxx;
 
 //----------------------------------------------------------------------------//
 void runtest(rtt_dsxx::UnitTest &ut) {
-  cout << "start:" << endl;
+
+  cout << "Begin tstPrefetch::runtest() checks...\n";
 
   // Loop without prefetch
   unsigned const R = 300;
+
+  // Reduce runtime for Debug builds.
+#ifdef DEBUG
+  unsigned const N = 10000;
+#else
   unsigned const N = 1000000;
+#endif
   vector<double> huge(N);
   double sum = 0.0;
   for (unsigned k = 0; k < R; ++k) {
     for (unsigned i = 0; i < N; i += CACHE_LINE_DOUBLE) {
       for (unsigned j = 0; j < CACHE_LINE_DOUBLE; ++j) {
-        huge[j] = 0.1 * j;
+        huge[j] = 0.12 * j;
       }
     }
     for (unsigned i = 0; i < N; i += CACHE_LINE_DOUBLE) {
@@ -41,7 +48,10 @@ void runtest(rtt_dsxx::UnitTest &ut) {
       }
     }
   }
-  cout << sum << endl;
+
+  // Save and reset
+  double const sum_noprefetch(sum);
+  sum = 0.0;
 
   // Loop with prefetch
   for (unsigned k = 0; k < R; ++k) {
@@ -58,9 +68,8 @@ void runtest(rtt_dsxx::UnitTest &ut) {
       }
     }
   }
-  cout << sum << endl;
-
-  ut.passes("run to completion"); // Nothing crashed
+  FAIL_IF_NOT(soft_equiv(sum_noprefetch, sum));
+  PASSMSG("run to completion"); // Nothing crashed
 }
 
 //---------------------------------------------------------------------------//
@@ -73,5 +82,5 @@ int main(int argc, char *argv[]) {
 }
 
 //---------------------------------------------------------------------------//
-//  end of tstSafe_Divide.cc
+//  end of tstPrefetch.cc
 //---------------------------------------------------------------------------//
