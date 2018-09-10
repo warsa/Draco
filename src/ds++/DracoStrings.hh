@@ -96,6 +96,9 @@ template <typename T> auto parse_number_impl(std::string const &str) -> T;
 // specializations for these types are defined in DracoStrings.cc
 template <> auto parse_number_impl<int32_t>(std::string const &str) -> int32_t;
 template <> auto parse_number_impl<int64_t>(std::string const &str) -> int64_t;
+template <> auto parse_number_impl<long>(std::string const &str) -> long;
+template <>
+auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
 template <>
 auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t;
 template <>
