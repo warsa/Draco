@@ -4,7 +4,7 @@
 
 ;;; Description:
 
-;;; With format-f90.sh, laod a file in Emacs, apply standard Draco
+;;; With format-f90.sh, load a file in Emacs, apply standard Draco
 ;;; formatting rules, save and exit Emacs via a non-interactive batch
 ;;; process.
 

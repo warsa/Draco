@@ -5,7 +5,7 @@
 # brief  Provide a python class that aids in creating unit tests that run
 #        interactive user codes (i.e.: run a binary that reads an
 #        input file and diff the resulting output file).
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -427,10 +427,11 @@ class UnitTest:
   ##############################################################################
   # Check output for capsaicin pass/fail criteria
   def capsaicin_output_check(self, driver="serrano", ignore_error_N=False):
+
+    print("Parsing {0} output".format(driver))
+
     error_found = False
-    done_found = False
-    error_str = "error"
-    ERROR_str = "ERROR"
+    done_found  = False
 
     if (driver == "serrano"):
       done_str = "serrano done"
@@ -440,45 +441,42 @@ class UnitTest:
       done_str = "guajillo completed on 0"
 
     # always ignore these errors
-    JFNK_error = "JFNK DONE error"
+    JFNK_error     = "JFNK DONE error"
     smoothed_error = "Smoothed Aggregation error :"
+    compiler_flag  = "-Werror"
+    re_error_N     = re.compile("error[(][0-9]*[)]")
 
     # parse output
-    if (not ignore_error_N):
-      print("Parsing {0} output".format(driver))
-      with open(self.outfile) as f:
-        for line in f:
-          if ((error_str in line) or (ERROR_str in line)):
-            if (not (JFNK_error in line) and not (smoothed_error in line)):
-              print("Found error in line: {0}".format(line.strip()))
-              self.failmsg("Anaheim output contains error")
-              error_found = True
-            else:
-              print("Error ignored in line: {0}".format(line.strip()))
-          if (done_str in line):
-            done_found = True
+    with open(self.outfile) as f:
+      for line in f:
 
-    # parse output while ignoring error(N)
-    elif (ignore_error_N):
-      print("Parsing {0} output and ignoring error(N)".format(driver))
-      re_error_N = re.compile("error[(][0-9]*[)]")
-      with open(self.outfile) as f:
-        for line in f:
-          if (error_str in line or ERROR_str in line):
-            if (not (JFNK_error in line) and (not (smoothed_error in line)
-                and not re_error_N.search(line))):
-              print("Found error in line: {0}".format(line.strip()))
-              self.failmsg("Anaheim output contains error")
-              error_found = True
-            else:
-              print("Error ignored in line: {0}".format(line.strip()))
-          if (done_str in line):
-            done_found = True
-    else:
-      self.failmsg("Input parameters not recognized, file not parsed")
+        # 1. found "error" in the line
+        if re.search( 'error', line, re.IGNORECASE):
 
+          # 1.a. Ignore false positives related to matching "error"
+          ignore_false_positive = False
+          ignore_false_positive |= (JFNK_error     in line)
+          ignore_false_positive |= (smoothed_error in line)
+          ignore_false_positive |= (compiler_flag  in line)
+
+          if (ignore_error_N and re_error_N.search(line)):
+            ignore_false_positive |= True
+
+          if not ignore_false_positive:
+            print("Found error in line: {0}".format(line.strip()))
+            self.failmsg("${0} output contains error".format(driver))
+            error_found = True
+          else:
+            print("Error ignored in line: {0}".format(line.strip()))
+
+        # 2. found "completed" string
+        if (done_str in line):
+          done_found = True
+
+    # Did the code print that it was finished?
     if (not done_found):
       self.failmsg("{0} output did not finish".format(driver))
+
     if (done_found and not error_found):
       self.passmsg("\"{0}\" message found in {1} output".format(done_str, \
         driver))
@@ -658,8 +656,8 @@ class UnitTest:
       if gdiff_file.strip():
         clean_run_args.append(gdiff_file.strip())
 
-      # run diff command, redirecting stdout and stderr, get a unique
-      # filename for the diff output and error files
+      # run diff command, redirecting stdout and stderr, get a unique filename
+      # for the diff output and error files
 
       print("Running gdiff from {0} on {1}".format(gdiff_exe, gdiff_file))
       print("About to run: {0}".format(" ".join(clean_run_args)))
@@ -668,12 +666,19 @@ class UnitTest:
         stderr=subprocess.STDOUT)
 
       diff_out, diff_err = diff_process.communicate()
+      if (diff_process.returncode != 0):
+        sdiff_err=diff_err.decode('UTF-8')
+        print("Unable to run \'{0}\'".format(' '.join(clean_run_args)))
+        print(sdiff_err)
+      else:
+        sdiff_out=diff_out.decode('UTF-8')
+        print("stdout = {0}".format(sdiff_out))
 
       # check gdiff output for passes and fails
       found_fail = False
       found_pass = False
 
-      for line in diff_out.split():
+      for line in sdiff_out.split():
         if ("FAILED" in line):
           found_fail = True
         if ("passed" in line):
@@ -687,7 +692,7 @@ class UnitTest:
         print(diff_out)
 
     except Exception:
-      print("Caught exception in gdiff: {0}  {1}".format( sys.exc_info()[0], \
+      print("Caught exception in run_gdiff: {0}  {1}".format( sys.exc_info()[0], \
         sys.exc_info()[1]))
       self.fatal_error("Ending test execution after catching exception")
   ##############################################################################
