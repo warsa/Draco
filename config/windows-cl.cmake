@@ -51,6 +51,9 @@ endif()
 if( NOT CXX_FLAGS_INITIALIZED )
   set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
+  # Alternative for per-directory, or per-target specific flags:
+  # add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/MP>")
+
   # Notes on options:
   # - /wd 4251 disable warning #4251: 'identifier' : class 'type' needs to have
   #   dll-interface to be used by clients of class 'type2'
