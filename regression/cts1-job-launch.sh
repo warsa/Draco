@@ -62,6 +62,11 @@ case $available_queues in
   *dev*)    access_queue="--qos=dev" ;;
 esac
 
+case $machine_name_short in
+  # Must use interactive qos on grizzly because standrad has a 70 node minimum
+  gr*) access_queue="--qos=interactive";;
+esac
+
 # Banner
 print_job_launch_banner
 
@@ -84,11 +89,6 @@ fi
 
 build_partition_options="-N 1 -t 4:00:00"
 partition_options="-N 1 -t 4:00:00"
-
-
-
-
-
 
 # Configure on the front end
 echo "Configure:"

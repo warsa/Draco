@@ -266,8 +266,8 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss22
       ;;
 
-    # Snow | Badger | Fire | Ice
-    sn* | ba* | fi* | ic* )
+    # Badger | Fire | Grizzly | Ice | Snow
+    ba* | fi* | gr* | ic* | sn* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_toss3
       ;;
 
