@@ -608,6 +608,14 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                  false, // add_extra_directions,
                  Ordinate_Set::LEVEL_ORDERED);
 
+    test_no_axis(ut, quadrature,
+                 1U, // dimension,
+                 rtt_mesh_element::CARTESIAN,
+                 1U, // expansion_order,
+                 "GQF",
+                 false, // add_extra_directions,
+                 Ordinate_Set::LEVEL_ORDERED);
+
     if (quadrature.is_open_interval()) {
       // Our curvilinear angular operator algorithm doesn't work with closed
       // interval quadratures (those for which mu=-1 is part of the set).
