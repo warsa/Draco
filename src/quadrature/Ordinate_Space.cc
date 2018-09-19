@@ -322,7 +322,7 @@ void Ordinate_Space::compute_moments_(Quadrature_Class const quadrature_class,
     number_of_moments_ = 0;
     for (unsigned n = 0; n < moments_.size(); ++n) {
       int const l = moments_[n].L();
-      if (l <= Lmax || !prune()) {
+      if (!prune() || l <= Lmax) {
         if (l > Lmax) {
           Lmax = l;
           moments_per_order_.resize(Lmax + 1, 0U);
