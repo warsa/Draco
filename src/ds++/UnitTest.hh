@@ -165,7 +165,7 @@ public:
   }
   /*!
    * \brief Returns the path of the test source directory (useful for locating
-   * input files).
+   *        input files).
    *
    * This function depends on the cmake build system setting the
    * COMPILE_DEFINITIONS target property. This should be done in
