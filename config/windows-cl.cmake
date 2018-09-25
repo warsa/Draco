@@ -7,6 +7,9 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+# Useful reference information:
+# https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=vs-2017
+
 #
 # Sanity Checks
 #
@@ -62,7 +65,10 @@ if( NOT CXX_FLAGS_INITIALIZED )
   # - /std:c++14 (should be added by cmake in compilerEnv.cmake)
   # - /showIncludes
   # - /FC
-  set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /arch:AVX2 /DWIN32 /D_WINDOWS /MP /wd4251" )
+  set( CMAKE_C_FLAGS "/W2 /Gy /fp:precise /DWIN32 /D_WINDOWS /MP /wd4251" )
+  if(HAVE_HARDWARE_AVX2)
+    string(APPEND CMAKE_C_FLAGS " /arch:AVX2")
+  endif()
   set( CMAKE_C_FLAGS_DEBUG "/${MD_or_MT_debug} /Od /Zi /DDEBUG /D_DEBUG" )
   set( CMAKE_C_FLAGS_RELEASE "/${MD_or_MT} /O2 /DNDEBUG" )
   set( CMAKE_C_FLAGS_MINSIZEREL "/${MD_or_MT} /O1 /DNDEBUG" )

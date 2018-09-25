@@ -22,7 +22,7 @@ build_script:
 # no MPI installed so force scalar builds.
   - cmake -G "Visual Studio 15 2017" -DDRACO_C4=SCALAR %APPVEYOR_BUILD_FOLDER%
   - cmake --build . --config Debug
-  - ctest -C Debug -j 2 --output-on-failures
+  - ctest -C Debug -j 2 --output-on-failure
 
 #build:
 #  verbosity: minimal
