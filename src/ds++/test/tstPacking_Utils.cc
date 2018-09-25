@@ -121,7 +121,9 @@ void compute_buffer_size_test(rtt_dsxx::UnitTest &ut) {
     uint32_t buffer_size(static_cast<unsigned>(vd.size() * sizeof(double)));
     vector<char> buffer(buffer_size);
     bool byte_swap = false;
-    rtt_dsxx::pack_vec_double(&vd[0], &buffer[0], vd.size(), byte_swap);
+    Check(vd.size() < UINT32_MAX);
+    rtt_dsxx::pack_vec_double(&vd[0], &buffer[0],
+                              static_cast<uint32_t>(vd.size()), byte_swap);
 
     Unpacker u;
     u.set_buffer(buffer.size(), &buffer[0]);
