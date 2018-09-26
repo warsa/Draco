@@ -27,11 +27,18 @@
 
 #include <immintrin.h>
 
-int check_4th_gen_intel_core_features() {
-  const int the_4th_gen_features =
-      (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT |
-       _FEATURE_MOVBE);
-  return _may_i_use_cpu_feature(the_4th_gen_features);
+int check_4th_gen_intel_core_features(int const mode = 0) {
+
+  if (mode == 1)
+    return _may_i_use_cpu_feature(_FEATURE_AVX2);
+  else if (mode == 2)
+    return _may_i_use_cpu_feature(_FEATURE_FMA);
+  else {
+    const int the_4th_gen_features =
+        (_FEATURE_AVX2 | _FEATURE_FMA | _FEATURE_BMI | _FEATURE_LZCNT |
+         _FEATURE_MOVBE);
+    return _may_i_use_cpu_feature(the_4th_gen_features);
+  }
 }
 
 //----------------------------------------------------------------------------//
