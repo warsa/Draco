@@ -54,8 +54,6 @@ using std::string;
 void ipcress_file_read(std::string const &op_data_file) {
   // Ipcress data filename (IPCRESS format required)
 
-  cout << "Creating a Ipcress File object from " << op_data_file << endl;
-
   std::shared_ptr<IpcressFile> spGF;
   try {
     spGF.reset(new rtt_cdi_ipcress::IpcressFile(op_data_file));
@@ -221,7 +219,6 @@ void ipcress_file_read(std::string const &op_data_file) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   // Process known command line arguments:
   rtt_dsxx::XGetopt::csmap long_options;
@@ -232,6 +229,11 @@ int main(int argc, char *argv[]) {
   help_strings['v'] = "print version information and exit.";
   rtt_dsxx::XGetopt program_options(argc, argv, long_options, help_strings);
 
+  std::string const helpstring(
+      "\nUsage: IpcressInterpreter [-hv] "
+      "<ipcress file>\nFollow the prompts to print opacity data to the "
+      "screen.");
+
   int c(0);
   while ((c = program_options()) != -1) {
     switch (c) {
@@ -240,13 +242,9 @@ int main(int argc, char *argv[]) {
       return 0;
 
     case 'h': // --help
-      cout << argv[0] << ": version " << rtt_dsxx::release()
-           << "\nUsage: IpcressInterpreter <ipcress file>\n"
-           << "Follow the prompts to print opacity data to the screen." << endl;
+      cout << argv[0] << ": version " << rtt_dsxx::release() << helpstring
+           << endl;
       return 0;
-
-    default:
-      break;
     }
   }
 
