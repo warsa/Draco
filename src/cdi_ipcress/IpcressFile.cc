@@ -152,20 +152,13 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
 
   // ensure a name is provided
   Insist(ipcressFile.size() > 0,
-         (std::string("You must provide a filename when constructing an") +
-          std::string(" IpcressFile object."))
-             .c_str());
-
-  // if the provided filename looks okay then use it.
-  if (rtt_dsxx::fileExists(ipcressFile))
-    return ipcressFile;
-
-  // Try prepending other paths?
-  // string const cp = currentPath();
-
+         std::string("You must provide a filename when constructing an") +
+             " IpcressFile object.");
   Insist(rtt_dsxx::fileExists(ipcressFile),
          "Could not located requested ipcress file.");
-  return foundFile;
+
+  // if the provided filename looks okay then use it.
+  return ipcressFile;
 }
 
 //---------------------------------------------------------------------------//
