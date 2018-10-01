@@ -26,6 +26,8 @@ if [[ ! ${VENDOR_DIR} ]]; then
    fi
 fi
 
+# alias salloc='salloc --gres=craynetwork:0'
+
 add_to_path $VENDOR_DIR/bin
 
 # If LESS is set, is should include '-R' so that git diff's color

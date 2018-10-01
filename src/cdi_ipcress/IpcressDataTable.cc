@@ -286,25 +286,24 @@ double IpcressDataTable::interpOpac(double const targetTemperature,
     logrho = std::log(densities[numrho - 1]);
 
   /*
-     * The grid looks like this:
-     *
-     *      |   T1     |   T      |   T2
-     * -----------------------------------------
-     * rho1 |   sig11  |          |   sig13
-     * -----------------------------------------
-     * rho  |   sig21  |  sig22   |   sig23
-     * -----------------------------------------
-     * rho2 |   sig31  |          |   sig33
-     *
-     * rho1, rho2, T1 and T2 are table values.
-     * sig11, sig13, sig31 and sig33 are table values.
-     *
-     * Use linear interploation wrt log(rho) to find sig21 and sig23, then use
-     * linear interpolation wrt log(T) to find sig22.
-     */
+   * The grid looks like this:
+   *
+   *      |   T1     |   T      |   T2
+   * -----------------------------------------
+   * rho1 |   sig11  |          |   sig13
+   * -----------------------------------------
+   * rho  |   sig21  |  sig22   |   sig23
+   * -----------------------------------------
+   * rho2 |   sig31  |          |   sig33
+   *
+   * - rho1, rho2, T1 and T2 are table values.
+   * - sig11, sig13, sig31 and sig33 are table values.
+   *
+   * Use linear interploation wrt log(rho) to find sig21 and sig23, then use
+   * linear interpolation wrt log(T) to find sig22.
+   */
 
-  // Find the bracketing table values (T1, T2) and (rho1, rho2) for rho and
-  // T.
+  // Find the bracketing table values (T1, T2) and (rho1, rho2) for rho and T.
   size_t irho = logDensities.size() - 1;
   size_t iT = logTemperatures.size() - 1;
   for (size_t i = 0; i < numT - 1; ++i) {
@@ -324,7 +323,6 @@ double IpcressDataTable::interpOpac(double const targetTemperature,
 
   // index of cell with lower T and lower rho bound
   size_t i = (iT * numrho + irho) * ng + group;
-  // size_t j = i + ng; // index for cell with higher rho value.
   size_t k = i + ng * numrho; // index for cell with higher T value
 
   // If we are on the edge of the opacity table, return the edge values.  So

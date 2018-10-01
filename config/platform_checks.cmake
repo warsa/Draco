@@ -288,7 +288,7 @@ macro( query_have_restrict_keyword )
 endmacro()
 
 #------------------------------------------------------------------------------#
-# Query if hardware has FMA
+# Query if hardware has FMA, AVX2
 #
 # This code is adopted from
 # https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
@@ -314,6 +314,7 @@ macro( query_fma_on_hardware )
         HAVE_HARDWARE_FMA_COMPILE
         ${CMAKE_CURRENT_BINARY_DIR}/config
         ${CMAKE_CURRENT_SOURCE_DIR}/config/query_fma.cc
+        ARGS "-f"
         )
       if( NOT HAVE_HARDWARE_FMA_COMPILE )
         message( FATAL_ERROR "Unable to compile config/query_fma.cc.")
@@ -353,6 +354,33 @@ macro( query_fma_on_hardware )
     #     set(HAS_HARDWARE_FMA ON)
     #   endif()
     # endif()
+
+    message( STATUS "Looking for hardware AVX2 support...")
+
+    if( "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "ppc64le" )
+      # power8/9 have AVX2 and the check below fails for power architectures, so
+      # we hard code the result here.
+      set(HAVE_HARDWARE_AVX2 TRUE)
+
+    else()
+      unset(HAVE_HARDWARE_AVX2)
+      try_run(
+        HAVE_HARDWARE_AVX2
+        HAVE_HARDWARE_AVX2_COMPILE
+        ${CMAKE_CURRENT_BINARY_DIR}/config
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/query_fma.cc
+        ARGS "-f"
+        )
+      if( NOT HAVE_HARDWARE_AVX2_COMPILE )
+        message( FATAL_ERROR "Unable to compile config/query_fma.cc.")
+      endif()
+    endif()
+
+    if( HAVE_HARDWARE_AVX2 )
+      message( STATUS "Looking for hardware AVX2 support...found AVX2.")
+    else()
+      message( STATUS "Looking for hardware AVX2 support...AVX2 not found.")
+    endif()
 
   endif()
 
