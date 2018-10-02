@@ -615,8 +615,7 @@ macro( toggle_compiler_flag switch compiler_flag
   # generate names that are safe for CMake RegEx MATCHES commands
   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})
 
-  # Loop over types of variables to check: CMAKE_C_FLAGS,
-  # CMAKE_CXX_FLAGS, etc.
+  # Loop over types of variables to check: CMAKE_C_FLAGS, CMAKE_CXX_FLAGS, etc.
   foreach( comp ${compiler_flag_var_names} )
 
     # sanity check
