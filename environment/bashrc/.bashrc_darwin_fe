@@ -36,10 +36,10 @@ if test -n "$MODULESHOME"; then
       arm)
         cflavor="gcc-8.2.0"
         mflavor="$cflavor-openmpi-3.1.2"
-        noflavor="git cmake gcc/8,2.0"
+        noflavor="git cmake gcc/8.2.0"
         compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_8.2.0"
         mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
-        ec_mf="ndi"
+        # ec_mf="ndi"
       ;;
 
       x86_64)
@@ -90,6 +90,9 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
     export CC=`which gcc`
     export FC=`which gfortran`
     export MPIEXEC_EXECUTABLE=`which mpirun`
+
+    # CMake-3.12+ doesn't want X_ROOT variables
+    unset MPI_ROOT
 
     # Previously, we used Darwin for nightly regressions with Intel-MPI.  When
     # Intel-MPI is selected, these variables must be set:
