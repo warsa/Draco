@@ -461,9 +461,10 @@ void quadrature_integration_test(UnitTest & /*ut*/, Quadrature &quadrature) {
 }
 
 //---------------------------------------------------------------------------//
-void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
-  cout << "Testing quadrature " << quadrature.name() << endl;
-  cout << "  Parse name: " << quadrature.parse_name() << endl;
+void quadrature_test(UnitTest &ut, Quadrature &quadrature,
+                     bool const cartesian_tests_only) {
+  cout << "Testing quadrature " << quadrature.name()
+       << "\n  Parse name: " << quadrature.parse_name() << endl;
   switch (quadrature.quadrature_class()) {
   case INTERVAL_QUADRATURE:
     cout << "  This is an interval quadrature." << endl;
@@ -613,21 +614,24 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
     if (quadrature.is_open_interval()) {
       // Our curvilinear angular operator algorithm doesn't work with closed
       // interval quadratures (those for which mu=-1 is part of the set).
-      test_no_axis(ut, quadrature,
-                   1U, // dimension,
-                   rtt_mesh_element::SPHERICAL,
-                   1U, // expansion_order,
-                   "SN",
-                   false, // add_extra_directions,
-                   Ordinate_Set::LEVEL_ORDERED);
+      if (!cartesian_tests_only) {
 
-      test_no_axis(ut, quadrature,
-                   1U, // dimension,
-                   rtt_mesh_element::SPHERICAL,
-                   1U, // expansion_order,
-                   "GQ1",
-                   false, // add_extra_directions,
-                   Ordinate_Set::LEVEL_ORDERED);
+        test_no_axis(ut, quadrature,
+                     1U, // dimension,
+                     rtt_mesh_element::SPHERICAL,
+                     1U, // expansion_order,
+                     "SN",
+                     false, // add_extra_directions,
+                     Ordinate_Set::LEVEL_ORDERED);
+
+        test_no_axis(ut, quadrature,
+                     1U, // dimension,
+                     rtt_mesh_element::SPHERICAL,
+                     1U, // expansion_order,
+                     "GQ1",
+                     false, // add_extra_directions,
+                     Ordinate_Set::LEVEL_ORDERED);
+      }
     }
   }
 
@@ -692,20 +696,23 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
                    Ordinate_Set::LEVEL_ORDERED);
     }
 
-    if (!quadrature.has_axis_assignments()) {
-      // Axisymmetric is hosed if axes have been reassigned, since the levels
-      // are only guaranteed on the xi axis.
-      /*
-      if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
-        test_no_axis(ut, quadrature,
-                     1U, // dimension,
-                     rtt_mesh_element::AXISYMMETRIC,
-                     // expansion_order
-                     min(8U, quadrature.number_of_levels()), "GQ1",
-                     false, // add_extra_directions,
-                     Ordinate_Set::LEVEL_ORDERED);
+    if (!cartesian_tests_only) {
+
+      if (!quadrature.has_axis_assignments()) {
+        // Axisymmetric is hosed if axes have been reassigned, since the levels
+        // are only guaranteed on the xi axis.
+        if (false && quadrature.quadrature_class() == TRIANGLE_QUADRATURE) {
+
+          test_no_axis(ut, quadrature,
+                       1U, // dimension,
+                       rtt_mesh_element::AXISYMMETRIC,
+                       // expansion_order
+                       min(8U, quadrature.number_of_levels()), "GQ1",
+                       false, // add_extra_directions,
+                       Ordinate_Set::LEVEL_ORDERED);
+        }
       }
-      */
+
       test_no_axis(ut, quadrature,
                    1U, // dimension,
                    rtt_mesh_element::AXISYMMETRIC,
@@ -744,8 +751,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature) {
 // and assign data into a "quadrature_data" type.  See
 // ftest/tstquadrature_interfaces.f90
 // --------------------------------------------------------------------------//
-extern "C" DLL_PUBLIC_quadrature_test void
-rtt_test_quadrature_interfaces(const quadrature_data &quad, int &error_code) {
+extern "C" void rtt_test_quadrature_interfaces(const quadrature_data &quad,
+                                               int &error_code) {
   using rtt_dsxx::soft_equiv;
   using std::cout;
   using std::endl;
