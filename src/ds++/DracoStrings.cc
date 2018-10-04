@@ -55,7 +55,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t {
 }
 
 // See notes in DracoStrings.hh about this CPP block
-#if defined(WIN32)
+#if defined(WIN32) || defined(APPLE)
 
 template <> auto parse_number_impl<long>(std::string const &str) -> long {
   return std::stol(str); // use stoull or stul?

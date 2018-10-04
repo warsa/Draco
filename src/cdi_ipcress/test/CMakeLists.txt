@@ -32,12 +32,21 @@ add_scalar_tests(
   TEST_ARGS "-u" )
 
 include( ApplicationUnitTest )
+# Test multi-group opacities found in an ipcressfile
 add_app_unit_test(
   DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
   APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
   TEST_ARGS "-v;-h;${PROJECT_SOURCE_DIR}/Al_BeCu.ipcress;missingfile.ipcress"
   STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.stdin"
   GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-Al_BeCu.ipcress.gold"
+  )
+# Test gray opacities found in an ipcressfile  
+add_app_unit_test(
+  DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tIpcress_Interpreter.py
+  APP       $<TARGET_FILE_DIR:Exe_Ipcress_Interpreter>/$<TARGET_FILE_NAME:Exe_Ipcress_Interpreter>
+  TEST_ARGS "${PROJECT_SOURCE_DIR}/odfregression10.ipcress"
+  STDINFILE "${PROJECT_SOURCE_DIR}/IpcressInterpreter.odf.stdin"
+  GOLDFILE  "${PROJECT_SOURCE_DIR}/Ipcress_Interpreter-odfregression10.ipcress.gold"
   )
 
 #------------------------------------------------------------------------------#

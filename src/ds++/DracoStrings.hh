@@ -139,7 +139,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
 // If we are using Visual Studio, we need these definitions. I expect that they
 // will be needed for 32-bit Linux as well, but I can't test that.
 // Might need to add "|| (defined(__GNUC__) && __WORDSIZE != 64)"
-#if defined(WIN32)
+#if defined(WIN32) || defined(APPLE)
 
 template <> auto parse_number_impl<long>(std::string const &str) -> long;
 template <>
