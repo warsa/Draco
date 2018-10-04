@@ -150,6 +150,28 @@ void Console_Token_Stream::rewind() {
   Ensure(location_() == "input");
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * Console_Token_Stream does not presently support the #include directive.
+ */
+void Console_Token_Stream::push_include(std::string const &) {
+  report_syntax_error("#include not supported for Console_Token_Stream");
+}
+
+#ifdef _BullseyeCoverage
+#pragma BullseyeCoverage off
+#endif
+//---------------------------------------------------------------------------//
+/*!
+ * Console_Token_Stream does not presently support the #include directive.
+ */
+void Console_Token_Stream::pop_include() {
+  /* this function should be unreachable. Please note this in code coverage. */
+}
+#ifdef _BullseyeCoverage
+#pragma BullseyeCoverage on
+#endif
+
 } // namespace rtt_parser
 
 //---------------------------------------------------------------------------------------//

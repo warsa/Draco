@@ -58,8 +58,8 @@ String_Token_Stream::String_Token_Stream(string &&text)
  *
  * \param text Text from which to extract tokens.
  * \param ws Points to a string containing user-defined whitespace characters.
- * \param no_nonbreaking_whitespace Causes spaces and tabs to be treated as 
- *        breaking whitespace. This has the effect of forcing all keywords to 
+ * \param no_nonbreaking_whitespace Causes spaces and tabs to be treated as
+ *        breaking whitespace. This has the effect of forcing all keywords to
  *        consist of a single identifier.
  */
 String_Token_Stream::String_Token_Stream(string const &text,
@@ -174,6 +174,28 @@ void String_Token_Stream::rewind() {
 bool String_Token_Stream::check_class_invariants() const {
   return pos_ <= text_.length();
 }
+
+//---------------------------------------------------------------------------//
+/*!
+ * String_Token_Stream does not presently support the #include directive.
+ */
+void String_Token_Stream::push_include(std::string const &) {
+  report_syntax_error("#include not supported for String_Token_Stream");
+}
+
+#ifdef _BullseyeCoverage
+#pragma BullseyeCoverage off
+#endif
+//---------------------------------------------------------------------------//
+/*!
+ * String_Token_Stream does not presently support the #include directive.
+ */
+void String_Token_Stream::pop_include() {
+  /* this function should be unreachable. Please note this in code coverage. */
+}
+#ifdef _BullseyeCoverage
+#pragma BullseyeCoverage on
+#endif
 
 } // namespace rtt_parser
 

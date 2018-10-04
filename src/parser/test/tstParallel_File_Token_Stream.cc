@@ -329,6 +329,32 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       PASSMSG("Keyword read correctly.");
     }
   }
+
+  // Test #include directive.
+  {
+    Parallel_File_Token_Stream tokens(ut.getTestSourcePath() +
+                                      std::string("parallel_include_test.inp"));
+
+    Token token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try rewind
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+  }
 }
 
 //---------------------------------------------------------------------------//
