@@ -247,9 +247,10 @@ void Ensight_Translator::ensight_dump(
     Check(i < INT_MAX);
     cells_of_type[ipart][iel_type[i]].push_back(static_cast<int>(i));
 
-    int n_local_vertices = d_vrtx_cnt[iel_type[i]];
+    // get number of vertices for this cell
+    const size_t n_local_vertices = ipar.ncols(i);
 
-    for (int iv = 0; iv < n_local_vertices; ++iv)
+    for (size_t iv = 0; iv < n_local_vertices; ++iv)
       vertices_of_part[ipart].insert(ipar(i, iv) - 1);
   }
 
@@ -462,7 +463,9 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
         d_geom_out << g_cell_indices[c[i]] << endl;
 
       for (size_t i = 0; i < num_elem; ++i) {
-        Check(static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]);
+        Check(d_vrtx_cnt[type] > 0
+                  ? static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]
+                  : true);
         for (int j = 0; j < d_vrtx_cnt[type]; j++)
           d_geom_out << ens_vertex[ipar(c[i], j)];
         d_geom_out << endl;
