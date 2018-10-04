@@ -53,7 +53,6 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
   size_t ndim = 2;
   size_t ndata = 2;
   std::vector<size_t> nvert_per_cell = {4, 6};
-  size_t nrgn = 1;
 
   // size the cell-vertex vector
   vec2_i ipar = {vec_i(nvert_per_cell[0]), vec_i(nvert_per_cell[1])};
@@ -62,7 +61,7 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
   vec2_d cell_data(ncells, vec_d(ndata));
   vec2_d pt_coor(nvert, vec_d(ndim));
   // set the element type to be unstructured
-  vec_i iel_type(ncells, rtt_viz::unstructured_2d);
+  vec_i iel_type(ncells, rtt_viz::unstructured);
   // set the vertex-centered and cell-centered data names
   vec_s vdata_names = {"Densities", "Temperatures"};
   Check(vdata_names.size() == ndata);
@@ -73,7 +72,6 @@ void ensight_dump_test_unstr2d(rtt_dsxx::UnitTest &ut, bool const binary) {
   Check(rgn_index.size() == ncells);
   vec_s rgn_name = {"RGN_A"};
   vec_i rgn_data = {1};
-  Check(rgn_data.size() == nrgn);
 
   // create some arbitrary cell and vertex based data (as in structured test)
   for (size_t i = 0; i < ndata; i++) {
