@@ -59,16 +59,16 @@ File_Token_Stream::File_Token_Stream(string const &file_name)
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief Construct a File_Token_Stream that derives its text from the 
- *        specified file. If the file cannot be opened, then \c error() will 
+ * \brief Construct a File_Token_Stream that derives its text from the
+ *        specified file. If the file cannot be opened, then \c error() will
  *        test true.
  *
  * \param file_name Name of the file from which to extract tokens.
  *
  * \param ws User-defined whitespace characters.
  *
- * \param no_nonbreaking_ws If true, treat spaces and tabs as breaking 
- *           whitespace. This has the effect of forcing all keywords to consist 
+ * \param no_nonbreaking_ws If true, treat spaces and tabs as breaking
+ *           whitespace. This has the effect of forcing all keywords to consist
  *           of a single identifier.
  *
  * \throw invalid_argument If the input stream cannot be opened.
@@ -122,8 +122,8 @@ void File_Token_Stream::open(string const &file_name) {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief This function constructs and returns a string of the form "filename, 
- *        line #" indicating the location at which the last token was parsed.  
+ * \brief This function constructs and returns a string of the form "filename,
+ *        line #" indicating the location at which the last token was parsed.
  *        This is useful for error reporting in parsers.
  *
  * \return A string of the form "filename, line #"
@@ -144,7 +144,7 @@ string File_Token_Stream::location_() const {
  *         character buffer.
  */
 void File_Token_Stream::fill_character_buffer_() {
-  char const c = static_cast<char const>(infile_.get());
+  char const c = static_cast<char>(infile_.get());
   if (infile_.fail()) {
     character_push_back_('\0');
   } else {
@@ -156,7 +156,7 @@ void File_Token_Stream::fill_character_buffer_() {
 
 //----------------------------------------------------------------------------//
 /*!
- * \brief This function may be used to check whether an I/O error has occured, 
+ * \brief This function may be used to check whether an I/O error has occured,
  *        such as failure to open the text file.
  *
  * \return \c true if an error has occured; \c false otherwise.

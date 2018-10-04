@@ -103,8 +103,8 @@ void Sides::redefineSides() {
            "Error in Sides redefinition.");
     // Check to see if the nodes need to be rearranged for this side type.
     bool redefined = false;
-    for (size_t n = 0; n < node_map.size(); n++) {
-      if (node_map[n] != static_cast<int>(n))
+    for (unsigned n = 0; n < node_map.size(); n++) {
+      if (node_map[n] != n)
         redefined = true;
     }
     if (redefined) {
