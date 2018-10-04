@@ -98,7 +98,7 @@ void Sides::redefineSides() {
   vector_uint temp_nodes;
   for (size_t st = 0; st < dims.get_nside_types(); st++) {
     int this_side_type = dims.get_side_types(st);
-    vector_int node_map(cellDefs.get_node_map(this_side_type));
+    vector_uint node_map(cellDefs.get_node_map(this_side_type));
     Insist(node_map.size() == cellDefs.get_nnodes(this_side_type),
            "Error in Sides redefinition.");
     // Check to see if the nodes need to be rearranged for this side type.

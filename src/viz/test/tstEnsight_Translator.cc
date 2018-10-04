@@ -157,7 +157,7 @@ void ensight_dump_test(rtt_dsxx::UnitTest &ut, bool const binary) {
       p_iel_type[i][j] = iel_type[g];
 
       for (size_t k = 0; k < ipar[g].size(); k++) {
-        int tmp = ipar[g][k] - 1;
+        IT tmp = ipar[g][k] - 1;
         auto f = find(g_vrtx_indices[i].begin(), g_vrtx_indices[i].end(), tmp);
         Require(f != g_vrtx_indices[i].end());
         p_ipar[i][j][k] = static_cast<int>(f - g_vrtx_indices[i].begin() + 1);

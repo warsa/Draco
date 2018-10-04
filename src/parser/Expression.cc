@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-C++-*-----------------------------------//
 /*!
  * \file   parser/Expression.cc
  * \author Kent Budge
@@ -6,7 +6,7 @@
  * \brief  Implementation of class Expression
  * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 #include "Constant_Expression.hh"
 #include <limits>
@@ -17,7 +17,7 @@ using namespace rtt_dsxx;
 typedef std::shared_ptr<Expression> pE;
 typedef map<string, pair<unsigned, Unit>> Variable_Map;
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * The and operator implicitly converts its operands to bool. Hence no unit
  * compatibility of the operands is required, and the result is dimensionless.
@@ -47,12 +47,12 @@ private:
             (std::abs(evaluate_def_(e2_, x)) > eps));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > AND_PRECEDENCE) {
       out << '(';
     }
@@ -67,7 +67,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Cos_Expression : public Expression {
 public:
   Cos_Expression(pE const &expression)
@@ -91,12 +91,12 @@ private:
     return cos(evaluate_def_(expression_, x));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > FUNCTION_PRECEDENCE) {
       out << '(';
     }
@@ -111,7 +111,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Difference_Expression : public Expression {
 public:
   Difference_Expression(pE const &e1, pE const &e2)
@@ -138,12 +138,12 @@ private:
     return evaluate_def_(e1_, x) - evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > DIFFERENCE_PRECEDENCE) {
       out << '(';
     }
@@ -158,7 +158,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Exp_Expression : public Expression {
 public:
   Exp_Expression(pE const &expression)
@@ -182,12 +182,12 @@ private:
     return exp(evaluate_def_(expression_, x));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > FUNCTION_PRECEDENCE) {
       out << '(';
     }
@@ -202,7 +202,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Greater_Expression : public Expression {
 public:
   Greater_Expression(pE const &e1, pE const &e2)
@@ -229,12 +229,12 @@ private:
     return evaluate_def_(e1_, x) > evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > GREATER_PRECEDENCE) {
       out << '(';
     }
@@ -249,7 +249,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class GE_Expression : public Expression {
 public:
   GE_Expression(pE const &e1, pE const &e2)
@@ -276,12 +276,12 @@ private:
     return evaluate_def_(e1_, x) >= evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > GE_PRECEDENCE) {
       out << '(';
     }
@@ -296,7 +296,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Less_Expression : public Expression {
 public:
   Less_Expression(pE const &e1, pE const &e2)
@@ -323,12 +323,12 @@ private:
     return evaluate_def_(e1_, x) < evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > LESS_PRECEDENCE) {
       out << '(';
     }
@@ -343,7 +343,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class LE_Expression : public Expression {
 public:
   LE_Expression(pE const &e1, pE const &e2)
@@ -370,12 +370,12 @@ private:
     return evaluate_def_(e1_, x) <= evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > LE_PRECEDENCE) {
       out << '(';
     }
@@ -390,7 +390,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Log_Expression : public Expression {
 public:
   Log_Expression(pE const &expression)
@@ -414,12 +414,12 @@ private:
     return log(evaluate_def_(expression_, x));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > FUNCTION_PRECEDENCE) {
       out << '(';
     }
@@ -434,7 +434,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Negate_Expression : public Expression {
 public:
   Negate_Expression(pE const &expression)
@@ -456,12 +456,12 @@ private:
     return -evaluate_def_(expression_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > NEGATE_PRECEDENCE) {
       out << '(';
     }
@@ -475,7 +475,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Not_Expression : public Expression {
 public:
   Not_Expression(pE const &expression)
@@ -497,12 +497,12 @@ private:
     return std::abs(evaluate_def_(expression_, x)) < eps;
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > NOT_PRECEDENCE) {
       out << '(';
     }
@@ -516,7 +516,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Or_Expression : public Expression {
 public:
   Or_Expression(pE const &e1, pE const &e2)
@@ -543,12 +543,12 @@ private:
            (std::abs(evaluate_def_(e2_, x)) > eps);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > OR_PRECEDENCE) {
       out << '(';
     }
@@ -563,7 +563,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Power_Expression : public Expression {
 public:
   Power_Expression(pE const &e1, pE const &e2)
@@ -593,12 +593,12 @@ private:
     return std::pow(evaluate_def_(e1_, x), evaluate_def_(e2_, x));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > FUNCTION_PRECEDENCE) {
       out << '(';
     }
@@ -615,7 +615,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Product_Expression : public Expression {
 public:
   Product_Expression(pE const &e1, pE const &e2)
@@ -641,12 +641,12 @@ private:
     return evaluate_def_(e1_, x) * evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > PRODUCT_PRECEDENCE) {
       out << '(';
     }
@@ -661,7 +661,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Quotient_Expression : public Expression {
 public:
   Quotient_Expression(pE const &e1, pE const &e2)
@@ -687,12 +687,12 @@ private:
     return evaluate_def_(e1_, x) / evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > QUOTIENT_PRECEDENCE) {
       out << '(';
     }
@@ -707,7 +707,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Sin_Expression : public Expression {
 public:
   Sin_Expression(pE const &expression)
@@ -731,12 +731,12 @@ private:
     return sin(evaluate_def_(expression_, x));
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return expression_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > FUNCTION_PRECEDENCE) {
       out << '(';
     }
@@ -751,7 +751,7 @@ private:
   pE expression_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Sum_Expression : public Expression {
 public:
   Sum_Expression(pE const &e1, pE const &e2)
@@ -777,12 +777,12 @@ private:
     return evaluate_def_(e1_, x) + evaluate_def_(e2_, x);
   }
 
-  virtual bool is_constant_(unsigned const i) const {
+  virtual bool is_constant_(unsigned const i) const override {
     return e1_->is_constant(i) && e2_->is_constant(i);
   }
 
   virtual void write_(Precedence const p, vector<string> const &vars,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (p > SUM_PRECEDENCE) {
       out << '(';
     }
@@ -797,7 +797,7 @@ private:
   pE e1_, e2_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 class Variable_Expression : public Expression {
 public:
   Variable_Expression(unsigned const index, unsigned const number_of_variables,
@@ -814,7 +814,9 @@ public:
 private:
   virtual double evaluate_(double const *const x) const { return x[index_]; }
 
-  virtual bool is_constant_(unsigned const i) const { return i != index_; }
+  virtual bool is_constant_(unsigned const i) const override {
+    return i != index_;
+  }
 
   virtual void write_(Precedence, vector<string> const &vars,
                       ostream &out) const {
@@ -826,7 +828,7 @@ private:
   unsigned index_;
 };
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_primary(unsigned const number_of_variables,
                         Variable_Map const &variable_map,
                         Token_Stream &tokens) {
@@ -938,10 +940,10 @@ static pE parse_primary(unsigned const number_of_variables,
           unit_map["keV"] = keV;
         }
 
-        map<string, Unit>::const_iterator i = unit_map.find(variable.text());
+        map<string, Unit>::const_iterator ii = unit_map.find(variable.text());
 
-        if (i != unit_map.end()) {
-          Unit units = i->second;
+        if (ii != unit_map.end()) {
+          Unit units = ii->second;
           units.conv *= conversion_factor(units, get_internal_unit_system());
           if (!unit_expressions_are_required()) {
             units = units.conv * dimensionless;
@@ -959,7 +961,7 @@ static pE parse_primary(unsigned const number_of_variables,
   return pE();
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_power(unsigned const number_of_variables,
                       Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_primary(number_of_variables, variable_map, tokens);
@@ -979,7 +981,7 @@ static pE parse_power(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_unary(unsigned const number_of_variables,
                       Variable_Map const &variable_map, Token_Stream &tokens) {
   if (tokens.lookahead().text() == "+") {
@@ -999,7 +1001,7 @@ static pE parse_unary(unsigned const number_of_variables,
   }
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_multiplicative(unsigned const number_of_variables,
                                Variable_Map const &variable_map,
                                Token_Stream &tokens) {
@@ -1019,7 +1021,7 @@ static pE parse_multiplicative(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_additive(unsigned const number_of_variables,
                          Variable_Map const &variable_map,
                          Token_Stream &tokens) {
@@ -1049,7 +1051,7 @@ static pE parse_additive(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_relational(unsigned const number_of_variables,
                            Variable_Map const &variable_map,
                            Token_Stream &tokens) {
@@ -1101,7 +1103,7 @@ static pE parse_relational(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_and(unsigned const number_of_variables,
                     Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_relational(number_of_variables, variable_map, tokens);
@@ -1113,7 +1115,7 @@ static pE parse_and(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 static pE parse_or(unsigned const number_of_variables,
                    Variable_Map const &variable_map, Token_Stream &tokens) {
   pE Result = parse_and(number_of_variables, variable_map, tokens);
@@ -1125,7 +1127,7 @@ static pE parse_or(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param x Variable values to apply to the expression. The values must be in
  * SI units.
@@ -1142,7 +1144,7 @@ double Expression::operator()(vector<double> const &x) const {
   return evaluate_(&x[0]);
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param number_of_variables Number of distinct independent variables in the
  * expression.
@@ -1177,7 +1179,7 @@ Expression::parse(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 /*!
  * \param number_of_variables Number of distinct independent variables in the
  * expression.
@@ -1227,7 +1229,7 @@ Expression::parse(unsigned const number_of_variables,
   return Result;
 }
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 void Expression::write(Precedence const p, vector<string> const &vars,
                        ostream &out) const {
   Require(vars.size() == number_of_variables());
@@ -1237,6 +1239,6 @@ void Expression::write(Precedence const p, vector<string> const &vars,
 
 } // end namespace rtt_parser
 
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // end of Expression.cc
-//---------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//

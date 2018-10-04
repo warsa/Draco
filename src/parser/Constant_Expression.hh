@@ -5,10 +5,7 @@
  * \date   Wed Jul 26 07:53:32 2006
  * \brief  Definition of class Constant_Expression
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef parser_Constant_Expression_hh
@@ -18,7 +15,7 @@
 
 namespace rtt_parser {
 //---------------------------------------------------------------------------//
-DLL_PUBLIC_parser void write_c(Unit const &units, ostream &out);
+void write_c(Unit const &units, ostream &out);
 
 //===========================================================================//
 /*!
@@ -40,23 +37,23 @@ public:
   // CREATORS
 
   /*! Create a dimensionless constant.
-     *
-     * \param number_of_variables Number of indepedent variables in the
-     * expression.
-     *
-     * \param value Value of the constant
-     */
+   *
+   * \param number_of_variables Number of indepedent variables in the
+   * expression.
+   *
+   * \param value Value of the constant
+   */
   Constant_Expression(unsigned const number_of_variables, double const value)
       : Expression(number_of_variables, value * dimensionless) {}
 
   /*! Create a dimensioned constant.
-     *
-     * \param number_of_variables Number of indepedent variables in the
-     * expression.
-     *
-     * \param value Dimensions and value of the constant. The value is stored
-     * in the \c conv member of this argument.
-     */
+   *
+   * \param number_of_variables Number of indepedent variables in the
+   * expression.
+   *
+   * \param value Dimensions and value of the constant. The value is stored
+   * in the \c conv member of this argument.
+   */
   Constant_Expression(unsigned const number_of_variables, Unit const &value)
       : Expression(number_of_variables, value) {}
 
@@ -70,7 +67,7 @@ private:
   virtual double evaluate_(double const *const) const { return units().conv; }
 
   virtual void write_(Precedence const, vector<string> const &,
-                      ostream &out) const {
+                      ostream &out) const override {
     if (is_compatible(units(), dimensionless)) {
       out << units().conv;
     } else {

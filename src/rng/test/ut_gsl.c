@@ -100,11 +100,11 @@ int main(int argc, char **argv) {
   printf("uniforms from %s\n", gsl_rng_name(r));
   sum = 0.;
   for (i = 0; i < 5; i++) {
-    double x = gsl_rng_uniform(r);
+    double x2 = gsl_rng_uniform(r);
     rngRemember(double y = gsl_rng_uniform(rcopy));
-    printf("%d: %.4g\n", i, x);
-    sum += x;
-    assert(x == y);
+    printf("%d: %.4g\n", i, x2);
+    sum += x2;
+    assert(x2 == y);
   }
   assert(gsl_rng_get(r) != save);
   assert(sum < 0.9 * 5 && sum > 0.1 * 5 &&

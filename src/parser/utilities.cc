@@ -759,30 +759,30 @@ double parse_quantity(Token_Stream &tokens, Unit const &target_unit,
  * \post \c Result>=0.0
  */
 double parse_temperature(Token_Stream &tokens) {
-  double T = parse_real(tokens);
+  double Temp = parse_real(tokens);
 
-  if (T < 0.0) {
+  if (Temp < 0.0) {
     tokens.report_semantic_error("temperature must be nonnegative");
-    T = 0.0;
+    Temp = 0.0;
   }
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
-    return T;
+    return Temp;
   } else {
     Unit const u = parse_unit(tokens);
-    T *= u.conv * conversion_factor(u, get_internal_unit_system());
+    Temp *= u.conv * conversion_factor(u, get_internal_unit_system());
     if (is_compatible(u, K)) {
       // no action needed
     } else if (is_compatible(u, J)) {
-      T *= get_internal_unit_system().T() /
-           (rtt_units::boltzmannSI *
-            conversion_factor(u, get_internal_unit_system()));
+      Temp *= get_internal_unit_system().T() /
+              (rtt_units::boltzmannSI *
+               conversion_factor(u, get_internal_unit_system()));
     } else {
       tokens.report_semantic_error("expected quantity with units of "
                                    "temperature");
       return 0.0;
     }
-    return T;
+    return Temp;
   }
 }
 
@@ -811,34 +811,34 @@ double parse_temperature(Token_Stream &tokens) {
 std::shared_ptr<Expression>
 parse_temperature(Token_Stream &tokens, unsigned const number_of_variables,
                   std::map<string, pair<unsigned, Unit>> const &variable_map) {
-  std::shared_ptr<Expression> T =
+  std::shared_ptr<Expression> Temp =
       Expression::parse(number_of_variables, variable_map, tokens);
 
   if (!unit_expressions_are_required() && !at_unit_term(tokens)) {
-    return T;
+    return Temp;
   } else {
     rtt_units::UnitSystem const &unit_system = get_internal_unit_system();
-    Unit const u = parse_unit(tokens) * T->units();
+    Unit const u = parse_unit(tokens) * Temp->units();
     double const conv = conversion_factor(u, unit_system);
     if (is_compatible(u, K)) {
       // no action needed
-      T->set_units(conv * u);
+      Temp->set_units(conv * u);
     } else if (is_compatible(u, J)) {
       double const boltzmann =
           rtt_units::boltzmannSI * unit_system.e() / unit_system.T();
 
-      T->set_units(conv * u / boltzmann);
+      Temp->set_units(conv * u / boltzmann);
     } else {
       tokens.report_syntax_error("expected quantity with units of "
                                  "temperature");
     }
-    return T;
+    return Temp;
   }
 }
 
 //---------------------------------------------------------------------------//
 /*!
- * Parses a STRING token and strips the delimiting quotation marks.
+ * \brief Parses a STRING token and strips the delimiting quotation marks.
  *
  * \param tokens Token_Stream from which to parse.
  * \return The stripped string.
@@ -861,14 +861,13 @@ std::string parse_manifest_string(Token_Stream &tokens) {
  *
  * \param tokens Token stream from which to parse the geometry.
  * \param parsed_geometry On entry, if the value is not \c END_GEOMETRY, a
- * diagnostic is generated to the token stream. On return, contains the
- * geometry that was parsed.
+ *           diagnostic is generated to the token stream. On return, contains
+ *           the geometry that was parsed.
  *
  * \post <code> parsed_geometry == rtt_mesh_element::AXISYMMETRIC ||
  *         parsed_geometry == rtt_mesh_element::CARTESIAN    ||
  *         parsed_geometry == rtt_mesh_element::SPHERICAL </code>
  */
-
 void parse_geometry(Token_Stream &tokens,
                     rtt_mesh_element::Geometry &parsed_geometry) {
   tokens.check_semantics(parsed_geometry == rtt_mesh_element::END_GEOMETRY,

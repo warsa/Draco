@@ -202,7 +202,7 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
     // Read up to numeric_limits<signed char>::max() characters from the
     // input file.
     while (i < static_cast<unsigned>(numeric_limits<signed char>::max() + 1)) {
-      char const c = infile_.get();
+      char const c = static_cast<char const>(infile_.get());
       if (infile_.eof() || infile_.fail())
         break;
       comm_buffer[i++] = c;
@@ -250,10 +250,10 @@ void Parallel_File_Token_Stream::fill_character_buffer_() {
 
     // Copy the transmitted characters into the local character buffer.
 
-    vector<char>::iterator first = comm_buffer.begin();
-    vector<char>::iterator last = first + i;
+    vector<char>::iterator local_first = comm_buffer.begin();
+    vector<char>::iterator local_last = local_first + i;
 
-    for (vector<char>::iterator iter = first + 1; iter != last; ++iter) {
+    for (auto iter = local_first + 1; iter != local_last; ++iter) {
       character_push_back_(*iter);
     }
   }

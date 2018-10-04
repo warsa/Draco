@@ -237,6 +237,7 @@ protected:
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
 #define UT_CHECK(ut, m) ut.check(m, #m);
+#define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
 #define FAIL_IF_NOT(c)                                                         \

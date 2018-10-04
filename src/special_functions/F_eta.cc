@@ -133,16 +133,16 @@ double F_eta(double const eta, double const gamma) {
     return dsum;
   } else {
     // Degenerate regime?
-    double const e = square(eta + 1) - 1;
+    double const ee = square(eta + 1) - 1;
 
-    if (e <= 0) {
+    if (ee <= 0) {
       Insist(false, std::string("Please add a unit test for this case and ") +
                         "then re-enable Feta_brute(eta,gamma).");
       // return Feta_brute(eta, gamma);
     } else {
-      double const de = 2 * (eta + 1);
-      double const x = sqrt(e);
-      double const dx = 0.5 * de / x;
+      double const dde = 2 * (eta + 1);
+      double const x = sqrt(ee);
+      double const dx = 0.5 * dde / x;
       double const rad = sqrt(x * x + 1);
       double const drad = x * dx / rad;
 

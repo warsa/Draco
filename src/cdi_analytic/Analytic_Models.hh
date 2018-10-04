@@ -631,12 +631,12 @@ public:
   //!  Calculate the electron temperature given density and Electron
   //!  internal energy and initial temperature.
   double calculate_elec_temperature(double const /*rho*/, double const Ue,
-                                    double const Te0) const;
+                                    double const Te0) const override;
 
   //!  Calculate the ion temperature given density and ion internal energy
   //!  and initial temperature.
   double calculate_ion_temperature(double const /*rho*/, double const Uic,
-                                   double const Ti0) const;
+                                   double const Ti0) const override;
   //! Return the model parameters.
   sf_double get_parameters() const;
 
