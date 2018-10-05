@@ -479,11 +479,23 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupParMETIS )
 
+  set( QUIET "QUIET")
   if( NOT TARGET METIS::metis )
     message( STATUS "Looking for METIS..." )
 
-    find_package( METIS QUIET )
-    if( METIS_FOUND )
+    find_package( METIS CONFIG ${QUIET} )
+    if( NOT TARGET METIS::metis )
+      find_package( METIS ${QUIET} )
+    endif()
+    if( TARGET METIS::metis )
+      if( TARGET METIS::metis AND NOT METIS_LIBRARY )
+        foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
+          get_target_property(tmp METIS::metis IMPORTED_LOCATION_${config} )
+          if( EXISTS ${tmp} AND NOT METIS_LIBRARY )
+            set( METIS_LIBRARY ${tmp} )
+          endif()
+        endforeach()
+      endif()
       message( STATUS "Looking for METIS.....found ${METIS_LIBRARY}" )
     else()
       message( STATUS "Looking for METIS.....not found" )
@@ -523,7 +535,7 @@ macro( setupParMETIS )
    computing fill-reducing orderings of sparse matrices." )
 
   endif()
-
+  unset(QUIET)
 endmacro()
 
 #------------------------------------------------------------------------------

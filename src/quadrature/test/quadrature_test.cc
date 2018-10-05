@@ -697,7 +697,8 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
     }
 
     if (!cartesian_tests_only) {
-
+      // This test can never be called due to 'if(false)'
+      /*
       if (!quadrature.has_axis_assignments()) {
         // Axisymmetric is hosed if axes have been reassigned, since the levels
         // are only guaranteed on the xi axis.
@@ -712,7 +713,7 @@ void quadrature_test(UnitTest &ut, Quadrature &quadrature,
                        Ordinate_Set::LEVEL_ORDERED);
         }
       }
-
+      */
       test_no_axis(ut, quadrature,
                    1U, // dimension,
                    rtt_mesh_element::AXISYMMETRIC,
