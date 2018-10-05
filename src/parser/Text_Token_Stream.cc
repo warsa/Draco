@@ -8,6 +8,8 @@
 //---------------------------------------------------------------------------//
 
 #include "Text_Token_Stream.hh"
+
+#include "ds++/path.hh"
 #include <cstring>
 #include <ctype.h>
 #include <string>
@@ -575,7 +577,9 @@ void Text_Token_Stream::character_push_back_(char const c) {
 
 //---------------------------------------------------------------------------//
 /*!
- * \param include_file_name Name of file to be included at this point.
+ * \param include_file_name Name of file to be included at this point. On
+ * return, replaced with an absolute path based on DRACO_INCLUDE_PATH if the
+ * relative path did not exist.
  *
  * Child classes must set a policy on how to include a file. For example, a
  * File_Token_Stream can be expected to read the included file in serial; a
@@ -586,18 +590,37 @@ void Text_Token_Stream::character_push_back_(char const c) {
  *
  * This function is pure virtual with an implementation. This means that every
  * child class must implement this function, but part of its implementation
- * must be to set the line number by directly calling the base version. That
- * is, every child class must include
+ * must be to include
  *
  * \code Text_Token_Stream::push_include(include_file_name);
  *
- * as the first line in its implementation of this function.
+ * as the first line in its implementation of this function. This call stashes
+ * the line and character buffer of the underlying Text_Token_Stream and also
+ * finds the absolute path of the file name.
  */
-void Text_Token_Stream::push_include(std::string const &) {
+void Text_Token_Stream::push_include(std::string &file_name) {
   lines_.push(line_);
   line_ = 1;
   buffers_.push(buffer_);
   buffer_.clear();
+
+  // Now find the absolute path of the file name.
+
+  if (!rtt_dsxx::fileExists(file_name)) {
+    // File name as given does not resolve to an existing file. Assume this
+    // is a relative path and look for the file in DRACO_INCLUDE_PATH.
+
+    // At present, DRACO_INCLUDE_PATH can contain only a single path.
+    // Multiple search options may be implemented in the future.
+    auto path = getenv("DRACO_INCLUDE_PATH");
+    if (path != nullptr) {
+      // For now, the only other possibility:
+      file_name = path + ('/' + file_name);
+      // If this doesn't exist, the stream will report the error later on.
+    }
+    // else return and let the stream report the error
+  }
+  // else the file name as given resolves to an existing file
 
   Require(check_class_invariants());
   Require(line() == 1);

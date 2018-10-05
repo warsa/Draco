@@ -179,7 +179,7 @@ bool String_Token_Stream::check_class_invariants() const {
 /*!
  * String_Token_Stream does not presently support the #include directive.
  */
-void String_Token_Stream::push_include(std::string const &) {
+void String_Token_Stream::push_include(std::string &) {
   report_syntax_error("#include not supported for String_Token_Stream");
 }
 

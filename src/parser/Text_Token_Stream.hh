@@ -98,7 +98,7 @@ protected:
   void eat_whitespace_(void);
 
   //! Enter a nested file in a #include directive.
-  virtual void push_include(std::string const &include_file_name) = 0;
+  virtual void push_include(std::string &include_file_name) = 0;
 
   //! Exit a nested file from a #include directive.
   virtual void pop_include() = 0;

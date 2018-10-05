@@ -154,7 +154,7 @@ void Console_Token_Stream::rewind() {
 /*!
  * Console_Token_Stream does not presently support the #include directive.
  */
-void Console_Token_Stream::push_include(std::string const &) {
+void Console_Token_Stream::push_include(std::string &) {
   report_syntax_error("#include not supported for Console_Token_Stream");
 }
 
