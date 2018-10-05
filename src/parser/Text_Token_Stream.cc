@@ -14,6 +14,10 @@
 #include <ctype.h>
 #include <string>
 
+#if defined(MSVC)
+#undef ERROR
+#endif
+
 namespace rtt_parser {
 using namespace std;
 
