@@ -462,11 +462,18 @@ void Ensight_Translator::write_geom(const uint32_t part_num,
       for (size_t i = 0; i < num_elem; ++i)
         d_geom_out << g_cell_indices[c[i]] << endl;
 
+      // for n-sided polygons, Ensight requires number of nodes per cell
+      if (d_cell_names[type] == "nsided") {
+        for (size_t i = 0; i < num_elem; ++i) {
+          d_geom_out << static_cast<int>(ipar.ncols(c[i])) << endl;
+        }
+      }
+
       for (size_t i = 0; i < num_elem; ++i) {
         Check(d_vrtx_cnt[type] > 0
                   ? static_cast<int>(ipar.ncols(c[i])) == d_vrtx_cnt[type]
                   : true);
-        for (int j = 0; j < d_vrtx_cnt[type]; j++)
+        for (size_t j = 0; j < ipar.ncols(c[i]); j++)
           d_geom_out << ens_vertex[ipar(c[i], j)];
         d_geom_out << endl;
       }

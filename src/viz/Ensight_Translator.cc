@@ -182,7 +182,7 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
   d_cell_names = {"point",   "bar2",     "bar3",      "tria3",
                   "tria6",   "quad4",    "quad8",     "tetra4",
                   "tetra10", "pyramid5", "pyramid13", "hexa8",
-                  "hexa20",  "penta6",   "penta15",   "unstr"};
+                  "hexa20",  "penta6",   "penta15",   "nsided"};
   Check(d_cell_names.size() == d_num_cell_types);
 
   // Assign values to vrtx_count, the number of vertices in a cell.
