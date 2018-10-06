@@ -9,11 +9,11 @@
 
 macro( set_ccs2_software_version PROJNAME )
 
-  if( NOT ${${PROJNAME}_VERSION_MAJOR} )
+  if( "${${PROJNAME}_VERSION_MAJOR}x" STREQUAL "x" )
     message( WARNING "${PROJNAME}_VERSION_MAJOR should already be set!" )
     set(${PROJNAME}_VERSION_MAJOR 0)
   endif()
-  if( NOT ${${PROJNAME}_VERSION_MINOR} )
+  if( "${${PROJNAME}_VERSION_MINOR}x" STREQUAL "x" )
     message( WARNING "${PROJNAME}_VERSION_MINOR should already be set!" )
     set(${PROJNAME}_VERSION_MINOR 0)
   endif()

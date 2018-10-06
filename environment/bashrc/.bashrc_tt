@@ -90,11 +90,19 @@ function dracoenv ()
   export CC=cc
   export FC=ftn
   export CRAYPE_LINK_TYPE=dynamic
+  export DRACO_OLD_LD_LIBRARY_PATH=LD_LIBRARY_PATH
+  for dir in ${CRAY_LD_LIBRARY_PATH//:/ }; do
+    # remove each directory listed in CRAY_LD_LIBRARY_PATH from LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=$(echo "$LD_LIBRARY_PATH" | sed -e 's%:${dir}%%')
+    # Now prepend each $dir w/o respect to if it was removed above.
+    LD_LIBRARY_PATH=$dir:$LD_LIBRARY_PATH
+  done
 #  export MPIEXEC_EXECUTABLE=`which srun`
 }
 
 function rmdracoenv ()
 {
+  export LD_LIBRARY_PATH=$DRACO_OLD_LD_LIBRARY_PATH
   # unload in reverse order.
   mods=( ${dracomodules} )
   for ((i=${#mods[@]}-1; i>=0; i--)); do

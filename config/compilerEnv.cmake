@@ -418,7 +418,7 @@ macro(dbsSetupStaticAnalyzers)
 
   # include-what-you-link
   # https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/'
-  if( ${DRACO_STATIC_ANALYZER} MATCHES "iwyl" )
+  if( ${DRACO_STATIC_ANALYZER} MATCHES "iwyl" AND UNIX )
     option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked."
       TRUE )
   else()
