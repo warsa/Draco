@@ -157,7 +157,7 @@ public:
 /*!
  * \class Polynomial_Analytic_Opacity_Model
  * \brief Derived Analytic_Opacity_Model class that defines a polynomial
- * function for the opacity.
+ *        function for the opacity.
  *
  * The opacity is defined:
  *
@@ -167,7 +167,6 @@ public:
  *
  * \arg a = [cm^2/g * (cm^3/g)^d]
  * \arg b = [keV^(-c) * cm^2/g * (cm^3/g)^d]
- *
  */
 class DLL_PUBLIC_cdi_analytic Polynomial_Analytic_Opacity_Model
     : public Analytic_Opacity_Model {
@@ -185,16 +184,15 @@ private:
 public:
   /*!
    * \brief Constructor.
-   * \param a_ constant [cm^2/g (cm^3/g)^d]
-   * \param b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
-   * \param c_ temperature power
-   * \param d_ density power
-   * \param e_ frequency power
-   * \param f_ reference temperature
-   * \param g_ reference density
-   * \param h_ reference frequency
+   * \param[in] a_ constant [cm^2/g (cm^3/g)^d]
+   * \param[in] b_ temperature multiplier [keV^(-c) cm^2/g (cm^3/g)^d]
+   * \param[in] c_ temperature power
+   * \param[in] d_ density power
+   * \param[in] e_ frequency power (default = 0)
+   * \param[in] f_ reference temperature (default = 1)
+   * \param[in] g_ reference density (default = 1)
+   * \param[in] h_ reference frequency (default = 1)
    */
-
   Polynomial_Analytic_Opacity_Model(double a_, double b_, double c_, double d_,
                                     double e_ = 0, double f_ = 1, double g_ = 1,
                                     double h_ = 1)

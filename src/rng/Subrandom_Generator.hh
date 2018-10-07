@@ -60,7 +60,7 @@ protected:
 
   /*!
    * \brief Constructor for Subrandom_Generator.
-   * \param count Dimension of the vector calculated by this generator.
+   * \param[in] count Dimension of the vector calculated by this generator.
    */
   explicit Subrandom_Generator(unsigned count)
       : count_(count), element_(0) { /* empty */
