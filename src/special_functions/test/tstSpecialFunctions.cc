@@ -59,7 +59,7 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, "
             "kronecker_delta is not working.");
 
-  if (kronecker_delta(lOne, lZero) == lZero)
+  if (kronecker_delta(lOne, lZero) == static_cast<unsigned>(lZero))
     PASSMSG("Found kronecker_delta<long>(uOne,uZero) == uZero, "
             "kronecker_delta is working.");
   else

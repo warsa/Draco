@@ -178,13 +178,10 @@ case ${-} in
      sreport -t Hours cluster AccountUtilizationByUser user=$user start=$fday end=$lday
    }
 
-   target="`uname -n | sed -e s/[.].*//`"
-   case $target in
-     tt*|tr*)
-       alias salloc='salloc --gres=craynetwork:0'
-       ;;
+   export host=`uname -n | sed -e 's/[.].*//g'`
+   case $host in)
+   tt*|tr*) alias salloc='salloc --gres=craynetwork:0' ;;
    esac
-
    ;; # end case 'interactive'
 
 ##---------------------------------------------------------------------------##

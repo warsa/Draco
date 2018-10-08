@@ -9,8 +9,8 @@
 
 # called from regression-master.sh
 # assumes the following variables are defined in regression-master.sh:
-#    $regdir     - /scratch/regress
-#    $rscriptdir - /scratch/regress/draco/regression (actually, the location
+#    $regdir     - /usr/projects/jayenne/regress
+#    $rscriptdir - $regdir/draco/regression (actually, the location
 #                  where the active regression_master.sh is located)
 #    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
 #    $build_type - 'Debug', 'Release'

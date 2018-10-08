@@ -353,16 +353,14 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
           << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
       FAILMSG(msg.str());
     } catch (const Syntax_Error &msg) {
-      // cout << msg.what() << endl;
-      // exception = true;
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 1)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
@@ -380,11 +378,11 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
       string errmsg = msg.what();
       string expected("syntax error");
       if (errmsg == expected) {
-        ostringstream msg;
-        msg << "Caught expected exception from Token_Stream.\n"
-            << "\tunbalanced quotes were read from the input\n"
-            << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
-        PASSMSG(msg.str());
+        ostringstream message;
+        message << "Caught expected exception from Token_Stream.\n"
+                << "\tunbalanced quotes were read from the input\n"
+                << "\tfile, \"scanner_recover.inp\" (line 2)." << endl;
+        PASSMSG(message.str());
       } else
         ITFAILS;
     }
