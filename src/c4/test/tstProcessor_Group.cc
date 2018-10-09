@@ -69,11 +69,11 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
     for (size_t i = 0; i < vlen; ++i)
       myvec.push_back(pid * 1000.0 + i);
     vector<double> globalvec(group_pids * vlen);
+    Check(myvec.size() < UINT32_MAX);
     comm.assemble_vector(&myvec[0], &globalvec[0],
                          static_cast<unsigned>(myvec.size()));
 
-    if (globalvec.size() != group_pids * vlen)
-      ITFAILS;
+    FAIL_IF_NOT(globalvec.size() == group_pids * vlen);
 
     // Check the the first 5 elements
     vector<double> goldglobalvec;
@@ -81,9 +81,8 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
       for (size_t i = 0; i < vlen; ++i)
         goldglobalvec.push_back((base + 2.0 * j) * 1000 + i);
 
-    if (!rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
-                              globalvec.begin(), globalvec.end()))
-      ITFAILS;
+    FAIL_IF_NOT(rtt_dsxx::soft_equiv(goldglobalvec.begin(), goldglobalvec.end(),
+                                     globalvec.begin(), globalvec.end()));
   }
   return;
 }

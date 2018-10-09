@@ -16,6 +16,26 @@
 namespace rtt_dsxx {
 
 //----------------------------------------------------------------------------//
+//! Convert a string to all lower case
+std::string string_tolower(std::string const &string_in) {
+  std::locale loc;
+  std::ostringstream string_out;
+  for (auto elem : string_in)
+    string_out << std::tolower(elem, loc);
+  return string_out.str();
+}
+
+//----------------------------------------------------------------------------//
+//! Convert a string to all upper case
+std::string string_toupper(std::string const &string_in) {
+  std::locale loc;
+  std::ostringstream string_out;
+  for (auto elem : string_in)
+    string_out << std::toupper(elem, loc);
+  return string_out.str();
+}
+
+//----------------------------------------------------------------------------//
 // Definitions for fully specialized template functions
 //----------------------------------------------------------------------------//
 

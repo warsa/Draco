@@ -12,20 +12,18 @@
 #include "C4_Functions.hh"
 
 namespace rtt_c4 {
-using namespace std;
 
 //---------------------------------------------------------------------------//
 /*! Write all buffered data to console.
  *
- * Causes all buffered data to be written to console in MPI rank order; that
- * is, all data from rank 0 is written first, then all data from rank 1, and
- * so on.
+ * Causes all buffered data to be written to console in MPI rank order; that is,
+ * all data from rank 0 is written first, then all data from rank 1, and so on.
  */
 void opstream::mpibuf::send() {
   unsigned const pid = rtt_c4::node();
   if (pid == 0) {
     buffer_.push_back('\0'); // guarantees that buffer_.size() > 0
-    cout << &buffer_[0];
+    std::cout << &buffer_[0];
     buffer_.clear();
 
     unsigned const pids = rtt_c4::nodes();
@@ -37,7 +35,7 @@ void opstream::mpibuf::send() {
         rtt_c4::receive(&buffer_[0], N, i);
       }
       buffer_.push_back('\0');
-      cout << &buffer_[0]; // guarantees that buffer_.size() > 0
+      std::cout << &buffer_[0]; // guarantees that buffer_.size() > 0
     }
   } else {
 
@@ -70,7 +68,7 @@ void opstream::mpibuf::send() {
  * \return Integer representation of the character just added to the buffer.
  */
 /*virtual*/ opstream::mpibuf::int_type opstream::mpibuf::overflow(int_type c) {
-  buffer_.push_back(c);
+  buffer_.push_back(static_cast<char>(c));
   return c;
 }
 

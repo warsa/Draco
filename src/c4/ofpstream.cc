@@ -102,7 +102,7 @@ void ofpstream::mpibuf::send() {
  */
 /*virtual*/ ofpstream::mpibuf::int_type
 ofpstream::mpibuf::overflow(int_type c) {
-  buffer_.push_back(c);
+  buffer_.push_back(static_cast<char>(c));
   return c;
 }
 

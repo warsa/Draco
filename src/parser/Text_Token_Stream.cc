@@ -151,8 +151,8 @@ Token Text_Token_Stream::fill_() {
       } else if (int_length > 0) {
         text.reserve(int_length);
         for (unsigned i = 0; i < int_length; i++) {
-          char c = pop_char_();
-          text += c;
+          char cc = pop_char_();
+          text += cc;
         }
         Ensure(check_class_invariants());
         return {INTEGER, give(text), give(token_location)};
