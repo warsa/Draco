@@ -406,6 +406,7 @@ function( cafs_fix_mpi_library )
 
     if( "${MPI_Fortran_LIBRARIES}none" STREQUAL "none" OR
         "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
+        message("cafs_fix_mpi_library")
       # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
       # or C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\[x86|x64]
       if( MPI_msmpi_LIBRARY )
@@ -433,8 +434,8 @@ function( cafs_fix_mpi_library )
         string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_${comp_opt}
           ${CMAKE_Fortran_${comp_opt}} )
       else()
-        set( CMAKE_Fortran_FLAGS_${comp_opt}
-          "${CMAKE_Fortran_FLAGS_${comp_opt}} -fno-range-check")
+        set( CMAKE_Fortran_${comp_opt}
+          "${CMAKE_Fortran_${comp_opt}} -fno-range-check")
       endif()
       set( CMAKE_Fortran_${comp_opt} "${CMAKE_Fortran_${comp_opt}}"
         CACHE STRING "Compiler flags." FORCE )
