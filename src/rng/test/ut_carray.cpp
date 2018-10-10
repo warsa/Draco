@@ -32,13 +32,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
+// - 4701: potentially uninitialized local variable used
 // - 4521: Engines have multiple copy constructors, quite legal C++, disable
 //         MSVC complaint.
 // - 4244: possible loss of data when converting between int types.
 // - 4204: nonstandard extension used - non-constant aggregate initializer
 // - 4127: conditional expression is constant
+// - 4100: unreferenced formal parameter
 #pragma warning(push)
-#pragma warning(disable : 4521 4244 4127)
+#pragma warning(disable : 4701 4521 4244 4127 4100)
 #endif
 
 #include "ut_carray.hh"

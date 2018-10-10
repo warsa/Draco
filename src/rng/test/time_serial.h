@@ -20,7 +20,7 @@
 #ifdef _MSC_FULL_VER
 // - 4204 :: nonstandard extension used: non-constant aggregate initializer.
 #pragma warning(push)
-#pragma warning(disable : 4204)
+#pragma warning(disable : 4204 4100)
 #endif
 
 #include <Random123/aes.h>
