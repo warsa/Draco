@@ -390,8 +390,6 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   // Test #include directive.
   {
-    setenv("DRACO_INCLUDE_PATH", ut.getTestSourcePath().c_str(), -1);
-
     File_Token_Stream tokens(ut.getTestSourcePath() +
                              std::string("parallel_include_test.inp"));
 
