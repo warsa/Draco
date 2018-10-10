@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // - 4204: nonstandard extension used - non-constant aggregate initializer
 // - 4127: conditional expression is constant
 #pragma warning(push)
-#pragma warning(disable : 4521 4244 4127)
+#pragma warning(disable : 4521 4244 4204 4127)
 #endif
 
 #include "kat_main.h"
