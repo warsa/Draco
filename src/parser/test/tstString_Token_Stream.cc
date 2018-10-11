@@ -371,13 +371,26 @@ void tstString_Token_Stream(UnitTest &ut) {
       ut.failure("Did NOT correctly scan 0XA");
   }
 
+  // Test that missing closing quote is a syntax error.
+  {
+    String_Token_Stream tokens("\"quote");
+    try {
+      tokens.shift();
+      ut.failure(
+          "Did NOT correctly report missing closing quote as syntax error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("missing closing quote correctly thrown and caught");
+    }
+  }
+
   // Test that #include is treated as a syntax error (not supported)
   {
     String_Token_Stream tokens("#include \"dummy.inp\"");
     try {
       tokens.shift();
       ut.failure("Did NOT correctly report #include as error");
-    } catch (const Syntax_Error & /*msg*/) {
+    } catch (const Syntax_Error &msg) {
+      cout << "expected: " << tokens.messages() << endl;
       PASSMSG("#include not supported error correctly thrown and caught");
     }
   }
@@ -402,10 +415,10 @@ void tstString_Token_Stream(UnitTest &ut) {
     }
   }
   {
-    String_Token_Stream tokens("#insist, bad");
+    String_Token_Stream tokens("#include, bad");
     try {
       tokens.shift();
-      ut.failure("Did NOT correctly report #insist, bad as error");
+      ut.failure("Did NOT correctly report #include, bad as error");
     } catch (const Syntax_Error & /*msg*/) {
       PASSMSG("invalid #insist, bad correctly thrown and caught");
     }

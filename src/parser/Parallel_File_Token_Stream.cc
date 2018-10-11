@@ -37,6 +37,7 @@ Parallel_File_Token_Stream::letter::letter(string const &file_name)
 Parallel_File_Token_Stream::Parallel_File_Token_Stream()
     : Text_Token_Stream(), letters_(), letter_(nullptr) {
   Ensure(check_class_invariants());
+  Ensure(location_() == "\"\", line 0");
 }
 
 //----------------------------------------------------------------------------//

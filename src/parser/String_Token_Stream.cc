@@ -183,9 +183,6 @@ void String_Token_Stream::push_include(std::string &) {
   report_syntax_error("#include not supported for String_Token_Stream");
 }
 
-#ifdef _BullseyeCoverage
-#pragma BullseyeCoverage off
-#endif
 //---------------------------------------------------------------------------//
 /*!
  * String_Token_Stream does not presently support the #include directive.
@@ -193,9 +190,6 @@ void String_Token_Stream::push_include(std::string &) {
 void String_Token_Stream::pop_include() {
   /* this function should be unreachable. Please note this in code coverage. */
 }
-#ifdef _BullseyeCoverage
-#pragma BullseyeCoverage on
-#endif
 
 } // namespace rtt_parser
 

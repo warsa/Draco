@@ -122,6 +122,7 @@ Token Text_Token_Stream::fill_() {
         return {EXIT, token_location};
       }
     } else {
+      // Code only reachable if hardware failure occurs. Code coverage not expected.
       Ensure(check_class_invariants());
       return {rtt_parser::ERROR, token_location};
     }
@@ -723,7 +724,7 @@ Token Text_Token_Stream::scan_manifest_string() {
   unsigned ci = 1;
   char c = peek_(ci);
   for (;;) {
-    while (c != '"' && c != '\\' && c != '\n' && !end_() && !error_()) {
+    while (c != '"' && c != '\\' && c != '\n' && c != '\0') {
       ci++;
       c = peek_(ci);
     }
@@ -733,7 +734,7 @@ Token Text_Token_Stream::scan_manifest_string() {
       ci += 2;
       c = peek_(ci);
     } else {
-      if (end_() || error_()) {
+      if (c == '\0') {
         report_syntax_error(Token(EXIT, give(token_location)),
                             "unexpected end of file; "
                             "did you forget a closing quote?");
@@ -753,7 +754,7 @@ Token Text_Token_Stream::scan_manifest_string() {
   pop_char_();
   c = peek_();
   for (;;) {
-    while (c != '"' && c != '\\' && c != '\n' && !end_() && !error_()) {
+    while (c != '"' && c != '\\' && c != '\n' && c != '\0') {
       text += c;
       pop_char_();
       c = peek_();
