@@ -404,11 +404,10 @@ function( cafs_fix_mpi_library )
   # MS-MPI and gfortran do not play nice together...
   if(WIN32)
 
-    if( "${MPI_Fortran_LIBRARIES}none" STREQUAL "none" OR
+    if( NOT MPI_Fortran_LIBRARIES OR
         "${MPI_Fortran_LIBRARIES}" MATCHES "msmpi.lib" )
-        message("cafs_fix_mpi_library")
-      # should be located in ENV{PATH} at c:/Program Files/Microsoft MPI/Bin/
-      # or C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\[x86|x64]
+      # should be located at
+      # C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\[x86|x64]
       if( MPI_msmpi_LIBRARY )
         # FindMPI.cmake should have set $MPI_msmpi_LIBRARY.
         get_filename_component( MSMPI_SDK_DIR ${MPI_msmpi_LIBRARY} DIRECTORY)
@@ -419,17 +418,27 @@ function( cafs_fix_mpi_library )
       else()
         find_file( MPI_gfortran_LIBRARIES NAMES "libmsmpi.a" )
       endif()
-      if( MPI_gfortran_LIBRARIES )
-        set( MPI_Fortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
-          "msmpi for gfortran" FORCE )
-      else()
-        message( FATAL_ERROR "Unable to find libmsmpi.a. This library must"
-        " be created from msmpi.dll and saved as a MinGW library. ")
-      endif()
+    elseif( "${MPI_Fortran_LIBRARIES}" MATCHES "libmsmpi.a" )
+      foreach(lib ${MPI_Fortran_LIBRARIES})
+        if( "${lib}" MATCHES "libmsmpi.a" )
+          set( MPI_gfortran_LIBRARIES "${lib}" )
+        endif()
+      endforeach()
+    endif()
+
+    # Sanity check
+    if( MPI_gfortran_LIBRARIES )
+      set( MPI_gfortran_LIBRARIES ${MPI_gfortran_LIBRARIES} CACHE FILEPATH
+        "msmpi for gfortran" FORCE )
+    else()
+      message( FATAL_ERROR "Unable to find libmsmpi.a. This library must "
+      "be created from msmpi.dll and saved as a MinGW library. "
+      "For more help see https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment")
     endif()
 
     # Force '-fno-range-check' gfortran compiler flag
-    foreach( comp_opt FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_RELWITHDEBINFO MINSIZEREL )
+    foreach( comp_opt FLAGS FLAGS_DEBUG FLAGS_RELEASE FLAGS_RELWITHDEBINFO
+      MINSIZEREL )
       if( "${CMAKE_Fortran_${comp_opt}}" MATCHES "frange-check" )
         string(REPLACE "range-check" "no-range-check" CMAKE_Fortran_${comp_opt}
           ${CMAKE_Fortran_${comp_opt}} )
@@ -442,7 +451,7 @@ function( cafs_fix_mpi_library )
     endforeach()
 
   endif(WIN32)
-  
+
 endfunction(cafs_fix_mpi_library)
 
 #-------------------------------------------------------------------------------#
