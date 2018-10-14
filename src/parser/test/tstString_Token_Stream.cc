@@ -371,6 +371,59 @@ void tstString_Token_Stream(UnitTest &ut) {
       ut.failure("Did NOT correctly scan 0XA");
   }
 
+  // Test that missing closing quote is a syntax error.
+  {
+    String_Token_Stream tokens("\"quote");
+    try {
+      tokens.shift();
+      ut.failure(
+          "Did NOT correctly report missing closing quote as syntax error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("missing closing quote correctly thrown and caught");
+    }
+  }
+
+  // Test that #include is treated as a syntax error (not supported)
+  {
+    String_Token_Stream tokens("#include \"dummy.inp\"");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include as error");
+    } catch (const Syntax_Error &msg) {
+      cout << "expected: " << tokens.messages() << endl;
+      PASSMSG("#include not supported error correctly thrown and caught");
+    }
+  }
+
+  // Test that # without a valid directive is treated as syntax error
+  {
+    String_Token_Stream tokens("# !");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #! as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #directive correctly thrown and caught");
+    }
+  }
+  {
+    String_Token_Stream tokens("#bad");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #bad as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #bad correctly thrown and caught");
+    }
+  }
+  {
+    String_Token_Stream tokens("#include, bad");
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include, bad as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("invalid #insist, bad correctly thrown and caught");
+    }
+  }
+
   return;
 }
 

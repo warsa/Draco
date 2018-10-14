@@ -206,6 +206,14 @@ void tstConsole_Token_Stream(rtt_dsxx::UnitTest &ut) {
     if (token.type() != KEYWORD || token.text() != "x")
       ITFAILS;
 
+    // Test that #include is treated as a syntax error (not supported)
+    try {
+      tokens.shift();
+      ut.failure("Did NOT correctly report #include as error");
+    } catch (const Syntax_Error & /*msg*/) {
+      PASSMSG("#include not supported error correctly thrown and caught");
+    }
+
     token = tokens.shift();
     if (token.type() != EXIT)
       ITFAILS;
