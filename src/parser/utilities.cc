@@ -445,197 +445,199 @@ Unit parse_unit(Token_Stream &tokens);
  * \return The unit.
  */
 static Unit parse_unit_name(Token_Stream &tokens) {
+  // Return value
+  Unit retval;
   Token token = tokens.shift();
   if (token.type() == KEYWORD) {
     string const &u = token.text();
     switch (u[0]) {
     case 'A':
       if (u.size() == 1)
-        return A;
+        retval = A;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'C':
       if (u.size() == 1)
-        return C;
+        retval = C;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'F':
       if (u.size() == 1)
-        return F;
+        retval = F;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'H':
       if (u.size() == 1)
-        return H;
+        retval = H;
       else if (u.size() == 2)
-        return Hz;
+        retval = Hz;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'J':
       if (u.size() == 1)
-        return J;
+        retval = J;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'K':
       if (u.size() == 1)
-        return K;
+        retval = K;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'N':
       if (u.size() == 1)
-        return N;
+        retval = N;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'P':
       if (u.size() == 2)
-        return Pa;
+        retval = Pa;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'S':
       if (u.size() == 1)
-        return S;
+        retval = S;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'T':
       if (u.size() == 1)
-        return T;
+        retval = T;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'V':
       if (u.size() == 1)
-        return V;
+        retval = V;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'W':
       if (u.size() == 1)
-        return W;
+        retval = W;
       else if (token.text() == "Wb")
-        return Wb;
+        retval = Wb;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'c':
       if (token.text() == "cd")
-        return cd;
+        retval = cd;
       else if (token.text() == "cm")
-        return cm;
+        retval = cm;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'd':
       if (token.text() == "dyne")
-        return dyne;
+        retval = dyne;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'e':
       if (token.text() == "erg")
-        return erg;
+        retval = erg;
       else if (token.text() == "eV")
-        return eV;
+        retval = eV;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'f':
       if (token.text() == "foot")
-        return foot;
+        retval = foot;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'g':
       if (u.size() == 1)
-        return g;
+        retval = g;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'i':
       if (token.text() == "inch")
-        return inch;
+        retval = inch;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'k':
       if (token.text() == "kg")
-        return kg;
+        retval = kg;
       else if (token.text() == "keV")
-        return keV;
+        retval = keV;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'l':
       if (token.text() == "lm")
-        return lm;
+        retval = lm;
       else if (token.text() == "lx")
-        return lx;
+        retval = lx;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'm':
       if (u.size() == 1)
-        return m;
+        retval = m;
       else if (token.text() == "mol")
-        return mol;
+        retval = mol;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'o':
       if (token.text() == "ohm")
-        return ohm;
+        retval = ohm;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'p':
       if (token.text() == "pound")
-        return pound;
+        retval = pound;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 'r':
       if (token.text() == "rad")
-        return rad;
+        retval = rad;
       else
         tokens.report_syntax_error("expected a unit");
       break;
 
     case 's':
       if (u.size() == 1)
-        return s;
+        retval = s;
       else if (token.text() == "sr")
-        return sr;
+        retval = sr;
       else
         tokens.report_syntax_error("expected a unit");
       break;
@@ -648,12 +650,13 @@ static Unit parse_unit_name(Token_Stream &tokens) {
     token = tokens.shift();
     if (token.type() != OTHER || token.text() != ")")
       tokens.report_syntax_error("missing ')'");
-    return Result;
+    retval = Result;
   } else {
     tokens.report_syntax_error("expected a unit expression");
   }
   // never reached but causes warnings
-  return dimensionless;
+  // return dimensionless;
+  return retval;
 }
 
 //---------------------------------------------------------------------------//

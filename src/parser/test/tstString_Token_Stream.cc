@@ -108,12 +108,15 @@ void tstString_Token_Stream(UnitTest &ut) {
     else
       PASSMSG("Shift after pushback has correct value");
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      FAILMSG("Syntax error NOT correctly thrown");
     } catch (const Syntax_Error & /*msg*/) {
+      caught = true;
       PASSMSG("Syntax error correctly thrown and caught");
     }
+    FAIL_IF_NOT(caught); // FAILMSG("Syntax error NOT correctly thrown");
+
     if (tokens.error_count() != 1) {
       FAILMSG("Syntax error NOT correctly counted");
     } else {
@@ -389,7 +392,7 @@ void tstString_Token_Stream(UnitTest &ut) {
     try {
       tokens.shift();
       ut.failure("Did NOT correctly report #include as error");
-    } catch (const Syntax_Error &msg) {
+    } catch (const Syntax_Error & /*msg*/) {
       cout << "expected: " << tokens.messages() << endl;
       PASSMSG("#include not supported error correctly thrown and caught");
     }
