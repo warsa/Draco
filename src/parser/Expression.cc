@@ -834,15 +834,15 @@ private:
 static pE parse_primary(unsigned const number_of_variables,
                         Variable_Map const &variable_map,
                         Token_Stream &tokens) {
+  pE retvalue;
   if (at_real(tokens)) {
-    return pE(new Constant_Expression(number_of_variables, parse_real(tokens)));
+    retvalue =
+        pE(new Constant_Expression(number_of_variables, parse_real(tokens)));
   } else if (tokens.lookahead().text() == "(") {
     tokens.shift();
-    pE Result = Expression::parse(number_of_variables, variable_map, tokens);
+    retvalue = Expression::parse(number_of_variables, variable_map, tokens);
     if (tokens.shift().text() != ")") {
       tokens.report_syntax_error("missing ')'?");
-    } else {
-      return Result;
     }
   } else {
     Token const variable = tokens.shift();
@@ -859,32 +859,36 @@ static pE parse_primary(unsigned const number_of_variables,
       switch (name[0]) {
       case 'e':
         if (name == "exp") {
-          return pE(new Exp_Expression(argument));
+          retvalue = pE(new Exp_Expression(argument));
         } else {
           tokens.report_semantic_error("unrecognized function");
-          return pE(new Constant_Expression(number_of_variables, 0.0));
+          retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
+        break;
       case 'c':
         if (name == "cos") {
-          return pE(new Cos_Expression(argument));
+          retvalue = pE(new Cos_Expression(argument));
         } else {
           tokens.report_semantic_error("unrecognized function");
-          return pE(new Constant_Expression(number_of_variables, 0.0));
+          retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
+        break;
       case 'l':
         if (name == "log") {
-          return pE(new Log_Expression(argument));
+          retvalue = pE(new Log_Expression(argument));
         } else {
           tokens.report_semantic_error("unrecognized function");
-          return pE(new Constant_Expression(number_of_variables, 0.0));
+          retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
+        break;
       case 's':
         if (name == "sin") {
-          return pE(new Sin_Expression(argument));
+          retvalue = pE(new Sin_Expression(argument));
         } else {
           tokens.report_semantic_error("unrecognized function");
-          return pE(new Constant_Expression(number_of_variables, 0.0));
+          retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
+        break;
       default:
         tokens.report_semantic_error("unrecognized function");
         return pE(new Constant_Expression(number_of_variables, 0.0));
@@ -892,14 +896,12 @@ static pE parse_primary(unsigned const number_of_variables,
     } else
     // a variable or constant name
     {
-
       Variable_Map::const_iterator i = variable_map.find(variable.text());
-
       if (i != variable_map.end()) {
-        return pE(new Variable_Expression(i->second.first, number_of_variables,
-                                          (unit_expressions_are_required()
-                                               ? i->second.second
-                                               : dimensionless)));
+        retvalue = pE(new Variable_Expression(
+            i->second.first, number_of_variables,
+            (unit_expressions_are_required() ? i->second.second
+                                             : dimensionless)));
       } else {
         static map<string, Unit> unit_map;
         if (unit_map.size() == 0) {
@@ -950,17 +952,16 @@ static pE parse_primary(unsigned const number_of_variables,
           if (!unit_expressions_are_required()) {
             units = units.conv * dimensionless;
           }
-          return pE(new Constant_Expression(number_of_variables, units));
+          retvalue = pE(new Constant_Expression(number_of_variables, units));
         } else {
           tokens.report_semantic_error("undefined variable or unit: " +
                                        variable.text());
-          return pE(new Constant_Expression(number_of_variables, 0.0));
+          retvalue = pE(new Constant_Expression(number_of_variables, 0.0));
         }
       }
     }
   }
-  // not reached
-  return pE();
+  return retvalue;
 }
 
 //----------------------------------------------------------------------------//

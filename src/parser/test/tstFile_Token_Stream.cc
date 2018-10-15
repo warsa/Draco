@@ -115,12 +115,15 @@ void tstFile_Token_Stream(rtt_dsxx::UnitTest &ut) {
     else
       PASSMSG("Shift after pushback has correct value");
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      FAILMSG("Syntax error NOT correctly thrown");
     } catch (const Syntax_Error & /*msg*/) {
+      caught = true;
       PASSMSG("Syntax error correctly thrown and caught");
     }
+    FAIL_IF_NOT(caught); // FAILMSG("Syntax error NOT correctly thrown");
+
     try {
       tokens.check_syntax(true, "dummy syntax error");
       PASSMSG("Syntax error correctly checked");

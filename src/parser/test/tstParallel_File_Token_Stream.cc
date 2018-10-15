@@ -99,15 +99,11 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     if (token.type() != OTHER || token.text() != "$")
       ITFAILS;
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      {
-        ostringstream msg;
-        msg << "Parallel_File_Token_Stream did not throw an exception when\n"
-            << "\ta syntax error was reported by Token_Stream." << endl;
-        FAILMSG(msg.str());
-      }
     } catch (const Syntax_Error &) {
+      caught = true;
       {
         ostringstream msg;
         msg << "Parallel_File_Token_Stream threw an expected exception when\n"
@@ -115,6 +111,8 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       }
     }
+    FAIL_IF_NOT(caught);
+
     if (tokens.error_count() != 1)
       ITFAILS;
 
