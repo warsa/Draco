@@ -37,6 +37,7 @@ gitlab_projects=(
   Draco/dracodoc
   capsaicin/capsaicin
   capsaicin/docs
+  capsaicin/core
   jayenne/imcdoc
   jayenne/jayenne
   user_contrib/user_contrib

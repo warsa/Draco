@@ -97,7 +97,7 @@ if ! [[ -d $REGDIR ]]; then
 fi
 
 # Draco/Jayenne/Capsaicin
-projects="draco jayenne capsaicin CSK"
+projects="draco jayenne capsaicin core CSK"
 for p in $projects; do
   echo -e "\nUpdating $REGDIR/$p..."
   if test -d ${REGDIR}/$p; then
