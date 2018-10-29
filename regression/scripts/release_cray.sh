@@ -94,7 +94,7 @@ run "module list"
 run "module list"
 CC=`which cc`
 CXX=`which CC`
-FC=`which ftn`j
+FC=`which ftn`
 export CRAYPE_LINK_TYPE=dynamic
 export OMP_NUM_THREADS=17
 export TARGET=knl
@@ -147,7 +147,7 @@ run "module unload papi perftools"
 run "module load PrgEnv-intel"
 run "module unload intel"
 run "module unload xt-libsci xt-totalview"
-run "module load intel/17.0.40"
+run "module load intel/17.0.4"
 run "module load cmake/3.12.1 numdiff git"
 run "module load gsl random123 eospac/6.3.0 ndi"
 run "module load trilinos/12.10.1 metis parmetis/4.0.3 superlu-dist"
