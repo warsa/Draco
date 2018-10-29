@@ -16,7 +16,9 @@ if test $fn_exists = 0; then
   # only define if they do not already exist...
   function dracoenv ()
   {
-    module load $dracomodules
+    for m in $dracomodules; do
+	module load $m
+    done
   }
   function rmdracoenv ()
   {

@@ -213,4 +213,4 @@ void Compton::interpolate_precycle(const std::vector<double> &Tms,
                                    const std::vector<double> &dens) const {
   llnli->preinterp_in_temp(Tms, dens);
 }
-}
+} // namespace rtt_compton

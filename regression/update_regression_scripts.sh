@@ -53,6 +53,10 @@ case ${target} in
     VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
     ;;
+  sn-* | ba-* | tt-* )
+    REGDIR=/usr/projects/jayenne/regress
+    VENDOR_DIR=/usr/projects/draco/vendors
+    ;;
   *)
     REGDIR=/scratch/regress
     ;;
@@ -93,7 +97,7 @@ if ! [[ -d $REGDIR ]]; then
 fi
 
 # Draco/Jayenne/Capsaicin
-projects="draco jayenne capsaicin"
+projects="draco jayenne capsaicin CSK"
 for p in $projects; do
   echo -e "\nUpdating $REGDIR/$p..."
   if test -d ${REGDIR}/$p; then
@@ -116,20 +120,20 @@ done
 if [[ -d $logdir ]]; then
   echo -e "\nCleaning up old log files."
   run "cd $logdir"
-  run "find . -mtime +14 -type f"
-  run "find . -mtime +14 -type f -delete"
+  run "find . -mtime +5 -type f"
+  run "find . -mtime +5 -type f -delete"
 fi
 if [[ -d $REGDIR/cdash ]]; then
   echo -e "\nCleaning up old builds."
   run "cd $REGDIR/cdash"
-  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
-  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
+  run "find . -maxdepth 3 -mtime +5 -name 'Experimental*-pr*' -type d"
+  run "find . -maxdepth 3 -mtime +5 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
 if [[ -d /usr/projects/ccsrad/regress/cdash ]]; then
   echo -e "\nCleaning up old builds."
   run "cd /usr/projects/ccsrad/regress/cdash"
-  run "find . -maxdepth 3 -mtime +2 -name 'Experimental*-pr*' -type d"
-  run "find . -maxdepth 3 -mtime +2 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
+  run "find . -maxdepth 3 -mtime +3 -name 'Experimental*-pr*' -type d"
+  run "find . -maxdepth 3 -mtime +3 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
 
 echo -e "\n--------------------------------------------------------------------------------"

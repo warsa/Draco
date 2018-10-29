@@ -17,8 +17,8 @@
 #include <fstream>
 
 namespace rtt_parser {
-using std::string;
 using std::set;
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -77,6 +77,9 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
+
 private:
   // IMPLEMENTATION
 
@@ -88,7 +91,7 @@ private:
   string messages_; //!< Collection of diagnostic messages
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_String_Token_Stream_HH
 

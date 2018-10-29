@@ -33,6 +33,7 @@ elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
    else()
       set( FPETRAP_DARWIN_INTEL 1 )
    endif()
+
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
    set( FPETRAP_WINDOWS_X86 1 )
 endif()
@@ -53,12 +54,17 @@ set_property( CACHE DRACO_DIAGNOSTICS PROPERTY STRINGS 0 1 2 3 4 5 6 7 )
 string( REPLACE "." "" CMAKE_CXX_COMPILER_VERSION_ENUM
   ${CMAKE_CXX_COMPILER_VERSION} )
 
+# Is this a KNL
+if( CRAY_PE AND "$ENV{CRAY_CPU_TARGET}" STREQUAL "mic-knl" )
+  set( draco_isKNL ON )
+endif()
+
 # Create ds++/config.h
 configure_file( config.h.in ${PROJECT_BINARY_DIR}/ds++/config.h )
 
 # Generate the dll_declspec.h file that defines DLL_PUBLIC_<pkg> CPP macros.
 include(generate_dll_declspec)
-generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;meshReaders;mesh_element;min;norms;ode;parser;quadrature;quadrature_test;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
+generate_dll_declspec( "ds++" "c4;cdi;cdi_test;cdi_analytic;cdi_eospac;cdi_ipcress;cdi_ipcress_test;device;diagnostics;dsxx;fit;FC_Derived_Type;linear;mesh;meshReaders;mesh_element;min;norms;ode;parser;quadrature;quadrature_test;rng;roots;RTT_Format_Reader;special_functions;timestep;timestep_test;units;viz" )
 
 # ---------------------------------------------------------------------------- #
 # Source files
@@ -73,6 +79,9 @@ list( APPEND headers
    ${PROJECT_BINARY_DIR}/ds++/dll_declspec.h )
 list( REMOVE_ITEM headers ${template_implementations} )
 
+set_source_files_properties( Release.cc PROPERTIES 
+  COMPILE_DEFINITIONS BUILD_TYPE="$<CONFIG>" )
+
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -81,6 +90,7 @@ add_component_library(
    TARGET       Lib_dsxx
    LIBRARY_NAME ds++
    SOURCES      "${sources}"
+   HEADERS      "${headers}"
    )
 target_link_libraries( Lib_dsxx ${Lib_win_winsock} )
 target_include_directories( Lib_dsxx

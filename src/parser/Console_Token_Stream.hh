@@ -69,9 +69,12 @@ protected:
   virtual void fill_character_buffer_();
   virtual bool error_() const;
   virtual bool end_() const;
+
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_Console_Token_Stream_HH
 //---------------------------------------------------------------------------//

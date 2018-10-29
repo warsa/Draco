@@ -34,7 +34,6 @@ file( GLOB ui_files  *.ui )
 
 # Use moc to convert *.ui files into ui_*.h files:
 qt5_wrap_ui( ui_headers ${ui_files} )
-list( APPEND sources ${ui_headers} )
 
 # use rcc to convert *.qrc files into qrc_*.cpp files:
 qt5_add_resources( qrc_sources ${resources} )

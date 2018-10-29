@@ -65,13 +65,14 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
             const Function_N_to_N &vecfunc, const double alf) {
   Require(x.size() > 0);
 
-  using std::vector;
   using std::numeric_limits;
   using std::range_error;
+  using std::vector;
   using namespace rtt_linear;
   using namespace rtt_roots;
 
-  const unsigned n = x.size();
+  Check(x.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(x.size());
 
   vector<Field> c(n);
   vector<Field> d(n);
@@ -232,8 +233,8 @@ void broydn(std::vector<Field> &x, const double /*STPMX*/,
         }
         for (unsigned i = 0; i < n; i++) {
           double fx = std::abs(x[i]);
-          double f = (fx > 1.0 ? fx : 1.0);
-          double const temp = std::abs(g[i]) * f / den;
+          double ff = (fx > 1.0 ? fx : 1.0);
+          double const temp = std::abs(g[i]) * ff / den;
           if (temp > test)
             test = temp;
         }
@@ -302,13 +303,14 @@ template <class Field, class Function_N_to_N, class Function_N_to_NN>
 void broydn(std::vector<Field> &x, const double /*STPMX*/,
             Function_N_to_N vecfunc, Function_N_to_NN dvecfunc,
             const double alf, double const min_lambda) {
-  using std::vector;
   using std::numeric_limits;
   using std::range_error;
+  using std::vector;
   using namespace rtt_linear;
   using namespace rtt_roots;
 
-  const unsigned n = x.size();
+  Check(x.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(x.size());
 
   vector<Field> c(n);
   vector<Field> d(n);

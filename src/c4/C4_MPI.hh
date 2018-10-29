@@ -16,7 +16,6 @@
 
 #ifdef C4_MPI
 
-#include "C4_Functions.hh"
 #include "MPI_Traits.hh"
 #include "c4_mpi.h"
 #include "ds++/Assert.hh"
@@ -58,6 +57,12 @@ int create_vector_type(unsigned count, unsigned blocklength, unsigned stride,
  * Broadcast the range [first, last) from proc 0 into [result, ...) on all other
  * processors.
  */
+
+// This signature must be exported since it is explicitly instantiated.
+template <typename T>
+DLL_PUBLIC_c4 int broadcast(T * /*buffer*/, int /*size*/, int /*root*/);
+
+// This signature is defined in the header so no export is required.
 template <typename ForwardIterator, typename OutputIterator>
 void broadcast(ForwardIterator first, ForwardIterator last,
                OutputIterator result) {
@@ -78,7 +83,8 @@ void broadcast(ForwardIterator first, ForwardIterator last,
   if (node() == 0)
     std::copy(first, last, buf);
 
-  Remember(check =) broadcast(buf, size, 0);
+  Check(size < INT_MAX);
+  Remember(check =) broadcast(buf, static_cast<int>(size), 0);
   Check(check == MPI_SUCCESS);
 
   if (node() != 0)

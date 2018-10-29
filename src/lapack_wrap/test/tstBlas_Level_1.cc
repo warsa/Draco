@@ -3,9 +3,7 @@
 * \file   lapack_wrap/test/tstBlas_Level_1.cc
 * \brief  Test Blas level 1 wrap.
 * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC
-*         All rights reserved.
-* \version $Id$
-*/
+*         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "lapack_wrap/Blas.hh"
@@ -15,12 +13,12 @@
 
 using namespace std;
 
-using rtt_lapack_wrap::blas_copy;
-using rtt_lapack_wrap::blas_scal;
-using rtt_lapack_wrap::blas_dot;
-using rtt_lapack_wrap::blas_axpy;
-using rtt_lapack_wrap::blas_nrm2;
 using rtt_dsxx::soft_equiv;
+using rtt_lapack_wrap::blas_axpy;
+using rtt_lapack_wrap::blas_copy;
+using rtt_lapack_wrap::blas_dot;
+using rtt_lapack_wrap::blas_nrm2;
+using rtt_lapack_wrap::blas_scal;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -29,8 +27,8 @@ template <typename T> void tst_copy(rtt_dsxx::UnitTest &ut) {
   vector<T> x(10, 0.0);
   vector<T> y(10, 0.0);
 
-  for (int i = 0; i < 10; i++)
-    x[i] = 1.2 + i;
+  for (size_t i = 0; i < 10; i++)
+    x[i] = static_cast<T>(1.2 + i);
 
   blas_copy(10, &x[0], 1, &y[0], 1);
   if (!soft_equiv(x.begin(), x.end(), y.begin(), y.end()))
@@ -186,7 +184,6 @@ template <typename T> void tst_nrm2(rtt_dsxx::UnitTest &ut) {
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
