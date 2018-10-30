@@ -55,6 +55,7 @@ case ${-} in
      echo "usercpuhrs [moniker] [start date (mm/dd/yy)] [end date (mm/dd/yy)] - Print total cpu-hr usage by account."
      if [[ -f /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias ]]; then
      echo -e "\nMore slurm related aliases can be found at /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias."
+     fi
    }
 
    alias hluser="egrep --color -E '.*${USER}.*|$'"
