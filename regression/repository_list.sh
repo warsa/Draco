@@ -36,8 +36,10 @@ gitlab_projects=(
   CSK/CSK
   Draco/dracodoc
   capsaicin/capsaicin
-  capsaicin/docs
   capsaicin/core
+  capsaicin/docs
+  capsaicin/npt
+  capsaicin/trt
   jayenne/imcdoc
   jayenne/jayenne
   user_contrib/user_contrib
