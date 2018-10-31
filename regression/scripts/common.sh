@@ -508,7 +508,11 @@ function install_versions
         run "ctest -L nr -j $test_pe" ;;
       *)
         # run all tests
-        run "ctest -j $test_pe --output-on-failure" ;;
+        run "ctest -j $test_pe --output-on-failure"
+        if [[ $? != 0 ]]; then
+          run "ctest -j $test_pe --output-on-failure --rerun-failed"
+        fi
+        ;;
     esac
   fi
   if ! test ${build_permissions:-notset} = "notset"; then
