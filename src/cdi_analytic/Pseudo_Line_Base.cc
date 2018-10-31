@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/pseudo_line.cc
+ * \file   cdi_analytic/Pseudo_Line_Base.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.

@@ -597,7 +597,9 @@ void Text_Token_Stream::character_push_back_(char const c) {
  * child class must implement this function, but part of its implementation
  * must be to include
  *
- * \code Text_Token_Stream::push_include(include_file_name);
+ * \code
+ * Text_Token_Stream::push_include(include_file_name);
+ * \endcode
  *
  * as the first line in its implementation of this function. This call stashes
  * the line and character buffer of the underlying Text_Token_Stream and also
@@ -638,7 +640,9 @@ void Text_Token_Stream::push_include(std::string &file_name) {
  * must be to reset the line number by directly calling the base version. That
  * is, every child class must include
  *
- * \code Text_Token_Stream::pop_include(include_file_name);
+ * \code
+ * Text_Token_Stream::pop_include(include_file_name);
+ * \endcode
  *
  * as the first line in its implementation of this function.
  */
