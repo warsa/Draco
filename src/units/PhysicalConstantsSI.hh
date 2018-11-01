@@ -113,8 +113,8 @@ static double const EV2K = electronChargeSI / boltzmannSI;
  * /f
  */
 static double const stefanBoltzmannSI =
-    2.0d * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
-    (15.0d * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
+    2.0 * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
+    (15.0 * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
 
 //! [F] Faraday constant == Na * e
 static double const faradayConstantSI = AVOGADRO * electronChargeSI;
