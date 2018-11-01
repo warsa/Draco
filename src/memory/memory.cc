@@ -4,10 +4,7 @@
  * \author Kent G. Budge
  * \brief  memory diagnostic utilities
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: memory.cc 7133 2013-06-11 17:54:11Z kellyt $
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "memory.hh"
