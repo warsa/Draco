@@ -15,6 +15,7 @@
  * std::shared_ptr<Class> parse_class(Token_Stream &tokens) {
  *   return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
  * }
+ * \endcode
  *
  * Why don't we define this as the default implementation? Because then any file
  * that #included Class_Parse_Table.hh would attempt to use the default
