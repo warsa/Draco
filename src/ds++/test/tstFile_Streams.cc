@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*----------------------------------//
+//----------------------------------*-c++-*----------------------------------//
 /*!
  * \file   ds++/test/tstFile_Streams.cc
  * \author Rob Lowrie
@@ -23,9 +23,10 @@ using rtt_dsxx::soft_equiv;
 // TESTS
 //---------------------------------------------------------------------------//
 
-void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
+void test_fileio(rtt_dsxx::UnitTest &ut, const bool is_fformat_binary) {
 
-  string const filename("file_streams." + (binary ? "binary" : "ascii"));
+  string const filename("file_streams." +
+                        string(is_fformat_binary ? "binary" : "ascii"));
 
   int i = 5;
   string s = "  a string with spaces  ";
@@ -36,7 +37,7 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
   // write the data
 
   {
-    File_Output f(filename, binary);
+    File_Output f(filename, is_fformat_binary);
     f << i;
 
     // here's how you write strings:
@@ -110,7 +111,7 @@ void test_fileio(rtt_dsxx::UnitTest &ut, const bool binary) {
   if (ut.numFails == 0) {
     ostringstream m;
     m << "test_fileio(";
-    if (binary)
+    if (is_fformat_binary)
       m << "binary";
     else
       m << "ascii";
