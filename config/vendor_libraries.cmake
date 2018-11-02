@@ -684,6 +684,23 @@ macro( SetupVendorLibrariesWindows )
   setupPython()
   setupQt()
 
+
+  # Doxygen ------------------------------------------------------------------
+  message( STATUS "Looking for Doxygen..." )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  set_package_properties( Doxygen PROPERTIES
+    URL "http://www.stack.nl/~dimitri/doxygen"
+    DESCRIPTION "Doxygen autodoc generator"
+    TYPE OPTIONAL
+    PURPOSE "Required for building develop HTML documentation."
+    )
+  if( DOXYGEN_FOUND )
+    message( STATUS "Looking for Doxygen...found version ${DOXYGEN_VERSION}" )
+  else()
+    message( STATUS "Looking for Doxygen...not found" )
+  endif()
+  
+  
 endmacro()
 
 #------------------------------------------------------------------------------

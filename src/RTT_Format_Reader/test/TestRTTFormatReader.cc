@@ -86,8 +86,7 @@ void runTest(UnitTest &ut) {
 
     if (!all_passed) {
       ostringstream m;
-      m << "Errors occured testing mesh "
-        << "number " << mesh_type << std::endl;
+      m << "Errors occured testing mesh number " << mesh_type << std::endl;
       FAILMSG(m.str());
     }
   }
