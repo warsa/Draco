@@ -3,7 +3,7 @@
 ## File  : regression/ccscs-regression.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -81,6 +81,7 @@ echo "                  ${subproj}-${build_type}${epdash}${extra_params}${prdash
 echo "==========================================================================="
 
 run "ulimit -a"
+run "top -n 1 -bc"
 
 # Modules
 # ----------------------------------------
@@ -101,26 +102,31 @@ else
 fi
 
 # Load default set of modules
-dm_core="eospac git ndi python graphviz doxygen ccache numdiff"
-dm_gcc="gcc/7.2.0 cmake netlib-lapack gsl metis random123 csk qt"
-dm_openmpi="openmpi parmetis superlu-dist trilinos"
+# This version of f90cache only works with gfortran < version 8
+dm_core="ccache dia doxygen git graphviz htop mscgen numdiff random123 \
+ndi"
+dm_gcc="gcc cmake eospac/6.3.1_r20161202150449 gsl metis netlib-lapack python \
+qt"
+dm_openmpi="openmpi csk parmetis superlu-dist trilinos"
 export dracomodules="$dm_core $dm_gcc $dm_openmpi"
 
+# default compiler
+comp=gcc
 # use bash_functions.sh::add_to_path?
 if [ -d $VENDOR_DIR/bin ] && [[ ":${PATH}:" != *":${VENDOR_DIR}/bin:"* ]]; then
   PATH="${PATH:+${PATH}:}${VENDOOR_DIR}/bin"
 fi
 
 # Setup for special builds (extra_params)
+# This variable is known by draco_regression_macros.cmake and is used for
+# setting up ctest for special builds (like static or vtest).
 case $extra_params in
   "")
     run "module load $dracomodules"
-    comp=gcc
     ;;
   coverage)
-    run "module load $dracomodules"
-    comp=gcc
     echo "Coverage option selected."
+    run "module load $dracomodules"
     if ! [[ "${build_type}" == "Debug" ]]; then
       die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
     fi
@@ -133,34 +139,28 @@ case $extra_params in
     ;;
   clang)
     run "module load $dm_core"
-    run "module load llvm cmake netlib-lapack gsl metis random123 csk"
-    run "module load $dm_openmpi"
+    run "module load llvm cmake eospac/6.3.1_r20161202150449 gsl metis \
+netlib-lapack python"
+    run "module load openmpi/3.0.1 csk parmetis superlu-dist trilinos"
+    # csk
     comp=clang
     ;;
-  fulldiagnostics)
+  fulldiagnostidcs | scalar | static)
     run "module load $dracomodules"
-    comp="gcc-fulldiagnostics"
-    ;;
-#  gcc630)
-#    run "module load $dracomodules"
-#    comp=gcc-6.3.0
-#    ;;
-  scalar)
-    run "module load $dracomodules"
-    comp="gcc-scalar"
-    ;;
-  static)
-    run "module load $dracomodules"
-    comp="gcc-staticlink"
     ;;
   valgrind)
-    run "module load $dracomodules valgrind"
-    comp=gcc
     echo "Dynamic Analysis (valgrind) option selected."
+    run "module load git numdiff random123 ndi"
+    run "module load gcc/7.3.0 cmake eospac/6.3.1_r20161202150449 gsl metis netlib-lapack python"
+    run "module load openmpi csk parmetis superlu-dist trilinos"
+    run "module load valgrind"
     if ! [[ "${build_type}" == "Debug" ]]; then
-      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) coverage."
+      die "FATAL ERROR: build_type (-b) must be Debug when using extra option (-e) valgrind."
     fi
     build_type=DynamicAnalysis
+    ;;
+  vtest)
+    run "module load $dracomodules"
     ;;
   *)
     echo "FATAL ERROR"
@@ -170,7 +170,11 @@ case $extra_params in
     ;;
 esac
 run "module list"
-comp=$comp-$featurebranch
+if [[ $extra_params ]]; then
+  comp=$comp-$extra_params-$featurebranch
+else
+  comp=$comp-$featurebranch
+fi
 
 # When run by crontab, use a special ssh-key to allow authentication to gitlab
 if test "$USER" == "kellyt"; then
@@ -237,6 +241,12 @@ elif test "${subproj}" == capsaicin; then
   export OMP_NUM_THREADS=1
   script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%capsaicin/scripts%'`
   script_name=Capsaicin_Linux64.cmake
+elif test "${subproj}" == core; then
+  # For now force core to only 1 OMP thread per MPI rank to avoid
+  # oversubscribing the system.
+  export OMP_NUM_THREADS=1
+  script_dir=`echo ${rscriptdir} | sed -e 's%draco/regression%core/scripts%'`
+  script_name=Core_Linux64.cmake
 elif test "${subproj}" == asterisk; then
   script_dir=`echo ${rscriptdir} | sed -e 's/draco/asterisk/'`
   script_name=Asterisk_Linux64.cmake
@@ -253,8 +263,12 @@ if [[ "${regress_mode}" = "off" ]]; then
   export AUTODOCDIR=$work_dir/autodoc
 else
   export work_dir=${base_dir}/${subproj}/${dashboard_type}_${comp}/${build_type}
-  if test -d /ccs/codes/radtran/autodoc; then
-    export AUTODOCDIR=/ccs/codes/radtran/autodoc
+  if [[ -d /ccs/codes/radtran/autodoc ]]; then
+    if [[ $featurebranch == develop ]]; then
+      export AUTODOCDIR=/ccs/codes/radtran/autodoc
+    else
+      export AUTODOCDIR=/ccs/codes/radtran/autodoc/${featurebranch}
+    fi
   fi
 fi
 

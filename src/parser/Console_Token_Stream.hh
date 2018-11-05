@@ -3,11 +3,11 @@
  * \file   parser/Console_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Console_Token_Stream.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_Console_Token_Stream_HH
@@ -58,6 +58,8 @@ public:
 
   virtual void report(const string &message);
 
+  virtual void comment(std::string const &message);
+
 protected:
   // IMPLEMENTATION
 
@@ -67,9 +69,12 @@ protected:
   virtual void fill_character_buffer_();
   virtual bool error_() const;
   virtual bool end_() const;
+
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_Console_Token_Stream_HH
 //---------------------------------------------------------------------------//

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 17:24:12 2001
  * \brief  nGray_Analytic_MultigroupOpacity test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,12 +18,12 @@
 
 using namespace std;
 
-using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
-using rtt_cdi_analytic::Analytic_Opacity_Model;
-using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
-using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_cdi::CDI;
 using rtt_cdi::MultigroupOpacity;
+using rtt_cdi_analytic::Analytic_Opacity_Model;
+using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
+using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
 using rtt_dsxx::soft_equiv;
 
 //---------------------------------------------------------------------------//

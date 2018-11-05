@@ -5,7 +5,7 @@
  * \date   Monday, Apr 22, 2013, 10:10 am
  * \brief  Procmon class for printing runtime system diagnostics (free memory
  *         per node, etc).
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * A file with the same name lives in wedgehog_components and provided the
@@ -23,8 +23,6 @@
  * files are: \c procmon_info.h, \c procmon_info.c, \c procmon_iface.h and
  * \c resources.f90.
  */
-//---------------------------------------------------------------------------//
-// $Id: Procmon.hh 5523 2010-11-30 01:12:12Z kellyt $
 //---------------------------------------------------------------------------//
 
 #ifndef diagnostics_Procmon_hh

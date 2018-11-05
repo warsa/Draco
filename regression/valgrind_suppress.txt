@@ -4,7 +4,7 @@
 # Date  : Friday, May 19, 2017, 10:26 am
 # Author: Kelly Thompson <kgt@lanl.gov>
 # Breif : Valgrind Suppression Instructions
-# Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+# Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #         All rights are reserved.
 #------------------------------------------------------------------------------#
 #
@@ -292,18 +292,22 @@
    fun:eos_CreateTablesEosDataMap
    ...
 }
+# after moving to eospac/6.3.1...
+{
+  eospac/6.3.1/e001
+   Memcheck:Cond
+   fun:eos_SearchIndices_XF
+   ...
+   fun:eos_InterpolateRecordType1
+   fun:eos_InterpolateEosInterpolation
+   fun:eos_Interpolate
+   ...
+}
 
 ## ---------------------------------------------------------------------- ##
 ## Numdiff
 ## ---------------------------------------------------------------------- ##
 
-# ==24572== Use of uninitialised value of size 8
-# ==24572==    at 0x38B5024F8B: __gmpn_mul_basecase (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x38B501FB23: __gmpn_mul (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x38B5008661: __gmpf_set_str (in /usr/lib64/libgmp.so.3.3.3)
-# ==24572==    by 0x4043D2: init_mpa (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==24572==    by 0x40ABB6: init_mpa_support (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==24572==    by 0x40BC6F: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/uninit8/use
    Memcheck:Value8
@@ -312,14 +316,8 @@
    fun:init_mpa_support
    fun:main
 }
-# ==18912== Conditional jump or move depends on uninitialised value(s)
-# ==18912==    at 0x38B501FB03: __gmpn_mul (in /usr/lib64/libgmp.so.3.3.3)
-# ==18912==    by 0x38B5008661: __gmpf_set_str (in /usr/lib64/libgmp.so.3.3.3)
-# ==18912==    by 0x4043D2: init_mpa (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18912==    by 0x40ABB6: init_mpa_support (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18912==    by 0x40BC6F: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
-   <insert_a_suppression_name_here>
+   numdiff/e002
    Memcheck:Cond
    ...
    fun:__gmpf_set_str
@@ -328,43 +326,42 @@
    fun:main
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e003
    Memcheck:Value8
    fun:__gmpn_mul_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e004
    Memcheck:Cond
    fun:__gmpn_mul_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e005
    Memcheck:Cond
    ...
    fun:init_mpa_support
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e006
    Memcheck:Value8
    fun:__gmpn_sqr_basecase
    ...
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e007
    Memcheck:Value8
    fun:__gmpn_sqr_n
 }
 {
-   <insert_a_suppression_name_here>
+   numdiff/e008
    Memcheck:Cond
    ...
    fun:__gmpn_divrem
    ...
 }
-
 {
    numdiff/lost/04
    Memcheck:Leak
@@ -405,18 +402,6 @@
    fun:cmp_files
    fun:main
 }
-
-
-
-#===================== text compare =============================================#
-
-# ==18889== Conditional jump or move depends on uninitialised value(s)
-# ==18889==    at 0x38B5007F48: __gmpf_set (in /usr/lib64/libgmp.so.3.3.3)
-# ==18889==    by 0x404740: Cabs (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x4052C8: cmp_fields (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x405CD2: cmp_lines (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18889==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/text1
    Memcheck:Cond
@@ -426,13 +411,6 @@
    fun:cmp_files
    fun:main
 }
-# ==18881== Use of uninitialised value of size 8
-# ==18881==    at 0x38B500C9FD: __gmpf_cmp (in /usr/lib64/libgmp.so.3.3.3)
-# ==18881==    by 0x4048BB: cmp (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x4052DB: cmp_fields (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x405CD2: cmp_lines (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x40646B: cmp_files (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
-# ==18881==    by 0x40BE6C: main (in /ccs/codes/radtran/vendors/numdiff-5.2.1/bin/numdiff)
 {
    numdiff/text/2
    Memcheck:Value8
@@ -442,8 +420,6 @@
    fun:cmp_files
    fun:main
 }
-# ==18871== Use of uninitialised value of size 8
-# ==18871==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
 {
    numdiff/text/3
    Memcheck:Value8
@@ -451,8 +427,6 @@
    fun:__gmpn_divrem_1
    ...
 }
-# ==25358== Use of uninitialised value of size 8
-# ==25358==    at 0x38B501E9C0: __gmpn_divrem_1 (in /usr/lib64/libgmp.so.3.3.3)
 {
    numdiff/text/4
    Memcheck:Value8
@@ -478,6 +452,15 @@
    fun:calloc
    fun:process_substring
    fun:get_separating_string
+   ...
+}
+
+{
+   numdiff/leak/05
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:bc_new_num
    ...
 }
 
@@ -1227,16 +1210,9 @@
    match-leak-kinds: possible
    fun:calloc
    fun:pmix1_server_register_nspace
-   fun:orte_pmix_server_register_nspace
-   fun:orte_odls_base_default_construct_child_list
-   fun:orte_odls_default_launch_local_procs
-   fun:orte_daemon_recv
-   fun:orte_rml_base_process_msg
-   fun:event_process_active_single_queue
-   fun:event_process_active
-   fun:opal_libevent2022_event_base_loop
+   ...
    fun:orterun
-   fun:main
+   ...
 }
 {
    openmpi/211/e0001
@@ -1294,7 +1270,140 @@
    fun:PMPI_Init
    ...
 }
-
+{
+   openmpi211/e0007
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:strdup
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0008
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:pmix_start_listening
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0009
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_base_component_find
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0010
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_oob_usock_component_set_module
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0011
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:realloc
+   fun:vasprintf
+   ...
+}
+{
+   openmpi211/e0012
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:prq_cons
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0013
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:orte_dt_unpack_sig
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0014
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:orte_rml_oob_recv_cancel
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0015
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:mca_oob_usock_peer_recv_connect_ack
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0016
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:orte_daemon
+   fun:main
+}
+{
+   openmpi211/e0017
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:pmix1_server_register_nspace
+   ...
+   fun:orte_daemon
+   ...
+}
+{
+   openmpi211/e0018
+   Memcheck:Addr8
+   fun:opal_libevent2022_event_del
+   ...
+   fun:ompi_mpi_finalize
+   ...
+}
+{
+   openmpi211/e0019
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:opal_argv_join
+   ...
+   fun:orte_init
+   ...
+}
+{
+   openmpi/301/e0001
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:pmix_server_commit
+   ...
+   fun:opal_libevent2022_event_base_loop
+   ...
+}
 
 #------------------------------------------------------------------------------#
 # Python 2.7
@@ -1420,6 +1529,34 @@
    python/e011
    Memcheck:Cond
    fun:PyObject_Realloc
+   ...
+}
+{
+   python/e012
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython2.7.so.1.0
+   ...
+}
+{
+   python/e013
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ...
+   obj:/usr/lib64/libpython2.7.so.1.0
+   ...
+}
+{
+   python/e014
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+   ...
+   fun:PyEval_EvalFrameEx
    ...
 }
 

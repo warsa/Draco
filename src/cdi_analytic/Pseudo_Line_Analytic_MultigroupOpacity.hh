@@ -3,7 +3,7 @@
  * \file   cdi_analytic/Pseudo_Line_Analytic_MultigroupOpacity.hh
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:36:13 MDT 2011
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -30,7 +30,7 @@ using rtt_parser::Expression;
  * density, which allows precalculation of the opacity structure, an important
  * time saver.
  */
-class DLL_PUBLIC_cdi_analytic Pseudo_Line_Analytic_MultigroupOpacity
+class Pseudo_Line_Analytic_MultigroupOpacity
     : public Analytic_MultigroupOpacity,
       public Pseudo_Line_Base {
 private:

@@ -1,7 +1,7 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
-;; Copyright (C) 2016-2017 Los Alamos National Security, LLC
+;; Copyright (C) 2016-2018 Los Alamos National Security, LLC
 ;;
 ;; $Id$
 ;;
@@ -251,8 +251,8 @@ auto-mode-alist.
 		      ("\\.c$"      . c-mode)   ; to edit C code
 		      ("\\.cu$"     . c-mode)   ; to edit CUDA kernels
 		      ("\\.h$"      . c-mode)   ; to edit C code
-		      ("\\.dcc$"    . c-mode)   ; to edit C code
-		      ("\\.dcc.in$" . c-mode)   ; to edit C code
+		      ("\\.dcc$"    . c++-mode)   ; to edit C code
+		      ("\\.dcc.in$" . c++-mode)   ; to edit C code
  		      ("\\.dot$"    . c-mode)  ; for dot files
 		      ) auto-mode-alist))
       (defun draco-menu-insert-comments-cc ()
@@ -466,12 +466,16 @@ auto-mode-alist."
 	     ) auto-mode-alist))
 
     (defun draco-f90-mode-hook ()
-      "Hooks added to F90 mode"
+      "Hooks added to F90 mode. See https://jblevins.org/log/f90-mode"
       (local-set-key [(f5)]         'draco-f90-subroutine-divider)
       (local-set-key [(control f6)] 'draco-f90-insert-document)
       (local-set-key [(f6)]         'draco-f90-comment-divider)
       (draco-mode-update-menu (draco-menu-insert-comments-f90))
       (set-fill-column draco-code-comment-width)
+      (abbrev-mode 1)
+      (setq f90-font-lock-keywords f90-font-lock-keywords-3)
+      (setq f90-beginning-ampersand nil)
+      (setq f90-associate-indent 0)
       (require 'fill-column-indicator)
       (fci-mode))
      ;; let .F denone Fortran and not freeze files

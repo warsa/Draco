@@ -4,7 +4,7 @@
  * \author Kendra Keady
  * \date   Tues Feb 21 2017
  * \brief  Implementation file for compton CSK_generator interface
- * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -170,4 +170,4 @@ Compton::interpolate_nu_ratio(const double etemp, const bool limit_grps) const {
   // call the appropriate routine in the electron interp object
   return ei->interpolate_nu_ratio(etemp, limit_grps);
 }
-}
+} // namespace rtt_compton

@@ -4,7 +4,7 @@
  * \author John McGhee
  * \date   Thu Apr  2 14:06:18 1998
  * \brief  Defines the field time-step advisor.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.  
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.  
  *         All rights reserved.
  * \version $Id$
  */
@@ -77,7 +77,7 @@ bool field_ts_advisor::invariant_satisfied() const {
          0. < fc_value && 0 <= update_method && update_method < last_umf;
 }
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 //---------------------------------------------------------------------------//
 // end of field_ts_advisor.cc

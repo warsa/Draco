@@ -3,7 +3,7 @@
  * \file   parser/Class_Parse_Table.hh
  * \author Kent Budge
  * \brief  Define template function parse_class
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * utilities.hh declares a function template for parsers for class objects,
@@ -15,6 +15,7 @@
  * std::shared_ptr<Class> parse_class(Token_Stream &tokens) {
  *   return parse_class_from_table<Class_Parse_Table<Class> >(tokens);
  * }
+ * \endcode
  *
  * Why don't we define this as the default implementation? Because then any file
  * that #included Class_Parse_Table.hh would attempt to use the default
@@ -122,9 +123,9 @@ template <class Class> class Class_Parse_Table;
 template <class Class_Parse_Table>
 std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens) {
-  using rtt_parser::Token;
   using rtt_parser::END;
   using rtt_parser::EXIT;
+  using rtt_parser::Token;
 
   typedef typename Class_Parse_Table::Return_Class Return_Class;
 
@@ -172,9 +173,9 @@ parse_class_from_table(Token_Stream &tokens) {
 template <typename Class_Parse_Table, typename Context>
 std::shared_ptr<typename Class_Parse_Table::Return_Class>
 parse_class_from_table(Token_Stream &tokens, Context const &context) {
-  using rtt_parser::Token;
   using rtt_parser::END;
   using rtt_parser::EXIT;
+  using rtt_parser::Token;
 
   typedef typename Class_Parse_Table::Return_Class Return_Class;
 

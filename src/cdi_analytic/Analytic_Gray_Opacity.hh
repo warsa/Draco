@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Fri Aug 24 13:13:46 2001
  * \brief  Analytic_Gray_Opacity class definition.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -52,15 +52,9 @@ namespace rtt_cdi_analytic {
  * Example usage of Analytic_Gray_Opacity, Analytic_Opacity_Model, and their
  * incorporation into rtt_cdi::CDI.
  */
-// revision history:
-// -----------------
-// 0) original
-// 1) 06-MAR-03 : added model specification; default is still ANALYTIC
-//
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity
-    : public rtt_cdi::GrayOpacity {
+class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;

@@ -19,7 +19,7 @@
 ## 2. Update variables that control the build:
 ##    - $ddir
 ##    - $CONFIG_BASE
-## 3. Run this script: ./release_ml &> ../logs/relase_moonlight.log
+## 3. Run this script: ./release_darwin.sh &> ../logs/release_darwin.log
 
 #----------------------------------------------------------------------#
 # Per release settings go here (edits go here)
@@ -31,7 +31,7 @@ ddir=draco-6_18_0
 pdir=$ddir
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_VERSION_PATCH=0 -DUSE_CUDA=OFF"
+export CONFIG_BASE="-DDraco_VERSION_PATCH=0 -DUSE_CUDA=OFF"
 
 # environment (use draco modules)
 # release for each module set
@@ -44,7 +44,7 @@ function intel14env()
   run "module load compilers/intel/14.0.2 mpi/openmpi-1.6.5-intel_14.0.2"
   run "module load random123 eospac/6.2.4"
   run "module list"
-  export MPIEXEC=${MPIRUN}
+  export MPIEXEC_EXECUTABLE=${MPIRUN}
 }
 function intel15env()
 {
@@ -54,7 +54,7 @@ function intel15env()
   run "module load intel/15.0.3 openmpi/1.6.5-intel_15.0.3"
   run "module load random123 eospac/6.2.4"
   run "module list"
-  export MPIEXEC=${MPIRUN}
+  export MPIEXEC_EXECUTABLE=${MPIRUN}
 }
 
 # ============================================================================
@@ -80,7 +80,7 @@ scratchdir=`selectscratchdir`
 
 # =============================================================================
 # Build types:
-# - These must be copied into release_ml.msub because bash arrays cannot
+# - These must be copied into release_darwin.msub because bash arrays cannot
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
@@ -133,7 +133,7 @@ for env in $environments; do
   $env
 
   buildflavor=`flavor`
-  # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
+  # e.g.: buildflavor=darwin-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"

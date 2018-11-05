@@ -3,11 +3,8 @@
  * \file   min/test/tstpowell.cc
  * \author Kent Budge
  * \date   Tue Jul  6 10:00:38 2004
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved.  */
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"

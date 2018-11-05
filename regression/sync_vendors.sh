@@ -3,7 +3,7 @@
 ## File  : regression/sync_vendors.sh
 ## Date  : Tuesday, Oct 25, 2016, 09:07 am
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -47,10 +47,10 @@ echo "umask: `umask`"
 # From dir (ccscs7)
 vdir=/scratch/vendors
 # To dir
-r72v=/ccs/codes/radtran/vendors/rhel72vendors
+# r72v=/ccs/codes/radtran/vendors/rhel72vendors
 # To machines (cccs[234568]:/scratch/vendors)
 # omit ccscs5 (scratch is too full)
-ccs_servers="ccscs1 ccscs2 ccscs3 ccscs4 ccscs6 ccscs8 ccscs9"
+ccs_servers="ccscs1 ccscs2 ccscs3 ccscs6 ccscs8 ccscs9"
 
 # exclude these directories
 exclude_dirs="spack.mirror spack.rasa tmp spack.temporary spack.test spack.ccs.developmental"
@@ -70,7 +70,7 @@ else
 fi
 
 # Banner
-echo "Rsync /scratch/vendors to $r72v and to /scratch/vendors on:"
+echo "Rsync /scratch/vendors to /scratch/vendors on:"
 for m in $ccs_servers; do echo " - ${m}"; done
 
 # Sanity check
@@ -83,23 +83,25 @@ if ! test -d ${vdir}-ec; then
   exit 1
 fi
 
-# Make a backup copy of vendors to $r72v
+# Reset permissions (if possible):
 echo " "
 echo "Clean up permissions on source files..."
+run "cd $vdir"
 vdir_subdirs=`\ls -1 $vdir`
 for dir in $vdir_subdirs; do
   run "chgrp -R draco $dir &> /dev/null"
   run "chmod -R g+rX,o+rX $dir &> /dev/null"
 done
 
+run "cd ${vdir}-ec"
 vdir_subdirs=`\ls -1 ${vdir}-ec`
 for dir in $vdir_subdirs; do
   run "chgrp -R ccsrad $dir &> /dev/null"
   run "chmod -R g+rX,o-rwX $dir &> /dev/null"
 done
 
-echo " "
-echo "Save a copy of /scratch/vendors to $r72v..."
+#echo " "
+#echo "Save a copy of /scratch/vendors to $r72v..."
 #run "rsync -av --exclude 'ndi' --delete $vdir/ $r72v"
 # rsync -av --omit-dir-times --checksum --human-readable --progress <local dir> <remote dir>
 

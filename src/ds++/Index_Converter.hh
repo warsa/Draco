@@ -4,7 +4,7 @@
  * \author Mike Buksas
  * \date   Fri Jan 20 14:51:51 2006
  * \brief  Decleration and Definition of Index_Converter
- * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -154,10 +154,12 @@ void Index_Converter<D, OFFSET>::get_indices(int index, IT iter) const {
   Check(Base::index_in_range(index));
   index -= OFFSET;
 
-  for (size_t d = 0; d <= D - 1; ++d) {
-    const int dim_size = Base::get_size(d);
+  for (unsigned d = 0; d <= D - 1; ++d) {
+    const unsigned dim_size = Base::get_size(d);
     *(iter++) = index % dim_size + OFFSET;
-    index /= dim_size;
+    // Ensure that conversion of dim_size from unsigned to int is safe.
+    Check(dim_size < static_cast<unsigned>(std::numeric_limits<int>::max()));
+    index /= static_cast<int>(dim_size);
   }
 
   Ensure(index == 0);

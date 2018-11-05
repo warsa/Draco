@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for parser/test.
-# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 project( parser_test CXX )
@@ -13,16 +13,6 @@ project( parser_test CXX )
 # ---------------------------------------------------------------------------- #
 
 file( GLOB test_sources *.cc )
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}      # headers for tests
-   ${PROJECT_SOURCE_DIR}/..   # headers for package
-   ${PROJECT_BINARY_DIR}/..   # config.h
-   )
 
 # ---------------------------------------------------------------------------- #
 # Build Unit tests
@@ -79,6 +69,22 @@ add_parallel_tests(
    PE_LIST "1;2"
    DEPS    "Lib_parser;${MPI_CXX_LIBRARIES};${PAPI_LIBRARY}" )
 
+# To ensure that the file token stream tests of the #include capability know
+# where to look for the included file.
+ if( "${DRACO_C4}" STREQUAL "MPI" )
+   set( tests_with_env_reqs
+     parser_tstParallel_File_Token_Stream_1
+     parser_tstParallel_File_Token_Stream_2
+     parser_tstFile_Token_Stream_1 )
+ else()
+   set( tests_with_env_reqs
+     parser_tstParallel_File_Token_Stream
+     parser_tstFile_Token_Stream )
+ endif()
+ set_tests_properties( ${tests_with_env_reqs} PROPERTIES
+   ENVIRONMENT
+   DRACO_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR})
+
 #------------------------------------------------------------------------------#
-# End parser/CMakeLists.txt
+# End parser/test/CMakeLists.txt
 #------------------------------------------------------------------------------#

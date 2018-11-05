@@ -8,12 +8,13 @@ if test -n "$verbose"; then
   echo "In .bashrc_darwin_fe"
 fi
 
+# sfeatures | grep <feature:=knl> <-- look for "idle" (not "down" and not "drain")
+# salloc -N 1 -p power8+
+# salloc -N 1 -p knl-quad_flat
+
 ##---------------------------------------------------------------------------##
 ## ENVIRONMENTS
 ##---------------------------------------------------------------------------##
-
-# unlimit stack and core dump sizes.
-ulimit -s unlimited
 
 if [[ ! ${VENDOR_DIR} ]]; then
   export VENDOR_DIR=/usr/projects/draco/vendors
@@ -21,51 +22,91 @@ if [[ ! ${VENDOR_DIR} ]]; then
 fi
 
 # modules
+export DRACO_ARCH=`/usr/projects/draco/vendors/bin/target_arch`
+
 if test -n "$MODULESHOME"; then
 
-  # Nodes that have MIC capability use different modules...
-  if test "$SLURM_JOB_PARTITION" = "knc-mic"; then
-    # mic_status=`/usr/sbin/micctrl -s | egrep -c mic[0-9]+`
-    case `uname -n` in
-      darwin-fe* ) mic_status=0 ;;
-      *)           mic_status=1 ;;
+    module use --append ${VENDOR_DIR}/user_contrib
+    module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH
+    module load user_contrib
+
+    echo -e "\nLoading modules for architecture type $DRACO_ARCH. \n"
+
+    case $DRACO_ARCH in
+      arm)
+        cflavor="gcc-8.2.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="git cmake gcc/8.2.0"
+        compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_8.2.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
+        # ec_mf="ndi"
+        # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
+        export OMPI_MCA_btl=^openib
+        export UCX_NET_DEVICES=mlx5_0:1
+      ;;
+
+      x86_64)
+        cflavor="gcc-7.3.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="emacs git cmake gcc/7.3.0 ack ccache"
+        compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_7.3.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
+        ec_mf="ndi"
+      ;;
+
+      knl)
+        cflavor="gcc-7.1.0"
+        mflavor="$cflavor-openmpi-2.1.0"
+        noflavor="git random123 cmake"
+        compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor \
+numdiff/5.9.0"
+        mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
+superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
+        ec_mf="ndi eospac/6.3.0"
+        ;;
+#       power8*)
+#         cflavor="gcc-7.1.0"
+#         mflavor="$cflavor-openmpi-2.1.0"
+#         noflavor="subversion git random123 numdiff/5.9.0 cmake/3.9.4"
+#         compflavor="gcc/7.1.0 gsl/2.4-$cflavor metis/5.1.0-$cflavor"
+#         mpiflavor="openmpi/2.1.0-gcc_7.1.0 parmetis/4.0.3-$mflavor \
+#         superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
+#         ;;
+      power9*)
+        cflavor="gcc-7.3.0"
+        mflavor="$cflavor-openmpi-3.1.2"
+        noflavor="git cmake gcc/7.3.0"
+        compflavor="random123 numdiff gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor openmpi/p9/3.1.2-gcc_7.3.0"
+        mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-netlib trilinos/12.12.1-${mflavor}-netlib"
+        # These aren't built for power architectures?
+        # ec_mf="ndi eospac/6.3.0"
+        ;;
     esac
-  else
-    mic_status=0
-  fi
-
-  if test ${mic_status} -gt 0; then
-    mic_status=1
-    # module unuse ${VENDOR_DIR}/Modules
-    # module use --append ${VENDOR_DIR}/Modules_knc
-
-    # # unload module that might conflict.
-    # module purge
-    # module load subversion
-    # # setup for draco
-    # module load intel/15.0.3 impi/5.1.1.109-mic
-    # module load random123 cmake/3.5.1 numdiff/5.8.1
-    # module load mkl/11.2 gsl/1.16
-    # # additional setup for capsaicin
-    # module load ParMetis/4.0.3 SuperLU_DIST/3.3 trilinos/11.10.2
-  else
-    module use --append ${VENDOR_DIR}/Modules
-    export dracomodules="emacs subversion/1.9.3 git intel/16.0.3 \
-gsl/2.1 random123 cmake/3.6.0 numdiff/5.8.1 \
-eospac/6.2.4 ndi metis parmetis superlu-dist trilinos"
-  fi
+    export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"
 
   function dracoenv ()
   {
     for m in $dracomodules; do
       module load $m
     done
-    export CXX=`which mpiicpc`
-    export CC=`which mpiicc`
-    export FC=`which mpiifort`
-    export MPIEXEC=`which mpirun`
-    echo "mpd --daemon"
-    mpd --daemon
+    export CXX=`which g++`
+    export CC=`which gcc`
+    export FC=`which gfortran`
+    export MPIEXEC_EXECUTABLE=`which mpirun`
+
+    # CMake-3.12+ doesn't want X_ROOT variables
+    unset MPI_ROOT
+
+    # Previously, we used Darwin for nightly regressions with Intel-MPI.  When
+    # Intel-MPI is selected, these variables must be set:
+
+    #export CXX=`which mpiicpc`
+    #export CC=`which mpiicc`
+    #export FC=`which mpiifort`
+
+    # only for Intel-MPI
+    #echo "mpd --daemon"
+    #mpd --daemon
   }
 
   function rmdracoenv ()
@@ -73,7 +114,7 @@ eospac/6.2.4 ndi metis parmetis superlu-dist trilinos"
     unset CXX
     unset CC
     unset FC
-    unset MPIEXEC
+    unset MPIEXEC_EXECUTABLE
     # unload in reverse order.
     mods=( ${dracomodules} )
     for ((i=${#mods[@]}-1; i>=0; i--)); do

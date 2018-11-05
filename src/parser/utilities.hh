@@ -3,7 +3,7 @@
  * \file   parser/utilities.hh
  * \author Kent G. Budge
  * \brief  Declarations of a number of useful parsing utilities.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This file declares functions that parse certain common constructs in a
@@ -115,7 +115,7 @@ template <typename Class, typename Context>
 std::shared_ptr<Class> parse_class(Token_Stream &tokens,
                                    Context const &context);
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif
 // parser_utilities_hh

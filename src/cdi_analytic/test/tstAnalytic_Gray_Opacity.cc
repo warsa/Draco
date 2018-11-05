@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Sep 24 12:08:55 2001
  * \brief  Analytic_Gray_Opacity test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -18,13 +18,13 @@
 
 using namespace std;
 
-using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
+using rtt_cdi::CDI;
+using rtt_cdi::GrayOpacity;
 using rtt_cdi_analytic::Analytic_Gray_Opacity;
 using rtt_cdi_analytic::Analytic_Opacity_Model;
 using rtt_cdi_analytic::Constant_Analytic_Opacity_Model;
+using rtt_cdi_analytic::nGray_Analytic_MultigroupOpacity;
 using rtt_cdi_analytic::Polynomial_Analytic_Opacity_Model;
-using rtt_cdi::CDI;
-using rtt_cdi::GrayOpacity;
 using rtt_dsxx::soft_equiv;
 using std::dynamic_pointer_cast;
 
@@ -64,13 +64,13 @@ void constant_test(rtt_dsxx::UnitTest &ut) {
     ITFAILS;
 
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::ABSORPTION);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Absorption")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::ABSORPTION);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Absorption")
       ITFAILS;
   }
   {
-    Analytic_Gray_Opacity anal_opacity(model, rtt_cdi::TOTAL);
-    if (anal_opacity.getDataDescriptor() != "Analytic Gray Total")
+    Analytic_Gray_Opacity analyt_opacity(model, rtt_cdi::TOTAL);
+    if (analyt_opacity.getDataDescriptor() != "Analytic Gray Total")
       ITFAILS;
   }
 

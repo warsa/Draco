@@ -3,7 +3,7 @@
 ## File  : regression/update_regression_scripts.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -53,9 +53,8 @@ case ${target} in
     VENDOR_DIR=/scratch/vendors
     keychain=keychain-2.8.2
     ;;
-  ml-*)
+  sn-* | ba-* | tt-* )
     REGDIR=/usr/projects/jayenne/regress
-    keychain=keychain-2.7.1
     VENDOR_DIR=/usr/projects/draco/vendors
     ;;
   *)
@@ -97,19 +96,23 @@ if ! [[ -d $REGDIR ]]; then
   run "chmod g+s ${REGDIR}"
 fi
 
-# Draco/Jayenne/Capsaicin
-projects="draco jayenne capsaicin"
-for p in $projects; do
-  echo -e "\nUpdating $REGDIR/$p..."
-  if test -d ${REGDIR}/$p; then
-    run "cd ${REGDIR}/$p; git pull"
+# List of repositories (also used by push_repositories_xf.sh and
+# pull_repositories_xf.sh).  It defines $github_projects and $gitlab_projects.
+source ${scriptdir}/repository_list.sh
+
+for project in ${github_projects[@]}; do
+  namespace=`echo $p | sed -e 's%/.*%%'`
+  repo=`echo $p | sed -e 's%.*/%%'`
+  echo -e "\nUpdating $REGDIR/$repo..."
+  if test -d ${REGDIR}/$repo; then
+    run "cd ${REGDIR}/$repo; git pull"
   else
-    case $p in
-      draco)
-        run "cd ${REGDIR}; git clone git@github.com:lanl/Draco.git $p"
+    case $repo in
+      draco|branson)
+        run "cd ${REGDIR}; git clone git@github.com:$project $repo"
         ;;
       *)
-        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${p}/${p}.git"
+        run "cd ${REGDIR}; git clone git@gitlab.lanl.gov:${project}.git"
         ;;
     esac
   fi
@@ -121,14 +124,14 @@ done
 if [[ -d $logdir ]]; then
   echo -e "\nCleaning up old log files."
   run "cd $logdir"
-  run "find . -mtime +14 -type f"
-  run "find . -mtime +14 -type f -delete"
+  run "find . -mtime +5 -type f"
+  run "find . -mtime +5 -type f -delete"
 fi
 if [[ -d $REGDIR/cdash ]]; then
   echo -e "\nCleaning up old builds."
   run "cd $REGDIR/cdash"
-  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d"
-  run "find . -maxdepth 3 -mtime +14 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
+  run "find . -maxdepth 3 -mtime +5 -name 'Experimental*-pr*' -type d"
+  run "find . -maxdepth 3 -mtime +5 -name 'Experimental*-pr*' -type d -exec rm -rf {} \;"
 fi
 if [[ -d /usr/projects/ccsrad/regress/cdash ]]; then
   echo -e "\nCleaning up old builds."

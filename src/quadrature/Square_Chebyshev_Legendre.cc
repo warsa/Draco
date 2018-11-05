@@ -3,7 +3,7 @@
  * \file   quadrature/Square_Chebyshev_Legendre.cc
  * \author Kelly Thompson
  * \date   Wed Sep  1 10:19:52 2004
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -35,8 +35,9 @@ unsigned Square_Chebyshev_Legendre::number_of_levels() const {
 
 //---------------------------------------------------------------------------//
 string Square_Chebyshev_Legendre::as_text(string const &indent) const {
-  string Result = indent + "type = square cl" + indent + "  order = " +
-                  to_string(sn_order()) + Octant_Quadrature::as_text(indent);
+  string Result = indent + "type = square cl" + indent +
+                  "  order = " + to_string(sn_order()) +
+                  Octant_Quadrature::as_text(indent);
 
   return Result;
 }
@@ -44,10 +45,10 @@ string Square_Chebyshev_Legendre::as_text(string const &indent) const {
 //---------------------------------------------------------------------------//
 void Square_Chebyshev_Legendre::create_octant_ordinates_(
     vector<double> &mu, vector<double> &eta, vector<double> &wt) const {
+  using rtt_dsxx::soft_equiv;
+  using std::cos;
   using std::fabs;
   using std::sqrt;
-  using std::cos;
-  using rtt_dsxx::soft_equiv;
 
   // The number of quadrature levels is equal to the requested SN order.
   size_t levels = sn_order();

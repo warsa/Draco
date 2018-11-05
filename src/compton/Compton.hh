@@ -4,7 +4,7 @@
  * \author Kendra Keady
  * \date   Mon Feb 27 2017
  * \brief  Header file for compton CSK_generator interface
- * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -98,7 +98,7 @@ public:
   //! Retrieve electron temperature eval points (diagnostic use)
   std::vector<double> get_etemp_pts() const { return ei->get_etemp_pts(); }
 };
-}
+} // namespace rtt_compton
 
 #endif // COMPTON_FOUND
 

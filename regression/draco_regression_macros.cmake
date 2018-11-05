@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -65,7 +65,7 @@ macro( find_num_procs_avail_for_running_tests )
     set( num_test_procs $ENV{SLURM_NPROCS} )
   else()
     # If this is not a known batch system, then attempt to set values according
-    # to machine name:
+    # to machine properties
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
   endif()
@@ -80,7 +80,11 @@ endmacro()
 # ------------------------------------------------------------
 macro( set_defaults )
 
-  # Prerequisits:
+  message("\n----------------------------------------
+Setting defaults
+----------------------------------------\n")
+
+  # Prerequisites:
   #
   # This setup assumes that the project work_dir will contain 3 subdirectories:
   # source, build and target.  See how CMAKE_SOURCE_DIRECTORY,
@@ -143,7 +147,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
   if( WIN32 )
     # add option for "NMake Makefiles JOM"?
     # set( CTEST_CMAKE_GENERATOR "NMake Makefiles" )
-    set( CTEST_CMAKE_GENERATOR "Visual Studio 15 2017" )
+    set( CTEST_CMAKE_GENERATOR "Visual Studio 15 2017 Win64" )
   else()
     set( CTEST_CMAKE_GENERATOR "Unix Makefiles" )
   endif()
@@ -201,7 +205,7 @@ win32$ set work_dir=c:/full/path/to/work_dir
          set(CTEST_BUILD_FLAGS "-j${num_compile_procs} -l${num_compile_procs}")
          if( "${sitename}" STREQUAL "Trinity" OR "${sitename}" STREQUAL "Trinitite")
            # We compile on the front end for this machine. Since we don't know
-           # the actual load apriori, we use the -l option to limit the total
+           # the actual load a priori, we use the -l option to limit the total
            # load on the machine.  For CT, my experience shows that 'make -l N'
            # actually produces a machine load ~ 1.5*N, so we will specify the
            # max load to be half of the total number of procs.
@@ -209,6 +213,12 @@ win32$ set work_dir=c:/full/path/to/work_dir
            set(CTEST_BUILD_FLAGS "-j ${half_num_compile_procs} -l ${num_compile_procs}")
          endif()
        endif()
+   else()
+     if(NOT num_compile_procs EQUAL 0)
+       # Parallel builds for 'msbuild'
+       # Ref: https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2015
+       set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
+     endif()
    endif()
 
    # Testing parallelism
@@ -250,6 +260,10 @@ endmacro( set_defaults )
 # Parse Arguments
 # ------------------------------------------------------------
 macro( parse_args )
+
+  message("\n----------------------------------------
+Parsing arguments
+----------------------------------------\n")
 
   # Default is "Experimental." Special builds are "Nightly" or "Continuous"
   if( ${CTEST_SCRIPT_ARG} MATCHES Nightly )
@@ -353,25 +367,40 @@ macro( parse_args )
 
   # append the compiler_short_name with the extra_params string (if any) and set
   # some variables based on extra_param's value.
-  if( NOT "$ENV{extra_params}x" STREQUAL "x" )
-    set( compiler_short_name "${compiler_short_name}-$ENV{extra_params}" )
-    if( $ENV{extra_params} MATCHES "cuda" )
+  if( DEFINED ENV{extra_params_sort_safe} )
+
+    if( NOT "$ENV{extra_params_sort_safe}empty" STREQUAL "empty" )
+      set( compiler_short_name
+        "${compiler_short_name}-$ENV{extra_params_sort_safe}" )
+    endif()
+
+    if( $ENV{extra_params_sort_safe} MATCHES "cuda" )
       set(USE_CUDA ON)
-    elseif( $ENV{extra_params} MATCHES "fulldiagnostics" )
+    endif()
+    if( $ENV{extra_params_sort_safe} MATCHES "fulldiagnostics" )
       set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
-      # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot parse output).
-    elseif( $ENV{extra_params} MATCHES "nr" )
+      # Note 'DRACO_TIMING:STRING=2' will break milagro tests (python cannot
+      # parse output).
+    endif()
+    if( $ENV{extra_params_sort_safe} MATCHES "nr" )
       set( RNG_NR "ENABLE_RNG_NR:BOOL=ON" )
-    elseif( $ENV{extra_params} MATCHES "scalar" )
+    endif()
+    if( $ENV{extra_params_sort_safe} MATCHES "scalar" )
       set( DRACO_C4 "DRACO_C4:STRING=SCALAR" )
-    elseif( $ENV{extra_params} MATCHES "static" )
+    elseif( $ENV{extra_params_sort_safe} MATCHES "static" )
       set( DRACO_LIBRARY_TYPE "DRACO_LIBRARY_TYPE:STRING=STATIC" )
+    endif()
+    if( $ENV{extra_params_sort_safe} MATCHES "vtest" )
+      list( APPEND CUSTOM_VARS "RUN_VERIFICATION_TESTS:BOOL=ON" )
+    endif()
+    if( $ENV{extra_params_sort_safe} MATCHES "perfbench" )
+      list( APPEND CUSTOM_VARS "ENABLE_PERFBENCH:BOOL=ON" )
     endif()
   endif()
 
   # Set the build name: (<platform>-<compiler>-<configuration>)
   if( WIN32 )
-    set( CTEST_BUILD_NAME "${CTEST_BUILD_CONFIGURATION}" )
+    set( CTEST_BUILD_NAME "${compiler_short_name}-${CTEST_BUILD_CONFIGURATION}" )
     # if( "$ENV{dirext}" MATCHES "x64" )
     # endif()
   elseif( APPLE ) # OS/X
@@ -417,6 +446,9 @@ macro( parse_args )
     set( CTEST_BUILD_NAME "${CTEST_BUILD_NAME}$ENV{buildname_append}" )
   endif()
 
+# Convert CUSTOM_VARS from a list into a multi-line string
+string(REGEX REPLACE ";" "\n" CUSTOM_VARS "${CUSTOM_VARS}")
+
   if( ${drm_verbose} )
     message("
 CTEST_MODEL                 = ${CTEST_MODEL}
@@ -428,6 +460,7 @@ CTEST_BUILD_NAME            = ${CTEST_BUILD_NAME}
 ENABLE_C_CODECOVERAGE       = ${ENABLE_C_CODECOVERAGE}
 ENABLE_DYNAMICANALYSIS      = ${ENABLE_DYNAMICANALYSIS}
 CTEST_USE_LAUNCHERS         = ${CTEST_USE_LAUNCHERS}
+CUSTOM_VARS                 = ${CUSTOM_VARS}
 ")
   endif()
 endmacro( parse_args )
@@ -437,6 +470,10 @@ endmacro( parse_args )
 # ------------------------------------------------------------
 macro( find_tools )
 
+  message("\n----------------------------------------
+Finding tools...
+----------------------------------------\n")
+
   find_program( CTEST_CMD
     NAMES ctest
     HINTS
@@ -445,18 +482,6 @@ macro( find_tools )
     )
   if( NOT EXISTS ${CTEST_CMD} )
     message( FATAL_ERROR "Cound not find ctest executable.(CTEST_CMD = ${CTEST_CMD})" )
-  endif()
-
-  find_program( CTEST_SVN_COMMAND
-     NAMES svn
-     HINTS
-        "C:/Program Files (x86)/CollabNet Subversion"
-        "C:/Program Files (x86)/CollabNet/Subversion Client"
-        # NO_DEFAULT_PATH
-     )
-  set( CTEST_CVS_COMMAND ${CTEST_SVN_COMMAND} )
-  if( NOT EXISTS "${CTEST_CVS_COMMAND}" )
-    message( FATAL_ERROR "Cound not find cvs executable." )
   endif()
 
   find_program( CTEST_GIT_COMMAND
@@ -481,7 +506,7 @@ macro( find_tools )
 
   if( NOT WIN32 )
     # if MAKECOMMAND is found when using "Visual Studio" as the generator,
-    # the compiler 'cl' will be found to be unable to compile a simple 
+    # the compiler 'cl' will be found to be unable to compile a simple
     # program.
     find_program( MAKECOMMAND NAMES make )
     # No memory check program on Windows for now.
@@ -513,8 +538,6 @@ macro( find_tools )
   if( ${drm_verbose} )
     message("
 CTEST_CMD           = ${CTEST_CMD}
-CTEST_CVS_COMMAND   = ${CTEST_CVS_COMMAND}
-CTEST_SVN_COMMAND   = ${CTEST_SVN_COMMAND}
 CTEST_GIT_COMMAND   = ${CTEST_GIT_COMMAND}
 CTEST_CMAKE_COMMAND = ${CTEST_CMAKE_COMMAND}
 MAKECOMMAND         = ${MAKECOMMAND}
@@ -782,37 +805,43 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # Assume that draco_work_dir is parallel to our current location, but only
   # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
-  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)" "${dep_pkg}/\\1"
-    ${dep_pkg}_work_dir ${work_dir} )
+  file( TO_CMAKE_PATH "$ENV{DRACO_DIR}" DRACO_DIR )
+  string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)"
+    "${dep_pkg}/\\1" ${dep_pkg}_work_dir ${work_dir} )
 
   # If this is a special build, link to the normal Debug/Release Draco files:
-  if( "${dep_pkg}" MATCHES "draco" )
-    # coverage  build -> debug   version of Draco
-    # nr        build -> release version of Draco
-    # perfbench build -> release version of Draco
-    # string( REPLACE "Coverage" "Debug"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-nr"        "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "intel-perfbench" "intel" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    string( REPLACE "gcc-perfbench"   "gcc"  ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    # string( REPLACE "-belosmods"      ""     ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+  #
+  # J/C directory       Draco directory
+  # --------------      -----------------
+  # *-nr-*              *-*
+  # *-vtest-*           *-*
+  # *-perfbench-*       *-*
+  # *-knl-perfbench-*   *-knl-*
 
-    if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin")
+  if( "${dep_pkg}" MATCHES "draco" )
+    # not any ${extraparam} since many map to draco builds that have the same
+    # ${extraparam}.  For example: *-newtools-*.
+    foreach( extraparam nr perfbench vtest )
+      string( REGEX REPLACE "[-_]${extraparam}[-_]" "-" ${dep_pkg}_work_dir
+        ${${dep_pkg}_work_dir} )
+    endforeach()
+    if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin" OR "${this_pkg}" MATCHES "core")
       # If this is jayenne, we might be building a pull request. Replace the PR
       # number in the path with '-develop' before looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/" "\\1_\\2-develop/"
-        ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
+      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
+        "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
     endif()
   endif()
 
   find_file( ${dep_pkg}_target_dir
-    NAMES README.${dep_pkg}
+    NAMES README.${dep_pkg} README.md
     HINTS
-    # if DRACO_DIR is defined, use it.
-    $ENV{DRACO_DIR}
-    # Try a path parallel to the work_dir
-    ${${dep_pkg}_work_dir}/target
+      # if DRACO_DIR is defined, use it.
+      ${DRACO_DIR}
+      # Try a path parallel to the work_dir
+      ${${dep_pkg}_work_dir}/target
+    NO_DEFAULT_PATH
   )
-
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
     message( FATAL_ERROR
       "Could not locate the ${dep_pkg} installation directory.
@@ -821,6 +850,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   endif()
 
   get_filename_component( ${dep_pkg_caps}_DIR ${${dep_pkg}_target_dir} PATH )
+  unset( dep_pkg_caps )
 
 endmacro(set_pkg_work_dir)
 

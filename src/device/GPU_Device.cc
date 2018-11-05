@@ -4,11 +4,11 @@
  * \author Kelly (KT) Thompson
  * \date   Thu Oct 20 15:28:48 2011
  * \brief  
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "GPU_Device.hh"
@@ -28,9 +28,7 @@ namespace rtt_device {
  * - Query the devices for features.
  */
 GPU_Device::GPU_Device(void) // int /*argc*/, char */*argv*/[] )
-    : deviceCount(0),
-      computeCapability(),
-      deviceName() {
+    : deviceCount(0), computeCapability(), deviceName() {
   // Initialize the library
   cudaError_enum err = cuInit(0); // currently must be 0.
   checkForCudaError(err);

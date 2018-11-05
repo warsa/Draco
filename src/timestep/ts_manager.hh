@@ -4,7 +4,7 @@
  * \author  John McGhee
  * \date    Mon Apr  6 17:22:53 1998
  * \brief   Header file for the manager utility for time-step advisors.
- * \note    Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -135,7 +135,7 @@ public:
   bool invariant_satisfied() const;
 };
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 #endif // __timestep_ts_manager_hh__
 

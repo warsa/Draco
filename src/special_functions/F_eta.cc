@@ -4,7 +4,7 @@
  * \author Kent Budge
  * \date   Mon Sep 20 15:01:53 2004
  * \brief  Implementation of F_eta.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * These routines are based on C routines from Numerical Recipes.
@@ -25,7 +25,7 @@ using namespace rtt_ode;
 using rtt_units::PI;
 
 // Parametrization of integrand and inverse functions
-static double leta, lgamma;
+// static double leta, lgamma;
 
 //---------------------------------------------------------------------------//
 /*!
@@ -37,38 +37,42 @@ static double leta, lgamma;
  *         \f$\frac{(x^2+2x)^{3/2}}{e^\frac{x-\eta}{\gamma}+1}\f$
  *
  * \post \c Result>=0
+ *
+ * \bug no unit tests cover this function, so commenting it out.
  */
-static double Feta_integrand(double x) {
-  double const y = x * x + 2 * x;
-  double const d = (2 * lgamma * lgamma * sqrt(2 * lgamma));
-  double const expp1 = exp((x - leta) / lgamma) + 1;
-  double const dexpp1 = -exp((x - leta) / lgamma) / lgamma;
-  double const Result = -dexpp1 * cube(sqrt(y)) / (square(expp1) * d);
+// static double Feta_integrand(double x) {
+//   double const y = x * x + 2 * x;
+//   double const d = (2 * lgamma * lgamma * sqrt(2 * lgamma));
+//   double const expp1 = exp((x - leta) / lgamma) + 1;
+//   double const dexpp1 = -exp((x - leta) / lgamma) / lgamma;
+//   double const Result = -dexpp1 * cube(sqrt(y)) / (square(expp1) * d);
 
-  Ensure(Result >= 0.0);
-  return Result;
-}
+//   Ensure(Result >= 0.0);
+//   return Result;
+// }
 
-static double Feta_brute(double const eta, double const gamma) {
-  // Partial degenerate: Sommerfeld expansion not sufficiently accurate.  Must
-  // integrate explicitly.
-  leta = eta;
-  lgamma = gamma;
-  double const max1 = (eta > 0 ? Feta_integrand(eta) : 0);
-  double const max2 = Feta_integrand(1.5 * gamma);
-  double const max3 = Feta_integrand(3 * gamma);
-  double tol = numeric_limits<double>::epsilon() * max(max1, max(max2, max3)) *
-               (max(eta, 0.0) + gamma);
+//----------------------------------------------------------------------------//
+//! \bug no unit tests cover this function, so commenting it out.
+// static double Feta_brute(double const eta, double const gamma) {
+//   // Partial degenerate: Sommerfeld expansion not sufficiently accurate.  Must
+//   // integrate explicitly.
+//   leta = eta;
+//   lgamma = gamma;
+//   double const max1 = (eta > 0 ? Feta_integrand(eta) : 0);
+//   double const max2 = Feta_integrand(1.5 * gamma);
+//   double const max3 = Feta_integrand(3 * gamma);
+//   double tol = numeric_limits<double>::epsilon() * max(max1, max(max2, max3)) *
+//                (max(eta, 0.0) + gamma);
 
-  // help the compiler out by telling it that rkqs is a function pointer that
-  // returns void and has the following argument list.  We have added this
-  // typedef because cxx needs help parsing the call to quad(...).
-  typedef void (*fpv)(std::vector<double> &, std::vector<double> const &,
-                      double &, double, double, std::vector<double> const &,
-                      double &, double &, Quad_To_ODE<double (*)(double)>);
-  fpv rkqs_fpv = &rkqs<double, Quad_To_ODE<double (*)(double)>>;
-  return quad(&Feta_integrand, 0.0, max(eta, 0.0) + 50 * gamma, tol, rkqs_fpv);
-}
+//   // help the compiler out by telling it that rkqs is a function pointer that
+//   // returns void and has the following argument list.  We have added this
+//   // typedef because cxx needs help parsing the call to quad(...).
+//   typedef void (*fpv)(std::vector<double> &, std::vector<double> const &,
+//                       double &, double, double, std::vector<double> const &,
+//                       double &, double &, Quad_To_ODE<double (*)(double)>);
+//   fpv rkqs_fpv = &rkqs<double, Quad_To_ODE<double (*)(double)>>;
+//   return quad(&Feta_integrand, 0.0, max(eta, 0.0) + 50 * gamma, tol, rkqs_fpv);
+// }
 
 //---------------------------------------------------------------------------//
 /*!
@@ -129,14 +133,16 @@ double F_eta(double const eta, double const gamma) {
     return dsum;
   } else {
     // Degenerate regime?
-    double const e = square(eta + 1) - 1;
+    double const ee = square(eta + 1) - 1;
 
-    if (e <= 0) {
-      return Feta_brute(eta, gamma);
+    if (ee <= 0) {
+      Insist(false, std::string("Please add a unit test for this case and ") +
+                        "then re-enable Feta_brute(eta,gamma).");
+      // return Feta_brute(eta, gamma);
     } else {
-      double const de = 2 * (eta + 1);
-      double const x = sqrt(e);
-      double const dx = 0.5 * de / x;
+      double const dde = 2 * (eta + 1);
+      double const x = sqrt(ee);
+      double const dx = 0.5 * dde / x;
       double const rad = sqrt(x * x + 1);
       double const drad = x * dx / rad;
 
@@ -148,11 +154,10 @@ double F_eta(double const eta, double const gamma) {
              (1 - (5. / 14.) * x * x + (5. / 24.) * x * x * x * x -
               (25. / 176.) * x * x * x * x * x * x +
               (35. / 1024.) * x * x * x * x * x * x * x * x);
-        dn1 = dx *
-              (5 * n1 / x +
-               0.2 * x * x * x * x * x * x *
-                   (-5. / 7. + (5. / 6.) * x * x - (75. / 88.) * x * x * x * x +
-                    (35. / 128.) * x * x * x * x * x * x));
+        dn1 = dx * (5 * n1 / x + 0.2 * x * x * x * x * x * x *
+                                     (-5. / 7. + (5. / 6.) * x * x -
+                                      (75. / 88.) * x * x * x * x +
+                                      (35. / 128.) * x * x * x * x * x * x));
       } else {
         n1 = (x * (2 * x * x - 3) * rad + 3 * log(rad + x)) / 8;
         dn1 = (dx * (2 * x * x - 3) * rad + 4 * x * x * dx * rad +
@@ -168,7 +173,9 @@ double F_eta(double const eta, double const gamma) {
             square(PI * gamma) * (2 * x * x + 1) * dx / (2 * rad);
         return (dn1 + dn2 + dn3) / (2 * gamma * gamma * sqrt(2 * gamma));
       } else {
-        return Feta_brute(eta, gamma);
+        Insist(false, std::string("Please add a unit test for this case and ") +
+                          "then re-enable Feta_brute(eta,gamma).");
+        // return Feta_brute(eta, gamma);
       }
     }
   }

@@ -4,11 +4,8 @@
  * \author Kent Budge
  * \date   Tue Dec 21 14:20:03 2004
  * \brief  Declaration file for the class rtt_quadrature::Ordinate.
- * \note   Copyright (C)  2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved. 
- */
-//---------------------------------------------------------------------------//
-// $Id: Ordinate.hh 6607 2012-06-14 22:31:45Z kellyt $
+ * \note   Copyright (C)  2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include <algorithm>
@@ -23,12 +20,12 @@ using namespace rtt_quadrature;
 
 // convenience functions to check ordinates
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool check_4(vector<Ordinate> const &ordinates) {
   // In 1-D spherical geometry, the ordinates must be confined to the first
   // two octants.
 
-  unsigned const N = ordinates.size();
+  size_t const N = ordinates.size();
   for (unsigned i = 0; i < N; ++i) {
     if (ordinates[i].eta() < 0 || ordinates[i].xi() < 0)
       return false;
@@ -36,12 +33,12 @@ bool check_4(vector<Ordinate> const &ordinates) {
   return true;
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool check_2(vector<Ordinate> const &ordinates) {
   // In 2-D geometry, the ordinates must be confined to the first
   // four octants
 
-  unsigned const N = ordinates.size();
+  size_t const N = ordinates.size();
   for (unsigned i = 0; i < N; ++i) {
     if (ordinates[i].xi() < 0)
       return false;
@@ -53,7 +50,7 @@ bool check_2(vector<Ordinate> const &ordinates) {
 
 namespace rtt_quadrature {
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /* static */
 bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b) {
   // Note that x==r==mu, z==xi
@@ -73,7 +70,7 @@ bool Ordinate_Set::level_compare(Ordinate const &a, Ordinate const &b) {
   }
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
   // We initially sort by octant. Only the +++ octant is actually used by
   // PARTISN-type sweepers that assume all quadratures are octant
@@ -104,7 +101,7 @@ bool Ordinate_Set::octant_compare(Ordinate const &a, Ordinate const &b) {
   }
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 /*!
  * Construct an Ordinate_Set.
  *
@@ -144,7 +141,7 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, Geometry const geometry,
   Require(dimension != 2 || check_2(ordinates));
 
   norm_ = 0.0;
-  unsigned const N = ordinates_.size();
+  size_t const N = ordinates_.size();
   for (unsigned i = 0; i < N; ++i) {
     norm_ += ordinates[i].wt();
   }
@@ -170,7 +167,7 @@ Ordinate_Set::Ordinate_Set(unsigned const dimension, Geometry const geometry,
   Ensure(this->ordering() == ordering);
 }
 
-//---------------------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 bool Ordinate_Set::check_class_invariants() const {
   return (dimension_ >= 1 && dimension_ <= 3) &&
          (geometry_ != rtt_mesh_element::AXISYMMETRIC || dimension_ < 3) &&
@@ -228,5 +225,5 @@ void Ordinate_Set::display() const {
 } // end namespace rtt_quadrature
 
 //---------------------------------------------------------------------------//
-//              end of quadrature/Ordinate_Set.cc
+// end of quadrature/Ordinate_Set.cc
 //---------------------------------------------------------------------------//

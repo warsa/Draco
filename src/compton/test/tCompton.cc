@@ -4,7 +4,7 @@
  * \author Kendra Keady
  * \date   2017 Feb 10
  * \brief  Implementation file for tCompton
- * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //----------------------------------------------------------------------------//
 
@@ -382,7 +382,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Did not successfully catch a CSK_generator exception.");
   }
 }
-}
+} // namespace rtt_compton_test
 
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {

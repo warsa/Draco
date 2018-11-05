@@ -4,11 +4,8 @@
  * \author Rob Lowrie
  * \date   Fri Nov 19 12:42:18 2004
  * \brief  Header for File_Output and File_Input.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_dsxx_File_Streams_hh
@@ -79,7 +76,7 @@ namespace rtt_dsxx {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_dsxx File_Output {
+class File_Output {
 private:
   // DATA
 

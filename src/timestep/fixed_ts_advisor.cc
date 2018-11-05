@@ -4,11 +4,11 @@
  * \author John McGhee
  * \date   Mon Apr  6 17:22:53 1998
  * \brief  Defines the fixed time-step advisor.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "fixed_ts_advisor.hh"
@@ -57,7 +57,7 @@ bool fixed_ts_advisor::invariant_satisfied() const {
   return ts_advisor::invariant_satisfied() && 0. < fixed_value;
 }
 
-} //end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 //---------------------------------------------------------------------------//
 // end of fixed_ts_advisor.cc

@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Mon Oct 29 17:16:32 2001
  * \brief  Ipcress + CDI test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -17,12 +17,12 @@
 
 using namespace std;
 
-using rtt_cdi_ipcress::IpcressGrayOpacity;
-using rtt_cdi_ipcress::IpcressMultigroupOpacity;
-using rtt_cdi_ipcress::IpcressFile;
+using rtt_cdi::CDI;
 using rtt_cdi::GrayOpacity;
 using rtt_cdi::MultigroupOpacity;
-using rtt_cdi::CDI;
+using rtt_cdi_ipcress::IpcressFile;
+using rtt_cdi_ipcress::IpcressGrayOpacity;
+using rtt_cdi_ipcress::IpcressMultigroupOpacity;
 
 //---------------------------------------------------------------------------//
 // TESTS
@@ -48,7 +48,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   //-----------------------------------------------------------------
 
   // Ipcress data filename (IPCRESS format required)
-  string op_data_file = "analyticOpacities.ipcress";
+  string op_data_file = ut.getTestSourcePath() + "analyticOpacities.ipcress";
 
   // ------------------------- //
   // Create IpcressFile object //
@@ -255,7 +255,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   bool caught = false;
   try {
     spCDI_Analytic->mg(r, rtt_cdi::SCATTERING);
-  } catch (const rtt_dsxx::assertion &excpt) {
+  } catch (const rtt_dsxx::assertion & /*excpt*/) {
     PASSMSG("Good, caught illegal accessor to CDI-mg().");
     caught = true;
   }
@@ -266,7 +266,7 @@ void test_ipcress_CDI(rtt_dsxx::ScalarUnitTest &ut) {
   caught = false;
   try {
     spCDI_Analytic->gray(rtt_cdi::ANALYTIC, a);
-  } catch (const rtt_dsxx::assertion &excpt) {
+  } catch (const rtt_dsxx::assertion & /*excpt*/) {
     PASSMSG("Good, caught illegal accessor to CDI-gray().");
     caught = true;
   }

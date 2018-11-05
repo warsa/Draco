@@ -5,7 +5,7 @@
  * \date   Mon Sep 20 15:15:40 2004
  * \brief  Integrate an ordinary differential equation with local error
  *         control using fifth-order Cash-Karp Runge-Kutta steps.
- * \note   Copyright (C) 2004-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2004-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -63,7 +63,8 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
                       dc4 = c4 - 13525.0 / 55296.0, dc5 = -277.0 / 14336.0,
                       dc6 = c6 - 0.25;
 
-  const unsigned n = y.size();
+  Check(y.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(y.size());
 
   yout.resize(n);
   yerr.resize(n);
@@ -93,9 +94,8 @@ void rkck(std::vector<Field> const &y, std::vector<Field> const &dydx, double x,
   }
   derivs(x + a5 * h, ytemp, ak5);
   for (unsigned i = 0; i < n; i++) {
-    ytemp[i] = y[i] +
-               h * (b61 * dydx[i] + b62 * ak2[i] + b63 * ak3[i] + b64 * ak4[i] +
-                    b65 * ak5[i]);
+    ytemp[i] = y[i] + h * (b61 * dydx[i] + b62 * ak2[i] + b63 * ak3[i] +
+                           b64 * ak4[i] + b65 * ak5[i]);
   }
   derivs(x + a6 * h, ytemp, ak6);
   for (unsigned i = 0; i < n; i++) {
@@ -155,7 +155,8 @@ void rkqs(std::vector<Field> &y, std::vector<Field> const &dydx, double &x,
 
   using std::vector;
 
-  const unsigned n = y.size();
+  Check(y.size() < UINT_MAX);
+  const unsigned n = static_cast<unsigned>(y.size());
 
   double const SAFETY = 0.9;
   double const PSHRNK = -0.25;

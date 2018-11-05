@@ -4,15 +4,9 @@
  * \author Mike Berry <mrberry@lanl.gov>, Kelly Thompson <kgt@lanl.gov>
  * \date   Wednesday, Aug 09, 2017, 11:45 am
  * \brief  Print MPI rank, thread number and core affinity bindings.
- * \note   Copyright (C) 2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2017-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
-
-// #define _GNU_SOURCE
-// #include <cstdio>
-// #include <cstring>
-// #include <sched.h>
-// #include <unistd.h>
 
 #include "c4_omp.h"
 #include "c4/C4_Functions.hh"

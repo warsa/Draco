@@ -3,7 +3,7 @@
  * \file   ds++/test/tstdbc.cc
  * \author Kent G. Budge
  * \date   Feb 18 2003
- * \brief  Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \brief  Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -27,11 +27,10 @@ public:
 };
 
 //---------------------------------------------------------------------------//
-
 void dbc_test(UnitTest &ut) {
+  using rtt_dsxx::dim;
   using std::pair;
   using std::vector;
-  using rtt_dsxx::dim;
   using namespace std;
 
   if (abs(abs(5.4) - 5.4) > std::numeric_limits<double>::epsilon() ||
@@ -61,8 +60,7 @@ void dbc_test(UnitTest &ut) {
 
   if (!is_monotonic_increasing(sum_test_array, sum_test_array + 1))
     FAILMSG(string("is_monotonic_increasing function template ") +
-            string("incorrectly reported length=1 container ") +
-            string("non-monotonic."));
+            "incorrectly reported length=1 container non-monotonic.");
   else
     PASSMSG(string("is_monotonic_increasing function template worked for ") +
             string("length=1 test."));
@@ -135,31 +133,21 @@ void dbc_test(UnitTest &ut) {
   A[0 + 2 * 1] = 3.8;
   A[1 + 2 * 0] = 4.5;
   A[1 + 2 * 1] = 3.3;
-  if (!is_symmetric_matrix(A, 2))
-    PASSMSG("detected nonsymmetric matrix");
-  else
-    FAILMSG("did NOT detect nonsymmetric matrix");
+  UT_MSG(!is_symmetric_matrix(A, 2), "detected nonsymmetric matrix");
+
   A[1 + 2 * 0] = A[0 + 2 * 1];
-  if (is_symmetric_matrix(A, 2))
-    PASSMSG("passed symmetric matrix");
-  else
-    FAILMSG("did NOT pass symmetric matrix");
+  UT_MSG(is_symmetric_matrix(A, 2), "passed symmetric matrix");
+
   return;
 }
 
 //---------------------------------------------------------------------------//
-
 void isFinite_test(UnitTest &ut) {
-  double x(15.0);
-  if (rtt_dsxx::isFinite(x))
-    PASSMSG("Correctly found x to be finite.");
-  else
-    FAILMSG("Failed to find x to be finite.");
+  UT_MSG(rtt_dsxx::isFinite(15.0), "Correctly found x to be finite.");
   return;
 }
 
 //---------------------------------------------------------------------------//
-
 int main(int argc, char *argv[]) {
   ScalarUnitTest ut(argc, argv, release);
   try {

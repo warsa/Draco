@@ -28,8 +28,12 @@
 set -m
 
 # load some common bash functions
-export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export rscriptdir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" )
+if ! [[ -d $rscriptdir ]]; then
+  export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+fi
 if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  echo "source $rscriptdir/scripts/common.sh"
   source $rscriptdir/scripts/common.sh
 else
   echo " "
@@ -54,14 +58,14 @@ regress_mode="off"
 print_use()
 {
   echo " "
-  echo "Usage: ${0##*/} -h -p [draco|jayenne|capsaicin]"
+  echo "Usage: ${0##*/} -h -p [draco|jayenne|capsaicin|core]"
   echo "       -f <git branch name> -r"
   echo " "
   echo "All arguments are optional,  The first value listed is the default value."
   echo "   -h    help           prints this message and exits."
   echo "   -f    git feature branch, default=develop"
   echo "         common: 'develop', '42'"
-  echo "   -p    project name = { draco, jayenne, capsaicin }"
+  echo "   -p    project name = { draco, jayenne, capsaicin, core }"
   echo "   -r    special run mode that uses the regress account's credentials."
   echo "   -t    remove the last-draco tagfile."
   echo " "
@@ -93,25 +97,21 @@ done
 ##---------------------------------------------------------------------------##
 
 case $project in
-  draco | jayenne | capsaicin ) # known projects, continue
+  draco | jayenne | capsaicin | core ) # known projects, continue
     ;;
   *)  echo "" ;echo "FATAL ERROR: unknown project name (-p) = ${proj}"
     print_use; exit 1 ;;
 esac
 
-# Restrict the use of ccscs7.
-# case $target in
-#   ccscs7*)
-#     if ! [[ $LOGNAME == "kellyt" ]]; then
-#       echo ""; echo "FATAL ERROR: Please use ccscs6 for manual use of checkpr.sh."
-#       exit 1
-#     fi
-#     ;;
-# esac
+if [[ $pr =~ "pr" ]]; then
+  echo -e "\nFATAL ERROR, the '-f' option expects a number (i.e.: no 'pr' prefix) or the string 'develop'."
+  print_use;
+  exit 1;
+fi
 
 if [[ $regress_mode == "on" ]]; then
   if ! [[ $LOGNAME == "kellyt" ]]; then
-    echo ""; echo "FATAL ERROR: invalid use of -r"
+    echo ""; echo "FATAL ERROR: invalid use of -r. Please contact kgt@lanl.gov."
     print_use; exit 1
   fi
   # special defaults for regress_mode
@@ -155,10 +155,19 @@ function startCI()
   if ! [[ ${pr} == "develop" ]]; then
     pr=pr${pr}
   fi
+  if [[ ${project} == "draco" ]] && [[ ${extra} == 'vtest' ]]; then
+    # Capsaicin/Jayenne -e vtest uses Draco w/o 'vtest'
+    extra="na"
+  fi
   if [[ ${extra} == 'na' ]]; then
     extra=""
     edash=""
     eflag=""
+  elif [[ ${extra} == 'autodoc' ]]; then
+    extra=""
+    edash=""
+    eflag=""
+    autodoc='-a'
   else
     extrastring="(${extra}) "
     edash="-"
@@ -175,10 +184,17 @@ function startCI()
   echo "  Log: $logdir/${machine_name_short}-${build_type}-master-YYYYMMDD-hhmm.log"
   echo " "
   cmd="$rscriptdir/regression-master.sh ${rflag} -b ${build_type}"
-  cmd="$cmd ${eflag} ${extra} -p ${project} -f ${pr}"
-  if ! [[ $project == "draco" ]]; then
-    cmd="$cmd &"
-  fi
+  cmd="$cmd ${autodoc} ${eflag} ${extra} -p ${project} -f ${pr}"
+  case $target in
+    ccscs* )  # build one at a time.
+      ;;
+    * )
+      # Run all builds simultaneously (via job submission system)
+      if ! [[ $project == "draco" ]]; then
+        cmd="$cmd &"
+      fi
+      ;;
+  esac
   echo "$cmd"
   eval "$cmd"
 }
@@ -190,7 +206,6 @@ function startCI()
 
 case $target in
   ccscs*) machine_name_short=ccscs ;;
-  ml*) machine_name_short=ml ;;
   sn*) machine_name_short=sn ;;
   tt*) machine_name_short=tt ;;
   darwin*) machine_name_short=darwin ;;
@@ -206,7 +221,7 @@ if [[ $rmlastdracotag == "on" ]]; then
 fi
 
 case $project in
-  jayenne|capsaicin)
+  jayenne|capsaicin|core)
     # Do we need to build draco? Only build draco-develop once per day.
     eval "$(date +'today=%F now=%s')"
     midnight=$(date -d "$today 0" +%s)
@@ -217,7 +232,7 @@ case $project in
     fi
     if [[ $midnight -gt $draco_last_built ]]; then
       echo " "
-      echo "Found a Jayenne or Capsaicin PR, but we need to build draco-develop first..."
+      echo "Found a Jayenne or Capsaicin  PR, but we need to build draco-develop first..."
       echo " "
 
       # Call this script recursively to build the draco 'develop' branch.
@@ -229,6 +244,7 @@ case $project in
 
       # Reset the modified date on the file used to determine when draco was
       # last built.
+      echo "date &> $draco_tag_file"
       date &> $draco_tag_file
     fi
     ;;
@@ -240,33 +256,60 @@ esac
 
 echo " "
 case $target in
-  # CCS-NET: Release
-  ccscs2*) startCI ${project} Release na $pr ;;
+
+  # CCS-NET: Release, vtest, coverage
+  ccscs2*)
+    startCI ${project} Release autodoc $pr
+    startCI ${project} Debug coverage $pr
+    ;;
+
+  # CCS-NET: Release, vtest, coverage
+  ccscs3*)
+    if [[ ${project} == "draco" ]]; then
+      startCI ${project} Release na $pr
+    else
+      startCI ${project} Release vtest $pr
+    fi
+    startCI ${project} Debug clang $pr
+    ;;
 
   # CCS-NET: Valgrind (Debug)
   ccscs6*) startCI ${project} Debug valgrind $pr ;;
 
-  # CCS-NET: Coverage (Debug)
-  ccscs7*) startCI ${project} Debug coverage $pr ;;
-
-  # Moonlight: Fulldiagnostics (Debug)
-  ml-fey*) startCI ${project} Debug na $pr ;;
-
   # Snow: Debug
   sn-fe*)
     startCI ${project} Release na $pr
+    if ! [[ ${project} == "draco" ]]; then
+      startCI ${project} Release vtest $pr
+    fi
     startCI ${project} Debug fulldiagnostics $pr
     ;;
 
   # Trinitite: Release
   tt-fe*)
     startCI ${project} Release na $pr
+    if ! [[ ${project} == "draco" ]]; then
+      startCI ${project} Release vtest $pr;
+    fi
     startCI ${project} Release knl $pr
     ;;
 
   # Darwin: Disabled
   darwin-fe*)
     # startCI ${project} Release na $pr
+    ;;
+
+  # These cases are not automated checks of PRs.  However, these machines are
+  # supported if this script is started by a developer:
+  ccscs[14]*)
+    startCI ${project} Release na $pr
+    startCI ${project} Debug na $pr ;;
+  ccscs[589]*)
+    startCI ${project} Debug coverage $pr ;;
+  ba-fe* | pi-fe* | wf-fe*)
+    startCI ${project} Release na $pr
+    startCI ${project} Release vtest $pr
+    startCI ${project} Debug fulldiagnostics $pr
     ;;
 
   *) echo "Unknown target machine: target = $target" ; exit 1 ;;

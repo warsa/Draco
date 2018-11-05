@@ -3,11 +3,11 @@
  * \file   parser/Parse_Table.hh
  * \author Kent G. Budge
  * \brief  Definition of Keyword and Parse_Table.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_Parse_Table_HH
@@ -89,6 +89,25 @@ struct Keyword {
      * moniker in the same Parse_Table.
      */
   char const *module;
+
+  /*! Explanation of keyword.
+   *
+   * This optional member is a brief description of the keyword. If the
+   * parser sees a keyword in the Token_Stream that it does not recognize,
+   * it will list the recognized keywords and, if a keyword has a non-null
+   * description, it will print that description.
+   */
+  char const *description;
+
+  Keyword()
+      : moniker(nullptr), func(nullptr), index(0), module(nullptr),
+        description(nullptr) {}
+
+  Keyword(char const *moniker, void (*func)(Token_Stream &, int),
+          int const index, char const *module,
+          char const *description = nullptr)
+      : moniker(moniker), func(func), index(index), module(module),
+        description(description) {}
 };
 
 //-------------------------------------------------------------------------//
@@ -273,7 +292,7 @@ inline bool operator==(Keyword const &a, Keyword const &b) {
 
 DLL_PUBLIC_parser bool Is_Well_Formed_Keyword(Keyword const &key);
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_Parse_Table_HH
 

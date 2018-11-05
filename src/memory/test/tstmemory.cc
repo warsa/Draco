@@ -3,7 +3,7 @@
  * \file   memory/test/tstmemory.cc
  * \author Kent G. Budge, Kelly G. Thompson
  * \brief  memory test.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -79,6 +79,47 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
     FAILMSG("NOT correct total allocation");
   }
   if (peak_allocation() >= 50 * sizeof(double)) {
+    PASSMSG("correct peak allocation");
+  } else {
+    FAILMSG("NOT correct peak allocation");
+  }
+  if (largest_allocation() >= 30 * sizeof(double)) {
+    PASSMSG("correct largest allocation");
+  } else {
+    FAILMSG("NOT correct largest allocation");
+  }
+#endif
+
+  // Just to try to exercise the sized delete version.
+  int *scalar = new int;
+
+#if DRACO_DIAGNOSTICS & 2
+  if (total_allocation() == sizeof(int)) {
+    PASSMSG("correct total allocation");
+  } else {
+    FAILMSG("NOT correct total allocation");
+  }
+  if (peak_allocation() >= 50 * sizeof(double) + sizeof(int)) {
+    PASSMSG("correct peak allocation");
+  } else {
+    FAILMSG("NOT correct peak allocation");
+  }
+  if (largest_allocation() >= 30 * sizeof(double)) {
+    PASSMSG("correct largest allocation");
+  } else {
+    FAILMSG("NOT correct largest allocation");
+  }
+#endif
+
+  delete scalar;
+
+#if DRACO_DIAGNOSTICS & 2
+  if (total_allocation() == 0) {
+    PASSMSG("correct total allocation");
+  } else {
+    FAILMSG("NOT correct total allocation");
+  }
+  if (peak_allocation() >= 50 * sizeof(double) + sizeof(int)) {
     PASSMSG("correct peak allocation");
   } else {
     FAILMSG("NOT correct peak allocation");

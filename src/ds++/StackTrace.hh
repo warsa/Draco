@@ -4,11 +4,8 @@
  * \author Kelly Thompson
  * \date   Friday, Dec 20, 2013, 09:47 am
  * \brief  Contains function to generate a stack trace on Linux
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id$
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef StackTrace_hh
@@ -20,11 +17,11 @@
 namespace rtt_dsxx {
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief print_stacktrace
- * 
+ *
  * \param error_name A string that identifies why the stack trace is
- *                   requested. 
+ *                   requested.
  * \return A multi-line message including the error_name and the stack trace.
  *
  * A stack trace will look something like this:
@@ -49,9 +46,9 @@ namespace rtt_dsxx {
  *
  * Or, you can use addr2line:
  * \code
- * $ addr2line -e ./tstStackTrace 0x405671
+ * addr2line -e ./tstStackTrace 0x405671
  * /home/kellyt/draco/src/ds++/test/tstStackTrace.cc:29
- * $ addr2line -e ./tstStackTrace 0x405705
+ * addr2line -e ./tstStackTrace 0x405705
  * /home/kellyt/draco/src/ds++/test/tstStackTrace.cc:36
  * \endcode
  *

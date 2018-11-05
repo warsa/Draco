@@ -4,11 +4,11 @@
  * \author Kent Budge
  * \date   Fri Apr  4 09:34:28 2003
  * \brief  Unit tests for class Parallel_File_Token_Stream
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "c4/ParallelUnitTest.hh"
@@ -32,6 +32,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
 
   {
     Parallel_File_Token_Stream tokens(inputFile);
+    tokens.comment("begin test of Parallel_File_Token_Stream");
     if (tokens.whitespace() != Text_Token_Stream::default_whitespace)
       FAILMSG("Whitespace not set correctly");
     else
@@ -98,15 +99,11 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     if (token.type() != OTHER || token.text() != "$")
       ITFAILS;
 
+    bool caught(false);
     try {
       tokens.report_syntax_error(token, "dummy syntax error");
-      {
-        ostringstream msg;
-        msg << "Parallel_File_Token_Stream did not throw an exception when\n"
-            << "\ta syntax error was reported by Token_Stream." << endl;
-        FAILMSG(msg.str());
-      }
     } catch (const Syntax_Error &) {
+      caught = true;
       {
         ostringstream msg;
         msg << "Parallel_File_Token_Stream threw an expected exception when\n"
@@ -114,6 +111,8 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
         PASSMSG(msg.str());
       }
     }
+    FAIL_IF_NOT(caught);
+
     if (tokens.error_count() != 1)
       ITFAILS;
 
@@ -259,7 +258,7 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
       FAILMSG(errmsg.str());
       // Token token = tokens.shift();
       // if (token.type()!=ERROR) ITFAILS;
-    } catch (std::invalid_argument const &a) {
+    } catch (std::invalid_argument const & /*a*/) {
       std::ostringstream errmsg;
       errmsg << "Parallel_File_Token_Stream threw an expected exception.\n"
              << "\tThe constructor should throw an exception if the requested\n"
@@ -327,6 +326,59 @@ void tstParallel_File_Token_Stream(rtt_dsxx::UnitTest &ut) {
     } else {
       PASSMSG("Keyword read correctly.");
     }
+  }
+
+  // Test #include directive.
+  {
+    Parallel_File_Token_Stream tokens(ut.getTestSourcePath() +
+                                      std::string("parallel_include_test.inp"));
+
+    Token token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try rewind
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "topmost2",
+             "parse top file after include sequence");
+
+    // Try open of file in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.open(ut.getTestSourcePath() +
+                std::string("parallel_include_test.inp"));
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Try rewind in middle of include
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+    token = tokens.shift();
+    ut.check(token.text() == "second",
+             "parse included file in include sequence");
+    tokens.rewind();
+    token = tokens.shift();
+    ut.check(token.text() == "topmost", "parse top file in include sequence");
+
+    // Check empty stream
+    Parallel_File_Token_Stream dummy;
+    ut.check(dummy.lookahead().type() == EXIT, "empty stream returns EXIT");
   }
 }
 

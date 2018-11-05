@@ -1,9 +1,9 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   cdi_analytic/pseudo_line.cc
+ * \file   cdi_analytic/Pseudo_Line_Base.cc
  * \author Kent G. Budge
  * \date   Tue Apr  5 08:42:25 MDT 2011
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -65,7 +65,7 @@ void Pseudo_Line_Base::setup_(double emin, double emax) {
     }
     double C;
     if (nu0_ < 0) {
-      unsigned N = continuum_table_.size();
+      size_t N = continuum_table_.size();
       if (N > 0) {
         C = continuum_table_[static_cast<unsigned int>(edge_[i] * N / emax)];
       } else {
@@ -176,8 +176,8 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
 
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
-// Because we haven't implemented packing functionality for Expression trees
-// yet.
+  // Because we haven't implemented packing functionality for Expression trees
+  // yet.
 
 #if 0
 // caculate the size in bytes
@@ -218,7 +218,7 @@ double Pseudo_Line_Base::monoOpacity(double const x, double const T) const {
 
   double Result;
   if (nu0_ < 0) {
-    unsigned N = continuum_table_.size();
+    size_t N = continuum_table_.size();
     if (N > 0) {
       Result = continuum_table_[static_cast<unsigned int>(x * N / emax_)];
     } else {

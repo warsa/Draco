@@ -4,11 +4,11 @@
  * \author Kent Budge
  * \date   Tue Sep 14 13:16:09 2004
  * \brief  Gauss-Legendre quadrature
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef rtt_quadrature_gauleg_hh
@@ -115,7 +115,7 @@ void gauleg(
     } while (!soft_equiv(z, z1, tolerance));
 
     // Roots will be between -1 and 1.0 and symmetric about the origin.
-    int const idxSymPart(n - iroot - 1);
+    size_t const idxSymPart(n - iroot - 1);
 
     // Now, scale the root to tthe desired interval and put in its
     // symmetric counterpart.

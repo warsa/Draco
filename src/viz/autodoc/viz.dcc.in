@@ -1,10 +1,10 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // viz.dcc
 // viz Overview page
 // Thomas M. Evans
 // Mon Apr 19 21:47:53 2004
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 /*!
@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_viz Overview of the viz package
-\version Draco-@DRACO_VERSION@
+\version Draco-@Draco_VERSION@
 \author Thomas M. Evans and John McGhee
 
 The viz package contains translators to visualization software.

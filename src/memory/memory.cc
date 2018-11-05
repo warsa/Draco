@@ -3,11 +3,8 @@
  * \file   memory/memory.cc
  * \author Kent G. Budge
  * \brief  memory diagnostic utilities
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: memory.cc 7133 2013-06-11 17:54:11Z kellyt $
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "memory.hh"
@@ -222,12 +219,24 @@ void operator delete(void *ptr) throw() {
     }
   }
 }
+
+//---------------------------------------------------------------------------//
+/*! Deallocate memory with diagnostics
+ *
+ * C++14 introduces operator delete with a size_t argument, used in place of
+ * the unsized operator delete when the size of the allocation can be deduced
+ * as a hint to the memory manager. For now, we ignore the hint.
+ *
+ * Since C++14 does not mandate when the compiler calls this version, it is
+ * not possible to guarantee coverage on all platforms.
+ */
+void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
 #endif
 
 //---------------------------------------------------------------------------//
-/*! 
- * \brief 
- * 
+/*!
+ * \brief
+ *
  * \param name description
  * \return description
  *
@@ -240,7 +249,7 @@ void operator delete(void *ptr) throw() {
  * information.  This function must be registered in the program.
  *
  * Example:
- * 
+ *
  * \code
  * #include <cstdlib>
  * int main()

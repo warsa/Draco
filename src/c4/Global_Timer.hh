@@ -4,11 +4,8 @@
  * \author Kent G. Budge
  * \date   Mon Mar 25 17:35:07 2002
  * \brief  Define class Global_Timer, a POSIX standard timer.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: Timer.hh 7075 2013-04-01 22:48:15Z kellyt $
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __c4_Global_Timer_hh__
@@ -99,8 +96,12 @@ public:
 
   // Statics
 
-  static bool is_global_active() { return global_active_; }
+  // static bool is_global_active() { return global_active_; }
 
+  /*! \bug no unit test, used in rocotillo, attempt to use in c4/test/tstTime.cc
+   *       breaks the test.  I don't understand how to use this function.
+   *  \bug no documentation!
+   */
   static void set_global_activity(bool active);
 
   static void set_selected_activity(std::set<std::string> const &timer_list,

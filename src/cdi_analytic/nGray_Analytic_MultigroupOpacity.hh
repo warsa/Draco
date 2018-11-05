@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_MultigroupOpacity class definition.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -63,8 +63,7 @@ namespace rtt_cdi_analytic {
  */
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic nGray_Analytic_MultigroupOpacity
-    : public Analytic_MultigroupOpacity {
+class nGray_Analytic_MultigroupOpacity : public Analytic_MultigroupOpacity {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
@@ -113,31 +112,29 @@ public:
 //---------------------------------------------------------------------------//
 // INLINE FUNCTIONS
 //---------------------------------------------------------------------------//
-/*!
- * \brief Return a string describing the opacity model.
- */
+//! Return a string describing the opacity model.
 nGray_Analytic_MultigroupOpacity::std_string
 nGray_Analytic_MultigroupOpacity::getDataDescriptor() const {
   std_string descriptor;
 
-  rtt_cdi::Reaction const reaction = getReactionType();
+  rtt_cdi::Reaction const rxn = getReactionType();
 
-  if (reaction == rtt_cdi::TOTAL)
+  if (rxn == rtt_cdi::TOTAL)
     descriptor = "nGray Multigroup Total";
-  else if (reaction == rtt_cdi::ABSORPTION)
+  else if (rxn == rtt_cdi::ABSORPTION)
     descriptor = "nGray Multigroup Absorption";
-  else if (reaction == rtt_cdi::SCATTERING)
+  else if (rxn == rtt_cdi::SCATTERING)
     descriptor = "nGray Multigroup Scattering";
   else {
-    Insist(reaction == rtt_cdi::TOTAL || reaction == rtt_cdi::ABSORPTION ||
-               reaction == rtt_cdi::SCATTERING,
+    Insist(rxn == rtt_cdi::TOTAL || rxn == rtt_cdi::ABSORPTION ||
+               rxn == rtt_cdi::SCATTERING,
            "Invalid nGray multigroup model opacity!");
   }
 
   return descriptor;
 }
 
-} // end namespace
+} // namespace rtt_cdi_analytic
 
 #endif // __cdi_analytic_nGray_Analytic_MultigroupOpacity_hh__
 

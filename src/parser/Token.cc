@@ -3,10 +3,10 @@
  * \file   Token.cc
  * \author Kent G. Budge
  * \brief  Definitions of Token helper functions.
- * \note   Copyright © 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright © 2016-2018 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "Token.hh"
@@ -168,7 +168,7 @@ bool Token::check_class_invariant() const {
          (type_ != OTHER || Is_Other_Text(text_.c_str()));
 }
 
-} // rtt_parser
+} // namespace rtt_parser
 //---------------------------------------------------------------------------//
 //                          end of Token_Stream.cc
 //---------------------------------------------------------------------------//

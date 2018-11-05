@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Tue Feb 22 10:21:50 2000
  * \brief  A class representing an interval Gauss-Legendre quadrature set.
- * \note   Copyright 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.  */
 //----------------------------------------------------------------------------//
 
@@ -125,8 +125,8 @@ unsigned Lobatto::number_of_levels() const { return sn_order_; }
 
 //----------------------------------------------------------------------------//
 /* virtual */ string Lobatto::as_text(string const &indent) const {
-  string Result = indent + "type = lobatto" + indent + "  order = " +
-                  to_string(sn_order()) + indent + "end";
+  string Result = indent + "type = lobatto" + indent +
+                  "  order = " + to_string(sn_order()) + indent + "end";
 
   return Result;
 }

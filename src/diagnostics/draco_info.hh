@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Wednesday, Nov 07, 2012, 18:49 pm
  * \brief  Small executable that prints the version and copyright strings.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -70,9 +70,6 @@ public:
   std::string versionReport(void);
 
 private:
-  //! Convert the string to all lowercase except the first character.
-  std::string normalizeCapitalization(std::string in);
-
   // DATA
   // ----
 

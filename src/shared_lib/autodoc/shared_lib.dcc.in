@@ -1,10 +1,10 @@
-//---------------------------------*-text-*-----------------------------------//
+//---------------------------------*-c++-*-----------------------------------//
 // shared_lib.dcc
 // shared_lib Overview page
 // Thomas M. Evans
 // Wed Apr 21 14:18:38 2004
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 /*!
@@ -12,7 +12,7 @@
 <!---------------------------------------------------------------------------->
 
 \page overview_shared_lib Overview of the shared_lib package
-\version Draco-@DRACO_VERSION@
+\version Draco-@Draco_VERSION@
 \author Rob Lowrie
 
 The shared_lib component provides classes that manage the dynamic

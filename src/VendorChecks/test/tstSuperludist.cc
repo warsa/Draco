@@ -3,7 +3,7 @@
  * \file   VendorChecks/test/tstSuperludist.cc
  * \date   Monday, May 16, 2016, 16:30 pm
  * \brief  Attempt to link to libsuperludist and run a simple problem.
- * \note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This code is a modified version of \c pddrive.c provided in the EXAMPLES
@@ -18,7 +18,10 @@
 #include "ds++/Soft_Equivalence.hh"
 #include "ds++/path.hh"
 #include <sstream>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wundef"
 #include <superlu_ddefs.h>
+#pragma GCC diagnostic pop
 #include <vector>
 
 // forward declarations
@@ -135,7 +138,8 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
        options.Equil             = YES;
        options.ParSymbFact       = NO;
        options.ColPerm           = METIS_AT_PLUS_A;
-       options.RowPerm           = LargeDiag;
+       options.RowPerm           = LargeDiag;      // version < 5.4
+       options.RowPerm           = LargeDiag_MC64; // version > 5.4
        options.ReplaceTinyPivot  = YES;
        options.IterRefine        = DOUBLE;
        options.Trans             = NOTRANS;
@@ -153,8 +157,13 @@ void test_superludist(rtt_c4::ParallelUnitTest &ut) {
     ITFAILS;
   if (options.IterRefine != SLU_DOUBLE)
     ITFAILS;
+#if SUPERLU_DIST_MAJOR_VERSION == 5 && SUPERLU_DIST_MINOR_VERSION >= 4
+  if (options.RowPerm != LargeDiag_MC64)
+    ITFAILS;
+#else
   if (options.RowPerm != LargeDiag)
     ITFAILS;
+#endif
 
   if (!iam) {
     print_sp_ienv_dist(&options);

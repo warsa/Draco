@@ -3,11 +3,11 @@
  * \file   Parallel_File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Parallel_File_Token_Stream.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_Parallel_File_Token_Stream_HH
@@ -15,11 +15,12 @@
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
+#include <vector>
 
 namespace rtt_parser {
-using std::string;
-using std::set;
 using std::ifstream;
+using std::set;
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -62,6 +63,9 @@ public:
   //! Report a condition.
   virtual void report(string const &message);
 
+  //! Report a comment.
+  virtual void comment(std::string const &message);
+
   // ACCESSORS
 
   //! Check the class invariants.
@@ -77,22 +81,48 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
+
 private:
-  //! Open the input stream.
-  void open_();
+  // NESTED TYPES
+
+  struct letter {
+    // IMPLEMENTATION
+
+    //! Constructor
+    letter(string const &file_name);
+
+    bool check_class_invariants() const;
+
+    //! Open the input stream.
+    void open_();
+
+    //! Read the next set of characters into a buffer.
+    void fill_character_buffer_(std::vector<char> &comm_buffer);
+
+    //! Rewind the stream.
+    void rewind();
+
+    // DATA
+    string filename_; //!< File from which to take token text.
+    ifstream infile_; //!< Stream from which to take token text.
+
+    bool is_io_processor_; //!< Is this the designated I/O processor?
+
+    bool at_eof_;   //!< Did processor 0 see the end of file?
+    bool at_error_; //!< Did processor 0 see an I/O error?
+  };
+
+  // IMPLEMENTATION
 
   // DATA
 
-  string filename_; //!< File from which to take token text.
-  ifstream infile_; //!< Stream from which to take token text.
-
-  bool is_io_processor_; //!< Is this the designated I/O processor?
-
-  bool at_eof_;   //!< Did processor 0 see the end of file?
-  bool at_error_; //!< Did processor 0 see an I/O error?
+  std::stack<std::shared_ptr<letter>> letters_;
+  std::shared_ptr<letter> letter_;
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_Parallel_File_Token_Stream_HH
 

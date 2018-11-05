@@ -3,12 +3,58 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 6
 # brief  Look for any libraries which are required at the top level.
-# note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
 include( FeatureSummary )
 include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
+
+#------------------------------------------------------------------------------#
+# Helper macros for Python
+#------------------------------------------------------------------------------#
+macro( setupPython )
+
+  message( STATUS "Looking for Python...." )
+  find_package(PythonInterp 2.7 QUIET REQUIRED)
+  #  PYTHONINTERP_FOUND - Was the Python executable found
+  #  PYTHON_EXECUTABLE  - path to the Python interpreter
+  set_package_properties( PythonInterp PROPERTIES
+    URL "https://www.python.org"
+    DESCRIPTION "Python interpreter"
+    TYPE REQUIRED
+    PURPOSE "Required for running tests and accessing features that rely on matplotlib."
+    )
+  if( PYTHONINTERP_FOUND )
+    message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
+  else()
+    message( STATUS "Looking for Python....not found" )
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------#
+# Helper macros for Random123
+#
+# Providers: Linux - use spack to install netlib-lapack
+#                    https://github.com/spack/spack
+#------------------------------------------------------------------------------#
+macro( setupRandom123 )
+
+ message( STATUS "Looking for Random123...")
+  find_package( Random123 REQUIRED QUIET )
+  mark_as_advanced( RANDOM123_FOUND )
+  if( RANDOM123_FOUND )
+    message( STATUS "Looking for Random123.found ${RANDOM123_INCLUDE_DIR}")
+  else()
+    message( STATUS "Looking for Random123.not found")
+  endif()
+  set_package_properties( Random123 PROPERTIES
+    URL "http://www.deshawresearch.com/resources_random123.html"
+    DESCRIPTION "a library of counter-based random number generators"
+    TYPE REQUIRED
+    PURPOSE "Required for building the rng component."  )
+endmacro()
 
 #------------------------------------------------------------------------------
 # Helper macros for LAPACK/Unix
@@ -18,8 +64,13 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 #         interface is found
 # lapack_VERSION - '3.4.1'
 # provides targets: lapack, blas
+#
+# Providers: Linux - use spack to install netlib-lapack
+#                    https://github.com/spack/spack
+#            Windows - clone and build from sources
+#                    https://github.com/KineticTheory/lapack-visualstudio-mingw-gfortran
 #------------------------------------------------------------------------------
-macro( setupLAPACKLibrariesUnix )
+macro( setupLAPACKLibraries )
 
   # There are several flavors of LAPACK.
   # 1. look for netlib-lapack
@@ -41,13 +92,15 @@ macro( setupLAPACKLibrariesUnix )
 
   if( lapack_FOUND )
     set( lapack_flavor "netlib")
+    set( lapack_url "http://www.netlib.org/lapack" )
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
         set( lapack_FOUND TRUE )
+        set( lapack_loc ${tmp} )
       endif()
     endforeach()
-    message( STATUS "Looking for lapack (netlib)....found ${LAPACK_LIB_DIR}")
+    message( STATUS "Looking for lapack (netlib)....found ${lapack_loc}")
     set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:
@@ -61,6 +114,13 @@ macro( setupLAPACKLibrariesUnix )
       else()
         message( FATAL_ERROR "Looking for lapack (netlib)....blas not found")
       endif()
+    else()
+      # ensure lapack --> blas?
+      get_target_property( ilil lapack IMPORTED_LINK_INTERFACE_LIBRARIES )
+      if( NOT "${ilil}" MATCHES "blas" )
+        set_target_properties( lapack PROPERTIES
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas )
+      endif()
     endif()
 
   else()
@@ -68,6 +128,10 @@ macro( setupLAPACKLibrariesUnix )
   endif()
 
   mark_as_advanced( lapack_DIR lapack_FOUND )
+
+  # Debug targets:
+  # include(print_target_properties)
+  # print_targets_properties("lapack;blas")
 
   # Above we tried to find lapack-config.cmake at $LAPACK_LIB_DIR/cmake/lapack.
   # This is a draco supplied version of lapack.  If that search failed, then try
@@ -111,6 +175,7 @@ macro( setupLAPACKLibrariesUnix )
         set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
+        set( lapack_url "https://software.intel.com/en-us/intel-mkl")
         add_library( lapack ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas   ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
@@ -156,6 +221,7 @@ macro( setupLAPACKLibrariesUnix )
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
         set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
         set( lapack_flavor "openblas")
+        set( lapack_url "http://www.openblas.net")
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
         set_target_properties( blas PROPERTIES
@@ -168,7 +234,6 @@ macro( setupLAPACKLibrariesUnix )
       else()
         message(STATUS "Looking for lapack (OpenBLAS)...NOTFOUND")
       endif()
-
   endif()
 
   # If the above searches for LAPACK failed, then try to find netlib-lapack and
@@ -193,42 +258,18 @@ macro( setupLAPACKLibrariesUnix )
       else()
         message(STATUS "Looking for lapack(no cmake config)...NOTFOUND")
       endif()
-
   endif()
 
-  # Export BLAS/LAPACK target information to draco-config.cmake
-
-  if( lapack_FOUND )
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("blas;lapack")
-      set( props
-        GNUtoMS
-        IMPORTED
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        IMPORTED_LINK_INTERFACE_LIBRARIES_DEBUG
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELEASE
-        IMPORTED_LINK_INTERFACE_LIBRARIES_RELWITHDEBINFO
-        IMPORTED_LOCATION
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED_LOCATION_RELWITHDEBINFO
-        IMPORTED_SONAME_DEBUG
-        IMPORTED_SONAME_RELEASE
-        IMPORTED_SONAME_RELWITHDEBINFO
-        INTERFACE_INCLUDE_DIRECTORIES
-        INTERFACE_LINK_LIBRARIES
-        POSITION_INDEPENDENT_CODE
-        )
-      if( "${lapack_flavor}" STREQUAL "mkl" )
-        save_vendor_imported_library_to_draco_config(
-          "blas::mkl_thread;blas::mkl_core" "${props}" )
-      endif()
-      save_vendor_imported_library_to_draco_config( "lapack;blas" "${props}" )
-  endif()
+  set_package_properties( BLAS PROPERTIES
+    URL "${lapack_url}"
+    DESCRIPTION "Basic Linear Algebra Subprograms"
+    TYPE OPTIONAL
+    PURPOSE "Required for building the lapack_wrap component." )
+  set_package_properties( lapack PROPERTIES
+    URL "${lapack_url}"
+    DESCRIPTION "Linear Algebra PACKage"
+    TYPE OPTIONAL
+    PURPOSE "Required for building the lapack_wrap component." )
 
 endmacro()
 
@@ -310,7 +351,7 @@ endmacro()
 # Setup QT (any)
 #------------------------------------------------------------------------------
 macro( setupQt )
-  message( STATUS "Looking for Qt SDK..." )
+  message( STATUS "Looking for Qt SDK...." )
 
   # The CMake package information should be found in
   # $QTDIR/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake.  On CCS Linux
@@ -325,7 +366,7 @@ macro( setupQt )
     # message( FATAL_ERROR "Could not find cQt cmake macros.  Try
     # setting CMAKE_PREFIX_PATH_QT to the path that contains
     # Qt5WidgetsConfig.cmake" )
-    message( STATUS "Looking for Qt SDK...not found." )
+    message( STATUS "Looking for Qt SDK....not found." )
   else()
     file( TO_CMAKE_PATH "${CMAKE_PREFIX_PATH_QT}" CMAKE_PREFIX_PATH_QT )
     list( APPEND CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH_QT}" )
@@ -337,94 +378,53 @@ macro( setupQt )
       # Instruct CMake to run moc automatically when needed (only for
       # subdirectories that need Qt)
       # set(CMAKE_AUTOMOC ON)
-      message( STATUS "Looking for Qt SDK...${QTDIR}." )
+      message( STATUS "Looking for Qt SDK....${QTDIR}." )
     else()
       set( QT_FOUND "QT-NOTFOUND" )
-      message( STATUS "Looking for Qt SDK...not found." )
+      message( STATUS "Looking for Qt SDK....not found." )
     endif()
   endif()
 
   if( QT_FOUND )
     mark_as_advanced( Qt5Core_DIR Qt5Gui_DIR Qt5Gui_EGL_LIBRARY
-      Qt5Widgets_DIR )
+      Qt5Widgets_DIR QTDIR)
   endif()
-endmacro()
 
-#------------------------------------------------------------------------------
-# save_vendor_imported_library_to_draco_config
-#
-# Save imported target information to the installed file
-# "draco-config.cmake"
-#
-# Append the variable Draco_EXPORT_TARGET_PROPERTIES with enough
-# information to use the imported library from Jayenne or
-# Capsaicin.  The string  Draco_EXPORT_TARGET_PROPERTIES is written
-# to lib/cmake/draco/draco-config.cmake during the 'install' phase
-# of the build.
-# - Examine each imported target specified in the the list 'targets'
-#   and generate an 'import_library' for the imported target.
-# - Query each target for each of the properites listed in
-#   'target_properties'
-# - If the target has the requested property, save this value to
-#   Draco_EXPORT_TARGET_PROPERTIES.
-#------------------------------------------------------------------------------
-macro( save_vendor_imported_library_to_draco_config targets target_properties )
-  foreach( tgt ${targets} )
-    # The target's TYPE may not be set correctly, set it manually.
-    get_target_property( fplib ${tgt} IMPORTED_LOCATION )
-    get_target_property( fplibr ${tgt} IMPORTED_LOCATION_RELEASE )
-    get_target_property( fplibd ${tgt} IMPORTED_LOCATION_DEBUG )
-    set( fplib "${fplib} ${fplibr} ${fplibd}" )
-    if( "${fplib}" MATCHES "[.]so"  OR
-        "${fplib}" MATCHES "[.]dll" OR
-        "${fplib}" MATCHES "[.]dylib" )
-      set( library_type SHARED )
-    else()
-      set( library_type STATIC )
-      #set( library_type UNKNOWN )
-    endif()
+  set_package_properties( Qt PROPERTIES
+    URL "http://qt.io"
+    DESCRIPTION "Qt is a comprehensive cross-platform C++ application framework."
+    TYPE OPTIONAL
+    PURPOSE "Only needed to demo qt version of draco_diagnostics." )
 
-    set( tmp "add_library( ${tgt} ${library_type} IMPORTED )" )
-    set( tmp "${tmp}
-set_target_properties( ${tgt} PROPERTIES")
-    if(TARGET ${tgt})
-      foreach( prop ${target_properties} )
-        get_property(v TARGET ${tgt} PROPERTY ${prop})
-        #get_property(d TARGET ${tgt} PROPERTY ${prop} DEFINED)
-        get_property(s TARGET ${tgt} PROPERTY ${prop} SET)
-        if( s )
-          set( tmp "${tmp}
-   ${prop} \"${v}\"")
-        endif()
-      endforeach()
-      set( tmp "${tmp} )
-")
-    else()
-      message(FATAL_ERROR "There is no target named '${tgt}'")
-    endif()
-
-    # Append to Draco_EXPORT_TARGET_PROPERTIES the commands needed to
-    # import the library and set all of its properties.
-    set( Draco_EXPORT_TARGET_PROPERTIES
-      "${Draco_EXPORT_TARGET_PROPERTIES}
-${tmp}")
-    # message("${tmp}")
-  endforeach()
-  unset( fplib )
-  unset( library_type )
 endmacro()
 
 #------------------------------------------------------------------------------
 # Setup GSL (any)
 #------------------------------------------------------------------------------
 macro( setupGSL )
+
   if( NOT TARGET GSL::gsl )
 
     message( STATUS "Looking for GSL..." )
+    set( QUIET "QUIET")
 
-    # If gsl-config is in the PATH, query the value for GSL_ROOT_DIR
-    # This bit of logic is needed on Cielo/Cielito because gsl is not in
-    # a system location (it is provided by a module)
+    # There are 3 ways to find gsl:
+
+    # 1. Config mode.
+    #    If CMAKE_PREFIX_PATH contains a GSL install prefix directory and
+    #    the file gsl-config.cmake is found somewhere in this installation
+    #    tree, then the targets defined by gsl-config.cmake will be used.
+    find_package( GSL CONFIG ${QUIET} )
+
+  endif()
+
+  if( NOT TARGET GSL::gsl ) # if option #1 was successful, skip this.
+
+    # 2. pkg-config mode (Linux)
+    #    IF GSL_ROOT_DIR isn't set, look for the binary 'gsl-config' in $PATH.
+    #    If found, run it to discover and set GSL_ROOT_DIR that will be used
+    #    in method #3.
+
     if( "$ENV{GSL_ROOT_DIR}x" STREQUAL "x" AND "${GSL_ROOT_DIR}x" STREQUAL "x")
       find_program( GSL_CONFIG gsl-config )
       if( EXISTS "${GSL_CONFIG}" )
@@ -434,43 +434,43 @@ macro( setupGSL )
       endif()
     endif()
 
-    find_package( GSL QUIET REQUIRED )
-    if( GSL_FOUND )
-      message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
-      mark_as_advanced( GSL_CONFIG_EXECUTABLE )
+    # 3. Module mode.
+    #    Locate GSL by using the value of GSL_ROOT_DIR or by looking in
+    #    standard locations. We add 'REQUIRED' here because if this fails,
+    #    then we abort the built.
+    find_package( GSL REQUIRED ${QUIET} )
 
-      # Export GSL target information to draco-config.cmake
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("GSL::gsl;GSL::gslcblas")
-      set( props
-        GNUtoMS
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED
-        INTERFACE_INCLUDE_DIRECTORIES
-        POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
-      save_vendor_imported_library_to_draco_config(
-        "GSL::gsl;GSL::gslcblas" "${props}" )
-    else()
-      message( STATUS "Looking for GSL.......not found" )
+  endif()
+
+  # Print a report
+  if( TARGET GSL::gsl )
+    if( TARGET GSL::gsl AND NOT GSL_LIBRARY )
+      foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
+        get_target_property(tmp GSL::gsl IMPORTED_LOCATION_${config} )
+        if( EXISTS ${tmp} AND NOT GSL_LIBRARY )
+          set( GSL_LIBRARY ${tmp} )
+        endif()
+      endforeach()
     endif()
+    message( STATUS "Looking for GSL.......found ${GSL_LIBRARY}" )
+    mark_as_advanced( GSL_CONFIG_EXECUTABLE )
+  else()
+    message( STATUS "Looking for GSL.......not found" )
+  endif()
 
+  # If successful in finding GSL, provide some information for the vendor
+  # summary reported by src/CMakeLists.txt.
+  if( TARGET GSL::gsl )
     #=============================================================================
     # Include some information that can be printed by the build system.
     set_package_properties( GSL PROPERTIES
-      DESCRIPTION "Gnu Scientific Library"
-      URL "www.gnu.org/software/gsl"
-      PURPOSE "The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
-      )
-
+      URL "https://www.gnu.org/software/gsl"
+      DESCRIPTION "The GNU Scientific Library (GSL) is a numerical library for C and C++
+   programmers."
+      TYPE REQUIRED
+      PURPOSE "Required for rng and quadrature components." )
   endif()
+  unset(QUIET)
 
 endmacro()
 
@@ -479,32 +479,24 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupParMETIS )
 
+  set( QUIET "QUIET")
   if( NOT TARGET METIS::metis )
     message( STATUS "Looking for METIS..." )
 
-    find_package( METIS QUIET )
-    if( METIS_FOUND )
+    find_package( METIS CONFIG ${QUIET} )
+    if( NOT TARGET METIS::metis )
+      find_package( METIS ${QUIET} )
+    endif()
+    if( TARGET METIS::metis )
+      if( TARGET METIS::metis AND NOT METIS_LIBRARY )
+        foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
+          get_target_property(tmp METIS::metis IMPORTED_LOCATION_${config} )
+          if( EXISTS ${tmp} AND NOT METIS_LIBRARY )
+            set( METIS_LIBRARY ${tmp} )
+          endif()
+        endforeach()
+      endif()
       message( STATUS "Looking for METIS.....found ${METIS_LIBRARY}" )
-
-      # Export METIS target information to draco-config.cmake
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("METIS::metis")
-      set( props
-        GNUtoMS
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED
-        INTERFACE_INCLUDE_DIRECTORIES
-        POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
-
-      save_vendor_imported_library_to_draco_config( "METIS::metis" "${props}" )
     else()
       message( STATUS "Looking for METIS.....not found" )
     endif()
@@ -513,6 +505,7 @@ macro( setupParMETIS )
     # Include some information that can be printed by the build system.
     set_package_properties( METIS PROPERTIES
       DESCRIPTION "METIS"
+      TYPE OPTIONAL
       URL "http://glaros.dtc.umn.edu/gkhome/metis/metis/overview"
       PURPOSE "METIS is a set of serial programs for partitioning graphs, partitioning finite
    element meshes, and producing fill reducing orderings for sparse matrices."
@@ -527,27 +520,6 @@ macro( setupParMETIS )
     find_package( ParMETIS QUIET )
     if( ParMETIS_FOUND )
       message( STATUS "Looking for ParMETIS..found ${ParMETIS_LIBRARY}" )
-
-      # Export ParMETIS target information to draco-config.cmake
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("ParMETIS::parmetis")
-      set( props
-        GNUtoMS
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED
-        INTERFACE_INCLUDE_DIRECTORIES
-        POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
-
-      save_vendor_imported_library_to_draco_config(
-        "ParMETIS::parmetis" "${props}" )
     else()
       message( STATUS "Looking for ParMETIS..not found" )
     endif()
@@ -556,13 +528,14 @@ macro( setupParMETIS )
     # Include some information that can be printed by the build system.
     set_package_properties( ParMETIS PROPERTIES
       DESCRIPTION "MPI Parallel METIS"
+      TYPE OPTIONAL
       URL "http://glaros.dtc.umn.edu/gkhome/metis/parmetis/overview"
       PURPOSE "ParMETIS is an MPI-based parallel library that implements a
    variety of algorithms for partitioning unstructured graphs, meshes, and for
    computing fill-reducing orderings of sparse matrices." )
 
   endif()
-
+  unset(QUIET)
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -576,40 +549,52 @@ macro( setupSuperLU_DIST )
     find_package( SuperLU_DIST QUIET )
     if( SuperLU_DIST_FOUND )
       message( STATUS "Looking for SuperLU_DIST.....found ${SuperLU_DIST_LIBRARY}" )
-
-      # Export SuperLU_DIST target information to draco-config.cmake
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("SuperLU_DIST::superludist")
-      set( props
-        GNUtoMS
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED
-        INTERFACE_INCLUDE_DIRECTORIES
-        POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
-
-      save_vendor_imported_library_to_draco_config(
-        "SuperLU_DIST::superludist" "${props}" )
     else()
       message( STATUS "Looking for SuperLU_DIST.....not found" )
+    endif()
+
+    if( ${SuperLU_DIST_VERSION} VERSION_GREATER 5.2.9 )
+      message( FATAL_ERROR "The API change in SuperLU_DIST 5.3+ is not yet
+      supported by Draco. Please use a version of SuperLU_DIST prior to 5.3.")
     endif()
 
     #===========================================================================
     # Include some information that can be printed by the build system.
     set_package_properties( SuperLU_DIST PROPERTIES
-      DESCRIPTION "SuperLU_DIST"
       URL " http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+      DESCRIPTION "SuperLU_DIST"
+      TYPE OPTIONAL
       PURPOSE "SuperLU is a general purpose library for the direct solution of
    large, sparse, nonsymmetric systems of linear equations on high performance
    machines."  )
 
+  endif()
+
+endmacro()
+
+#------------------------------------------------------------------------------
+# Setup Eospac (https://laws.lanl.gov/projects/data/eos.html)
+#------------------------------------------------------------------------------
+macro( setupEOSPAC )
+
+  if( NOT TARGET EOSPAC::eospac )
+    message( STATUS "Looking for EOSPAC..." )
+
+    find_package( EOSPAC QUIET )
+
+    if( EOSPAC_FOUND )
+      message( STATUS "Looking for EOSPAC....found ${EOSPAC_LIBRARY}" )
+    else()
+      message( STATUS "Looking for EOSPAC....not found" )
+    endif()
+
+    #===========================================================================
+    # Include some information that can be printed by the build system.
+    set_package_properties( EOSPAC PROPERTIES
+      URL "https://laws.lanl.gov/projects/data/eos.html"
+      DESCRIPTION "Access SESAME thermodynamic and transport data."
+      TYPE OPTIONAL
+      PURPOSE "Required for bulding the cdi_eospac component." )
   endif()
 
 endmacro()
@@ -625,35 +610,15 @@ macro( setupCOMPTON )
     find_package( COMPTON QUIET )
 
     if( COMPTON_FOUND )
-      message( STATUS "Looking for COMPTON.....found ${COMPTON_LIBRARY}" )
-
-      # Export COMPTON target information to draco-config.cmake
-      # Choose items for props list via:
-      # include(print_target_properties)
-      # print_targets_properties("COMPTON::compton")
-      set( props
-        GNUtoMS
-        IMPORTED_CONFIGURATIONS
-        IMPORTED_IMPLIB
-        IMPORTED_IMPLIB_DEBUG
-        IMPORTED_LINK_INTERFACE_LANGUAGES
-        INTERFACE_LINK_LIBRARIES
-        IMPORTED_LOCATION_DEBUG
-        IMPORTED_LOCATION_RELEASE
-        IMPORTED
-        INTERFACE_INCLUDE_DIRECTORIES
-        POSITION_INDEPENDENT_CODE
-        IMPORTED_LOCATION )
-
-      save_vendor_imported_library_to_draco_config(
-        "COMPTON::compton" "${props}" )
+      message( STATUS "Looking for COMPTON...found ${COMPTON_LIBRARY}" )
     else()
-      message( STATUS "Looking for COMPTON.....not found" )
+      message( STATUS "Looking for COMPTON...not found" )
     endif()
 
     #===========================================================================
     # Include some information that can be printed by the build system.
     set_package_properties( COMPTON PROPERTIES
+      URL "https://gitlab.lanl.gov/CSK/CSK"
       DESCRIPTION "Access multigroup Compton scattering data."
       TYPE OPTIONAL
       PURPOSE "Required for bulding the compton component." )
@@ -666,20 +631,15 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( SetupVendorLibrariesUnix )
 
-  # GSL, METIS, ParMETIS and SuperLU_DIST ------------------------------------
   setupGSL()
   setupParMETIS()
   setupSuperLU_DIST()
   setupCOMPTON()
-
-  # Random123 ----------------------------------------------------------------
-  message( STATUS "Looking for Random123...")
-  find_package( Random123 REQUIRED QUIET )
-  if( RANDOM123_FOUND )
-    message( STATUS "Looking for Random123.found ${RANDOM123_INCLUDE_DIR}")
-  else()
-    message( STATUS "Looking for Random123.not found")
-  endif()
+  setupEospac()
+  setupRandom123()
+  setupCudaEnv()
+  setupPython()
+  setupQt()
 
   # Grace ------------------------------------------------------------------
   message( STATUS "Looking for Grace...")
@@ -695,33 +655,20 @@ macro( SetupVendorLibrariesUnix )
     message( STATUS "Looking for Grace.....not found")
   endif()
 
-  # CUDA ------------------------------------------------------------------
-  setupCudaEnv()
-
-  # PYTHON ----------------------------------------------------------------
-
-  message( STATUS "Looking for Python...." )
-  find_package(PythonInterp QUIET)
-  #  PYTHONINTERP_FOUND - Was the Python executable found
-  #  PYTHON_EXECUTABLE  - path to the Python interpreter
-  set_package_properties( PythonInterp PROPERTIES
-    DESCRIPTION "Python interpreter"
+  # Doxygen ------------------------------------------------------------------
+  message( STATUS "Looking for Doxygen..." )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  set_package_properties( Doxygen PROPERTIES
+    URL "http://www.stack.nl/~dimitri/doxygen"
+    DESCRIPTION "Doxygen autodoc generator"
     TYPE OPTIONAL
-    PURPOSE "Required for running the fpe_trap tests."
+    PURPOSE "Required for building develop HTML documentation."
     )
-  if( PYTHONINTERP_FOUND )
-    # if( ${PYTHON_VERSION_STRING} GREATER 3.9.9 )
-    #   message( FATAL_ERROR
-    #     "Looking for Python....found version"
-    #     "${PYTHON_VERSION_STRING}, but Draco requires version < 4.0." )
-    # endif()
-    message( STATUS "Looking for Python....found ${PYTHON_EXECUTABLE}" )
+  if( DOXYGEN_FOUND )
+    message( STATUS "Looking for Doxygen...found version ${DOXYGEN_VERSION}" )
   else()
-    message( STATUS "Looking for Python....not found" )
+    message( STATUS "Looking for Doxygen...not found" )
   endif()
-
-  # Qt -----------------------------------------------------------------------
-  setupQt()
 
 endmacro()
 
@@ -731,32 +678,29 @@ endmacro()
 
 macro( SetupVendorLibrariesWindows )
 
-  # GSL ---------------------------------------------------------------------
   setupGSL()
   setupParMETIS()
-
-  # Random123 ---------------------------------------------------------------
-  message( STATUS "Looking for Random123...")
-  find_package( Random123 REQUIRED QUIET )
-  if( RANDOM123_FOUND )
-    message( STATUS "Looking for Random123.found ${RANDOM123_INCLUDE_DIR}")
-  else()
-    message( STATUS "Looking for Random123.not found")
-  endif()
-
-  # PYTHON ----------------------------------------------------------------
-  find_package(PythonInterp QUIET)
-  #  PYTHONINTERP_FOUND - Was the Python executable found
-  #  PYTHON_EXECUTABLE  - path to the Python interpreter
-  set_package_properties( PythonInterp PROPERTIES
-    DESCRIPTION "Python interpreter"
-    TYPE OPTIONAL
-    PURPOSE "Required for running the fpe_trap tests."
-    )
-
-  # Qt -----------------------------------------------------------------------
+  setupRandom123()
+  setupPython()
   setupQt()
 
+
+  # Doxygen ------------------------------------------------------------------
+  message( STATUS "Looking for Doxygen..." )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  set_package_properties( Doxygen PROPERTIES
+    URL "http://www.stack.nl/~dimitri/doxygen"
+    DESCRIPTION "Doxygen autodoc generator"
+    TYPE OPTIONAL
+    PURPOSE "Required for building develop HTML documentation."
+    )
+  if( DOXYGEN_FOUND )
+    message( STATUS "Looking for Doxygen...found version ${DOXYGEN_VERSION}" )
+  else()
+    message( STATUS "Looking for Doxygen...not found" )
+  endif()
+  
+  
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -791,10 +735,6 @@ macro( setVendorVersionDefaults )
     set( VENDOR_DIR ${VENDOR_DIR} CACHE PATH
       "Root directory where CCS-2 3rd party libraries are located."
       FORCE )
-  else()
-    message( "
-WARNING: VENDOR_DIR not defined locally or in user environment,
-individual vendor directories should be defined." )
   endif()
 
   # Import environment variables related to vendors
@@ -811,10 +751,6 @@ individual vendor directories should be defined." )
     set( LAPACK_LIB_DIR "${VENDOR_DIR}/lapack-3.4.2/lib" )
     set( LAPACK_INC_DIR "${VENDOR_DIR}/lapack-3.4.2/include" )
   endif()
-  # if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY ${VENDOR_DIR}/clapack/lib )
-  # set( LAPACK_LIB_DIR "${VENDOR_DIR}/clapack/lib" )
-  # set( LAPACK_INC_DIR "${VENDOR_DIR}/clapack/include" )
-  # endif()
 
   if( NOT GSL_LIB_DIR )
     if( IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
@@ -835,34 +771,17 @@ individual vendor directories should be defined." )
   if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
     set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
   endif()
-  if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY ${VENDOR_DIR}/Random123-1.08/include )
+  if( NOT RANDOM123_INC_DIR AND
+      IS_DIRECTORY ${VENDOR_DIR}/Random123-1.08/include )
     set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.08/include" )
   endif()
-
-  set_package_properties( BLAS PROPERTIES
-    DESCRIPTION "Basic Linear Algebra Subprograms"
-    TYPE OPTIONAL
-    PURPOSE "Required for building the lapack_wrap component."
-    )
-  set_package_properties( lapack PROPERTIES
-    DESCRIPTION "Linear Algebra PACKage"
-    TYPE OPTIONAL
-    PURPOSE "Required for building the lapack_wrap component."
-    )
-  set_package_properties( Random123 PROPERTIES
-    URL "http://www.deshawresearch.com/resources_random123.html"
-    DESCRIPTION "a library of counter-based random number generators
-"
-    TYPE REQUIRED
-    PURPOSE "Required for building rng component."
-    )
 
 endmacro()
 
 #------------------------------------------------------------------------------
-# This macro should contain all the system libraries which are
-# required to link the main objects.
-#------------------------------------------------------------------------------
+# This macro should contain all the system libraries which are required to link
+# the main objects.
+# ------------------------------------------------------------------------------
 macro( setupVendorLibraries )
 
   message( "\nVendor Setup:\n")
@@ -871,31 +790,59 @@ macro( setupVendorLibraries )
   # General settings
   #
   setVendorVersionDefaults()
-  if( NOT TARGET blas )
-    setupLAPACKLibrariesUnix()
+  if( NOT TARGET lapack )
+    setupLAPACKLibraries()
   endif()
 
   # System specific settings
   if ( UNIX )
-
-    if( NOT MPI_CXX_COMPILER )
-      setupMPILibrariesUnix()
-    endif()
+    setupMPILibrariesUnix()
     setupVendorLibrariesUnix()
-
   elseif( WIN32 )
-
-    if( NOT MPI_CXX_COMPILER )
-      setupMPILibrariesWindows()
-    endif()
+    setupMPILibrariesWindows()
     setupVendorLibrariesWindows()
-
   else()
     message( FATAL_ERROR "
 I don't know how to setup global (vendor) libraries for this platform.
 WIN32=0; UNIX=0; CMAKE_SYSTEM=${CMAKE_SYSTEM};
 CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}" )
   endif()
+
+  # Add commands to draco-config.cmake (which is installed for use by othe
+  # projects), to setup Draco's vendors
+  set( Draco_EXPORT_TARGET_PROPERTIES "${Draco_EXPORT_TARGET_PROPERTIES}
+
+message(\"
+Looking for Draco...\")
+message(\"Looking for Draco...\${draco_DIR}
+\")
+
+# Provide helper functions used by component CMakeLists.txt files
+# This block of code generated by draco/config/vendor_libraries.cmake.
+
+# CMake macros that check the system for features like 'gethostname', etc.
+include( platform_checks )
+
+# Sanity check for Cray Programming Environments
+query_craype()
+
+# Set compiler options
+include( compilerEnv )
+dbsSetupCxx()
+dbsSetupFortran()
+dbsSetupProfilerTools()
+
+# CMake macros like 'add_component_library' and 'add_component_executable'
+include( component_macros )
+
+# CMake macros to query the availability of TPLs.
+include( vendor_libraries )
+
+# Provide targets for MPI, Metis, etc.
+setupVendorLibraries()
+")
+
+  message( " " )
 
 endmacro()
 

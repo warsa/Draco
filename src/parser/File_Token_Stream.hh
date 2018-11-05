@@ -3,11 +3,11 @@
  * \file   parser/File_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class File_Token_Stream.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_File_Token_Stream_HH
@@ -17,9 +17,9 @@
 #include <fstream>
 
 namespace rtt_parser {
-using std::string;
-using std::set;
 using std::ifstream;
+using std::set;
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -55,6 +55,8 @@ public:
 
   virtual void report(string const &message);
 
+  virtual void comment(std::string const &message);
+
 protected:
   // IMPLEMENTATION
 
@@ -64,14 +66,40 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
+
 private:
+  struct letter {
+    // IMPLEMENTATION
+
+    //! Constructor
+    letter(string const &file_name);
+
+    bool check_class_invariants() const {
+      return true; // none at present
+    }
+
+    //! Open the input stream.
+    void open_();
+
+    //! Rewind the stream.
+    void rewind();
+
+    // DATA
+    string filename_; //!< File from which to take token text.
+    ifstream infile_; //!< Stream from which to take token text.
+  };
+
+  // IMPLEMENTATION
+
   // DATA
 
-  string filename_; //!< File from which to take token text.
-  ifstream infile_; //!< Stream from which to take token text.
+  std::stack<std::shared_ptr<letter>> letters_;
+  std::shared_ptr<letter> letter_;
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_File_Token_Stream_HH
 

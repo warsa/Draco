@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun  1 17:15:05 2006
  * \brief  Declaration file for encapsulation of Draco parallel unit tests.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * This file provides a definition for ParallelUnitTest.  The purpose of this
@@ -91,6 +91,9 @@ public:
 
   //! Provide a report of the number of unit test passes and fails.
   DLL_PUBLIC_c4 void status(void);
+
+  DLL_PUBLIC_c4 virtual bool check_all(bool good, std::string const &checkmsg,
+                                       bool fatal = false);
 };
 
 } // end namespace rtt_c4

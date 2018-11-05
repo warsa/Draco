@@ -4,17 +4,17 @@
  * \author Rob Lowrie
  * \date   Wed Dec 29 11:16:44 2004
  * \brief  Implementation of creator and destroyer functions for Foo.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "Foo.hh"
 #include "Foo_Base.hh"
 
-using rtt_shared_lib_test::Foo_Base;
 using rtt_shared_lib_test::Foo;
+using rtt_shared_lib_test::Foo_Base;
 
 // These functions are used by the tst_Shared_Lib to create and destroy Foo
 // objects, where Foo is defined within a shared library.

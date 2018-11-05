@@ -4,11 +4,11 @@
  * \author Paul Talbot
  * \date   Tue Jul 26 14:48:13 MDT 2011
  * \brief  Declare the ExpInt function templates.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef special_functions_ExpInt_hh
@@ -23,7 +23,7 @@ DLL_PUBLIC_special_functions double En(unsigned const n, double const x);
 
 //! Compute exponential integral, argument x \f$ Ei(x) \f$.
 DLL_PUBLIC_special_functions double Ei(double const x);
-}
+} // namespace rtt_sf
 
 #endif //special_functions_ExpInt
 

@@ -3,7 +3,7 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for FortranChecks.
-# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -20,15 +20,11 @@ project( FortranChecks CXX )
 file( GLOB Csources *.cc )
 
 # ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-include_directories( ${dsxx_BINARY_DIR} ) # ds++/config.h
-
-# ---------------------------------------------------------------------------- #
 # Build package libraries
 # ---------------------------------------------------------------------------- #
 add_component_library(
   TARGET       Lib_FC_Derived_Type
+  TARGET_DEPS  "Lib_dsxx"
   LIBRARY_NAME FC_Derived_Type
   SOURCES      "${Csources}"
   NOEXPORT )
@@ -37,8 +33,8 @@ set_target_properties( Lib_FC_Derived_Type PROPERTIES FOLDER FortranChecks )
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
-# Do not install these libraries.  They are only used for testing the
-# build system.
+# Do not install these libraries. They are only used for testing the build
+# system.
 # install( TARGETS Lib_FC_Derived_Type EXPORT draco-targets DESTINATION lib )
 
 #------------------------------------------------------------------------------#
@@ -59,19 +55,20 @@ if( BUILD_TESTING )
     # into the list build_system_state, recode Draco_TPL_INCLUDE_DIRS by
     # replacing semicolons with triple underscores.  The list will be
     # reconstructed in the subdirectory's CMakeLists.txt.
-    string( REGEX REPLACE ";" "___" tmp "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
+    string( REGEX REPLACE ";" "___" tmp
+      "${Draco_TPL_INCLUDE_DIRS};${MPI_Fortran_INCLUDE_PATH}")
 
     # The alternate build system (Makefiles if we are Apple/OSX or Linux/Ninja)
     # will need some of the current build system parameters:
     set( draco_DIR ${Draco_SOURCE_DIR}/config )
     set( build_system_state
-      "-Ddraco_DIR=${draco_DIR}"
+#      "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
+      "-DDRACO_C4=${DRACO_C4}"
       "-DDRACO_LIBRARY_TYPE=${DRACO_LIBRARY_TYPE}"
       "-DDraco_TPL_INCLUDE_DIRS=${tmp}"
-      "-DCMAKE_VERBOSE_MAKEFILE=TRUE"
-      "-DDRACO_C4=${DRACO_C4}"
-      "-DRANDOM123_INCLUDE_DIR=${RANDOM123_INCLUDE_DIR}"
       "-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}"
+      "-DRANDOM123_INCLUDE_DIR=${RANDOM123_INCLUDE_DIR}"
+      "-Ddraco_DIR=${draco_DIR}"
       )
     if( WIN32 )
       # For Win32 builds, DLL and applications are built in the directory

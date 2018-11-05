@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   src/quadrature/CMakeLists.txt
+# file   quadrature/CMakeLists.txt
 # brief  Instructions for building quadrature Makefiles.
-# note   Copyright (C) 2010-2016-2017 Los Alamos National Security, LLC.
+# note   Copyright (C) 2010-2016-2018 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -15,21 +15,6 @@ file( GLOB sources *.cc )
 file( GLOB headers *.hh )
 file( GLOB f90sources *.f90 )
 
-# Make the header files available in the IDE.
-if( MSVC_IDE OR ${CMAKE_GENERATOR} MATCHES Xcode )
-   list( APPEND sources ${headers} )
-   list( APPEND sources ${f90sources} )
-endif()
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories( ${PROJECT_SOURCE_DIR}       # sources
-                     ${draco_src_dir_SOURCE_DIR} # ds++ header files
-                     ${dsxx_BINARY_DIR}          # ds++/config.h
-                     )
-
 # ---------------------------------------------------------------------------- #
 # Build package library
 # ---------------------------------------------------------------------------- #
@@ -39,13 +24,15 @@ add_component_library(
    TARGET_DEPS  "Lib_special_functions;Lib_parser;Lib_mesh_element;GSL::gsl"
    LIBRARY_NAME ${PROJECT_NAME}
    SOURCES      "${sources}"
+   HEADERS      "${headers};${f90sources}"
 )
 
 # ---------------------------------------------------------------------------- #
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
+install( TARGETS Lib_quadrature EXPORT draco-targets DESTINATION
+  ${DBSCFGDIR}lib )
 install( FILES ${headers} ${f90sources}
   DESTINATION ${DBSCFGDIR}include/quadrature )
 
@@ -102,7 +89,7 @@ if( BUILD_TESTING )
       # VERBOSE
       )
 
-    # This directory contains c++ main code that wraps the Fortran tests. 
+    # This directory contains c++ main code that wraps the Fortran tests.
     add_subdirectory( fctest )
   endif()
 

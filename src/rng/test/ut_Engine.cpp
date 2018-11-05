@@ -32,9 +32,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
-// Engines have multiple copy constructors, quite legal C++, disable MSVC
-// complaint
-#pragma warning(disable : 4521)
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+// - 4100: unreferenced formal parameter
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4127 4100)
+#endif
+
+#ifdef __GNUC__
+#if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
+// Suppress GCC's "unused variable" warning.
+#if (DBS_GNUC_VERSION >= 40600)
+#pragma GCC diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 #endif
 
 #include "ut_Engine.hh"
@@ -99,10 +114,11 @@ template <typename EType> void doit() {
   EType ess(dummyss);
   assert(ess != e);
 
-  rtype r1 = e();
-  rtype r2 = e();
+  rngRemember(rtype r1 = e());
+  rngRemember(rtype r2 = e());
+  rngRemember(rtype r3 = e());
+
   assert(r1 != r2);
-  rtype r3 = e();
   assert(r3 != r2 && r3 != r1);
 
   // We've elsewhere confirmed that the underlying bijections actually "work",
@@ -121,7 +137,7 @@ template <typename EType> void doit() {
     ctype rb = b(c1, k);
     for (typename ctype::reverse_iterator p = rb.rbegin(); p != rb.rend();
          ++p) {
-      rtype re = e();
+      rngRemember(rtype re = e());
       assert(*p == re);
     }
   }
@@ -179,7 +195,7 @@ template <typename EType> void doit() {
   e5.seed((rtype)99);
   ASSERTEQ(e4, e5);
 
-#if R123_USE_STD_RANDOM
+#ifdef R123_USE_STD_RANDOM
   // Check that we can use an EType with a std::distribution. Obviously, this
   // requires <random>
   uniform_int_distribution<int> dieroller(1, 6);
@@ -224,6 +240,7 @@ template <typename EType> void doit() {
   cout << " OK" << endl;
 }
 
+//----------------------------------------------------------------------------//
 int main(int, char **) {
 #if R123_USE_PHILOX_64BIT
   doit<Engine<Philox2x64>>();
@@ -256,6 +273,17 @@ int main(int, char **) {
 #ifdef __clang__
 // Restore clang diagnostics to previous state.
 #pragma clang diagnostic pop
+#endif
+
+#ifdef __GNUC__
+#if (DBS_GNUC_VERSION >= 40600)
+// Restore GCC diagnostics to previous state.
+#pragma GCC diagnostic pop
+#endif
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif
 
 //---------------------------------------------------------------------------//

@@ -3,11 +3,11 @@
  * \file   Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class Token_Stream.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_Token_Stream_HH
@@ -120,11 +120,11 @@ public:
   virtual void rewind() = 0;
 
   //! Report a syntax error to the user.
-  virtual void report_syntax_error(Token const &token,
-                                   std::string const &message);
+  [[noreturn]] void report_syntax_error(Token const &token,
+                                        std::string const &message);
 
   //! Report a syntax error to the user.
-  virtual void report_syntax_error(std::string const &message);
+  [[noreturn]] void report_syntax_error(std::string const &message);
 
   //! Report a semantic error to the user.
   virtual void report_semantic_error(Token const &token,
@@ -162,6 +162,21 @@ public:
      * Message to be passed to the user.
      */
   virtual void report(std::string const &message) = 0;
+
+  //-----------------------------------------------------------------------//
+  /*!
+     * \brief Send a comment, without location information, to the user.
+     *
+     * This function sends a message to the user in a stream-specific manner.
+     * This differs from the report() functions chiefly in that the message
+     * is not preceded by any location information. This is useful for
+     * extended comments, e.g., listing available keywords when the stream
+     * contains an unrecognized keyword.
+     *
+     * \param message
+     * Message to be passed to the user.
+     */
+  virtual void comment(std::string const &message) = 0;
 
   //-----------------------------------------------------------------------//
   /*! Check a syntax condition.

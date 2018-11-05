@@ -4,11 +4,11 @@
  * \author John McGhee
  * \date   Mon Aug 24 07:48:00 1998
  * \brief  Contains the template methods for the field ts_advisor class.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "field_ts_advisor.hh"
@@ -115,7 +115,7 @@ void field_ts_advisor::update_tstep(const ts_manager &tsm, const FT &q_old,
   Ensure(invariant_satisfied());
 }
 
-} // end of rtt_timestep namespace
+} // namespace rtt_timestep
 
 //---------------------------------------------------------------------------//
 // end of field_ts_advisor.t.hh

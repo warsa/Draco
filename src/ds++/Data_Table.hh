@@ -3,7 +3,7 @@
  * \file    Data_Table.hh
  * \author  Paul Henning
  * \brief   Declaration of class Data_Table
- * \note    Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *          All rights reserved. */
 //---------------------------------------------------------------------------//
 #ifndef dsxx_Data_Table_hh
@@ -48,7 +48,7 @@ public:
   inline const_iterator begin() const { return d_begin; }
   //! end iterator
   inline const_iterator end() const { return d_end; }
-  inline unsigned size() const { return d_end - d_begin; }
+  inline uint64_t size() const { return d_end - d_begin; }
   inline T const &front() const;
   inline T const &back() const;
   inline T *access();
@@ -139,7 +139,7 @@ template <typename T> inline T *Data_Table<T>::access() {
   return const_cast<T *>(d_begin);
 }
 
-} //end namespace
+} // namespace rtt_dsxx
 
 #endif // dsxx_Data_Table_hh
 

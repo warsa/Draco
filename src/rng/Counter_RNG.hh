@@ -4,7 +4,7 @@
  * \author Peter Ahrens
  * \date   Fri Aug 3 16:53:23 2012
  * \brief  Declaration of class Counter_RNG.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved */
 //---------------------------------------------------------------------------//
 
@@ -14,9 +14,13 @@
 #include "rng/config.h"
 
 #ifdef _MSC_FULL_VER
-// Engines have multiple copy constructors, quite legal C++, disable MSVC
-// complaint.
-#pragma warning(disable : 4521)
+// - 4521: Engines have multiple copy constructors, quite legal C++, disable
+//         MSVC complaint.
+// - 4244: possible loss of data when converting between int types.
+// - 4204: nonstandard extension used - non-constant aggregate initializer
+// - 4127: conditional expression is constant
+#pragma warning(push)
+#pragma warning(disable : 4521 4244 4204 4127)
 #endif
 
 #if defined(__ICC)
@@ -26,17 +30,15 @@
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define GNUC_VERSION                                                           \
-  (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 
 /*
-#if (GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
+#if (DBS_GNUC_VERSION >= 40204) && !defined(__ICC) && !defined(NVCC)
 // Suppress GCC's "unused parameter" warning, about lhs and rhs in sse.h, and an
 // "unused local typedef" warning, from a pre-C++11 implementation of a static
 // assertion in compilerfeatures.h.
 */
 #pragma GCC diagnostic push
-#if (GNUC_VERSION >= 70000)
+#if (DBS_GNUC_VERSION >= 70000)
 #pragma GCC diagnostic ignored "-Wexpansion-to-defined"
 #endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -58,11 +60,15 @@
 #pragma clang diagnostic pop
 #endif
 
-/* #if (GNUC_VERSION >= 40600) */
+/* #if (DBS_GNUC_VERSION >= 40600) */
 #if defined(__GNUC__) && !defined(__clang__)
-/* && (GNUC_VERSION >= 70000) */
+/* && (DBS_GNUC_VERSION >= 70000) */
 // Restore GCC diagnostics to previous state.
 #pragma GCC diagnostic pop
+#endif
+
+#ifdef _MSC_FULL_VER
+#pragma warning(pop)
 #endif
 
 #include "ds++/Data_Table.hh"
@@ -137,7 +143,7 @@ static inline double _ran(ctr_type::value_type *const data) {
   return r123::u01fixedpt<double, ctr_type::value_type>(result[0]);
 }
 
-} // end anonymous
+} // namespace
 
 //===========================================================================//
 /*!
@@ -215,7 +221,9 @@ public:
    * Counter_RNG but delegate its initialization to an Rnd_Control object.
    */
   Counter_RNG() {
-    Require(sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
+    Remember(constexpr bool is_data_ok =
+                 sizeof(data) == sizeof(ctr_type) + sizeof(key_type));
+    Require(is_data_ok);
   }
 
   //! Construct a Counter_RNG using a seed and stream number.

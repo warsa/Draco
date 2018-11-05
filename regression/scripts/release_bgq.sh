@@ -19,7 +19,7 @@
 ## 2. Update variables that control the build:
 ##    - $ddir
 ##    - $CONFIG_BASE
-## 3. Run this script: ./release_ml &> ../logs/relase_moonlight.log
+## 3. Run this script: ./release_bgq.sh &> ../logs/relase_bgq.log
 
 #----------------------------------------------------------------------#
 # Per release settings go here (edits go here)
@@ -74,7 +74,7 @@ cd $initial_working_dir
 source $draco_script_dir/common.sh
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDRACO_LIBRARY_TYPE=STATIC -DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+export CONFIG_BASE="-DDRACO_LIBRARY_TYPE=STATIC -DDraco_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
@@ -103,7 +103,7 @@ unset CEI_HOME
 
 # =============================================================================
 # Build types:
-# - These must be copied into release_ml.msub because bash arrays cannot
+# - These must be copied into release_bqq.msub because bash arrays cannot
 #   be passed to the subshell (bash bug)
 # =============================================================================
 
@@ -157,7 +157,7 @@ for env in $environments; do
   $env
 
   buildflavor=`flavor`
-  # e.g.: buildflavor=moonlight-openmpi-1.6.5-intel-15.0.3
+  # e.g.: buildflavor=sequoia-openmpi-1.6.5-intel-15.0.3
 
   export install_prefix="$source_prefix/$buildflavor"
   export build_prefix="$scratchdir/$USER/$pdir/$buildflavor"

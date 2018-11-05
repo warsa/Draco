@@ -4,11 +4,8 @@
  *  \brief  Provide a single place where physical constants (pi, speed of
  *          light, etc) are defined.
  *  \date   Fri Nov 07 10:04:52 2003
- *  \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: MathConstants.hh 7431 2015-02-24 17:10:44Z kellyt $
+ *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __units_MathConstants_hh__

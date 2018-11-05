@@ -4,7 +4,7 @@
  * \author Thomas M. Evans
  * \date   Tue Nov 13 11:19:59 2001
  * \brief  nGray_Analytic_Odfmg_Opacity class member definitions.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -78,8 +78,8 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
 
   // unpack the number of group boundaries
   sf_double const &group_boundaries = getGroupBoundaries();
-  int ngrp_bounds = group_boundaries.size();
-  int num_groups = ngrp_bounds - 1;
+  size_t const ngrp_bounds = group_boundaries.size();
+  size_t const num_groups = ngrp_bounds - 1;
 
   // make the group boundaries and model vectors
   group_models.resize(num_groups);

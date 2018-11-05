@@ -3,7 +3,7 @@
 ## File  : environment/bin/bash_functions.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 ##
@@ -97,7 +97,7 @@ function npwd()
 
   # local regHome=$(echo ${HOME} | sed -e 's/.*\///')
 
-  local scratchdirs=/scratch:/lustre/ttscratch1:/lustre/scratch[123]/yellow
+  local scratchdirs=/scratch:/lustre/ttscratch1:/lustre/scratch[34]/yellow
   if [[ $2 ]]; then scratchdirs=$2; fi
 
   # Indicator that there has been directory truncation:
@@ -195,15 +195,7 @@ function xfstatus()
 ##---------------------------------------------------------------------------##
 function rm_from_path ()
 {
-  badpath=$1
-  newpath=""
-  for dir in ${PATH//:/ }; do
-    if ! test "${badpath}" = "${dir}"; then
-      newpath="${newpath}:${dir}"
-    fi;
-  done
-  newpath=`echo $newpath | sed -e s/^[:]//`
-  export PATH=$newpath
+  export PATH=$(echo "$PATH" | sed -e 's%:${1}%%')
 }
 
 ##---------------------------------------------------------------------------##

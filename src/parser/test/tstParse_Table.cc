@@ -4,7 +4,7 @@
  * \author Kent G. Budge
  * \date   Feb 18 2003
  * \brief  Unit tests for the Parse_Table class.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  *
  * revision history:
@@ -13,7 +13,7 @@
  *    Solo inspection of documentation, assertions, and tests.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
@@ -60,19 +60,24 @@ const Keyword raw_table[] = {
     {"BLACK", Parse_Color, 0, "main"},
     {"BLUE GREEN", Parse_Color, 2, "main"},
     {"BLUISH GREEN", Parse_Color, 2, "main"},
-    {"lower blue", Parse_Color, 2, "main"},
+    {"lower blue", Parse_Color, 2, "main", "keyword to test case sensitivity"},
     {"COLOR", Parse_Any_Color, 0, "main"},
 };
 const size_t raw_table_size = sizeof(raw_table) / sizeof(Keyword);
 
 const Keyword raw_table_2[] = {
-    {"BLUE", Parse_Color, 1, "main"}, {"BLACK", Parse_Color, 0, "main"},
+    {"BLUE", Parse_Color, 1, "main"},
+    {"BLACK", Parse_Color, 0, "main"},
 };
 const size_t raw_table_2_size = sizeof(raw_table_2) / sizeof(Keyword);
 
 class Error_Token_Stream : public Token_Stream {
 public:
   void rewind() {}
+
+  void comment(string const & /*err*/) {
+    cout << "comment reported to Error_Token_Stream" << endl;
+  }
 
 protected:
   void report(Token const &, string const & /*err*/) {
@@ -91,6 +96,10 @@ public:
   Colon_Token_Stream() : count_(0) {}
 
   void rewind() {}
+
+  void comment(string const & /*err*/) {
+    cout << "comment reported to Colon_Token_Stream" << endl;
+  }
 
 protected:
   void report(Token const &, string const & /*err*/) {
@@ -334,6 +343,7 @@ void tstParse_Table(UnitTest &ut) {
   }
   {
     Colon_Token_Stream tokens;
+    tokens.comment("dummy test");
     if (table.parse(tokens).type() != END) {
       FAILMSG("END detection FAILED");
     }
@@ -344,6 +354,7 @@ void tstParse_Table(UnitTest &ut) {
   // Error handling
   {
     Error_Token_Stream tokens;
+    tokens.comment("dummy comment");
     if (table.parse(tokens).type() != rtt_parser::ERROR) {
       FAILMSG("error detection FAILED");
     }
@@ -444,19 +455,19 @@ void tstParse_Table(UnitTest &ut) {
   {
     // Additional test mandated by bug discovery.
 
-    Parse_Table table;
+    Parse_Table ptable;
 
-    table.reserve(raw_table_2_size);
-    table.add(raw_table_2, raw_table_2_size);
+    ptable.reserve(raw_table_2_size);
+    ptable.add(raw_table_2, raw_table_2_size);
 
-    if (table.size() != raw_table_2_size)
+    if (ptable.size() != raw_table_2_size)
       FAILMSG("test FAILS");
 
-    File_Token_Stream token_stream(ptInputFile);
+    File_Token_Stream ltoken_stream(ptInputFile);
 
-    table.parse(token_stream);
+    ptable.parse(ltoken_stream);
 
-    if (token_stream.error_count() != 5)
+    if (ltoken_stream.error_count() != 5)
       FAILMSG("test FAILS");
   }
 

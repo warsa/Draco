@@ -1,9 +1,9 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   config/CMakeLists.txt
+# file   diagnostics/CMakeLists.txt
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2012 Aug 1
 # brief  Generate build project files for diagnostics.
-# note   Copyright (C) 2016-2017, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2018, Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 cmake_minimum_required(VERSION 3.9.0)
@@ -43,34 +43,14 @@ configure_file( config.h.in ${PROJECT_BINARY_DIR}/diagnostics/config.h )
 # Source files
 # ---------------------------------------------------------------------------- #
 
-file( GLOB template_implementations *.t.hh *.i.hh )
 file( GLOB sources *.cc )
-file( GLOB explicit_instantiations *_pt.cc )
 file( GLOB headers *.hh )
 list( APPEND headers ${PROJECT_BINARY_DIR}/diagnostics/config.h )
-list( REMOVE_ITEM headers
-   ${template_implementations}
-   ${PROJECT_SOURCE_DIR}/draco_info_main.cc
-   )
 
 # Make the header files available in the IDE.
 if( CMAKE_CONFIGURATION_TYPES )
-   list( APPEND sources ${headers} )
-   add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
+  add_definitions(-DCMAKE_BUILD_TYPE=\"${CMAKE_CFG_INTDIR}\")
 endif()
-
-# ---------------------------------------------------------------------------- #
-# Directories to search for include directives
-# ---------------------------------------------------------------------------- #
-
-include_directories(
-   ${PROJECT_SOURCE_DIR}  # sources
-   ${PROJECT_BINARY_DIR}  # config.h
-   ${draco_src_dir_SOURCE_DIR} # ds++ and c4 headers
-   ${dsxx_BINARY_DIR}     # ds++/config.h
-   ${c4_BINARY_DIR}       # c4/config.h
-   ${MPI_CXX_INCLUDE_PATH}
-   )
 
 # ---------------------------------------------------------------------------- #
 # Build package library
@@ -81,14 +61,18 @@ add_component_library(
   TARGET_DEPS  "Lib_c4"
   LIBRARY_NAME ${PROJECT_NAME}
   SOURCES      "${sources}"
+  HEADERS      "${headers}"
   PREFIX       Draco
   )
+target_include_directories( Lib_diagnostics
+  PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}> )
 
 add_component_executable(
   TARGET      Exe_draco_info
   TARGET_DEPS Lib_diagnostics
   EXE_NAME    draco_info
   SOURCES     ${PROJECT_SOURCE_DIR}/draco_info_main.cc
+  HEADERS     ${PROJECT_SOURCE_DIR}/draco_info.hh
   PREFIX       Draco
   )
 
@@ -100,8 +84,10 @@ endif()
 # Installation instructions
 # ---------------------------------------------------------------------------- #
 
-install( TARGETS Lib_diagnostics EXPORT draco-targets DESTINATION ${DBSCFGDIR}lib )
-install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION ${DBSCFGDIR}bin )
+install( TARGETS Lib_diagnostics EXPORT draco-targets DESTINATION
+  ${DBSCFGDIR}lib )
+install( TARGETS Exe_draco_info  EXPORT draco-targets DESTINATION
+  ${DBSCFGDIR}bin )
 install( FILES ${headers}  DESTINATION ${DBSCFGDIR}include/diagnostics )
 
 # ---------------------------------------------------------------------------- #
@@ -117,3 +103,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 
 process_autodoc_pages()
+
+#------------------------------------------------------------------------------#
+# End diagnostics/CMakeLists.txt
+#------------------------------------------------------------------------------#

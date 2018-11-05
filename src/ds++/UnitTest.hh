@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu May 18 15:46:19 2006
  * \brief  Provide some common functions for unit testing within Draco
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -108,11 +108,16 @@ public:
   DLL_PUBLIC_dsxx bool passes(std::string const &passmsg);
   DLL_PUBLIC_dsxx bool check(bool, std::string const &checkmsg,
                              bool fatal = false);
+  DLL_PUBLIC_dsxx virtual bool check_all(bool good, std::string const &checkmsg,
+                                         bool fatal = false) {
+    return check(good, checkmsg, fatal);
+  }
+
   /*!
    * \brief Provide a summary of the test status
    *
    * This pure virtual function must be provided by the inherited class.  It
-   *        should provide output concerning the status of UnitTest.
+   * should provide output concerning the status of UnitTest.
    */
   void status(void) const {
     out << resultMessage() << std::endl;
@@ -124,6 +129,7 @@ public:
     numFails = 0;
     return;
   }
+
   bool dbcRequire(void) const { return m_dbcRequire; }
   bool dbcCheck(void) const { return m_dbcCheck; }
   bool dbcEnsure(void) const { return m_dbcEnsure; }
@@ -161,7 +167,7 @@ public:
   }
   /*!
    * \brief Returns the path of the test source directory (useful for locating
-   * input files).
+   *        input files).
    *
    * This function depends on the cmake build system setting the
    * COMPILE_DEFINITIONS target property. This should be done in
@@ -231,6 +237,7 @@ protected:
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
 #define UT_CHECK(ut, m) ut.check(m, #m);
+#define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
 #define FAIL_IF_NOT(c)                                                         \

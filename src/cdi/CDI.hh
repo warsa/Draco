@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Thu Jun 22 16:22:06 2000
  * \brief  CDI class header file.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -776,7 +776,7 @@ void CDI::integrate_planck_rosseland(double const scaled_freq,
   Require(rtt_dsxx::soft_equiv(exp_scaled_freq, std::exp(-scaled_freq)));
 
   // Calculate the Planckian integral
-  planck = integrate_planck(scaled_freq);
+  planck = integrate_planck(scaled_freq, exp_scaled_freq);
 
   Require(planck >= 0.0);
   Require(planck <= 1.0);

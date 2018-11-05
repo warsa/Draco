@@ -3,11 +3,11 @@
  * \file   parser/String_Token_Stream.hh
  * \author Kent G. Budge
  * \brief  Definition of class String_Token_Stream.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
-// $Id$
+
 //---------------------------------------------------------------------------//
 
 #ifndef CCS4_String_Token_Stream_HH
@@ -17,8 +17,8 @@
 #include <fstream>
 
 namespace rtt_parser {
-using std::string;
 using std::set;
+using std::string;
 
 //-------------------------------------------------------------------------//
 /*!
@@ -54,6 +54,9 @@ public:
   //! Report a condition.
   virtual void report(string const &message);
 
+  //! Report a comment.
+  virtual void comment(std::string const &message);
+
   // ACCESSORS
 
   //! Return the text to be tokenized.
@@ -74,6 +77,9 @@ protected:
   virtual bool error_() const;
   virtual bool end_() const;
 
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
+
 private:
   // IMPLEMENTATION
 
@@ -85,7 +91,7 @@ private:
   string messages_; //!< Collection of diagnostic messages
 };
 
-} // rtt_parser
+} // namespace rtt_parser
 
 #endif // CCS4_String_Token_Stream_HH
 

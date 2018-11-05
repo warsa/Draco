@@ -3,7 +3,7 @@
  * \file   ds++/SystemCall.hh
  * \brief  Wrapper for system calls. Hide differences between Unix/Windows
  *         system calls.
- * \note   Copyright (C) 2016-2017 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *         All rights reserved.
  */
 //---------------------------------------------------------------------------//
@@ -112,7 +112,7 @@ DLL_PUBLIC_dsxx void draco_mkdir(std::string const &path);
  */
 DLL_PUBLIC_dsxx void draco_remove(std::string const &path);
 
-} // end of rtt_dsxx
+} // namespace rtt_dsxx
 
 #endif // rtt_dsxx_SystemCall_hh
 
