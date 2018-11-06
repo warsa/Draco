@@ -14,13 +14,11 @@
 
 namespace rtt_dsxx {
 
-template<typename Lambda, typename Release>
+template <typename Lambda, typename Release>
 int do_scalar_unit_test(int argc, char *argv[], Release release,
-                 Lambda const &lambda)
-{
+                        Lambda const &lambda) {
   ScalarUnitTest ut(argc, argv, release);
-  try
-  {
+  try {
     lambda(ut);
   }
   UT_EPILOG(ut);

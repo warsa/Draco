@@ -7,8 +7,8 @@
  * \note   Copyright (C) 2018 TRIAD, LLC. All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#include "ds++/Release.hh"
 #include "c4/parallel_unit_test.hh"
+#include "ds++/Release.hh"
 
 using namespace rtt_dsxx;
 using namespace rtt_c4;

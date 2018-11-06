@@ -22,7 +22,7 @@ namespace rtt_dsxx {
  * \return EXIT_SUCCESS or EXIT_FAILURE as appropriate.
  */
 
-template<typename Lambda, typename Release>
+template <typename Lambda, typename Release>
 int do_parallel_unit_test(int argc, char *argv[], Release release,
                           Lambda const &lambda);
 

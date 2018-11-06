@@ -19,7 +19,7 @@ using namespace rtt_dsxx;
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
   return do_scalar_unit_test(argc, argv, release,
-                               [](UnitTest &ut) { ut.passes("basic run"); });
+                             [](UnitTest &ut) { ut.passes("basic run"); });
 }
 
 //----------------------------------------------------------------------------//
