@@ -10,7 +10,6 @@
 
 #include "Analytic_Gray_Opacity.hh"
 #include "ds++/Packing_Utils.hh"
-#include <cmath>
 
 namespace rtt_cdi_analytic {
 

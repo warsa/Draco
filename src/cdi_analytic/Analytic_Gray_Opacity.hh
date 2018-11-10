@@ -52,15 +52,9 @@ namespace rtt_cdi_analytic {
  * Example usage of Analytic_Gray_Opacity, Analytic_Opacity_Model, and their
  * incorporation into rtt_cdi::CDI.
  */
-// revision history:
-// -----------------
-// 0) original
-// 1) 06-MAR-03 : added model specification; default is still ANALYTIC
-//
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_Gray_Opacity
-    : public rtt_cdi::GrayOpacity {
+class Analytic_Gray_Opacity : public rtt_cdi::GrayOpacity {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_Opacity_Model> SP_Analytic_Model;
