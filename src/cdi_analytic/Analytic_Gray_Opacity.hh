@@ -75,8 +75,9 @@ private:
 
 public:
   // Constructor.
-  Analytic_Gray_Opacity(SP_Analytic_Model, rtt_cdi::Reaction,
-                        rtt_cdi::Model = rtt_cdi::ANALYTIC);
+  Analytic_Gray_Opacity(SP_Analytic_Model model_in,
+                        rtt_cdi::Reaction reaction_in,
+                        rtt_cdi::Model cdi_model_in = rtt_cdi::ANALYTIC);
 
   // Constructor for packed Analytic_Gray_Opacities.
   explicit Analytic_Gray_Opacity(const sf_char &);
