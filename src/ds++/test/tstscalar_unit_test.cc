@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------------//
 
 #include "ds++/Release.hh"
-#include "ds++/scalar_unit_test.hh"
+#include "ds++/ScalarUnitTest.hh"
 
 using namespace rtt_dsxx;
 
@@ -16,10 +16,12 @@ using namespace rtt_dsxx;
 // TESTS
 //----------------------------------------------------------------------------//
 
+void test1(UnitTest &ut) { ut.passes("function test"); }
+
 //----------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
-  return do_scalar_unit_test(argc, argv, release,
-                             [](UnitTest &ut) { ut.passes("basic run"); });
+  return do_scalar_unit_test(argc, argv, release, test1,
+                             [](UnitTest &ut) { ut.passes("lambda test"); });
 }
 
 //----------------------------------------------------------------------------//

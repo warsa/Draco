@@ -12,19 +12,21 @@
 
 #include "c4/ParallelUnitTest.hh"
 
-namespace rtt_dsxx {
+#include "ds++/ScalarUnitTest.i.hh"
 
-template <typename Lambda, typename Release>
+namespace rtt_c4 {
+
+template <typename... Lambda, typename Release>
 int do_parallel_unit_test(int argc, char *argv[], Release release,
-                          Lambda const &lambda) {
+                          Lambda const &... lambda) {
   rtt_c4::ParallelUnitTest ut(argc, argv, release);
   try {
-    lambda(ut);
+    rtt_dsxx::implement_do_unit_test(ut, lambda...);
   }
   UT_EPILOG(ut);
 }
 
-} // end namespace rtt_dsxx
+} // namespace rtt_c4
 
 #endif // dsxx_test_i_hh
 

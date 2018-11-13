@@ -1,25 +1,37 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   ds++/scalar_unit_test.i.hh
+ * \file   ds++/ScalarUnitTest.i.hh
  * \author Kent Grimmett Budge
  * \date   Tue Nov  6 13:12:37 2018
  * \brief  Member definitions of class test
  * \note   Copyright (C) TRIAD, LLC. All rights reserved. */
 //----------------------------------------------------------------------------//
 
-#ifndef dsxx_scalar_unit_test_i_hh
-#define dsxx_scalar_unit_test_i_hh
+#ifndef dsxx_ScalarUnitTest_i_hh
+#define dsxx_ScalarUnitTest_i_hh
 
 #include "ds++/ScalarUnitTest.hh"
 
 namespace rtt_dsxx {
 
-template <typename Lambda, typename Release>
+template <typename Lambda>
+void implement_do_unit_test(UnitTest &ut, Lambda const &lambda) {
+  lambda(ut);
+}
+
+template <typename First_Lambda, typename... More_Lambdas>
+void implement_do_unit_test(UnitTest &ut, First_Lambda const &first_lambda,
+                            More_Lambdas const &... more_lambdas) {
+  first_lambda(ut);
+  implement_do_unit_test(ut, more_lambdas...);
+}
+
+template <typename... Lambda, typename Release>
 int do_scalar_unit_test(int argc, char *argv[], Release release,
-                        Lambda const &lambda) {
+                        Lambda const &... lambda) {
   ScalarUnitTest ut(argc, argv, release);
   try {
-    lambda(ut);
+    implement_do_unit_test(ut, lambda...);
   }
   UT_EPILOG(ut);
 }
@@ -29,5 +41,5 @@ int do_scalar_unit_test(int argc, char *argv[], Release release,
 #endif // dsxx_test_i_hh
 
 //----------------------------------------------------------------------------//
-// end of ds++/scalar_unit_test.i.hh
+// end of ds++/ScalarUnitTest.i.hh
 //----------------------------------------------------------------------------//
