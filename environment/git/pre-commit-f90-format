@@ -259,6 +259,7 @@ printf "\nYou can apply these changes with:\n git apply $patch\n"
 printf "(may need to be called from the root directory of your repository)\n"
 printf "Aborting commit. Apply changes and commit again or skip checking with"
 printf " --no-verify (not recommended).\n"
-printf "\nYou can also manually update format by running f90-format -i <file>.\n"
+printf "\nYou can also manually update format by running\n"
+printf " emacs -batch <file> -l ${SCRIPTPATH}/f90-format.el -f emacs-format-f90-sources\n"
 
 exit 1
