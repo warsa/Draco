@@ -5,10 +5,7 @@
  *          light, etc) are defined in SI units.
  *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *          All rights reserved.
- */
-//---------------------------------------------------------------------------//
-// $Id: PhysicalConstants.hh 7431 2015-02-24 17:10:44Z kellyt $
+ *          All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #ifndef __units_PhysicalConstantsSI_hh__
@@ -19,6 +16,7 @@
 
 //! \namespace rtt_units Namespace for units and physical constants
 namespace rtt_units {
+
 // Base physical constants in SI units:
 
 //    m - meters, kg - kilograms, s - seconds, K - kelvin
@@ -39,7 +37,6 @@ namespace rtt_units {
 // Fundamental constants are listed first.
 // Derived constants are listed second.
 // Actual data is placed in a user-defined type for C-interoperatbility.
-//
 //---------------------------------------------------------------------------//
 
 //! [c] SPEED OF LIGHT (M/S)
@@ -99,12 +96,13 @@ static double const protonMassSI = 1.672621777e-27; // kg
  */
 static double const EV2K = electronChargeSI / boltzmannSI;
 
-/*! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
+/*! 
+ * \brief [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
  *
- * /f
+ * \f[
  * \sigma_{SB} = \frac{2 \pi^5 k^4} {15 h^3 c^2}
  *             = 5.670373e-8
- * /f
+ * \f]
  */
 static double const stefanBoltzmannSI =
     static_cast<double>(2.0) * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /

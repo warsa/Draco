@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   ds++/test/cxx11example_move_sematics.cc
+ * \file   ds++/test/cxx11example_move_semantics.cc
  * \author Tim M. Kelley <tkelley@lanl.gov>, Kelly G. Thompson <kgt@lanl.gov>
  * \date   Wednesday, May 24, 2017, 11:06 am
  * \brief  Demonstrate proper and improper use of std::move
@@ -71,7 +71,8 @@ struct B {
 };
 
 //----------------------------------------------------------------------------//
-/*! \breif Demonstration of move semantics
+/*! 
+ * \brief Demonstration of move semantics
  *
  * 1. Create a vector
  * 2. Attempt to construct a class (A), demonstrate that ownership is not
