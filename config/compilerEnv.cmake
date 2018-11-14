@@ -151,6 +151,9 @@ macro(dbsSetupCxx)
   set( CMAKE_CXX_EXTENSIONS OFF )
   set( CMAKE_C_EXTENSIONS   OFF )
 
+  # -fPIC by default
+  set( CMAKE_POSITION_INDEPENDENT_CODE ON )
+  
   # Setup compiler flags
   get_filename_component( my_cxx_compiler "${my_cxx_compiler}" NAME )
 
