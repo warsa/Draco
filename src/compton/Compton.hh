@@ -82,18 +82,18 @@ public:
   interpolate_nu_ratio(const double etemp, const bool limit_grps = true) const;
 
   //! Versions for use with on-the-fly temperature interpolation:
-  //! Interpolation (E)xpected (R)elative (E)nergy (C)hange:
+  //! Interpolate (E)xpected (R)elative (E)nergy (C)hange:
   double interpolate_erec(const double Tm, const double freq) const;
-  //! Interpolation total sigma_s(Tm, freq):
+  //! Interpolation total sigma_s for a given temperature and freq:
   double interpolate_sigc(const double Tm, const double freq) const;
 
   //! Versions for use with already-interped-in-etemp data:
-  //! Interpolation (E)xpected (R)elative (E)nergy (C)hange:
+  //! Interpolate (E)xpected (R)elative (E)nergy (C)hange:
   double interpolate_erec(const int64_t cell, const double freq) const;
-  //! Interpolation total sigma_s(Tm, freq):
+  //! Interpolate total sigma_s for a given cell index and freq:
   double interpolate_sigc(const int64_t cell, const double freq) const;
 
-  //! Interpolation of CSK data in etemp (stored in CSK for each cell):
+  //! Interpolate all CSK data in temperature (stored in CSK for each cell):
   void interpolate_precycle(const std::vector<double> &Tms,
                             const std::vector<double> &dens) const;
 
