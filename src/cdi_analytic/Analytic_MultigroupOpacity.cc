@@ -32,6 +32,7 @@ namespace rtt_cdi_analytic {
  * \param[in] groups vector containing the group boundaries in keV from lowest 
  *               to highest
  * \param[in] reaction_in rtt_cdi::Reaction type (enumeration)
+ * \param[in] model_in CDI type
  */
 Analytic_MultigroupOpacity::Analytic_MultigroupOpacity(
     const sf_double &groups, rtt_cdi::Reaction reaction_in,

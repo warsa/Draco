@@ -235,10 +235,8 @@ void operator delete(void *ptr, size_t) throw() { operator delete(ptr); }
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief
- *
- * \param name description
- * \return description
+ * \brief Provide a special action when an out-of-memory condition is 
+ *        encountered.
  *
  * The usual notion is that if new operator cannot allocate dynamic memory of
  * the requested size, then it should throw an exception of type

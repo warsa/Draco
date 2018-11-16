@@ -548,19 +548,15 @@ public:
    *
    * \param T Temperature (keV) for which the specific internal energy is to be
    *          evaluated.
-   * \param rho Density (g/cm^3) for which the specific internal energy is to
-   *          be evaluated. This parameter is not actually used.
    * \return Electron specific internal energy (kJ/g)
    *
    * \pre \c T>=0
    * \pre \c rho>=0
    * \post \c U>=0
    */
-  double
-  calculate_electron_internal_energy(double T,
-                                     double Remember(rho)) const override {
+  double calculate_electron_internal_energy(double T,
+                                            double /*rho*/) const override {
     Require(T >= 0.0);
-    Require(rho >= 0.0);
 
     Check(c >= 0.0);
     double T_power = std::pow(T, c + 1.0);
@@ -578,8 +574,6 @@ public:
    *
    * \param T Temperature (keV) for which the specific internal energy is to be
    *          evaluated.
-   * \param rho Density (g/cm^3) for which the specific internal energy is to
-   *          be evaluated. This parameter is not actually used.
    * \return Ion specific internal energy (kJ/g)
    *
    * \pre \c T>=0
@@ -587,9 +581,8 @@ public:
    * \post \c U>=0
    */
   double calculate_ion_internal_energy(double T,
-                                       double Remember(rho)) const override {
+                                       double /*rho*/) const override {
     Require(T >= 0.0);
-    Require(rho >= 0.0);
 
     Check(f >= 0.0);
     double T_power = std::pow(T, f + 1.0);

@@ -1,4 +1,4 @@
-//----------------------------------*-C++-*-----------------------------------//
+//----------------------------------*-C++-*----------------------------------//
 /*! \file   PhysicalConstantsSI.hh
  *  \author Kelly Thompson, Kent G. Budge
  *  \brief  Provide a single place where physical constants (pi, speed of
@@ -6,7 +6,7 @@
  *  \date   Fri Nov 07 10:04:52 2003
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *          All rights reserved. */
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 #ifndef __units_PhysicalConstantsSI_hh__
 #define __units_PhysicalConstantsSI_hh__
@@ -16,6 +16,7 @@
 
 //! \namespace rtt_units Namespace for units and physical constants
 namespace rtt_units {
+
 // Base physical constants in SI units:
 
 //    m - meters, kg - kilograms, s - seconds, K - kelvin
@@ -89,12 +90,12 @@ static double const accelerationFromGravitySI = 9.80665; // m/s^2
 // Wikipedia (2013-12-3) == NIST Codata 2010 (eps = 4.4e-8)
 static double const protonMassSI = 1.672621777e-27; // kg
 
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 // DERIVED CONSTANTS
 //  - constants derived from fundamental constants listed above
 //  - constants with alternate units
 //  - conversion factors
-//----------------------------------------------------------------------------//
+//---------------------------------------------------------------------------//
 
 /*! \brief EV2K CONVERSION FACTOR FROM ELECTRON-VOLTS TO KELVIN (K/eV)
  *
@@ -105,12 +106,13 @@ static double const protonMassSI = 1.672621777e-27; // kg
  */
 static double const EV2K = electronChargeSI / boltzmannSI;
 
-/*! [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
+/*! 
+ * \brief [sigma] STEFAN-BOLTZMANN CONSTANT (WATTS/(M**2-K**4)
  *
- * /f
+ * \f[
  * \sigma_{SB} = \frac{2 \pi^5 k^4} {15 h^3 c^2}
  *             = 5.670373e-8
- * /f
+ * \f]
  */
 static double const stefanBoltzmannSI =
     2.0 * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /

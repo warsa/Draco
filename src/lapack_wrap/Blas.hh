@@ -89,7 +89,6 @@ inline void blas_scal(int N, double alpha, double *x, int increment_x) {
  * \brief Do \f$ x\leftarrow\alpha x \f$ for vector<T> type.
  *
  * \param x vector<T> array
- * \param increment_x x stride
  * \param alpha scalar of type T
  *
  * The results are written into x.

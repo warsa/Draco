@@ -1,5 +1,5 @@
 //----------------------------------*-C++-*----------------------------------//
-/*! \file   tstTimeStep.c
+/*! \file   timestep/test/tstTimeStep.cc
  *  \brief  A driver for the time-step manager test facility.
  *  \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
  *          All rights reserved.  */

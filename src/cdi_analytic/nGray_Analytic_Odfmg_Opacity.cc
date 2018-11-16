@@ -32,13 +32,13 @@ namespace rtt_cdi_analytic {
  * must be equal to the number of groups.
  *
  * \param groups vector containing the group boundaries in keV from lowest to
- * highest
- *
+ *           highest
+ * \param bands vector containing the band boundaries in keV from lowest to
+ *           highest
  * \param models vector containing shared_ptrs to Analytic_Model derived types
- * for each group, the size should be groups.size() - 1
- *
+ *           for each group, the size should be groups.size() - 1
  * \param reaction_in rtt_cdi::Reaction type (enumeration)
- *
+ * \param model_in An enumeration for the model.
  */
 nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
     const sf_double &groups, const sf_double &bands,
@@ -137,10 +137,9 @@ nGray_Analytic_Odfmg_Opacity::nGray_Analytic_Odfmg_Opacity(
  * analytic opacity model is specified in the constructor
  * (nGray_Analytic_Odfmg_Opacity()).
  *
- * \param temperature material temperature in keV
- * \param density material density in g/cm^3
+ * \param targetTemperature material temperature in keV
+ * \param targetDensity material density in g/cm^3
  * \return group opacities (coefficients) in cm^2/g
- *
  */
 std::vector<std::vector<double>>
 nGray_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
