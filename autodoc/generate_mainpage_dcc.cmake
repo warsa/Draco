@@ -1,25 +1,24 @@
 #-----------------------------*-cmake-*----------------------------------------#
-# file   draco/config/configureFileOnMake.cmake
+# file   draco/autodoc/generate_mainpage_dcc.cmake
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 Oct 14
-# brief  Configure a file during the 'make' process instead of during 'cmake'
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# brief  Generate mainpage.dcc during 'make autodoc'
+# note   Copyright (C) 2018 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
 # Use:
-#   cmake -PconfigureFileOnMake.cmake -DINFILE=$infile \
-#         -DOUTFILE=$outfile -DSUBST_VARIABLE=VALUE ...
+#   cmake -DINFILE=$infile -DOUTFILE=$outfile -DSUBST_VARIABLE=VALUE ... \
+#         -P generate_mainpage_dcc.cmake
 #
 # Prerequisits:
-# - INFILE must be a valid file.
+# - INFILE must be a valid file (e.g. mainpage.dcc.in)
 #
 # Post
 # - OUTFILE will be written (or overwritten).
 #
-# Suggested use is to generate binary directory files based on
-# build-time changes to corresonding source tree .in file. For
-# example,
+# Suggested use is to generate binary directory files based on build-time
+# changes to corresonding source tree .in file. For example,
 #   add_custom_command(
 #    OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
 #    COMMAND "${CMAKE_COMMAND}"
@@ -27,7 +26,7 @@
 #            -DOUTFILE="${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
 #            -DCOMP_LINKS=${COMP_LINKS}
 #            -DPACKAGE_LINKS=${PACKAGE_LINKS}
-#            -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
+#            -P "${PROJECT_SOURCE_DIR}/config/generate_mainpage_dcc.cmake"
 #    DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
 #  )
 #
@@ -40,7 +39,6 @@ if( NOT EXISTS ${INFILE} )
   message( FATAL_ERROR "
 INFILE and OUTFILE must be set on command line.  For example,
 ${CMAKE_COMMAND}
-  -P ${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake
   -DINFILE=${INFILE}
   -DOUTFILE=${OUTFILE}
   -DPROJECT_NAME=${PROJECT_NAME}
@@ -51,6 +49,7 @@ ${CMAKE_COMMAND}
   -DHTML_OUTPUT=${HTML_OUTPUT}
   -DTAGFILES=${TAGFILES}
   -DDOTFILE_DIRS=${DOTFILE_DIRS}
+  -P${PROJECT_SOURCE_DIR}/config/generate_mainpage_dcc.cmake
 " )
 endif()
 
@@ -92,4 +91,19 @@ if( TAGFILES )
    endforeach()
    set( TAGFILES ${tmp_tagfiles} )
 endif()
+
+# Generate an author list
+
+if( EXISTS "${DRACO_INFO}" )
+  execute_process(
+    COMMAND         "${DRACO_INFO}" -a -d
+    OUTPUT_VARIABLE AUTHOR_LIST )
+endif()
+
+# Generage the new file while updating all of the build-spaecific '@' data.
+
 configure_file( ${INFILE} ${OUTFILE} @ONLY )
+
+#------------------------------------------------------------------------------#
+# End generate_mainpage_dcc.cmake
+#------------------------------------------------------------------------------#

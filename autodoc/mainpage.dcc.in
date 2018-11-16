@@ -6,38 +6,37 @@
 /*!
 
 \mainpage The Draco Documentation System
-
-\par Authors
-
-Kelly (KT) Thompson, Kent Budge, Jae Chang Jim Warsa, Alex Long, Matt Cleveland,
-Kendra Keady, Andrew Till, Ryan Wollaeger, Kris Garrett,
-
-\par Former contributors
-
-Massimiliano Rosa, Rob Lowrie, Jeff Densmore, Lori Pritchett-Sheats, Katherine
-Wang, Gabe Rockefeller, Allan Wollaber, Tom Evans, Todd Adams, John McGhee, Mike
-Buksas, Randy Roberts, Seth Johnson, Paul Talbot, Jeff Furnish, Paul Henning,
-Nick Meyers.
+\version Draco-@Draco_VERSION_FULL@
 
 \par Executive Summary
 
 Draco is a C++ radiation transport component library developed by CCS-2, Los
 Alamos National Laboratory. In addition to providing infrastructure for
 radiation transport code development, Draco serves as a "model Development
-Environment (DE)" for code development activities within CCS-2.  Most CCS-2
-code projects are based on the coding standards, idioms, style, organization,
-and architecture of Draco.
+Environment (DE)" for code development activities within CCS-2.  Most CCS-2 code
+projects are based on the coding standards, idioms, style, organization, and
+architecture of Draco.
 
-\par Getting Started
+\par Authors:
 
-To get started building Draco see \ref build_system.  Package
-overviews can be found in the <a href="pages.html">Related Pages</a>
+@AUTHOR_LIST@
+
+\par Resources
+
+To get started building Draco see \ref build_system  or [build
+system](https://rtt.lanl.gov/redmine/projects/draco/wiki/Common_Configure_Options).
+Package overviews can be found in the <a href="pages.html">Related Pages</a>
 section of the documentation. Also see:
+
 - <a href=https://github.com/lanl/Draco>Draco on GitHub</a>.
 - <a href=http://rtt.lanl.gov/redmine/projects/draco>Draco project
   management (Redmine) </a>.
 - <a href=http://rtt.lanl.gov/cdash>Draco regression reporting on CDash</a>.
 - Draco mailing list, draco@lanl.gov
+
+\par Copyright
+
+\include @PROJECT_SOURCE_DIR@/Copyright
 
 */
 

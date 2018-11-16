@@ -11,14 +11,11 @@
 #ifndef rtt_dsxx_DracoMath_hh
 #define rtt_dsxx_DracoMath_hh
 
-#include "Assert.hh"
 #include "Soft_Equivalence.hh"
 #include <algorithm>
-#include <cmath>
 #include <complex>
 #include <cstdlib>
 #include <functional>
-#include <iterator>
 
 namespace rtt_dsxx {
 
