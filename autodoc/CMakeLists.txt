@@ -32,6 +32,8 @@ set_doxygen_image_path() # --> DOXYGEN_IMAGE_PATH
 
 # Doxygen only allows 32 threads max
 set_doxygen_dot_num_threads() # --> DOXYGEN_DOT_NUM_THREADS
+                              # --> DOXYGEN_HTML_DYNAMIC_MENUS (v 1.8.14+)
+                              # --> DOXYGEN_WARN_AS_ERROR
 
 set( DOXYGEN_HTML_OUTPUT draco )
 set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
@@ -51,8 +53,7 @@ add_custom_command(
           -Ddoxygen_output_top="${DOXYGEN_OUTPUT_DIR}"
           -DINPUT=${DOXYGEN_INPUT}
           -Ddoxygen_input=${DOXYGEN_INPUT}
-          -DEXAMPLE_PATH=${DOXYGEN_EXAMPLES}
-          -Ddoxygen_examples=${DOXYGEN_EXAMPLES}
+          -DDOXYGEN_EXAMPLE_PATH=${DOXYGEN_EXAMPLE_PATH}
           -DHTML_OUTPUT=${DOXYGEN_HTML_OUTPUT}
           -Ddoxygen_html_output=${DOXYGEN_HTML_OUTPUT}
           -DDOTFILE_DIRS=""
@@ -65,6 +66,8 @@ add_custom_command(
           -Dproject_logo="${PROJECT_SOURCE_DIR}/autodoc/html/dragon.jpg"
           -Dnumthreads=${DOXYGEN_DOT_NUM_THREADS}
           -DDOXYGEN_IMAGE_PATH=${DOXYGEN_IMAGE_PATH}
+          -DDOXYGEN_HTML_DYNAMIC_MENUS="${DOXYGEN_HTML_DYNAMIC_MENUS}"
+          -DDOXYGEN_WARN_AS_ERROR="${DOXYGEN_WARN_AS_ERROR}"
           -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
   DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/autodoc)
@@ -98,8 +101,9 @@ add_custom_command(
 # The actual doxygen command that will be run
 add_custom_command(
   OUTPUT
-     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
      ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
+  BYPRODUCTS
+     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
   COMMAND "${DOXYGEN_EXECUTABLE}" ${PROJECT_BINARY_DIR}/autodoc/doxygen_config
   DEPENDS
     ${PROJECT_BINARY_DIR}/autodoc/doxygen_config

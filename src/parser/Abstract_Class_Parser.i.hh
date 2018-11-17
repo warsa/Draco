@@ -11,6 +11,9 @@
 #ifndef utils_Abstract_Class_Parser_i_hh
 #define utils_Abstract_Class_Parser_i_hh
 
+//! \bug This file needs to be cleaned up for doxygen parsing.
+//! \cond doxygen_ignore_block
+
 //---------------------------------------------------------------------------//
 template <typename Abstract_Class, typename Context,
           Context const &get_context()>
@@ -151,6 +154,8 @@ bool Abstract_Class_Parser<Class, get_parse_table, get_parsed_object,
                            Parse_Function>::check_static_class_invariants() {
   return true; // no significant invariant for now
 }
+
+//! \endcond
 
 #endif // utils_Abstract_Class_Parser_i_hh
 

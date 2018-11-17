@@ -46,7 +46,7 @@ function( set_doxygen_input )
     endif()
     if( EXISTS ${package}/test/CMakeLists.txt )
       list( APPEND DOXYGEN_INPUT "${package}/test" )
-      set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
+      set( DOXYGEN_EXAMPLE_PATH "${DOXYGEN_EXAMPLE_PATH} ${package}/test" )
     endif()
     if( EXISTS ${package}/autodoc )
       list( APPEND DOXYGEN_INPUT "${package}/autodoc" )
@@ -105,6 +105,18 @@ function( set_doxygen_dot_num_threads )
     set( DOXYGEN_DOT_NUM_THREADS 32 PARENT_SCOPE)
   else()
     set( DOXYGEN_DOT_NUM_THREADS ${MPIEXEC_MAX_NUMPROCS} PARENT_SCOPE)
+  endif()
+  # hack in a couple of other settings based on the version of doxygen
+  # discovered.
+  if( ${DOXYGEN_VERSION} VERSION_GREATER_EQUAL 1.8.14 )
+    set( DOXYGEN_HTML_DYNAMIC_MENUS "DOXYGEN_HTML_DYNAMIC_MENUS = YES"
+      PARENT_SCOPE)
+  endif()
+  # Escalate doxygen warnings into errors for CI builds
+  if( DEFINED ENV{CI} AND "$ENV{TRAVIS}" )
+    set( DOXYGEN_WARN_AS_ERROR "YES" PARENT_SCOPE )
+  else()
+    set( DOXYGEN_WARN_AS_ERROR "NO" PARENT_SCOPE )
   endif()
 endfunction()
 
