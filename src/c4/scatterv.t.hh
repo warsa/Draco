@@ -24,7 +24,7 @@ using std::vector;
 //---------------------------------------------------------------------------//
 
 //---------------------------------------------------------------------------//
-template <class T>
+template <typename T>
 DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
                                           vector<T> &incoming_data) {
 #ifdef C4_MPI
@@ -82,7 +82,7 @@ DLL_PUBLIC_c4 void indeterminate_scatterv(vector<vector<T>> &outgoing_data,
 }
 
 //---------------------------------------------------------------------------//
-template <class T>
+template <typename T>
 DLL_PUBLIC_c4 void determinate_scatterv(vector<vector<T>> &outgoing_data,
                                         vector<T> &incoming_data) {
   Require(static_cast<int>(outgoing_data.size()) == rtt_c4::nodes());

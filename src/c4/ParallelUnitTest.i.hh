@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   c4/parallel_unit_test.i.hh
+ * \file   c4/ParallelUnitTest.i.hh
  * \author Kent Grimmett Budge
  * \date   Tue Nov  6 13:12:37 2018
  * \brief  Member definitions of class test
