@@ -19,64 +19,19 @@ if( NOT DOXYGEN_FOUND )
   return()
 endif()
 
- # if AUTODOCDIR is set in environment (or make command line), create a CMake
- # variable with this value.
- if( ENV{AUTODOCDIR} )
-    set( AUTODOCDIR "$ENV{AUTODOCDIR}" )
- endif()
- # if AUTODOCDIR is set, use it, otherwise, default to CMAKE_INSTALL_PREFIX.
- if( AUTODOCDIR )
-    set( DOXYGEN_OUTPUT_DIR "${AUTODOCDIR}" )
-  else()
-    set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc )
- endif()
+include(autodoc_macros)
+set_autodocdir() # --> AUTODOCDIR
 
 # Source directories that should be examined by doxygen Sets ${DOXYGEN_INPUT}.
 # This value is embedded in the doxygen_config file below.
-set( DOXYGEN_INPUT
-   "${PROJECT_SOURCE_DIR}/autodoc ${PROJECT_BINARY_DIR}/autodoc" )
+set_doxygen_input() # --> DOXYGEN_INPUT
 
-# BUG: Move this list generation into component_macros.cmake so that inactive 
-#      packages are not included in this list.
-file( GLOB package_list ${PROJECT_SOURCE_DIR}/src/* )
-foreach( package ${package_list} )
-   if( EXISTS ${package}/CMakeLists.txt )
-      set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}" )
-   endif()
-   if( EXISTS ${package}/test/CMakeLists.txt )
-      set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/test" )
-      set( DOXYGEN_EXAMPLES "${DOXYGEN_EXAMPLES} ${package}/test" )
-   endif()
-   if( EXISTS ${package}/autodoc )
-      set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
-   endif()
-endforeach()
-
-# Tell doxygen where image files are located so they can be copied to the 
+# Tell doxygen where image files are located so they can be copied to the
 # output directory.
-#
-# The list of source files (this variable also set by 
-# comonent_macros.cmake::process_autodoc_pages()
-list(APPEND DOXYGEN_IMAGE_PATH 
-  "${PROJECT_SOURCE_DIR}/autodoc"
-  "${PROJECT_SOURCE_DIR}/autodoc/html" )
-list( REMOVE_DUPLICATES DOXYGEN_IMAGE_PATH )
-# convert list of image directories into a space delimited string
-unset( temp )
-foreach( image_dir ${DOXYGEN_IMAGE_PATH} )
-   set( temp "${temp} ${image_dir}" )
-endforeach()
-set( DOXYGEN_IMAGE_PATH "${temp}" )
-unset( temp )
+set_doxygen_image_path() # --> DOXYGEN_IMAGE_PATH
 
-# Also look for files that have been configured (.in files) and
-# placed in the BINARY_DIR.
-file( GLOB package_list ${PROJECT_BINARY_DIR}/src/* )
-foreach( package ${package_list} )
-   if( EXISTS ${package}/autodoc )
-      set( DOXYGEN_INPUT "${DOXYGEN_INPUT} ${package}/autodoc" )
-   endif()
-endforeach()
+# Doxygen only allows 32 threads max
+set_doxygen_dot_num_threads() # --> DOXYGEN_DOT_NUM_THREADS
 
 set( DOXYGEN_HTML_OUTPUT draco )
 set( project_brief "Object-oriented components for numerically intensive, parallel, radiation transport applications.")
@@ -108,26 +63,15 @@ add_custom_command(
           -Dhtmlheader="${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
           -Dhtmlfooter="${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
           -Dproject_logo="${PROJECT_SOURCE_DIR}/autodoc/html/dragon.jpg"
-          -Dnumthreads=${MPIEXEC_MAX_NUMPROCS}
+          -Dnumthreads=${DOXYGEN_DOT_NUM_THREADS}
           -DDOXYGEN_IMAGE_PATH=${DOXYGEN_IMAGE_PATH}
           -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
-  DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in" 
+  DEPENDS "${PROJECT_SOURCE_DIR}/config/doxygen_config.in"
   WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/autodoc)
-configure_file(
-  "${PROJECT_SOURCE_DIR}/autodoc/html/footer.html.in"
-  "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/footer.html"
-  @ONLY )
-configure_file(
-  "${PROJECT_SOURCE_DIR}/autodoc/html/header.html.in"
-  "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/header.html"
-  @ONLY )
-add_custom_command(
-  OUTPUT  "${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/doxygen.css"
-  COMMAND "${CMAKE_COMMAND}"
-          -DINFILE="${PROJECT_SOURCE_DIR}/autodoc/html/doxygen.css"
-          -DOUTFILE="${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/doxygen.css"
-          -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
-  DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/html/doxygen.css" )
+
+# Create header.html, footer.html and doxygen.css.
+doxygen_provide_support_files()
+
 add_custom_command(
   OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
   COMMAND "${CMAKE_COMMAND}"
@@ -135,10 +79,12 @@ add_custom_command(
           -DOUTFILE="${PROJECT_BINARY_DIR}/autodoc/mainpage.dcc"
           -DCOMP_LINKS=${COMP_LINKS}
           -DPACKAGE_LINKS=${PACKAGE_LINKS}
-          -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
+          -DDraco_VERSION_FULL="${Draco_VERSION_FULL}"
+          -DDRACO_INFO="$<TARGET_FILE_DIR:Exe_draco_info>/$<TARGET_FILE_NAME:Exe_draco_info>"
+          -DPROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+          -P "${PROJECT_SOURCE_DIR}/autodoc//generate_mainpage_dcc.cmake"
   DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/mainpage.dcc.in"
-  COMMENT "Doxygen docs are installed at"
-          "${DOXYGEN_HTML_OUTPUT}.  " )
+          Exe_draco_info )
 add_custom_command(
   OUTPUT  "${PROJECT_BINARY_DIR}/autodoc/build_system.dcc"
   COMMAND "${CMAKE_COMMAND}"
@@ -147,7 +93,7 @@ add_custom_command(
           -DCOMP_LINKS=${COMP_LINKS}
           -DPACKAGE_LINKS=${PACKAGE_LINKS}
           -P "${PROJECT_SOURCE_DIR}/config/configureFileOnMake.cmake"
-  DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/build_system.dcc.in" )          
+  DEPENDS "${PROJECT_SOURCE_DIR}/autodoc/build_system.dcc.in" )
 
 # The actual doxygen command that will be run
 add_custom_command(
@@ -174,5 +120,7 @@ add_custom_target( autodoc
 
 # To Do:
 # 1. How to 'make clean'?
-# 2. Consider using tagfiles and building each component as an thread
-#    to decrease wall clock time needed to build docs.
+
+#------------------------------------------------------------------------------#
+# End autodoc/CMakeLists.txt
+#------------------------------------------------------------------------------#
