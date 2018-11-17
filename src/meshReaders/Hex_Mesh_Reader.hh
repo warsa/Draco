@@ -12,9 +12,6 @@
 #define __meshReaders_Hex_Mesh_Reader_hh__
 
 #include "Mesh_Reader.hh"
-#include "mesh_element/Element_Definition.hh"
-#include <string>
-#include <vector>
 
 namespace rtt_meshReaders {
 

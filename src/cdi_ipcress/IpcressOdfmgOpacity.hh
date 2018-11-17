@@ -14,7 +14,6 @@
 #include "IpcressDataTable.hh"
 #include "cdi/OdfmgOpacity.hh"
 #include <cmath>
-#include <memory>
 
 namespace rtt_cdi_ipcress {
 // -------------------- //

@@ -13,8 +13,6 @@
 
 #include "C4_Functions.hh"
 #include "scatterv.hh"
-#include "c4/config.h"
-#include "ds++/Assert.hh"
 #include <algorithm>
 
 namespace rtt_c4 {

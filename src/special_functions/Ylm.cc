@@ -5,15 +5,12 @@
  * \date   Tue Sep 21 09:20:10 2004
  * \brief  Implementation of Ylm
  * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
- *         All rights reserved.
- */
+ *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
 #include "Ylm.hh"
 #include "Factorial.hh"
-#include "ds++/Assert.hh"
 #include "units/PhysicalConstants.hh"
-#include <cmath>
 #include <cstdlib>
 #include <gsl/gsl_sf_gamma.h>
 #include <gsl/gsl_sf_legendre.h>

@@ -98,8 +98,9 @@ add_custom_command(
 # The actual doxygen command that will be run
 add_custom_command(
   OUTPUT
-     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
      ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/always_out_of_date.html
+  BYPRODUCTS
+     ${DOXYGEN_OUTPUT_DIR}/${DOXYGEN_HTML_OUTPUT}/index.html
   COMMAND "${DOXYGEN_EXECUTABLE}" ${PROJECT_BINARY_DIR}/autodoc/doxygen_config
   DEPENDS
     ${PROJECT_BINARY_DIR}/autodoc/doxygen_config

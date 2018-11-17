@@ -8,7 +8,6 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "C4_Functions.hh"
 #include "C4_Req.hh"
 #include "scatterv.t.hh"
 #include <c4/config.h>
