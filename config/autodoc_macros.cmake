@@ -36,6 +36,7 @@ function( set_doxygen_input )
   set( DOXYGEN_INPUT
     "${PROJECT_SOURCE_DIR}/autodoc"
     "${PROJECT_BINARY_DIR}/autodoc" )
+  set( DOXYGEN_EXAMPLE_PATH "" )
 
   # BUG: Move this list generation into component_macros.cmake so that inactive
   #      packages are not included in this list.
@@ -46,7 +47,7 @@ function( set_doxygen_input )
     endif()
     if( EXISTS ${package}/test/CMakeLists.txt )
       list( APPEND DOXYGEN_INPUT "${package}/test" )
-      set( DOXYGEN_EXAMPLE_PATH "${DOXYGEN_EXAMPLE_PATH} ${package}/test" )
+      list( APPEND DOXYGEN_EXAMPLE_PATH "${package}/test" )
     endif()
     if( EXISTS ${package}/autodoc )
       list( APPEND DOXYGEN_INPUT "${package}/autodoc" )
@@ -63,12 +64,18 @@ function( set_doxygen_input )
     endif()
   endforeach()
 
-  # convert list of image directories into a space delimited string
+  # convert list of directories into a space delimited string
   unset( temp )
   foreach( dir ${DOXYGEN_INPUT} )
     set( temp "${temp} ${dir}" )
   endforeach()
   set( DOXYGEN_INPUT "${temp}" PARENT_SCOPE)
+
+  unset( temp )
+  foreach( dir ${DOXYGEN_EXAMPLE_PATH} )
+    set( temp "${temp} ${dir}" )
+  endforeach()
+  set( DOXYGEN_EXAMPLE_PATH "${temp}" PARENT_SCOPE)
   unset( temp )
 
 endfunction()
@@ -109,7 +116,7 @@ function( set_doxygen_dot_num_threads )
   # hack in a couple of other settings based on the version of doxygen
   # discovered.
   if( ${DOXYGEN_VERSION} VERSION_GREATER_EQUAL 1.8.14 )
-    set( DOXYGEN_HTML_DYNAMIC_MENUS "DOXYGEN_HTML_DYNAMIC_MENUS = YES"
+    set( DOXYGEN_HTML_DYNAMIC_MENUS "HTML_DYNAMIC_MENUS = YES"
       PARENT_SCOPE)
   endif()
   # Escalate doxygen warnings into errors for CI builds
