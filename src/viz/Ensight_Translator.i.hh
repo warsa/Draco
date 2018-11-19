@@ -312,13 +312,13 @@ void Ensight_Translator::ensight_dump(
  * \param pt_coor_in See ensight_dump().
  * \param vrtx_data_in See ensight_dump().
  * \param cell_data_in See ensight_dump().
- * \param g_vrtx_indices.  Global vertex indices.  These are used by Ensight as
+ * \param g_vrtx_indices Global vertex indices.  These are used by Ensight as
  *           integer labels for each vertex.  Specifically, let i access the
  *           i'th value in \a vrtx_data.  Then \a g_vrtx_indices[i] gives the
  *           "global index" (or label index) for i.  This is referred to as
  *           "global" because \a g_vrtx_indices can be used to map each
  *           processor's local indices to global index space.
- * \param g_cell_indices. Global cell indices.  Analogous to \a g_vrtx_indices,
+ * \param g_cell_indices Global cell indices.  Analogous to \a g_vrtx_indices,
  *           but for cell indices.
  *
  * \sa \ref Ensight_Translator_strings "Ensight_Translator class" for

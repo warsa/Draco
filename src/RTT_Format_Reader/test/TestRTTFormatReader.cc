@@ -9,12 +9,10 @@
 //---------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
-#include "RTT_Format_Reader/CellDefs.hh"
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/path.hh"
 #include <sstream>
 
 using namespace std;
