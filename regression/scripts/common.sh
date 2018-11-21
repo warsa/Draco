@@ -699,7 +699,7 @@ canonicalize_filename () {
 # Example:
 #
 # EMACSVER=`emacs --version | head -n 1 | sed -e 's/.*Emacs //'`
-# if [[ `version_gt "24.0.0" $EMACSVER`  ]]; then echo yes; fi
+# if `version_gt "24.0.0" $EMACSVER` ; then echo yes; fi
 ##----------------------------------------------------------------------------##
 function version_gt()
 {

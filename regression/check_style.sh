@@ -39,7 +39,8 @@ print_use()
     echo " "
     echo "All arguments are optional."
     echo "  -f Show diff and fix files (when possible)."
-    echo "  -t Run as a pre-commit check, print list of non-conformant files and return"
+    echo -n "  -t Run as a pre-commit check, print list of non-conformant "
+    echo "files and return"
     echo "     with exit code = 1 (implies -d)."
     echo " "
 }
@@ -114,7 +115,8 @@ done
 ##---------------------------------------------------------------------------##
 
 ver=`${cf} --version`
-echo -e "\n--------------------------------------------------------------------------------"
+echo -ne "\n------------------------------------------------------------"
+echo "--------------------"
 echo "Checking modified C/C++ code for style conformance..."
 #echo "  - using clang-format version $ver"
 #echo "  - using settings from this project's .clang_format configuration file."
@@ -128,17 +130,20 @@ run "${cmd}" &> $patchfile_c
 
 # if the patch file has the string "no modified files to format", the check passes.
 if [[ `grep -c "no modified files" ${patchfile_c}` != 0 ]]; then
-  echo "PASS: Changes to C++ sources conform to this project's style requirements."
+  echo -n "PASS: Changes to C++ sources conform to this project's style "
+  echo "requirements."
 else
   foundissues=1
-  echo    "FAIL: some C++ files do not conform to this project's style requirements:"
+  echo -n "FAIL: some C++ files do not conform to this project's style "
+  echo "requirements:"
   # Modify files, if requested
   if [[ ${fix_mode} == 1 ]]; then
     echo -e "      The following patch has been applied to your file.\n"
     run "git apply $patchfile_c"
     cat $patchfile_c
   else
-    echo -e "      run ${0##*/} with option -f to automatically apply this patch.\n"
+    echo -ne "      run ${0##*/} with option -f to automatically apply this "
+    echo -e "patch.\n"
     cat $patchfile_c
   fi
 fi
@@ -152,7 +157,7 @@ rm -f $patchfile_c
 EMACS=`which emacs`
 if [[ $EMACS ]]; then
   EMACSVER=`$EMACS --version | head -n 1 | sed -e 's/.*Emacs //'`
-  if [[ `version_gt "24.0.0" $EMACSVER`  ]]; then
+  if `version_gt "24.0.0" $EMACSVER` ; then
     echo "WARNING: Your version of emacs is too old. Expecting v 24.0+."
     echo "         pre-commit-hook partially disabled (f90 indentation)"
     unset EMACS
@@ -174,7 +179,8 @@ FILE_ENDINGS="_f.h _f77.h _f90.h"
 
 if [[ -x $EMACS ]]; then
 
-  echo -e "\n--------------------------------------------------------------------------------"
+  echo -ne "\n----------------------------------------------------------------"
+  echo "----------------"
   echo -e "Checking modified F90 code for style conformance (indentation)..\n"
 
   patchfile_f90=$(mktemp /tmp/emf90.patch.XXXXXXXX)
@@ -194,7 +200,8 @@ if [[ -x $EMACS ]]; then
       -f emacs-format-f90-sources &> /dev/null
     # color output is possible if diff -version >= 3.4 with option `--color`
     diff -u "${file}" "${tmpfile1}" | \
-      sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" >> "$patchfile_f90"
+      sed -e "1s|--- |--- a/|" -e "2s|+++ ${tmpfile1}|+++ b/${file}|" \
+          >> "$patchfile_f90"
     rm $tmpfile1
 
   done
@@ -202,18 +209,21 @@ if [[ -x $EMACS ]]; then
   # If the patch file is size 0, then no changes are needed.
   if [[ -s "$patchfile_f90" ]]; then
     foundissues=1
-    echo "FAIL: some F90 files do not conform to this project's style requirements:"
+    echo -n "FAIL: some F90 files do not conform to this project's style "
+    echo "requirements:"
     # Modify files, if requested
     if [[ ${fix_mode} == 1 ]]; then
       echo -e "      The following patch has been applied to your file.\n"
       run "git apply $patchfile_f90"
       cat $patchfile_f90
     else
-      echo -e "      run ${0##*/} with option -f to automatically apply this patch.\n"
+      echo -ne "      run ${0##*/} with option -f to automatically apply this "
+      ehco -e "patch.\n"
       cat $patchfile_f90
     fi
   else
-    echo "PASS: Changes to F90 sources conform to this project's style requirements."
+    echo -n "PASS: Changes to F90 sources conform to this project's style "
+    echo "requirements."
   fi
   rm -f $patchfile_f90
 
@@ -223,7 +233,8 @@ fi
 ## Check mode (Test F90 code line length with bash)
 ##---------------------------------------------------------------------------##
 
-echo -e "\n--------------------------------------------------------------------------------"
+echo -ne "\n----------------------------------------------------------------"
+echo "----------------"
 echo -e "Checking modified F90 code for style conformance (line length)..\n"
 
 tmpfile2=$(mktemp /tmp/f90-format-line-len.XXXXXXXX)
@@ -247,7 +258,8 @@ for file in $modifiedfiles; do
       if [[ ${header_printed} == 0 ]]; then
         echo -e "\nFile: ${file} [code line too long]\n" >> $tmpfile2
         echo "  line   length content" >> $tmpfile2
-        echo "  ------ ------ --------------------------------------------------------------------------------" >> $tmpfile2
+        echo -n "  ------ ------ -------------------------------" >> $tmpfile2
+        echo "-------------------------------------------------" >> $tmpfile2
         header_printed=1
       fi
       printf "  %-6s %-6s %s\n" "${lineno}" "${#line}" "${line}" >> $tmpfile2
@@ -260,7 +272,8 @@ done
 # If there are issues, report them
 if [[ `cat $tmpfile2 | wc -l` -gt 0 ]]; then
     foundissues=1
-    echo -e "FAIL: some F90 files do not conform to this project's style requirements:\n"
+    echo -ne "FAIL: some F90 files do not conform to this project's style "
+    echo "requirements:\n"
     cat $tmpfile2
     echo -ne "\nPlease reformat lines listed above to fit into 80 columns and "
     echo -ne "attempt running\n${0##*/} again. These issues cannot be fixed "
