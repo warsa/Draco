@@ -232,9 +232,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(double targetTemperature,
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided vector of
- *     temperatures and a single density value.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided vector of temperatures and a
+ *        single density value.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
@@ -250,16 +250,16 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief Opacity accessor that returns a vector of multigroupband
- *     opacity 2-D vectors that correspond to the provided
- *     temperature and a vector of density values.
+ * \brief Opacity accessor that returns a vector of multigroupband opacity 2-D
+ *        vectors that correspond to the provided temperature and a vector of
+ *        density values.
  */
 std::vector<std::vector<std::vector<double>>>
 Pseudo_Line_Analytic_Odfmg_Opacity::getOpacity(
     double targetTemperature, const std::vector<double> &targetDensity) const {
   std::vector<std::vector<std::vector<double>>> opacity(targetDensity.size());
 
-  //call our regular getOpacity function for every target density
+  // call our regular getOpacity function for every target density
   for (size_t i = 0; i < targetDensity.size(); ++i) {
     opacity[i] = getOpacity(targetTemperature, targetDensity[i]);
   }
@@ -287,8 +287,9 @@ Pseudo_Line_Analytic_Odfmg_Opacity::getDataDescriptor() const {
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+/*!
+ * \brief Packing function for Pseudo_Line_Analytic_Odfmg_Opacity
+ */
 Analytic_MultigroupOpacity::sf_char
 Pseudo_Line_Analytic_Odfmg_Opacity::pack() const {
   sf_char const pdata = Analytic_Odfmg_Opacity::pack();

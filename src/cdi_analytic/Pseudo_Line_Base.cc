@@ -106,6 +106,12 @@ Pseudo_Line_Base::Pseudo_Line_Base(
   setup_(emin, emax);
 }
 
+//----------------------------------------------------------------------------//
+// Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
+//                                    double line_peak, double line_width,
+//                                    int number_of_edges, double edge_ratio,
+//                                    double Tref, double Tpow, double emin,
+//                                    double emax, unsigned seed)
 Pseudo_Line_Base::Pseudo_Line_Base(const string &cont_file, int number_of_lines,
                                    double line_peak, double line_width,
                                    int number_of_edges, double edge_ratio,
@@ -172,8 +178,7 @@ Pseudo_Line_Base::Pseudo_Line_Base(double nu0, double C, double Bn, double Bd,
 }
 
 //---------------------------------------------------------------------------//
-// Packing function
-
+//! Packing function for Pseudo_Line_Base objects.
 vector<char> Pseudo_Line_Base::pack() const {
   throw std::range_error("sorry, pack not implemented for Pseudo_Line_Base");
   // Because we haven't implemented packing functionality for Expression trees
