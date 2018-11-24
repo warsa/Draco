@@ -128,8 +128,10 @@ patchfile_c=$(mktemp /tmp/gcf.patch.XXXXXXXX)
 cmd="${gcf} --binary ${cf} -f --diff --extensions hh,cc develop"
 run "${cmd}" &> $patchfile_c
 
-# if the patch file has the string "no modified files to format", the check passes.
-if [[ `grep -c "no modified files" ${patchfile_c}` != 0 ]]; then
+# if the patch file has the string "no modified files to format", the check
+# passes.
+if [[ `grep -c "no modified files" ${patchfile_c}` != 0 ]] || \
+   [[ `grep -c "clang-format did not modify any files" ${patchfile_c}` != 0 ]]; then
   echo -n "PASS: Changes to C++ sources conform to this project's style "
   echo "requirements."
 else

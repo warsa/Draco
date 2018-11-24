@@ -111,7 +111,6 @@ public:
 
   /*!
    * \brief Determine if the advisor is fit to use in a time-step calculation
-   * \param tsm the timestep manager in which the advisor resides
    *
    * Derived classes will have parameter 'tsm', the timestep manager in which 
    * the advisor resides.
