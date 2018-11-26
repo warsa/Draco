@@ -26,9 +26,9 @@ class ts_manager;
 /*!
  * \brief Defines the base class time-step advisor.
  *
- * \sa The ts_manager class provides a means to manage this advisor.
- * The \ref overview_timestep page gives a summary of the Draco time
- * step control utilities.
+ * \sa The ts_manager class provides a means to manage this advisor. The \ref 
+ *     overview_timestep page gives a summary of the Draco time step control
+ *     utilities.
  */
 //===========================================================================//
 class DLL_PUBLIC_timestep ts_advisor {
@@ -39,8 +39,8 @@ public:
   /*! 
    * \brief Flag to determine how the recommended timestep is to be used.
    *
-   * The recommended value "dt_rec" is to be used as indicated by
-   * the enumeration value selected
+   * The recommended value "dt_rec" is to be used as indicated by the
+   * enumeration value selected
    */
   enum usage_flag {
     min,       //!< use as a lower limit
@@ -79,6 +79,7 @@ public:
 
   /*!
    * \brief Constucts the advisor
+   *
    * \param name_ the name of the advisor
    * \param usage_ Specifies how the advisor is to be used
    * \param active_ turns the advisor on/off
@@ -92,7 +93,8 @@ public:
   //MANIPULATORS
 
   //! Turn the advisor on
-  void activate() { active = true; }
+  // void activate() { active = true; }
+
   //! Turn the advisor off
   void deactivate() { active = false; }
 
@@ -101,19 +103,21 @@ public:
   //! Determine if the advisor is active or not
   bool is_active() const { return active; }
 
-  /*! 
+  /*!
    * \brief Update and/or produce the time-step recommended by this advisor
    * \param tsm the timestep manager in which the advisor resides
    */
   virtual double get_dt_rec(const ts_manager &tsm) const = 0;
 
-  /*! 
+  /*!
    * \brief Determine if the advisor is fit to use in a time-step calculation
-   * 
+   *
    * Derived classes will have parameter 'tsm', the timestep manager in which 
    * the advisor resides.
    */
-  virtual bool advisor_usable(const ts_manager & /*tsm*/) const {
+  virtual bool advisor_usable(const ts_manager & /*tsm*/) const
+
+  {
     return (active == true);
   }
 
@@ -126,15 +130,14 @@ public:
   //! Vomit the entire internal state of the advisor to std out
   virtual void print_state(std::ostream &out = std::cout) const = 0;
 
-  //! Invariant function
-  /*! \return True if the invariant is satisfied.
-     */
+  //! True if the invariant is satisfied.
   virtual bool invariant_satisfied() const {
     return name.length() != 0 && 0 <= usage && usage < last_usage;
   }
 
-  /*! 
+  /*!
    * \brief Print out advisor data
+   *
    * \param tsm the timestep manager in which the advisor resides
    * \param controlling flags the advisor as the controlling advisor
    */

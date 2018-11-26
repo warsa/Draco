@@ -120,7 +120,7 @@ function( set_doxygen_dot_num_threads )
       PARENT_SCOPE)
   endif()
   # Escalate doxygen warnings into errors for CI builds
-  if( DEFINED ENV{CI} AND "$ENV{TRAVIS}" )
+  if( DEFINED ENV{CI} AND DEFINED ENV{TRAVIS} )
     set( DOXYGEN_WARN_AS_ERROR "YES" PARENT_SCOPE )
   else()
     set( DOXYGEN_WARN_AS_ERROR "NO" PARENT_SCOPE )
