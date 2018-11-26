@@ -70,7 +70,7 @@ public:
   explicit Pseudo_Line_Analytic_Odfmg_Opacity(const sf_char &);
 
   std::vector<std::vector<double>> getOpacity(double targetTemperature,
-                                              double targetDensity) const;
+                                              double /*targetDensity*/) const;
 
   std::vector<std::vector<std::vector<double>>>
   getOpacity(const std::vector<double> &targetTemperature,

@@ -1194,6 +1194,15 @@ macro( process_autodoc_pages )
     configure_file( ${file} ${PROJECT_BINARY_DIR}/autodoc/${dest_file}.dcc
       @ONLY )
   endforeach()
+  file( GLOB images_in autodoc/*.jpg autodoc/*.png autodoc/*.gif )
+  list( LENGTH images_in num_images )
+  if( ${num_images} GREATER 0 )
+    list( APPEND DOXYGEN_IMAGE_PATH "${PROJECT_SOURCE_DIR}/autodoc" )
+  endif()
+  set( DOXYGEN_IMAGE_PATH "${DOXYGEN_IMAGE_PATH}" CACHE PATH 
+     "List of directories that contain images for doxygen pages." FORCE )
+  unset( images_in )
+  unset( num_images )
 endmacro()
 
 #------------------------------------------------------------------------------#

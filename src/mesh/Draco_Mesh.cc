@@ -144,6 +144,8 @@ std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
  * \param[in] cell_to_node_linkage serial map of cell index to node indices.
  * \param[in] side_node_count number of verices per side.
  * \param[in] side_to_node_linkage serial map of side index to node indices.
+ * \param[in] ghost_cell_type help me
+ * \param[in] ghost_cell_to_node_linkage help me
  */
 void Draco_Mesh::compute_cell_to_cell_linkage(
     const std::vector<unsigned> &cell_type,

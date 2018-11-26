@@ -10,6 +10,7 @@
  * which is consistent in format with the other parse functins in utilities.hh
  * No implementation is provided. However, we recommend using the templates in
  * this header (Class_Parse_Table.hh) to provide an implementation of the form
+ *
  * \code
  * template<>
  * std::shared_ptr<Class> parse_class(Token_Stream &tokens) {
@@ -18,7 +19,7 @@
  * \endcode
  *
  * Why don't we define this as the default implementation? Because then any file
- * that #included Class_Parse_Table.hh would attempt to use the default
+ * that included Class_Parse_Table.hh would attempt to use the default
  * implementation for every call to parse_class in the file. When you are
  * parsing objects that include class subobjects, this would require including
  * the definition of the parse table class for every such subobject type. This

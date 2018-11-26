@@ -17,6 +17,8 @@
 #include "multigroup_data_types.hh"
 #include "multigroup_lib_builder.hh"
 
+#ifdef COMPTON_FOUND
+
 namespace rtt_compton {
 
 // ------------ //
@@ -270,3 +272,9 @@ void Compton::interpolate_precycle(const std::vector<double> &Tms,
   llnli->preinterp_in_temp(Tms, dens);
 }
 } // namespace rtt_compton
+
+#endif
+
+//---------------------------------------------------------------------------//
+// End compton/Compton.cc
+//---------------------------------------------------------------------------//
