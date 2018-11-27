@@ -143,7 +143,7 @@ void dbc_test(UnitTest &ut) {
 
 //---------------------------------------------------------------------------//
 void isFinite_test(UnitTest &ut) {
-  UT_MSG(rtt_dsxx::isFinite(15.0), "Correctly found x to be finite.");
+  UT_MSG(rtt_dsxx::isFinite(15.0), "Correctly found 15.0 to be finite.");
   return;
 }
 

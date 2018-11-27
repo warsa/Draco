@@ -187,7 +187,7 @@ private:
  * \brief General stream output.
  *
  * \param i The data to be written.
- * \param T The datatype.
+ * \tparam T The datatype.
  */
 template <class T> File_Output &File_Output::operator<<(const T i) {
   Require(d_stream.is_open());
@@ -215,7 +215,7 @@ template <class T> File_Output &File_Output::operator<<(const T i) {
  * \brief General stream input.
  *
  * \param i The data to be read.
- * \param T The datatype.
+ * \tparam T The datatype.
  */
 template <class T> File_Input &File_Input::operator>>(T &i) {
   Require(d_stream.is_open());

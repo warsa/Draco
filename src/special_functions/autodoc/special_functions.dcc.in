@@ -51,7 +51,7 @@ the delta function defined by
 
 <!---------------------------------------------------------------------------->
 
-\section sf_sf_sph Spherical Harmonics
+\section sf_sph Spherical Harmonics
 
 The spherical harmonics \f$ Y_l^m (\theta,\phi) \f$ are the angular portion of
 the solution to <a
@@ -92,7 +92,7 @@ Y_{\ell,k}(\theta_m,\omega_m) = c_{\ell,k}P_{\ell,k}(\mu_m) e^{i k\omega_m}, \,\
 \forall \,\,\,\,\, k \ge 0, \mu_m = \cos(\theta_m),
 \f]
 
-where \f$ P_{\ell,k} \f$ are the \ref assoc_leg_poly "Associated Legendre
+where \f$ P_{\ell,k} \f$ are the \ref sf_assoc_leg_poly "Associated Legendre
 Functions" of degree \f$ \ell \f$ and order \f$ k \f$.  See the associated
 figure below.  Note, for 1D quadrature sets, \f$ k=0 \f$, and the spherical
 harmonics functions become the associated Legendre polynomials.

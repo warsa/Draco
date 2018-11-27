@@ -20,7 +20,7 @@ namespace rtt_cdi_test {
 /*!
  * \class DummyGrayOpacity
  *
- * \breif This is an opacity class that derives its interface from 
+ * \brief This is an opacity class that derives its interface from 
  *        cdi/GrayOpacity and is used for testing purposes only.
  *
  * \sa This opacity class always contains the same data (set by the default 
@@ -35,8 +35,8 @@ namespace rtt_cdi_test {
  * GrayOpacity this class provides three additional 1-D STL-like accessors for 
  * opacity data.
  *
- * \example cdi/test/tDummyOpacity.cc
- * \example cdi/test/tCDI.cc
+ * \sa cdi/test/tDummyOpacity.cc
+ * \sa cdi/test/tCDI.cc
  */
 //============================================================================//
 

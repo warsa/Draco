@@ -163,16 +163,16 @@ public:
    *     IpcressFile object) to a IpcressOpacity object. There may be many
    *     IpcressOpacity objects per IpcressFile object but only one
    *     IpcressFile object for each IpcressOpacity object.
-   * \param materialID An identifier that links the IpcressOpacity object to
+   * \param in_materialID An identifier that links the IpcressOpacity object to
    *     a single material found in the specified IPCRESS file.
-   * \param opacityModel The physics model that the current data set is
+   * \param in_opacityModel The physics model that the current data set is
    *     based on.
-   * \param opacityReaction The type of reaction rate that the current data
+   * \param in_opacityReaction The type of reaction rate that the current data
    *     set represents.
    */
   IpcressGrayOpacity(std::shared_ptr<IpcressFile const> const &spIpcressFile,
-                     size_t materialID, rtt_cdi::Model opacityModel,
-                     rtt_cdi::Reaction opacityReaction);
+                     size_t in_materialID, rtt_cdi::Model in_opacityModel,
+                     rtt_cdi::Reaction in_opacityReaction);
 
   /*!
    * \brief Unpacking constructor.

@@ -11,8 +11,7 @@
 #ifndef __cdi_GrayOpacity_hh__
 #define __cdi_GrayOpacity_hh__
 
-#include "OpacityCommon.hh" // Stuff that is common between Gray and
-                            // Multigroup.
+#include "OpacityCommon.hh"
 #include "ds++/config.h"
 #include <string>
 #include <vector>
@@ -31,7 +30,7 @@ namespace rtt_cdi {
  * grid and the ability to return interpolated opacity values.
  *
  * \example cdi/test/tDummyOpacity.cc
- * \example cdi/test/tCDI.cc
+ * \sa cdi/test/tCDI.cc
  */
 //========================================================================
 
