@@ -14,6 +14,7 @@
 #include "ds++/Assert.hh"
 // headers provided in Compton include directory:
 #include "compton_file.hh"
+#include "llnl_compton_data.hh"
 #include "multigroup_data_types.hh"
 #include "multigroup_lib_builder.hh"
 
@@ -41,11 +42,15 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
   compton_file Cfile(false);
   if (!llnl_style) {
     // initialize the electron temperature interpolator with the mg compton data
-    ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    //ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
+    ei = std::unique_ptr<etemp_interp>(
+        new etemp_interp(std::move(Cfile.read_mg_csk_data(filehandle))));
     // Make sure the SP exists...
     Ensure(ei);
   } else {
-    llnli.reset(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    //llnli.reset(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+    llnli = std::unique_ptr<llnl_interp>(
+        new llnl_interp(std::move(Cfile.read_llnl_data(filehandle))));
     // Make sure the SP exists...
     Ensure(llnli);
   }
@@ -126,6 +131,9 @@ Compton::Compton(const std::string &filehandle,
   // Make sure the SP exists...
   Ensure(ei);
 }
+
+// Dtor
+Compton::~Compton() {}
 
 // ------------ //
 //  Interfaces  //
@@ -228,7 +236,8 @@ double Compton::interpolate_sigc(const double Tm, const double freq) const {
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated relative energy change (Delta-E / E)
  */
-double Compton::interpolate_erec(const int64_t cell, const double freq) const {
+double Compton::interpolate_cell_erec(const int64_t cell,
+                                      const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   Require(llnli->pre_interped());
@@ -249,7 +258,8 @@ double Compton::interpolate_erec(const int64_t cell, const double freq) const {
  * \param[in] freq Incident frequency (keV)
  * \return    The interpolated opacity (cm^-1)
  */
-double Compton::interpolate_sigc(const int64_t cell, const double freq) const {
+double Compton::interpolate_cell_sigc(const int64_t cell,
+                                      const double freq) const {
   // call the appropriate routine in the electron interp object
   // (unscaled -- it'll be scaled in the library
   Require(llnli->pre_interped());
