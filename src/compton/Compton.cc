@@ -12,11 +12,6 @@
 #include "compton/Compton.hh"
 #include "c4/global.hh"
 #include "ds++/Assert.hh"
-// headers provided in Compton include directory:
-#include "compton_file.hh"
-#include "llnl_compton_data.hh"
-#include "multigroup_data_types.hh"
-#include "multigroup_lib_builder.hh"
 
 #ifdef COMPTON_FOUND
 
@@ -40,19 +35,18 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
 
   // Make a compton file object to read the multigroup data
   compton_file Cfile(false);
-  if (!llnl_style) {
-    // initialize the electron temperature interpolator with the mg compton data
-    //ei.reset(new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
-    ei = std::unique_ptr<etemp_interp>(
-        new etemp_interp(std::move(Cfile.read_mg_csk_data(filehandle))));
-    // Make sure the SP exists...
-    Ensure(ei);
-  } else {
-    //llnli.reset(new llnl_interp(Cfile.read_llnl_data(filehandle)));
+  if (llnl_style) {
+    // initialize the etemp/frequency interpolated with the library data:
     llnli = std::unique_ptr<llnl_interp>(
         new llnl_interp(std::move(Cfile.read_llnl_data(filehandle))));
     // Make sure the SP exists...
     Ensure(llnli);
+  } else {
+    // initialize the electron temperature interpolator with the mg compton data
+    ei = std::unique_ptr<etemp_interp>(
+        new etemp_interp(std::move(Cfile.read_mg_csk_data(filehandle))));
+    // Make sure the SP exists...
+    Ensure(ei);
   }
 }
 
