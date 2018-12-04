@@ -57,7 +57,7 @@ subversion cmake/3.12.1 numdiff git totalview trilinos/12.10.1 \
 superlu-dist/5.1.3 metis parmetis random123 eospac/6.3.0"
 
   if [[ `groups | grep -c ccsrad` != 0 ]]; then
-    dracomodules="$dracomodules csk ndi"
+    dracomodules="$dracomodules csk/0.4.0 ndi"
   fi
 
 fi
