@@ -134,7 +134,7 @@ run "module load cmake/3.12.1 numdiff git"
 run "module load gsl random123 eospac/6.3.0 ndi"
 run "module load trilinos/12.10.1 ndi metis parmetis/4.0.3 superlu-dist"
 run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-run "module load csk"
+run "module load csk/0.4.0"
 
 export CC=`which cc`
 export CXX=`which CC`
