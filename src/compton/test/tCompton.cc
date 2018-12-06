@@ -40,7 +40,7 @@ void compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   try {
     compton_test.reset(new rtt_compton::Compton(filename));
-  } catch (int asrt) {
+  } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
@@ -268,7 +268,7 @@ void compton_build_test(rtt_dsxx::UnitTest &ut) {
     compton_test.reset(new rtt_compton::Compton(
         filename, test_groups, opac_type, wt_func, induced, det_bal, nxi));
     std::cout << "\n\n";
-  } catch (rtt_dsxx::assertion &asrt) {
+  } catch (rtt_dsxx::assertion & /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
