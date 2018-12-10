@@ -20,7 +20,7 @@ case $ddir in
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }
-
+    ;;
   #------------------------------------------------------------------------------#
   draco-6_25_0 )
     function intel1802env()
