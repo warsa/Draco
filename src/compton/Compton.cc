@@ -38,13 +38,13 @@ Compton::Compton(const std::string &filehandle, const bool llnl_style) {
   if (llnl_style) {
     // initialize the etemp/frequency interpolated with the library data:
     llnli = std::unique_ptr<llnl_interp>(
-        new llnl_interp(std::move(Cfile.read_llnl_data(filehandle))));
+        new llnl_interp(Cfile.read_llnl_data(filehandle)));
     // Make sure the SP exists...
     Ensure(llnli);
   } else {
     // initialize the electron temperature interpolator with the mg compton data
     ei = std::unique_ptr<etemp_interp>(
-        new etemp_interp(std::move(Cfile.read_mg_csk_data(filehandle))));
+        new etemp_interp(Cfile.read_mg_csk_data(filehandle)));
     // Make sure the SP exists...
     Ensure(ei);
   }
