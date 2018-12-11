@@ -144,7 +144,7 @@ void const_compton_file_test(rtt_dsxx::UnitTest &ut) {
 
   try {
     compton_test.reset(new const rtt_compton::Compton(filename));
-  } catch (int asrt) {
+  } catch (int /*asrt*/) {
     FAILMSG("Failed to construct a Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
@@ -367,7 +367,7 @@ void compton_fail_test(rtt_dsxx::UnitTest &ut) {
     std::cout << "Draco exception thrown: " << asrt.what() << std::endl;
     // We successfully caught the bad file!
     caught = true;
-  } catch (const int &asrt) {
+  } catch (const int & /*asrt*/) {
     std::cout << "CSK exception thrown. " << std::endl;
     // We successfully caught the bad file!
     caught = true;
@@ -397,7 +397,7 @@ void llnl_compton_test(rtt_dsxx::UnitTest &ut) {
   std::unique_ptr<rtt_compton::Compton> compton_test;
   try {
     compton_test.reset(new rtt_compton::Compton(filename, llnl_style));
-  } catch (int asrt) {
+  } catch (int /*asrt*/) {
     FAILMSG("Failed to construct an LLNL-style Compton object!");
     // if construction fails, there is no reason to continue testing...
     return;
