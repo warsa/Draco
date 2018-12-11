@@ -129,7 +129,7 @@ run "module load trilinos/12.10.1 superlu-dist metis parmetis"
 run "module load cmake/3.12.1 ndi numdiff git"
 run "module load mkl random123 eospac/6.3.0"
 run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-run "module load csk/0.4.0"
+run "module load csk"
 
 export OMP_NUM_THREADS=18
 comp=`basename $CXX`
@@ -194,7 +194,7 @@ for ep in $extra_params; do
       run "module load superlu-dist metis parmetis"
       run "module load trilinos/12.10.1"
       run "module load cmake/3.12.1 ndi numdiff git"
-      run "module load mkl random123 eospac/6.3.0 csk/0.4.0"
+      run "module load mkl random123 eospac/6.3.0 csk"
       ;;
     nr)
       # no-op
