@@ -16,7 +16,7 @@ case $ddir in
       run "module load cmake git numdiff python/3.6-anaconda-5.0.1"
       run "module load intel/18.0.2 openmpi/2.1.2"
       run "module load random123 eospac/6.3.0 gsl"
-      run "module load mkl metis ndi csk/0.4.0"
+      run "module load mkl metis ndi csk"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }
@@ -74,7 +74,7 @@ case $ddir in
       run "module load cmake git numdiff"
       run "module load intel/17.0.4 openmpi/2.1.2"
       run "module load random123 eospac/6.2.4 gsl"
-      run "module load mkl metis ndi csk/0.4.0"
+      run "module load mkl metis ndi csk"
       run "module load parmetis superlu-dist trilinos"
       run "module list"
     }

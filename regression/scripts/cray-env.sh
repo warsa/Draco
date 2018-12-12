@@ -37,7 +37,7 @@ case $ddir in
       run "module load gsl random123 eospac/6.3.0 ndi"
       run "module load trilinos/12.10.1 metis parmetis/4.0.3 superlu-dist"
       run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk/0.4.0"
+      run "module load csk"
       run "module list"
       CC=`which cc`
       CXX=`which CC`
@@ -69,7 +69,7 @@ case $ddir in
       run "module load gsl random123 eospac/6.3.0 ndi"
       run "module load trilinos/12.10.1 metis parmetis/4.0.3 superlu-dist"
       run "module use --append ${VENDOR_DIR}-ec/modulefiles"
-      run "module load csk/0.4.0"
+      run "module load csk"
       run "module swap craype-haswell craype-mic-knl"
       run "module list"
       run "module list"
