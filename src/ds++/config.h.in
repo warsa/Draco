@@ -50,6 +50,9 @@
 #cmakedefine MSVC @MSVC@
 #cmakedefine MSVC_IDE @MSVC_IDE@
 #cmakedefine MSVC_VERSION @MSVC_VERSION@
+#cmakedefine MINGW @MINGW@
+#cmakedefine XCODE @XCODE@
+#cmakedefine XCODE_VERSION @XCODE_VERSION@
 #cmakedefine CMAKE_SYSTEM_NAME @CMAKE_SYSTEM_NAME@
 #ifdef CMAKE_SYSTEM_NAME
 #define CMAKE_SYSTEM_NAME_STRING "@CMAKE_SYSTEM_NAME@"

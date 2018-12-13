@@ -14,7 +14,7 @@
 #include <cstdio>  // remove()
 #include <cstdlib> // _fullpath
 #include <cstring> // strncpy()
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <sys/param.h> // MAXPATHLEN
 #include <unistd.h>    // gethostname
 #endif
