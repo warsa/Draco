@@ -682,9 +682,9 @@ macro( SetupVendorLibrariesWindows )
   setupParMETIS()
   setupRandom123()
   setupCOMPTON()
+  setupEospac()
   setupPython()
   setupQt()
-
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
