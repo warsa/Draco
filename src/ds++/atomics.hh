@@ -3,7 +3,7 @@
  * \file   ds++/atomics.hh
  * \author Tim Kelley
  * \date   Thursday, Sept. 6, 2018, 10:50 am
- * \brief  Header file for atomic functions (until C++20)
+ * \brief  Header file for atomic functions on floatint-point (until C++20)
  * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
