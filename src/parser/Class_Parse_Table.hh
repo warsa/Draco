@@ -244,7 +244,7 @@ parse_class_from_table(Token_Stream &tokens, Context const &context) {
  *
  * Class__parser.cc:
  *
- * #include "Class__parser.hh"
+ * include "Class__parser.hh"
  *
  * void Class_Parse_Table<Class>::parse_flag(Token_Stream &tokens, int)
  * {
