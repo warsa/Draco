@@ -23,12 +23,11 @@ namespace rtt_dsxx {
  * \remark: Uses memory_order_relaxed, meaning (I think) that other atomic
  * operations on a can be moved before or after this one.
  */
-template <class FpT>
-FpT fetch_add(std::atomic<FpT> &a, FpT arg){
+template <class FpT> FpT fetch_add(std::atomic<FpT> &a, FpT arg) {
   FpT expected = a.load();
   FpT to_store = expected + arg;
-  while(!a.compare_exchange_weak(expected,to_store,
-      std::memory_order_relaxed)) {
+  while (
+      !a.compare_exchange_weak(expected, to_store, std::memory_order_relaxed)) {
     expected = a.load();
     to_store = arg + expected;
   }
@@ -43,12 +42,11 @@ FpT fetch_add(std::atomic<FpT> &a, FpT arg){
  * \remark: Uses memory_order_relaxed, meaning (I think) that other atomic
  * operations on a can be moved before or after this one.
  */
-template <class FpT>
-FpT fetch_sub(std::atomic<FpT> &a, FpT arg){
+template <class FpT> FpT fetch_sub(std::atomic<FpT> &a, FpT arg) {
   FpT expected = a.load();
   FpT to_store = expected - arg;
-  while(!a.compare_exchange_weak(expected,to_store,
-      std::memory_order_relaxed)) {
+  while (
+      !a.compare_exchange_weak(expected, to_store, std::memory_order_relaxed)) {
     expected = a.load();
     to_store = arg - expected;
   }
