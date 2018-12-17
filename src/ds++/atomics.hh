@@ -54,6 +54,7 @@ FpT fetch_sub(std::atomic<FpT> &a, FpT arg){
   }
   return to_store;
 }
+
 } // namespace rtt_dsxx
 
 #endif
