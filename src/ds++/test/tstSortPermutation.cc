@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   test/ds++/tstSortPermutation.cc
+ * \file   ds++/test/tstSortPermutation.cc
  * \author Randy M. Roberts
  * \date   Mon Feb 14 14:20:45 2000
  * \note   Copyright (c) 2016-2018 Los Alamos National Security, LLC.
@@ -142,7 +142,6 @@ template <typename F> struct evenIsLess {
 };
 
 //---------------------------------------------------------------------------//
-
 int main(int /*argc*/, char * /*argv*/ []) {
   cout << "Initiating test of the SortPermutation.\n";
 

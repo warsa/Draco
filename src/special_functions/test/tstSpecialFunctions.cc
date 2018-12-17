@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   sf/test/test_sf.cc
+ * \file   special_functions/test/tstSpecialFunctions.cc
  * \author Kelly Thompson
  * \date   Tue Sep 27 12:49:39 2005
  * \brief  Unit tests for kronecker_delta and factorial.
@@ -59,7 +59,7 @@ void tstKdelta(rtt_dsxx::UnitTest &ut) {
     FAILMSG("Found kronecker_delta<unsigned>(uOne,uZero) != uZero, "
             "kronecker_delta is not working.");
 
-  if (kronecker_delta(lOne, lZero) == lZero)
+  if (kronecker_delta(lOne, lZero) == static_cast<unsigned>(lZero))
     PASSMSG("Found kronecker_delta<long>(uOne,uZero) == uZero, "
             "kronecker_delta is working.");
   else

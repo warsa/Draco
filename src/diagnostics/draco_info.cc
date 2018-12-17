@@ -26,7 +26,7 @@ namespace rtt_diagnostics {
 DracoInfo::DracoInfo(void)
     : release(rtt_dsxx::release()), copyright(rtt_dsxx::copyright()),
       contact("For information, send e-mail to draco@lanl.gov."),
-      build_type(normalizeCapitalization(CMAKE_BUILD_TYPE)),
+      build_type(rtt_dsxx::string_toupper(CMAKE_BUILD_TYPE)),
       library_type("static"), system_type("Unknown"), site_name("Unknown"),
       cuda(false), mpi(false), mpirun_cmd(""), openmp(false),
       diagnostics_level("disabled"), diagnostics_timing(false),
@@ -105,7 +105,7 @@ void print_text_with_word_wrap(std::string const &longstring,
 }
 
 //---------------------------------------------------------------------------//
-std::string DracoInfo::fullReport(void) {
+std::string DracoInfo::fullReport(void) const {
   using std::cout;
   using std::endl;
 
@@ -180,7 +180,7 @@ std::string DracoInfo::fullReport(void) {
 }
 
 //---------------------------------------------------------------------------//
-std::string DracoInfo::briefReport(void) {
+std::string DracoInfo::briefReport(void) const {
   std::ostringstream infoMessage;
 
   // Print version and copyright information to the screen:
@@ -192,20 +192,11 @@ std::string DracoInfo::briefReport(void) {
 
 //---------------------------------------------------------------------------//
 //! extract the single-line version info from release and return it
-std::string DracoInfo::versionReport(void) {
+std::string DracoInfo::versionReport(void) const {
   std::ostringstream infoMessage;
   print_text_with_word_wrap(release, 5, 80, infoMessage, ";");
   infoMessage << "\n" << std::endl;
   return infoMessage.str();
-}
-
-//---------------------------------------------------------------------------//
-// Create a string to hold build_type and normalize the case.
-
-std::string DracoInfo::normalizeCapitalization(std::string mystring) {
-  std::transform(mystring.begin(), mystring.end(), mystring.begin(), ::tolower);
-  mystring[0] = ::toupper(mystring[0]);
-  return mystring;
 }
 
 } // end namespace rtt_diagnostics

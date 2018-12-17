@@ -53,6 +53,9 @@ case ${-} in
      echo "jobpriorities  - List of all jobs and their priorities."
      echo "backfill       - Maximum job size to allow immediate start?"
      echo "usercpuhrs [moniker] [start date (mm/dd/yy)] [end date (mm/dd/yy)] - Print total cpu-hr usage by account."
+     if [[ -f /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias ]]; then
+     echo -e "\nMore slurm related aliases can be found at /usr/projects/consult/public/SLURM/aliases/slurm_bash_alias."
+     fi
    }
 
    alias hluser="egrep --color -E '.*${USER}.*|$'"
@@ -180,11 +183,11 @@ case ${-} in
 
    target="`uname -n | sed -e s/[.].*//`"
    case $target in
+     darwin-fe*)
+       alias salloc='module purge; salloc' ;;
      tt*|tr*)
-       alias salloc='salloc --gres=craynetwork:0'
-       ;;
+       alias salloc='salloc --gres=craynetwork:0' ;;
    esac
-
    ;; # end case 'interactive'
 
 ##---------------------------------------------------------------------------##

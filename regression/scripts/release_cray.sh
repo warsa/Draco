@@ -26,7 +26,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-6_24_0
+ddir=draco-7_0_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -34,61 +34,8 @@ pdir=$ddir
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   t[rt]-fe* | t[rt]-login* )
-    environments="intel17env intel17env-knl" ;;
+    environments="intel1802env intel1802env-knl";;
 esac
-
-function intel17env()
-{
-run "module load user_contrib friendly-testing"
-run "module unload ndi metis parmetis superlu-dist trilinos csk"
-run "module unload lapack gsl intel"
-run "module unload cmake"
-run "module unload intel gcc"
-run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
-run "module unload papi perftools"
-run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module unload intel cray-mpich"
-run "module load intel/17.0.4 cray-mpich/7.7.0"
-run "module load gsl"
-run "module load cmake/3.9.0 numdiff"
-run "module load trilinos/12.10.1 superlu-dist metis parmetis"
-run "module load ndi random123 eospac/6.2.4 csk"
-run "module list"
-CC=`which cc`
-CXX=`which CC`
-FC=`which ftn`
-export CRAYPE_LINK_TYPE=dynamic
-export OMP_NUM_THREADS=16
-export TARGET=haswell
-}
-
-function intel17env-knl()
-{
-run "module load user_contrib friendly-testing"
-run "module unload ndi metis parmetis superlu-dist trilinos csk"
-run "module unload lapack gsl intel"
-run "module unload cmake"
-run "module unload intel gcc"
-run "module unload PrgEnv-intel PrgEnv-cray PrgEnv-gnu"
-run "module unload papi perftools"
-run "module load PrgEnv-intel"
-run "module unload xt-libsci xt-totalview"
-run "module unload intel cray-mpich"
-run "module load intel/17.0.4 cray-mpich/7.7.0"
-run "module swap craype-haswell craype-mic-knl"
-run "module load gsl"
-run "module load cmake/3.9.0 numdiff"
-run "module load trilinos/12.10.1 superlu-dist metis parmetis"
-run "module load ndi random123 eospac/6.2.4 csk"
-run "module list"
-CC=`which cc`
-CXX=`which CC`
-FC=`which ftn`
-export CRAYPE_LINK_TYPE=dynamic
-export OMP_NUM_THREADS=17
-export TARGET=knl
-}
 
 # ============================================================================
 # ====== Normally, you do not edit anything below this line ==================
@@ -171,6 +118,8 @@ fi
 ##---------------------------------------------------------------------------##
 ## Execute the build, test and install
 ##---------------------------------------------------------------------------##
+
+source $draco_script_dir/cray-env.sh
 
 jobids=""
 for env in $environments; do

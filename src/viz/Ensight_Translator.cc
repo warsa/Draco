@@ -149,8 +149,7 @@ void Ensight_Translator::close() {
 /*!
  * \brief Creates some of the file prefixes and filenames for ensight dump.
  *
- * \param prefix std_string giving the name of the problem
- * \param gd_wpath directory where dumps are stored
+ * \param[in] prefix std_string giving the name of the problem
  */
 void Ensight_Translator::create_filenames(const std_string &prefix) {
   if (d_dump_dir[d_dump_dir.size() - 1] == rtt_dsxx::UnixDirSep ||
@@ -175,17 +174,18 @@ void Ensight_Translator::create_filenames(const std_string &prefix) {
 void Ensight_Translator::initialize(const bool graphics_continue) {
   using std::strerror;
 
-  d_num_cell_types = 15;
+  d_num_cell_types = 16;
 
   // Assign values to d_cell_names. These are the official "Ensight" names that
   // must be used in the Ensight file.
-  d_cell_names = {"point",     "bar2",  "bar3",   "tria3",   "tria6",
-                  "quad4",     "quad8", "tetra4", "tetra10", "pyramid5",
-                  "pyramid13", "hexa8", "hexa20", "penta6",  "penta15"};
+  d_cell_names = {"point",   "bar2",     "bar3",      "tria3",
+                  "tria6",   "quad4",    "quad8",     "tetra4",
+                  "tetra10", "pyramid5", "pyramid13", "hexa8",
+                  "hexa20",  "penta6",   "penta15",   "nsided"};
   Check(d_cell_names.size() == d_num_cell_types);
 
   // Assign values to vrtx_count, the number of vertices in a cell.
-  d_vrtx_cnt = {1, 2, 3, 3, 6, 4, 8, 4, 10, 5, 13, 8, 20, 6, 15};
+  d_vrtx_cnt = {1, 2, 3, 3, 6, 4, 8, 4, 10, 5, 13, 8, 20, 6, 15, -1};
   Check(d_vrtx_cnt.size() == d_num_cell_types);
 
   // Assign values to d_cell_type_index. The user will use these to identify
@@ -204,7 +204,8 @@ void Ensight_Translator::initialize(const bool graphics_continue) {
                        eight_node_hexahedron,
                        twenty_node_hexahedron,
                        six_node_wedge,
-                       fifteen_node_wedge};
+                       fifteen_node_wedge,
+                       unstructured};
   Check(d_cell_type_index.size() == d_num_cell_types);
 
   // Check d_dump_dir

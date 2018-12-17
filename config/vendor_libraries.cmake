@@ -16,7 +16,7 @@ include( setupMPI ) # defines the macros setupMPILibrariesUnix|Windows
 macro( setupPython )
 
   message( STATUS "Looking for Python...." )
-  find_package(PythonInterp QUIET REQUIRED)
+  find_package(PythonInterp 2.7 QUIET REQUIRED)
   #  PYTHONINTERP_FOUND - Was the Python executable found
   #  PYTHON_EXECUTABLE  - path to the Python interpreter
   set_package_properties( PythonInterp PROPERTIES
@@ -479,11 +479,23 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupParMETIS )
 
+  set( QUIET "QUIET")
   if( NOT TARGET METIS::metis )
     message( STATUS "Looking for METIS..." )
 
-    find_package( METIS QUIET )
-    if( METIS_FOUND )
+    find_package( METIS CONFIG ${QUIET} )
+    if( NOT TARGET METIS::metis )
+      find_package( METIS ${QUIET} )
+    endif()
+    if( TARGET METIS::metis )
+      if( TARGET METIS::metis AND NOT METIS_LIBRARY )
+        foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
+          get_target_property(tmp METIS::metis IMPORTED_LOCATION_${config} )
+          if( EXISTS ${tmp} AND NOT METIS_LIBRARY )
+            set( METIS_LIBRARY ${tmp} )
+          endif()
+        endforeach()
+      endif()
       message( STATUS "Looking for METIS.....found ${METIS_LIBRARY}" )
     else()
       message( STATUS "Looking for METIS.....not found" )
@@ -523,7 +535,7 @@ macro( setupParMETIS )
    computing fill-reducing orderings of sparse matrices." )
 
   endif()
-
+  unset(QUIET)
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -669,9 +681,27 @@ macro( SetupVendorLibrariesWindows )
   setupGSL()
   setupParMETIS()
   setupRandom123()
+  setupCOMPTON()
   setupPython()
   setupQt()
 
+
+  # Doxygen ------------------------------------------------------------------
+  message( STATUS "Looking for Doxygen..." )
+  find_package( Doxygen QUIET OPTIONAL_COMPONENTS dot mscgen dia )
+  set_package_properties( Doxygen PROPERTIES
+    URL "http://www.stack.nl/~dimitri/doxygen"
+    DESCRIPTION "Doxygen autodoc generator"
+    TYPE OPTIONAL
+    PURPOSE "Required for building develop HTML documentation."
+    )
+  if( DOXYGEN_FOUND )
+    message( STATUS "Looking for Doxygen...found version ${DOXYGEN_VERSION}" )
+  else()
+    message( STATUS "Looking for Doxygen...not found" )
+  endif()
+  
+  
 endmacro()
 
 #------------------------------------------------------------------------------

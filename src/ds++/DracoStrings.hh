@@ -12,12 +12,39 @@
 #define rtt_dsxx_DracoStrings_hh
 
 #include "ds++/config.h"
+#include <locale>
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace rtt_dsxx {
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Convert a string to all lower case
+ *
+ * \param[in] string_in This string will be converted letter by letter to 
+ *               lowercase.
+ * \return A string that contains no uppercase letters.
+ *
+ * There are many complexities not considered here (e.g.: non-ASCI character 
+ * sets) and many third party libraries like Boost provide a more complete 
+ * solution. 
+ */
+std::string string_tolower(std::string const &string_in);
+
+//----------------------------------------------------------------------------//
+/*!
+ * \brief Convert a string to all upper case
+ *
+ * \param[in] string_in This string will be converted letter by letter to 
+ *               uppercase.
+ * \return A string that contains no lowercase letters.
+ *
+ * \sa string_toupper
+ */
+std::string string_toupper(std::string const &string_in);
 
 //----------------------------------------------------------------------------//
 /*!
@@ -42,22 +69,14 @@ std::string to_string(T const num, unsigned int const precision = 23) {
 }
 
 //----------------------------------------------------------------------------//
-/*!
- * \brief trim whitespace (or other characters) from before and after main text.
- *
- * \param[in] str The string that will be processed
- * \param[in] whitespace A set of characters that will be removed.
- *                 (default: " \t")
- * \return A new, probably shortened, string without unwanted leading/training
- *         characters.
- */
+//! trim whitespace (or other characters) from before and after main text.
 std::string trim(std::string const &str, std::string const &whitespace = " \t");
 
 //----------------------------------------------------------------------------//
 /*!
  * \brief Removes all specified characters from a string.
  *
- * \param[in] str The string that will be processed
+ * \param[in] orig_str The string that will be processed
  * \param[in] chars_to_remove A set of characters (as a std::string) that will
  *         be removed.
  * \return A new, possibly shortened, string that does not contain the unwanted
@@ -115,7 +134,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t;
 // If we are using Visual Studio, we need these definitions. I expect that they
 // will be needed for 32-bit Linux as well, but I can't test that.
 // Might need to add "|| (defined(__GNUC__) && __WORDSIZE != 64)"
-#if defined(WIN32)
+#if defined(WIN32) || defined(APPLE)
 
 template <> auto parse_number_impl<long>(std::string const &str) -> long;
 template <>
@@ -180,7 +199,7 @@ auto parse_number(std::string const &str, bool verbose = true) -> T;
  * \param[in] str The string that contains a number.
  * \param[in] range_symbols Parenthesis or braces that mark the beginning or end
  *                 of the value range. (default: "{}")
- * \param[in] delimiter A character that separates each numeric entry.
+ * \param[in] delimiters A character that separates each numeric entry.
  *                 (default: ",")
  * \return A vector of numeric values.
  *

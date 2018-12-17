@@ -22,10 +22,8 @@ using namespace rtt_dsxx;
  * string. Use the default Text_Token_Stream user-defined whitespace
  * characters.
  *
- * \param text
- * Text to be tokenized.
+ * \param text Text to be tokenized.
  */
-
 String_Token_Stream::String_Token_Stream(string const &text)
     : text_(text), pos_(0), messages_(std::string()) {
   Ensure(check_class_invariants());
@@ -58,8 +56,8 @@ String_Token_Stream::String_Token_Stream(string &&text)
  *
  * \param text Text from which to extract tokens.
  * \param ws Points to a string containing user-defined whitespace characters.
- * \param no_nonbreaking_whitespace Causes spaces and tabs to be treated as 
- *        breaking whitespace. This has the effect of forcing all keywords to 
+ * \param no_nonbreaking_ws Causes spaces and tabs to be treated as
+ *        breaking whitespace. This has the effect of forcing all keywords to
  *        consist of a single identifier.
  */
 String_Token_Stream::String_Token_Stream(string const &text,
@@ -75,9 +73,9 @@ String_Token_Stream::String_Token_Stream(string const &text,
 
 //---------------------------------------------------------------------------//
 /*!
- * This function constructs and returns a string of the form "near <text>"
- * where <text> reproduces the region of text where the last token was parsed.
- * This is useful for error reporting in parsers.
+ * This function constructs and returns a string of the form "near \<text\>"
+ * where \<text\> reproduces the region of text where the last token was 
+ * parsed. This is useful for error reporting in parsers.
  *
  * \return A string of the form "near <text>"
  */
@@ -173,6 +171,22 @@ void String_Token_Stream::rewind() {
 //---------------------------------------------------------------------------//
 bool String_Token_Stream::check_class_invariants() const {
   return pos_ <= text_.length();
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * String_Token_Stream does not presently support the include directive.
+ */
+void String_Token_Stream::push_include(std::string &) {
+  report_syntax_error("#include not supported for String_Token_Stream");
+}
+
+//---------------------------------------------------------------------------//
+/*!
+ * String_Token_Stream does not presently support the include directive.
+ */
+void String_Token_Stream::pop_include() {
+  /* this function should be unreachable. Please note this in code coverage. */
 }
 
 } // namespace rtt_parser

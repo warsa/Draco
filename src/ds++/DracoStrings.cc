@@ -16,6 +16,26 @@
 namespace rtt_dsxx {
 
 //----------------------------------------------------------------------------//
+//! Convert a string to all lower case
+std::string string_tolower(std::string const &string_in) {
+  std::locale loc;
+  std::ostringstream string_out;
+  for (auto elem : string_in)
+    string_out << std::tolower(elem, loc);
+  return string_out.str();
+}
+
+//----------------------------------------------------------------------------//
+//! Convert a string to all upper case
+std::string string_toupper(std::string const &string_in) {
+  std::locale loc;
+  std::ostringstream string_out;
+  for (auto elem : string_in)
+    string_out << std::toupper(elem, loc);
+  return string_out.str();
+}
+
+//----------------------------------------------------------------------------//
 // Definitions for fully specialized template functions
 //----------------------------------------------------------------------------//
 
@@ -42,7 +62,7 @@ auto parse_number_impl<uint64_t>(std::string const &str) -> uint64_t {
 }
 
 // See notes in DracoStrings.hh about this CPP block
-#if defined(WIN32)
+#if defined(WIN32) || defined(APPLE)
 
 template <> auto parse_number_impl<long>(std::string const &str) -> long {
   return std::stol(str); // use stoull or stul?
@@ -65,7 +85,16 @@ template <> auto parse_number_impl<double>(std::string const &str) -> double {
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-//! trim whitespace (or other characters) from before and after main text.
+/*!
+ * \brief trim whitespace (or other characters) from before and after main 
+ *        text.
+ *
+ * \param[in] str The string that will be processed
+ * \param[in] whitespace A set of characters that will be removed.
+ *              (default: " \t")
+ * \return A new, probably shortened, string without unwanted leading/training
+ *         characters.
+ */
 std::string trim(std::string const &str, std::string const &whitespace) {
   auto const strBegin = str.find_first_not_of(whitespace);
   if (strBegin == std::string::npos)

@@ -31,20 +31,20 @@ double unary_log(double x) { return std::log(x); }
  * this information the DataTypeKey is set, then the data table sizes are
  * loaded and finally the table data is loaded.
  *
- * \param opacityEnergyDescriptor This string variable specifies the energy
+ * \param[in] in_opacityEnergyDescriptor This string variable specifies the energy
  *     model { "gray" or "mg" } for the opacity data contained in this
  *     IpcressDataTable object.
- * \param opacityModel This enumerated value specifies the physics model {
+ * \param in_opacityModel This enumerated value specifies the physics model {
  *     Rosseland or Planck } for the opacity data contained in this object.
  *     The enumeration is defined in IpcressOpacity.hh
- * \param opacityReaction This enumerated value specifies the interaction
+ * \param in_opacityReaction This enumerated value specifies the interaction
  *     model { total, scattering, absorption " for the opacity data contained
  *     in this object.  The enumeration is defined in IpcressOpacity.hh
- * \param fieldNames This vector of strings is a list of data keys that the
+ * \param in_fieldNames This vector of strings is a list of data keys that the
  *     IPCRESS file knows about.  This list is read from the IPCRESS file when
  *     a IpcressOpacity object is instantiated but before the associated
  *     IpcressDataTable object is created.
- * \param matID The material identifier that specifies a particular material
+ * \param in_matID The material identifier that specifies a particular material
  *     in the IPCRESS file to associate with the IpcressDataTable container.
  * \param spIpcressFile A ds++ SmartPointer to a IpcressFile object.  One
  *     GanolfFile object should exist for each IPCRESS file.  Many
@@ -107,12 +107,13 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
         ipcressDataTypeKey = "ragray";
         dataDescriptor = "Gray Rosseland Absorption";
         break;
-      case (rtt_cdi::SCATTERING):
-        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-        // See LA-UR-01-5543
-        ipcressDataTypeKey = "rsgray";
-        dataDescriptor = "Gray Rosseland Scattering";
-        break;
+      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
+      /*
+        case (rtt_cdi::SCATTERING):
+          ipcressDataTypeKey = "rsgray";
+          dataDescriptor = "Gray Rosseland Scattering";
+          break;
+       */
       default:
         Assert(false);
         break;
@@ -122,22 +123,24 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
     case (rtt_cdi::PLANCK):
 
       switch (opacityReaction) {
-      case (rtt_cdi::TOTAL):
-        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-        // See LA-UR-01-5543
-        ipcressDataTypeKey = "ptgray";
-        dataDescriptor = "Gray Planck Total";
-        break;
+      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
+      /*
+        case (rtt_cdi::TOTAL):
+          ipcressDataTypeKey = "ptgray";
+          dataDescriptor = "Gray Planck Total";
+          break; 
+       */
       case (rtt_cdi::ABSORPTION):
         ipcressDataTypeKey = "pgray";
         dataDescriptor = "Gray Planck Absorption";
         break;
-      case (rtt_cdi::SCATTERING):
-        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-        // See LA-UR-01-5543
-        ipcressDataTypeKey = "psgray";
-        dataDescriptor = "Gray Planck Scattering";
-        break;
+      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
+      /*
+        case (rtt_cdi::SCATTERING):
+          ipcressDataTypeKey = "psgray";
+          dataDescriptor = "Gray Planck Scattering";
+          break;
+       */
       default:
         Assert(false);
         break;
@@ -175,22 +178,24 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
     case (rtt_cdi::PLANCK):
 
       switch (opacityReaction) {
+      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
+      /*
       case (rtt_cdi::TOTAL):
-        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-        // See LA-UR-01-5543
         ipcressDataTypeKey = "ptmg";
         dataDescriptor = "Multigroup Planck Total";
         break;
+       */
       case (rtt_cdi::ABSORPTION):
         ipcressDataTypeKey = "pmg";
         dataDescriptor = "Multigroup Planck Absorption";
         break;
-      case (rtt_cdi::SCATTERING):
-        // *** NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST *** //
-        // See LA-UR-01-5543
-        ipcressDataTypeKey = "psmg";
-        dataDescriptor = "Multigroup Planck Scattering";
-        break;
+      // NOTE: THIS KEY DOES NOT ACTUALLY EVER EXIST, See LA-UR-01-5543
+      /*
+        case (rtt_cdi::SCATTERING):
+          ipcressDataTypeKey = "psmg";
+          dataDescriptor = "Multigroup Planck Scattering";
+          break;
+       */
       default:
         Assert(false);
         break;
@@ -203,8 +208,7 @@ void IpcressDataTable::setIpcressDataTypeKey() const {
     }
   }
 
-  // Verify that the requested opacity type is available in
-  // the IPCRESS file.
+  // Verify that the requested opacity type is available in the IPCRESS file.
   Insist(key_available(ipcressDataTypeKey, fieldNames),
          "requested opacity type is not available in the IPCRESS file.");
 }
@@ -235,30 +239,32 @@ void IpcressDataTable::loadDataTable(
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief This function returns "true" if "key" is found in the list
- *        of "keys".  This is a static member function.
+ * \brief This function returns "true" if "key" is found in the list of 
+ *        "keys". This is a static member function.
  */
 template <typename T>
 bool IpcressDataTable::key_available(T const &key,
                                      std::vector<T> const &keys) const {
   // Loop over all available keys.  If the requested key matches one in the
-  // list return true.  If we reach the end of the list without a match
-  // return false.
+  // list return true.  If we reach the end of the list without a match return
+  // false.
   for (size_t i = 0; i < keys.size(); ++i)
     if (key == keys[i])
       return true;
   return false;
-} // end of IpcressDataTable::key_available( string, vector<string> )
+}
 
 //---------------------------------------------------------------------------//
 /*!
- * \brief
+ * \brief Calculate and return an interpolated opacity value.
  *
- * \param name description
- * \return description
+ * \param[in] targetTemperature 
+ * \param[in] targetDensity 
+ * \param[in] group Group index
+ * \return An interpolated opacity value.
  *
- * Note: the opacity array is a 1D array.  group id is the fastest moving
- * index and temperatures are the slowest moving index.
+ * \note The opacity array is a 1D array.  group id is the fastest moving index
+ *       and temperatures are the slowest moving index.
  */
 double IpcressDataTable::interpOpac(double const targetTemperature,
                                     double const targetDensity,
@@ -268,14 +274,14 @@ double IpcressDataTable::interpOpac(double const targetTemperature,
 
   size_t const numrho = logDensities.size();
   size_t const numT = logTemperatures.size();
-  // size_t const numpergroup = numrho*numT;
   size_t const ng = opacityEnergyDescriptor == std::string("gray")
                         ? 1
                         : groupBoundaries.size() - 1;
 
-  // Check if we are off the table boundaries.  We don't allow
-  // extrapolation, so move the target temperature or density to the table
-  // boundary.
+  // Check if we are off the table boundaries.  We don't allow extrapolation,
+  // so move the target temperature or density to the table boundary.
+  Check(numT > 1);
+  Check(numrho > 1);
   if (targetTemperature < temperatures[0])
     logT = std::log(temperatures[0]);
   if (targetTemperature > temperatures[numT - 1])

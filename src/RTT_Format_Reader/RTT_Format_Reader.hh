@@ -13,27 +13,24 @@
 
 #include "CellData.hh"
 #include "CellDataIDs.hh"
-#include "Cells.hh"
-#include "Dims.hh"
-#include "Flags.hh"
 #include "Header.hh"
 #include "NodeData.hh"
 #include "NodeDataIDs.hh"
 #include "SideData.hh"
 #include "SideDataIDs.hh"
-#include "Sides.hh"
 
 namespace rtt_RTT_Format_Reader {
+
 //===========================================================================//
-// class RTT_Format_Reader -
-//
 /*!
+ * class RTT_Format_Reader
+ *
  * \brief  A generalized input routine to parse an RTT Format mesh file.
  *
  *\sa The RTT_Format_Reader class constructor automatically instantiates and
  *    executes the readMesh member function used to parse the mesh data.
  *    Accessor functions are provided for all of the remaining member classes
- *    to allow data retrieval. The \ref rtt_mesh_reader_overview page presents
+ *    to allow data retrieval. The \ref overview_rtt_format_reader page presents
  *    a summary of the capabilities provided by the class.
  */
 //===========================================================================//
@@ -42,10 +39,7 @@ class DLL_PUBLIC_RTT_Format_Reader RTT_Format_Reader {
   // NESTED CLASSES AND TYPEDEFS
   typedef std::ifstream ifstream;
   typedef std::string string;
-  //  typedef std::set<int> set_int;
   typedef std::vector<int> vector_int;
-  //  typedef std::vector<std::vector<int>> vector_vector_int;
-  //  typedef std::vector<std::vector<std::vector<int>>> vector_vector_vector_int;
   typedef std::vector<double> vector_dbl;
   typedef std::vector<std::vector<double>> vector_vector_dbl;
   typedef std::vector<string> vector_str;
@@ -74,9 +68,6 @@ private:
 public:
   //! Constructor
   explicit RTT_Format_Reader(const string &RTT_File);
-  /*!
-   * \brief Destroys an RTT_Format_Reader class object
-   */
 
   //! Destructor
   ~RTT_Format_Reader() { /*empty*/
@@ -365,6 +356,7 @@ public:
   /*!
    * \brief Returns the side flag number associated with the specified side
    *        flag type and side flag index.
+   * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag number.
    */
@@ -384,6 +376,7 @@ public:
   /*!
    * \brief Returns the side flag name associated with the specified side flag
    *        index and side flag type.
+   * \param flagtype Side flag index.
    * \param flag_index Side flag index.
    * \return The side flag name.
    */
@@ -591,19 +584,9 @@ public:
    * \param cell_def Cell definition index.
    * \return New cell definition node map.
    */
-  const vector_int &get_cell_defs_node_map(int cell_def) const {
+  const vector_uint &get_cell_defs_node_map(int cell_def) const {
     return spCellDefs->get_node_map(cell_def);
   }
-
-  /*!
-   * \brief Returns the specified new node for the specified cell definition
-   *        when redefinition has been performed.
-   * \param cell_def Cell definition index.
-   * \param node_ind Node number index.
-   * \return New node number.
-   */
-  //    int get_cell_defs_node_map(int cell_def, int node_ind) const
-  //    { return spCellDefs->get_node_map(cell_def, node_ind);}
 
   /*!
    * \brief Returns the coordinate values for each of the nodes.

@@ -139,17 +139,24 @@ macro(dbsSetupCxx)
     set( my_cxx_compiler ${CMAKE_CXX_COMPILER} )
   endif()
 
+  # These CMAKE_* variables create defaults for the entire project so that we no
+  # longer need to set 'per_target' properties using:
+  # set_target_properties( <tgt> PROPERTIES C_STANDARD 11 ... )
+
   # C11 support:
   set( CMAKE_C_STANDARD 11 )
 
   # C++14 support:
   set( CMAKE_CXX_STANDARD 14 )
-  set( CXX_STANDARD_REQUIRED ON )
+  set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
   # Do not enable extensions (e.g.: --std=gnu++11)
   # https://crascit.com/2015/03/28/enabling-cxx11-in-cmake/
   set( CMAKE_CXX_EXTENSIONS OFF )
   set( CMAKE_C_EXTENSIONS   OFF )
+
+  # -fPIC by default
+  set( CMAKE_POSITION_INDEPENDENT_CODE ON )
 
   # Setup compiler flags
   get_filename_component( my_cxx_compiler "${my_cxx_compiler}" NAME )
@@ -418,7 +425,7 @@ macro(dbsSetupStaticAnalyzers)
 
   # include-what-you-link
   # https://blog.kitware.com/static-checks-with-cmake-cdash-iwyu-clang-tidy-lwyu-cpplint-and-cppcheck/'
-  if( ${DRACO_STATIC_ANALYZER} MATCHES "iwyl" )
+  if( ${DRACO_STATIC_ANALYZER} MATCHES "iwyl" AND UNIX )
     option( CMAKE_LINK_WHAT_YOU_USE "Report if extra libraries are linked."
       TRUE )
   else()
@@ -615,8 +622,7 @@ macro( toggle_compiler_flag switch compiler_flag
   # generate names that are safe for CMake RegEx MATCHES commands
   string(REPLACE "+" "x" safe_compiler_flag ${compiler_flag})
 
-  # Loop over types of variables to check: CMAKE_C_FLAGS,
-  # CMAKE_CXX_FLAGS, etc.
+  # Loop over types of variables to check: CMAKE_C_FLAGS, CMAKE_CXX_FLAGS, etc.
   foreach( comp ${compiler_flag_var_names} )
 
     # sanity check

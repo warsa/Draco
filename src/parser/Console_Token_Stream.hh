@@ -10,8 +10,8 @@
 
 //---------------------------------------------------------------------------//
 
-#ifndef CCS4_Console_Token_Stream_HH
-#define CCS4_Console_Token_Stream_HH
+#ifndef rtt_Console_Token_Stream_HH
+#define rtt_Console_Token_Stream_HH
 
 #include "Text_Token_Stream.hh"
 #include <fstream>
@@ -69,11 +69,14 @@ protected:
   virtual void fill_character_buffer_();
   virtual bool error_() const;
   virtual bool end_() const;
+
+  virtual void push_include(std::string &include_file_name);
+  virtual void pop_include();
 };
 
 } // namespace rtt_parser
 
-#endif // CCS4_Console_Token_Stream_HH
+#endif // rtt_Console_Token_Stream_HH
 //---------------------------------------------------------------------------//
 // end of Console_Token_Stream.hh
 //---------------------------------------------------------------------------//

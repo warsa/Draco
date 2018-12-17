@@ -36,16 +36,16 @@ namespace rtt_dsxx {
 /*! \brief Wrapper for system dependent hostname call.
  *
  * Windows:
- *     HOST_NAME_MAX set to MAX_COMPUTERNAME_LENGTH in config.h
+ *     \c HOST_NAME_MAX set to \c MAX_COMPUTERNAME_LENGTH in config.h
  *
  * Catamount systems:
- *     HOST_NAME_MAX hard coded by CMake in config.h
+ *     \c HOST_NAME_MAX hard coded by CMake in config.h
  *
  * Unix/Linux:
- *     HOST_NAME_MAX loaded from <climit>
+ *     \c HOST_NAME_MAX loaded from \<climit\>
  *
  * Mac OSX:
- *     HOST_NAME_MAX set to _POSIX_HOST_NAME_MAX in config.h
+ *     \c HOST_NAME_MAX set to \c _POSIX_HOST_NAME_MAX in config.h
  */
 std::string draco_gethostname(void) {
 // Windows: gethostname from <winsock2.h>
@@ -55,7 +55,8 @@ std::string draco_gethostname(void) {
   if (err)
     strncpy(hostname, "gethostname() failed", HOST_NAME_MAX);
   return std::string(hostname);
-#endif
+
+#else
 
 // Linux: gethostname from <unistd.h>
 #ifdef HAVE_GETHOSTNAME
@@ -69,8 +70,8 @@ std::string draco_gethostname(void) {
 #else
   return std::string("Host (unknown)");
 #endif
-
-} // draco_hostname
+#endif
+} // draco_gethostname
 
 //---------------------------------------------------------------------------//
 /*! \brief Wrapper for system dependent pid call..
@@ -197,17 +198,20 @@ bool draco_getstat::isdir() {
 
 //---------------------------------------------------------------------------//
 //! Is a Unix permission bit set?
-bool draco_getstat::has_permission_bit(int mask) {
-  Insist(isreg(), "Can only check permission bit for regular files.");
 #ifdef WIN32
+bool draco_getstat::has_permission_bit(int /*mask*/) {
+  Insist(isreg(), "Can only check permission bit for regular files.");
   Insist(false,
          "draco_getstat::hsa_permission_bit() not implemented for WIN32");
   return false;
+}
 #else
+bool draco_getstat::has_permission_bit(int mask) {
+  Insist(isreg(), "Can only check permission bit for regular files.");
   // check execute bit (buf.st_mode & 0111)
   return (buf.st_mode & mask);
-#endif
 }
+#endif
 
 //---------------------------------------------------------------------------//
 /*!

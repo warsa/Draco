@@ -73,18 +73,21 @@ private:
 
   // Ghost cell indices local to a different node, subscripted with a local
   // ghost cell index
-  const std::vector<unsigned> ghost_cell_number;
+  const std::vector<int> ghost_cell_number;
 
   // Node index for each ghost cell, subscripted with local ghost cell index
-  const std::vector<unsigned> ghost_cell_rank;
+  const std::vector<int> ghost_cell_rank;
 
   // Vector subscripted with node index with coordinate vector
   const std::vector<std::vector<double>> node_coord_vec;
 
-  // \todo: these arrays are convenient to store, but not necessary; keep them?
   // Cell types and node indices per cell
-  const std::vector<unsigned> cell_type;
-  const std::vector<unsigned> cell_to_node_linkage;
+  const std::vector<unsigned> m_cell_type;
+  const std::vector<unsigned> m_cell_to_node_linkage;
+
+  // Side types and node indices per side
+  const std::vector<unsigned> m_side_node_count;
+  const std::vector<unsigned> m_side_to_node_linkage;
 
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
@@ -109,8 +112,8 @@ public:
              const std::vector<unsigned> &global_node_number_,
              const std::vector<unsigned> &ghost_cell_type_ = {},
              const std::vector<unsigned> &ghost_cell_to_node_linkage_ = {},
-             const std::vector<unsigned> &ghost_cell_number_ = {},
-             const std::vector<unsigned> &ghost_cell_rank_ = {});
+             const std::vector<int> &ghost_cell_number_ = {},
+             const std::vector<int> &ghost_cell_rank_ = {});
 
   // >>> ACCESSORS
 
@@ -121,18 +124,24 @@ public:
   const std::vector<unsigned> &get_side_set_flag() const {
     return side_set_flag;
   }
-  const std::vector<unsigned> &get_ghost_cell_numbers() const {
+  const std::vector<int> &get_ghost_cell_numbers() const {
     return ghost_cell_number;
   }
-  const std::vector<unsigned> &get_ghost_cell_ranks() const {
+  const std::vector<int> &get_ghost_cell_ranks() const {
     return ghost_cell_rank;
   }
   const std::vector<std::vector<double>> &get_node_coord_vec() const {
     return node_coord_vec;
   }
-  const std::vector<unsigned> &get_cell_type() const { return cell_type; }
+  const std::vector<unsigned> &get_cell_type() const { return m_cell_type; }
   const std::vector<unsigned> &get_cell_to_node_linkage() const {
-    return cell_to_node_linkage;
+    return m_cell_to_node_linkage;
+  }
+  const std::vector<unsigned> &get_side_node_count() const {
+    return m_side_node_count;
+  }
+  const std::vector<unsigned> &get_side_to_node_linkage() const {
+    return m_side_to_node_linkage;
   }
   const Layout &get_cc_linkage() const { return cell_to_cell_linkage; }
   const Layout &get_cs_linkage() const { return cell_to_side_linkage; }
@@ -147,8 +156,8 @@ private:
   std::vector<std::vector<double>>
   compute_node_coord_vec(const std::vector<double> &coordinates) const;
 
-  //! Calculate the cell-to-cell linkage (layout)
   // \todo: add layout class and complete temporary version of this function.
+  //! Calculate the cell-to-cell linkage (layout)
   void compute_cell_to_cell_linkage(
       const std::vector<unsigned> &cell_type,
       const std::vector<unsigned> &cell_to_node_linkage,

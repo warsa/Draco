@@ -12,19 +12,18 @@
 #define __RTT_Format_Reader_Sides_hh__
 
 #include "CellDefs.hh"
-#include "Dims.hh"
 #include "Nodes.hh"
 #include "SideFlags.hh"
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <vector>
 
 namespace rtt_RTT_Format_Reader {
+
+//============================================================================//
 /*!
+ * \class Sides
  * \brief Controls parsing, storing, and accessing the data specific to the
  *        sides block of the mesh file.
  */
+//============================================================================//
 class Sides {
   // typedefs
   typedef std::ifstream ifstream;

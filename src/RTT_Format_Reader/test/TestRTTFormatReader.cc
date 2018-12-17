@@ -9,12 +9,10 @@
 //---------------------------------------------------------------------------//
 
 #include "TestRTTFormatReader.hh"
-#include "RTT_Format_Reader/CellDefs.hh"
 #include "RTT_Format_Reader/RTT_Mesh_Reader.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
-#include "ds++/path.hh"
 #include <sstream>
 
 using namespace std;
@@ -35,7 +33,7 @@ void runTest(UnitTest &ut) {
   // Meshes in the header file.
   int const MAX_MESHES = 1;
   std::string filename[MAX_MESHES] = {inpPath + string("rttdef.mesh")};
-  Meshes mesh_type;
+  Meshes mesh_type = MESHES_LASTENTRY;
 
   for (int mesh_number = 0; mesh_number < MAX_MESHES; mesh_number++) {
     // Construct an RTT_Format_Reader class object from the data in the
@@ -86,8 +84,7 @@ void runTest(UnitTest &ut) {
 
     if (!all_passed) {
       ostringstream m;
-      m << "Errors occured testing mesh "
-        << "number " << mesh_type << std::endl;
+      m << "Errors occured testing mesh number " << mesh_type << std::endl;
       FAILMSG(m.str());
     }
   }
@@ -1106,7 +1103,7 @@ bool check_cell_defs(RTT_Format_Reader const &mesh, Meshes const &meshtype,
 
   // Check get_cell_defs_node_map(int)
   {
-    std::vector<int> const myNodes = mesh.get_cell_defs_node_map(0);
+    std::vector<unsigned> const myNodes = mesh.get_cell_defs_node_map(0);
     size_t mySize = myNodes.size();
     // std::cout << "mySize = " << mySize << std::endl;
     if (mySize == 0) {

@@ -67,8 +67,9 @@ public:
   // CREATORS
 
   //! Default constructors.
-  DLL_PUBLIC_dsxx UnitTest(int &argc, char **&argv, string_fp_void release_,
-                           std::ostream &out_ = std::cout, bool verbose = true);
+  DLL_PUBLIC_dsxx UnitTest(int & /* argc */, char **&argv,
+                           string_fp_void release_, std::ostream &out_,
+                           bool const verbose_ = true);
 
   //! The copy constructor is disabled.
   UnitTest(UnitTest const &rhs) = delete;
@@ -237,6 +238,7 @@ protected:
 #define PASSMSG(m) ut.passes(m)
 #define FAILMSG(m) ut.failure(m)
 #define UT_CHECK(ut, m) ut.check(m, #m);
+#define UT_MSG(c, m) ut.check(c, #m);
 #define ITFAILS ut.failure(__LINE__, __FILE__)
 #define FAILURE ut.failure(__LINE__, __FILE__);
 #define FAIL_IF_NOT(c)                                                         \
