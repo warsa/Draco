@@ -32,7 +32,7 @@ namespace rtt_parser {
 //---------------------------------------------------------------------------//
 template <>
 class Class_Parse_Table<DummyClass>
-    : public Class_Parse_Table_Base<DummyClass> {
+    : public Class_Parse_Table_Base<DummyClass, false> {
 public:
   // TYPEDEFS
 
