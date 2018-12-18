@@ -33,6 +33,13 @@
 
 # dry_run=1
 
+# switch to group 'draco' and set umask
+if [[ $(id -gn) != 'draco' ]]; then
+  exec sg draco "$0 $*"
+fi
+# repos should be read only for group members and no access for 'other'
+umask 0027
+
 # load some common bash functions
 export scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ -f $scriptdir/scripts/common.sh ]]; then
@@ -155,7 +162,8 @@ done
 # Update permisssions as needed
 run "cd ${gitroot}/.."
 run "chgrp -R draco git"
-run "chmod -R g+rwX,o-rwX git"
+run "chmod -R g+rX,o-rwX git"
+run "find git -type d -exec chmdo g+s {} \;"
 run "cd $start_dir"
 
 echo -e "\nAll done.\n"
