@@ -15,7 +15,7 @@
 #include "Assert.hh"
 #include "SystemCall.hh"
 #include <iostream>
-#ifdef UNIX
+#if defined UNIX || defined MINGW
 #include <dirent.h>   // struct DIR
 #include <sys/stat.h> // struct stat; S_ISDIR
 #endif
