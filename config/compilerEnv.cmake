@@ -496,12 +496,12 @@ macro(dbsSetupFortran)
 
     # MPI wrapper
     if( ${my_fc_compiler} MATCHES "mpif90" )
-      execute_process( COMMAND ${my_fc_compiler} --version
+      execute_process( COMMAND ${my_fc_compiler} --version;
         OUTPUT_VARIABLE mpifc_version_output
         OUTPUT_STRIP_TRAILING_WHITESPACE )
-      if( ${mpifc_version_output} MATCHES ifort )
+      if( "${mpifc_version_output}" MATCHES "ifort" )
         set( my_fc_compiler ifort )
-      elseif( ${mpifc_version_output} MATCHES GNU )
+      elseif( "${mpifc_version_output}" MATCHES "GNU" )
         set( my_fc_compiler gfortran )
       endif()
     endif()
