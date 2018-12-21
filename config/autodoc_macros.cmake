@@ -25,9 +25,6 @@ function( set_autodocdir )
   else()
     set( DOXYGEN_OUTPUT_DIR ${CMAKE_INSTALL_PREFIX}/autodoc PARENT_SCOPE)
   endif()
-
-  message(STATUS "Using autodoc directory ${AUTODOCDIR}")
-
 endfunction()
 
 #------------------------------------------------------------------------------

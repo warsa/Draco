@@ -144,7 +144,7 @@ inline double fma_with_diagnostics(double const a, double const b,
 #define FMA(a, b, c) fma((a), (b), (c))
 #define FMA_ACCURATE(a, b, c) fma((a), (b), (c))
 #else
-#define FMA(a, b, c) fma((a), (b), (c))
+#define FMA(a, b, c) ((a) * (b) + c)
 #define FMA_ACURATE(a, b, c) ((a) * (b) + c)
 #endif
 
