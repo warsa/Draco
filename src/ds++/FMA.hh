@@ -4,7 +4,7 @@
  * \author  Kelly Thompson
  * \date    Thursday, Feb 09, 2017, 11:22 am
  * \brief   Provide extra control for FMA operations.
- * \note    Copyright (C) 2017-2018 Los Alamos National Security, LLC.
+ * \note    Copyright (C) 2017-2019 Los Alamos National Security, LLC.
  *          All rights reserved.
  *
  * Intel Haswell and later (and also modern AMD cpus) have hardware FMA
@@ -19,7 +19,7 @@
  * https://software.intel.com/en-us/node/405250?language=es&wapkw=avx2+cpuid
  *
  * \note The Intel compiler doesn't seem to set \c FP_FAST_FMA. If you know that
- * your algorithm is sensitive to roundoff, you might to locally disable
+ * your algorithm is sensitive to roundoff, you might need to locally disable
  * '-fp-model fast' by inserting this bit of code at the start of each function
  * that is sensitive:
  *
@@ -137,8 +137,8 @@ inline double fma_with_diagnostics(double const a, double const b,
  * compiler, so Intel will always pick the 2nd option.
  *
  * The intent of the \c FMA_ACCURATE version is to pick the more accurate
- * multiply-plus-add operation. When hardware FMA is available, we just just the
- * normal 'fast' version.
+ * multiply-plus-add operation. When hardware FMA is available, we just choose
+ * the normal 'fast' version.
  */
 #ifdef FP_FAST_FMA
 #define FMA(a, b, c) fma((a), (b), (c))
