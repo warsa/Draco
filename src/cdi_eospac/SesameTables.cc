@@ -253,7 +253,7 @@ SesameTables& SesameTables::Gs_D( unsigned matID )
 // Return the enumerated data type associated with the provided integer index
 std::vector<EOS_INTEGER>
 SesameTables::returnTypes(unsigned const tableIndex) const {
-  unsigned found = rtMap.count(tableIndex);
+  size_t const found = rtMap.count(tableIndex);
   std::vector<EOS_INTEGER> result;
   // note: map::operator[] is non-const only.
   if (found > 0)
