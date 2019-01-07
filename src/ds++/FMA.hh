@@ -145,7 +145,7 @@ inline double fma_with_diagnostics(double const a, double const b,
 #define FMA_ACCURATE(a, b, c) fma((a), (b), (c))
 #else
 #define FMA(a, b, c) ((a) * (b) + c)
-#define FMA_ACURATE(a, b, c) ((a) * (b) + c)
+#define FMA_ACCURATE(a, b, c) ((a) * (b) + c)
 #endif
 
 #else /* HAVE_HARDWARE_FMA is false */
