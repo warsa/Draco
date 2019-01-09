@@ -4,7 +4,7 @@
  * \author Kelly Thompson
  * \date   Mon Apr 2 14:20:14 2001
  * \brief  Implementation file for tEospac
- * \note   Copyright (C) 2016-2019 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
