@@ -4,7 +4,7 @@
 # date   Wednesday, Nov 14, 2018, 19:01 pm
 # brief  Provide extra macros to simplify CMakeLists.txt for autodoc
 #        directories.
-# note   Copyright (C) 2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2018-2019 Los Alamos National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 

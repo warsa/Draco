@@ -16,7 +16,7 @@ build_script:
 # we start at $(APPVEYOR_BUILD_FOLDER) = c:\projects\draco-2th1a
 # can't put vendors in the source directory.
   - cd ..
-  - curl -L -o win32-vendors.zip https://github.com/KineticTheory/ci-demo/releases/download/vendors-201809/win32-vendors.zip
+  - curl -L -o win32-vendors.zip https://github.com/KineticTheory/ci-demo/releases/download/vendors-201909/win32-vendors.zip
   - 7z.exe -y x win32-vendors.zip
   - mkdir build
   - cd build
