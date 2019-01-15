@@ -100,7 +100,7 @@ add_parallel_tests(
 #------------------------------------------------------------------------------#
 # Python based test runners
 #------------------------------------------------------------------------------#
-if( NOT WIN32 AND NOT APPLE )
+if( NOT APPLE )
   include( ApplicationUnitTest )
   add_app_unit_test(
     DRIVER    ${CMAKE_CURRENT_SOURCE_DIR}/tstXthi.py
