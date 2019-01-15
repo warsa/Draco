@@ -3,7 +3,7 @@
 # author Alex Long <along@lanl.gov>
 # date   Wednesday, September 14, 2016, 14:16 pm
 # brief  This is a Python script that is used to test cdi_eospac/QueryEospac
-# note   Copyright (C) 2016-2019, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
