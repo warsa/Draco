@@ -1,7 +1,7 @@
 ;; ======================================================================
 ;; draco-config-modes.el
 ;;
-;; Copyright (C) 2016-2018 Los Alamos National Security, LLC
+;; Copyright (C) 2016-2019 Triad National Security, LLC
 ;;
 ;; $Id$
 ;;
@@ -482,7 +482,15 @@ auto-mode-alist."
     (defvar crypt-freeze-vs-fortran nil)
     (add-hook 'f90-mode-hook 'draco-f90-mode-hook)
     (add-hook 'f90-mode-hook 'turn-on-draco-mode)
-    (add-hook 'f90-mode-hook 'turn-on-auto-fill)))
+    (add-hook 'f90-mode-hook 'turn-on-auto-fill)
+    ; should add this sometime
+    ; (add-hook 'font-lock-mode-hook
+    ;          '(lambda ()
+    ;             (if (major-mode 'f90-mode)
+    ;                 (draco-f90-font-lock)))) ; create this function
+                                        ; based on draco-font-lock but
+                                        ; for f90
+    ))
 
 ;; ========================================
 ;; FORTRAN
@@ -526,7 +534,8 @@ auto-mode-alist."
       (draco-mode-update-menu (draco-menu-insert-comments-f77)))
     (add-hook 'fortran-mode-hook 'draco-fortran-mode-hook)
     (add-hook 'fortran-mode-hook 'turn-on-draco-mode)
-    (add-hook 'fortran-mode-hook 'turn-on-auto-fill)))
+    (add-hook 'fortran-mode-hook 'turn-on-auto-fill)
+    ))
 
 ;; ========================================
 ;; ChangeLog
