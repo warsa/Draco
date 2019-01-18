@@ -802,7 +802,6 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # Assume that draco_work_dir is parallel to our current location, but only
   # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
-  # ${dep_pkg_caps}_DIR == {DRACO_DIR, CORE_DIR}
   file( TO_CMAKE_PATH "$ENV{${dep_pkg_caps}_DIR}" ${dep_pkg_caps}_DIR )
   string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)"
     "${dep_pkg}/\\1" ${dep_pkg}_work_dir ${work_dir} )
@@ -816,22 +815,17 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # *-perfbench-*       *-*
   # *-knl-perfbench-*   *-knl-*
 
-  if( "${dep_pkg}" MATCHES "draco" )
-    # not any ${extraparam} since many map to draco builds that have the same
-    # ${extraparam}.  For example: *-newtools-*.
-    foreach( extraparam nr perfbench vtest )
-      string( REGEX REPLACE "[-_]${extraparam}[-_]" "-" ${dep_pkg}_work_dir
-        ${${dep_pkg}_work_dir} )
-    endforeach()
-    if( "${this_pkg}" MATCHES "jayenne"   OR
-        "${this_pkg}" MATCHES "capsaicin" OR
-        "${this_pkg}" MATCHES "core")
-      # If this is jayenne, we might be building a pull request. Replace the PR
-      # number in the path with '-develop' before looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
-        "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    endif()
-  endif()
+  # not any ${extraparam} since many map to draco builds that have the same
+  # ${extraparam}.  For example: *-newtools-*.
+  foreach( extraparam nr perfbench vtest )
+    string( REGEX REPLACE "[-_]${extraparam}[-_]" "-" ${dep_pkg}_work_dir
+      ${${dep_pkg}_work_dir} )
+  endforeach()
+
+  # If this is jayenne, we might be building a pull request. Replace the PR
+  # number in the path with '-develop' before looking for draco.
+  string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
+    "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
   find_file( ${dep_pkg}_target_dir
     NAMES README.${dep_pkg} README.md
@@ -843,8 +837,8 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
     NO_DEFAULT_PATH
   )
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
-    message( FATAL_ERROR
-      "Could not locate the ${dep_pkg} installation directory.
+    message( FATAL_ERROR "
+      Could not locate the ${dep_pkg} installation directory.
       ${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}
       ${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
   endif()
