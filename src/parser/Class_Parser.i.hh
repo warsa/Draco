@@ -1,12 +1,12 @@
 //----------------------------------*-C++-*-----------------------------------//
 /*!
- * \file   Class_Parser.ii
+ * \file   Class_Parser.i.hh
  * \brief  Definitions of member functions of template Class_Parser
  * \note   Copyright (C) 2016-2019 TRIAD, LLC. All rights reserved */
 //----------------------------------------------------------------------------//
 
-#ifndef rtt_Class_Parser_II
-#define rtt_Class_Parser_II
+#ifndef rtt_Class_Parser_i_hh
+#define rtt_Class_Parser_i_hh
 
 #include <sstream>
 
@@ -110,52 +110,6 @@ void Class_Parser_Base<Class, once, allow_exit>::add(
 
   Ensure(check_class_invariants());
 }
-
-#if 0
-//----------------------------------------------------------------------------//
-/*!
- * \param moniker Keyword to remove from the table.
- *
- * \throw invalid_argument If the keyword is not in the table.
- */
-template <class Class, bool once, bool allow_exit>
-void Class_Parser_Base<Class, once, allow_exit>::remove(char const *moniker) {
-  // This is an order N operation as presently coded. N is never very large.
-  for (auto i = table_.begin(); i != table_.end(); ++i) {
-    if (!strcmp(i->moniker, moniker)) {
-      table_.erase(i);
-      Ensure(check_class_invariants());
-      return;
-    }
-  }
-
-  throw invalid_argument("keyword not found in Class_Parser_Base<Class, once, allow_exit>::remove");
-}
-
-//----------------------------------------------------------------------------//
-/*!
- * \param source Parse_Table whose keywords are to be added to this
- * Parse_Table.
- *
- * \throw invalid_argument If the keyword table is ill-formed or
- * ambiguous.
- */
-template <class Class, bool once, bool allow_exit>
-void Class_Parser_Base<Class, once, allow_exit>::add(Parse_Table const &source) noexcept(false) {
-  // Preallocate storage.
-  table_.reserve(table_.size() + source.table_.size());
-
-  // Add the new keywords.
-
-  for (auto i = source.table_.begin(); i != source.table_.end(); ++i) {
-    table_.push_back(*i);
-  }
-
-  sort_table_();
-
-  Ensure(check_class_invariants());
-}
-#endif
 
 //----------------------------------------------------------------------------//
 /* private */
@@ -398,144 +352,6 @@ Class_Parser_Base<Class, once, allow_exit>::parse(Token_Stream &tokens) {
   }
 }
 
-#if 0
-//----------------------------------------------------------------------------//
-/*!
- * Parse the stream of tokens until a keyword is found or an END, EXIT, or
- * ERROR token is reached.
- *
- * \param tokens The Token Stream from which to obtain the stream of tokens.
- *
- * \return The terminating token: either END, EXIT, or ERROR.
- *
- * \throw rtt_dsxx::assertion If the keyword table is ambiguous.
- */
-template <class Class, bool once, bool allow_exit>
-Token Class_Parser_Base<Class, once, allow_exit>::parseforkeyword(Token_Stream &tokens) const {
-  // Create a comparator object that will be used to attempt to match
-  // keywords in the Token_Stream to keywords in the Parse_Table.  This
-  // comparator object incorporates the current settings of the
-  // Parse_Table, such as case sensitivity and partial matching options.
-
-  Keyword_Compare_ const comp(flags_);
-
-  // Now begin the process of pulling keywords off the input token stream,
-  // and attempting to match these to the keyword table.
-
-  for (;;) {
-    Token const token = tokens.shift();
-
-    // The END, EXIT, and ERROR tokens are terminating tokens.  EXIT
-    // means the end of the token stream has been reached.  END is used
-    // to flag the end of a nested parse, where the result of matching a
-    // keyword in one parse table is to begin parsing keywords in a
-    // second parse table.  An END indicates that the second parse table
-    // should return control to the first parse table.  ERROR means that
-    // something went very wrong and we're probably hosed, but it allows
-    // some error recovery from within a nested parse table.
-
-    if (token.type() == END || token.type() == EXIT ||
-        token.type() == rtt_parser::ERROR) {
-      return token;
-    }
-
-    // A Parse_Table assumes that every construct begins with a keyword.
-    // This keyword is matched to the keyword table, and if a match is
-    // found, control is directed to the associated parse function, which
-    // can be written to accept just about any construct you wish.
-    // However, by the time return controls from a parse function, the
-    // token stream should be pointing either at a terminating token or
-    // the next keyword.
-
-    if (token.type() == KEYWORD) {
-      // Attempt to match the keyword to the keyword table.  The
-      // following call returns an iterator pointing to the first
-      // keyword in the table whose lexical ordering is greater than or
-      // equal to the keyword token.  The lexical ordering is supplied
-      // by the comp object.
-
-      vector<Keyword>::const_iterator const match =
-          lower_bound(table_.begin(), table_.end(), token, comp);
-
-      if (match == table_.end() ||
-          comp.kt_comparison(match->moniker, token.text().c_str()) != 0) {
-        // The token was not lexically equal to anything in the
-        // keyword table.  In other words, the keyword is
-        // unrecognized by the Parse_Table.  The error recovery
-        // procedure is to generate a diagnostic, then pull
-        // additional tokens off the token stream (without generating
-        // further diagnostics) until one is recognized as either a
-        // keyword or a terminating token.  We implement this
-        // behavior by setting the is_recovering flag when the first
-        // invalid token is encountered, and resetting this flag as
-        // soon as a valid token is encountered.
-      } else {
-        // We have a valid match.  However, depending on Parse_Table
-        // options, the match might be ambiguous.  For example if the
-        // Parse_Table option to allow partial matches is active, the
-        // keyword token may partially match more than one keyword in
-        // the keyword table.  Check for an ambiguous match:
-
-        if (match + 1 != table_.end() &&
-            comp.kt_comparison(match[1].moniker, token.text().c_str()) == 0) {
-          // The match is ambiguous.  This is diagnosed whether or
-          // not we are already in recovery mode, but it does put
-          // us into recovery mode.
-
-          tokens.report_semantic_error(token,
-                                       "ambiguous keyword: " + token.text());
-        } else {
-          // We successfully processed something, so we are no
-          // longer in recovery mode.
-
-          try {
-            // Call the parse function associated with the
-            // keyword.
-            match->func(tokens, match->index);
-
-            if (flags_ & ONCE)
-            // Quit after parsing a single keyword. This is
-            // useful for parse tables for selecting one of a
-            // set of short options.
-            {
-              return Token(END, "");
-            }
-          } catch (const Syntax_Error &) {
-            // If the parse function detects a syntax error, and
-            // if it does not have its own error recovery policy
-            // (or is unable to recover), it should call
-            // tokens.Report_Syntax_Error which generates a
-            // diagnostic and throws a Syntax_Error
-            // exception. This puts the main parser into recovery
-            // mode.
-            tokens.report_semantic_error(token,
-                                         "syntax error: " + token.text());
-          }
-        }
-      }
-    }
-  }
-}
-
-//----------------------------------------------------------------------------//
-/*!
- * \param f Flags to be set, ORed together.
- */
-template <class Class, bool once, bool allow_exit>
-void Class_Parser_Base<Class, once, allow_exit>::set_flags(unsigned char const f) {
-  flags_ = f;
-
-  add(nullptr, 0U);
-  // The keyword list needs to be sorted and checked.  For example, if the
-  // options are changed so that a previously case-sensitive Parse_Table is
-  // no longer case-sensitive, then the ordering changes, and previously
-  // unambiguous keywords may become ambiguous.
-
-  Ensure(check_class_invariants());
-  Ensure(get_flags() == f);
-}
-#endif
-
 //----------------------------------------------------------------------------//
 /*!
  * \brief Comparison function for sorting keyword tables.
@@ -651,8 +467,8 @@ std::vector<typename Class_Parser_Base<Class, once, allow_exit>::Keyword>
 
 } // namespace rtt_parser
 
-#endif // rtt_Class_Parser_II
+#endif // rtt_Class_Parser_i_hh
 
 //----------------------------------------------------------------------------//
-// end of Class_Parser.ii
+// end of Class_Parser.i.hh
 //----------------------------------------------------------------------------//

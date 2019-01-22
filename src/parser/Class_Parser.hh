@@ -105,7 +105,9 @@ namespace rtt_parser {
  *
  * A nontrivial Class_Parser should define a member
  *
+ * \code
  * static Class_Parser_Keyword<Class> const raw_table[];
+ * \endcode
  *
  * to hold a raw table of keywords that is passed to the constructor for
  * Class_Parser_Base in the constructor for Class_Parser. The Class_Parser_Base
@@ -116,6 +118,7 @@ namespace rtt_parser {
  *
  * Class__parser.hh:
  *
+ * \code
  * template<>
  * class Class_Parser<Class> : public Class_Parser_Base<Class>
  * {
@@ -146,10 +149,12 @@ namespace rtt_parser {
  *      // The raw keyword table.
  *      Class_Parser_Keyword<Class> const raw_table[];
  * };
+ * \endcode
  *
  *
  * Class__parser.cc:
  *
+ * \code
  * include "Class__parser.hh"
  *
  * void Class_Parser<Class>::parse_flag(Token_Stream &tokens, int)
@@ -195,6 +200,7 @@ namespace rtt_parser {
  *
  *    return parser.parse(tokens);
  * }
+ * \endcode
  *
  * This introduces all the "boilerplate" and lets the developer focus on the
  * data required for the constructor for Class, the parse functions needed to
@@ -402,7 +408,7 @@ Is_Well_Formed_Keyword(Class_Parser_Keyword<Class> const &key);
 
 } // namespace rtt_parser
 
-#include "Class_Parser.ii"
+#include "Class_Parser.i.hh"
 
 #endif // rtt_Parse_Table_HH
 
