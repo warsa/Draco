@@ -41,9 +41,9 @@ if( DEFINED CMAKE_CXX_COMPILER_ID )
   check_cxx_compiler_flag( "-Wsuggest-attribute=const" HAS_WSUGGEST_ATTRIBUTE )
   check_cxx_compiler_flag( "-Wunused-local-typedefs"   
     HAS_WUNUSED_LOCAL_TYPEDEFS )
-  #check_cxx_compiler_flag( "-Wunused-macros"           HAS_WUNUSED_MACROS )
-  check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant" 
-    HAS_WZER0_AS_NULL_POINTER_CONSTANT )
+  #check_cxx_compiler_flag( "-Wunused-macros" HAS_WUNUSED_MACROS )
+  #check_cxx_compiler_flag( "-Wzero-as-null-pointer-constant"
+  #  HAS_WZERO_AS_NULL_POINTER_CONSTANT )
 endif()
 
 # is this bullseye?

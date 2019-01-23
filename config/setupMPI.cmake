@@ -473,9 +473,10 @@ macro( setupMPILibrariesWindows )
       # subdirectory) and is trying to MS-MPI, the above check will fail (when 
       # cmake > 3.12). However, MS-MPI is known to be good when linking with 
       # Visual Studio so override the 'failed' report.
-      if( NOT "${MPI_C_FOUND}" AND "${Draco_MPI_C_WORKS}"
-          AND "${MPI_C_LIBRARIES}" MATCHES "msmpi" 
-          AND "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
+      if(
+#       NOT "${MPI_C_FOUND}" AND "${Draco_MPI_C_WORKS}" AND
+          "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
+          "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
         if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
           set( MPI_C_FOUND TRUE )          
           set( MPI_Fortran_FOUND TRUE )
