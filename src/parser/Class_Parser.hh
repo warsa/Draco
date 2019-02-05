@@ -318,12 +318,11 @@ public:
 
   // CREATORS
 
-  //! Constrauct a parse table with no keywords. Useful as a placeholder.
+  //! Construct a parse table with no keywords. Useful as a placeholder.
   Class_Parser_Base(Child &child) : child_(child) {}
 
   //! Construct a parse table with the specified keywords.
-  Class_Parser_Base(Child &child,
-                    Class_Parser_Keyword<Class> const *raw_table,
+  Class_Parser_Base(Child &child, Class_Parser_Keyword<Class> const *raw_table,
                     unsigned const count);
 
   //! This class is meant to be heritable.
@@ -335,20 +334,24 @@ public:
   void add(Keyword const *table, size_t count) noexcept(false);
 
   //! Add keywords to the parser. Used for derived parsers.
-  template<class Base>
+  template <class Base>
   void add(std::vector<Class_Parser_Keyword<Base>> const &) noexcept(false);
 
   //! Remove a keyword from the table.
   void remove(char const *);
 
   //! Request a change in capacity.
-  void reserve(typename std::vector<Keyword>::size_type n) { table_.reserve(n); }
+  void reserve(typename std::vector<Keyword>::size_type n) {
+    table_.reserve(n);
+  }
 
   // ACCESSORS
 
   //! Return the number of elements in the vector
   // using std::vector<Keyword>::size;
-  typename std::vector<Keyword>::size_type size() const { return table_.size(); }
+  typename std::vector<Keyword>::size_type size() const {
+    return table_.size();
+  }
 
   // SERVICES
 

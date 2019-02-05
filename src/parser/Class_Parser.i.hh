@@ -14,6 +14,9 @@ namespace rtt_parser {
 
 //----------------------------------------------------------------------------//
 /*!
+ * \param child Reference to the complete child object for which this base
+ * is being constructed.
+ *
  * \param raw_table Pointer to an array of keywords.
  *
  * \param count Length of the array of keywords pointed to by \c table.
