@@ -200,8 +200,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
    #   many cores we can use.
    include(ProcessorCount)
    ProcessorCount(num_compile_procs)
-   if( NOT WIN32 )
-       if(NOT num_compile_procs EQUAL 0)
+   if(NOT "${num_compile_procs}" EQUAL 0)
+      if( NOT WIN32 )
          set(CTEST_BUILD_FLAGS "-j${num_compile_procs} -l${num_compile_procs}")
          if( "${sitename}" STREQUAL "Trinity" OR "${sitename}" STREQUAL "Trinitite")
            # We compile on the front end for this machine. Since we don't know
@@ -212,13 +212,11 @@ win32$ set work_dir=c:/full/path/to/work_dir
            math(EXPR half_num_compile_procs "${num_compile_procs} / 2" )
            set(CTEST_BUILD_FLAGS "-j ${half_num_compile_procs} -l ${num_compile_procs}")
          endif()
-       endif()
-   else()
-     if(NOT num_compile_procs EQUAL 0)
-       # Parallel builds for 'msbuild'
-       # Ref: https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2015
-       set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
-     endif()
+      else()
+         # Parallel builds for 'msbuild'
+         # Ref: https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2015
+         set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
+      endif()
    endif()
 
    # Testing parallelism

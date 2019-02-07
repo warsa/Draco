@@ -680,6 +680,7 @@ macro( SetupVendorLibrariesWindows )
 
   setupGSL()
   setupParMETIS()
+  setupSuperLU_DIST()
   setupRandom123()
   setupCOMPTON()
   setupEospac()
