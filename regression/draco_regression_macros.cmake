@@ -312,7 +312,7 @@ Parsing arguments
   endif()
 
   # refine compiler short name.
-  set(USE_CUDA OFF)
+  set(WITH_CUDA OFF)
   if( "$ENV{CXX}" MATCHES "pgCC" OR "$ENV{CXX}" MATCHES "pgc[+][+]" )
     set( compiler_short_name "pgi" )
   elseif("$ENV{CXX}" MATCHES "clang" )
@@ -373,7 +373,7 @@ Parsing arguments
     endif()
 
     if( $ENV{extra_params_sort_safe} MATCHES "cuda" )
-      set(USE_CUDA ON)
+      set(WITH_CUDA ON)
     endif()
     if( $ENV{extra_params_sort_safe} MATCHES "fulldiagnostics" )
       set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
