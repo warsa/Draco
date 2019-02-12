@@ -71,7 +71,7 @@ if( BUILD_TESTING )
       # specified by CMAKE_RUNTIME_OUTPUT_DIRECTORY.
       set( build_system_state "${build_system_state};-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${Draco_BINARY_DIR}/\${CMAKE_BUILD_TYPE}" )
     else()
-      set( build_system_state "${build_system_state};-DUSE_CUDA=${USE_CUDA}" )
+      set( build_system_state "${build_system_state};-DWITH_CUDA=${WITH_CUDA}" )
     endif()
 
     cmake_add_fortran_subdirectory(
