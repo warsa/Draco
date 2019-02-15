@@ -48,7 +48,7 @@ VENDOR_DIR:PATH=${VENDOR_DIR}
 AUTODOCDIR:PATH=${AUTODOCDIR}
 # CMAKE_MAKE_PROGRAM:FILEPATH=${MAKECOMMAND}
 ${TEST_PPE_BINDIR}
-USE_CUDA:BOOL=${USE_CUDA}
+WITH_CUDA:BOOL=${WITH_CUDA}
 
 ${INIT_CACHE_PPE_PREFIX}
 ${TOOLCHAIN_SETUP}
@@ -114,12 +114,14 @@ if( ${CTEST_BUILD} AND ${CTEST_AUTODOC} )
    TARGET autodoc
    NUMBER_ERRORS num_errors
    NUMBER_WARNINGS num_warnings
+   FLAGS -j 24
    RETURN_VALUE res )" )
   ctest_build(
     TARGET autodoc
     RETURN_VALUE res
     NUMBER_ERRORS num_errors
     NUMBER_WARNINGS num_warnings
+    FLAGS "-j 24"
     )
   message( "build result:
    ${res}
@@ -138,8 +140,7 @@ if( ${CTEST_BUILD} )
       TARGET install
       RETURN_VALUE res
       NUMBER_ERRORS num_errors
-      NUMBER_WARNINGS num_warnings
-      )
+      NUMBER_WARNINGS num_warnings )
    message( "build result:
    ${res}
    Build errors  : ${num_errors}
@@ -182,4 +183,3 @@ message("end of ${CTEST_SCRIPT_NAME}.")
 #------------------------------------------------------------------------------#
 # End Draco_Win32.cmake
 #------------------------------------------------------------------------------#
-

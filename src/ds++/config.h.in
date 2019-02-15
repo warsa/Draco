@@ -24,7 +24,7 @@
 
 /* Version Inforation */
 #define Draco_BUILD_DATE "@Draco_BUILD_DATE@"
-#define Draco_BUILD_TYPE "@Draco_BUILD_TYPE@"
+#define Draco_BUILD_TYPE @Draco_BUILD_TYPE@
 #cmakedefine Draco_VERSION @Draco_VERSION@
 #cmakedefine Draco_VERSION_FULL @Draco_VERSION_FULL@
 #define Draco_VERSION_MAJOR "@Draco_VERSION_MAJOR@"
@@ -67,7 +67,7 @@
 #cmakedefine draco_isPGI
 #cmakedefine draco_isKNL
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
-#cmakedefine HAVE_CUDA @HAVE_CUDA@
+#cmakedefine WITH_CUDA @WITH_CUDA@
 #cmakedefine APPLE @APPLE@
 #cmakedefine SITENAME "@SITENAME@"
 
