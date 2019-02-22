@@ -6,7 +6,7 @@
 case $ddir in
 
   #------------------------------------------------------------------------------#
-  draco-6_25_0 | draco-7_0_0 )
+  draco-6_25_0 | draco-7_0_0 | draco-7_1_0)
     function intel1802env()
     {
       export VENDOR_DIR=/usr/projects/draco/vendors

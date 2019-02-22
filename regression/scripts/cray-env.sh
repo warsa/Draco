@@ -13,7 +13,7 @@ fi
 case $ddir in
 
   #------------------------------------------------------------------------------#
-  draco-7_0_0 )
+  draco-7_0_0 | draco-7_1_0)
     function intel1802env()
     {
       if [[ ${CRAY_CPU_TARGET} == mic-knl ]]; then
