@@ -168,7 +168,7 @@ const std::string copyright() {
 
   msg << author_list() << "\n"
       << "Copyright (C) 2016-2019 Triad National Security, LLC. "
-         "(LA-CC-16-016)"
+         "(C19028, LA-CC-16-016), Released under a 3-Clause BSD License."
       << std::endl;
 
   return msg.str();

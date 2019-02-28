@@ -112,7 +112,7 @@ configure_file(
 
 # install top level documents
 install(
-  FILES ChangeLog Copyright README.md
+  FILES ChangeLog LICENSE.md README.md
   DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Add support for the 'uninstall' target

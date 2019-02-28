@@ -14,6 +14,11 @@
 	                     GCC 6.4.0       OpenMPI-2.1.2
 	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.3
 	                     Intel 17.0.4    Cray_MPICH2-7.7.3
+	  Thunder/Astra      NA
+	  Toolbox            NA
+	  Sierra/RZAnsel     NA
+	  Darwin Power9      NA
+	  Darwin ARM         NA
 
 	* Summary of changes:
 	- 378 files changed, added or removed in 58 commits.
@@ -100,7 +105,7 @@
 	- Bug #1025 Add common build options to "Enabled features" list in build summary
 	- Bug #59 cdi_eospac design flaw
 
-	* Statistics
+	* Metrics:
 
 Contributers (updated Release.cc and README.md with this ordering).
 
@@ -110,9 +115,6 @@ CCS-2 Draco Team: Kelly G. Thompson, Kent G. Budge, Ryan T. Wollaeger, James S. 
 Prior Contributers: Jeff D. Densmore, Gabriel M. Rockefeller,
      Allan B. Wollaber, Rob B. Lowrie, Lori A. Pritchett-Sheats,
      Paul W. Talbot, and Katherine J. Wang.
-
-Lines of Code
--------------
 
 Code Coverage
 -------------
