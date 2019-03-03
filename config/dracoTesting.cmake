@@ -1,4 +1,11 @@
-# File: dracoTesting.cmake
+#-----------------------------*-cmake-*----------------------------------------#
+# file   config/compilerEnv.cmake
+# brief  Default CMake build parameters
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
+#        All rights reserved.
+#------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 include( FeatureSummary )
 option( BUILD_TESTING "Should we compile the tests?" ON )
@@ -44,3 +51,7 @@ if( BUILD_TESTING )
       COMMAND ${CMAKE_CTEST_COMMAND} ${pbuildtestflags} $(ARGS) )
   endif()
 endif()
+
+#------------------------------------------------------------------------------#
+# End dracoTesting.cmake
+#------------------------------------------------------------------------------#

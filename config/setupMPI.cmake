@@ -16,6 +16,8 @@
 # C4_MPI     BOOL
 #
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 include( FeatureSummary )
 
 ##---------------------------------------------------------------------------##
@@ -77,6 +79,15 @@ endmacro()
 ##---------------------------------------------------------------------------##
 macro( query_topology )
 
+# These cmake commands, while useful, don't provide the topology detail that we 
+# are interested in (i.e. number of sockets per node). We could use the results
+# of these queries to know if hyperthreading is enabled (if logical != physical 
+# cores)
+# - cmake_host_system_information(RESULT MPI_PHYSICAL_CORES
+#   QUERY NUMBER_OF_PHYSICAL_CORES)
+# - cmake_host_system_information(RESULT MPI_LOGICAL_CORES
+#   QUERY NUMBER_OF_LOGICAL_CORES)
+
   # start with default values
   set( MPI_CORES_PER_CPU 4 )
   set( MPI_PHYSICAL_CORES 1 )
@@ -132,7 +143,6 @@ macro( query_topology )
     set( MPI_HYPERTHREADING "ON" CACHE BOOL "Are we using hyperthreading?"
       FORCE )
   endif()
-
 endmacro()
 
 ##---------------------------------------------------------------------------##
@@ -468,17 +478,17 @@ macro( setupMPILibrariesWindows )
 
       message(STATUS "Looking for MPI...")
       find_package( MPI QUIET )
-      
-      # If this macro is called from a MinGW builds system (for a CAFS 
-      # subdirectory) and is trying to MS-MPI, the above check will fail (when 
-      # cmake > 3.12). However, MS-MPI is known to be good when linking with 
+
+      # If this macro is called from a MinGW builds system (for a CAFS
+      # subdirectory) and is trying to MS-MPI, the above check will fail (when
+      # cmake > 3.12). However, MS-MPI is known to be good when linking with
       # Visual Studio so override the 'failed' report.
       if(
 #       NOT "${MPI_C_FOUND}" AND "${Draco_MPI_C_WORKS}" AND
           "${MPI_C_LIBRARIES}" MATCHES "msmpi" AND
           "${CMAKE_GENERATOR}" STREQUAL "MinGW Makefiles")
         if( EXISTS "${MPI_C_LIBRARIES}" AND EXISTS "${MPI_C_INCLUDE_DIRS}" )
-          set( MPI_C_FOUND TRUE )          
+          set( MPI_C_FOUND TRUE )
           set( MPI_Fortran_FOUND TRUE )
         endif()
       endif()
@@ -652,9 +662,9 @@ macro( setupMPILibrariesWindows )
    endif()
 
    if( ${MPI_C_FOUND} )
-      message(STATUS "Looking for MPI...found${MPIEXEC_EXECUTABLE}")
+      message(STATUS "Looking for MPI.......found ${MPIEXEC_EXECUTABLE}")
    else()
-      message(STATUS "Looking for MPI...not found")
+      message(STATUS "Looking for MPI.......not found")
    endif()
 
    mark_as_advanced( MPI_FLAVOR MPIEXEC_OMP_POSTFLAGS MPI_LIBRARIES )
