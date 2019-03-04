@@ -13,7 +13,7 @@
 
 cmake_minimum_required(VERSION 3.11.0 FATAL_ERROR)
 project( Draco
-  VERSION 7.0
+  VERSION 7.1
   DESCRIPTION "An object-oriented component library supporting radiation transport applications."
   LANGUAGES CXX C )
 
@@ -112,7 +112,7 @@ configure_file(
 
 # install top level documents
 install(
-  FILES ChangeLog Copyright README.md
+  FILES ChangeLog LICENSE.md README.md
   DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 # Add support for the 'uninstall' target

@@ -5,14 +5,14 @@
 #          All rights reserved
 ##---------------------------------------------------------------------------##
 
-if( NOT DEFINED CRAY_PE )
-  message("
-Platform Checks...
-")
+include_guard(GLOBAL)
 
-  # ----------------------------------------------------------------------------
-  # Identify machine and save name in ds++/config.h
-  # ----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Identify machine and save name in ds++/config.h
+# ----------------------------------------------------------------------------
+
+macro(dbs_set_sitename)
+
   site_name( SITENAME )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
   if( ${SITENAME} MATCHES "ba")
@@ -38,6 +38,13 @@ Platform Checks...
   endif()
   set( SITENAME ${SITENAME} CACHE "STRING" "Name of the current machine" FORCE)
 
+endmacro()
+
+if( NOT DEFINED CRAY_PE )
+  message("
+Platform Checks...
+")
+  dbs_set_sitename()
 endif()
 
 #------------------------------------------------------------------------------#
