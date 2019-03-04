@@ -107,7 +107,7 @@ const std::string author_list(bool const use_doxygen_formatting) {
   current_developers.insert(fomdev(3445, "Ryan T. Wollaeger"));
   current_developers.insert(fomdev(2851, "James S. Warsa"));
   current_developers.insert(fomdev(2788, "Alex R. Long"));
-  current_developers.insert(fomdev(1260, "Kendra P. Keady"));
+  current_developers.insert(fomdev(1260, "Kendra P. Long"));
   current_developers.insert(fomdev(398, "Jae H. Chang"));
   current_developers.insert(fomdev(243, "Matt A. Cleveland"));
   current_developers.insert(fomdev(179, "Andrew T. Till"));

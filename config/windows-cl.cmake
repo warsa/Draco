@@ -7,6 +7,8 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
+
 # Useful reference information:
 # https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=vs-2017
 
