@@ -51,6 +51,14 @@ fi
 # sanity checks
 job_launch_sanity_checks
 
+# Extra parameters
+requested_nodes="-N 1"
+for ep in $extra_params; do
+  case $ep in
+    perfbench) requested_nodes="-N 4" ;;
+  esac
+done
+
 available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
 available_account=`sacctmgr -np list assoc user=$LOGNAME format=Account | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
 available_partition=`sacctmgr -np list assoc user=$LOGNAME format=Partition | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
@@ -87,8 +95,10 @@ if ! [[ -d $logdir ]]; then
   chmod g+s $logdir
 fi
 
+# only use 1 node for compiling/installing
 build_partition_options="-N 1 -t 4:00:00"
-partition_options="-N 1 -t 4:00:00"
+# perfbench uses 4 nodes, otherwise only request 1 node
+partition_options="${requested_nodes} -t 4:00:00"
 
 # Configure on the front end
 echo "Configure:"

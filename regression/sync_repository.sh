@@ -128,8 +128,8 @@ case ${target} in
     keychain=keychain-2.7.1
     ;;
   tt-fey*)
-    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/misc"
-    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/tools"
+    run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/misc"
+    run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/tools"
     run "module load user_contrib git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
