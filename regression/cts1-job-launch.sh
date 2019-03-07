@@ -53,9 +53,9 @@ job_launch_sanity_checks
 
 # Extra parameters
 requested_nodes="-N 1"
-for ep in $extra_params; do
+for ep in $extra_params_sort_safe; do
   case $ep in
-    perfbench) requested_nodes="-N 4" ;;
+    *perfbench*) requested_nodes="-N 4" ;;
   esac
 done
 
@@ -95,10 +95,8 @@ if ! [[ -d $logdir ]]; then
   chmod g+s $logdir
 fi
 
-# only use 1 node for compiling/installing
-build_partition_options="-N 1 -t 4:00:00"
-# perfbench uses 4 nodes, otherwise only request 1 node
-partition_options="${requested_nodes} -t 4:00:00"
+# build and test during same allocation.
+build_partition_options="${requested_nodes} -t 4:00:00"
 
 # Configure on the front end
 echo "Configure:"

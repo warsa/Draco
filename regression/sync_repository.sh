@@ -116,16 +116,16 @@ case ${target} in
     keychain=keychain-2.7.1
     ;;
   sn-fey*)
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/compiler"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/libraries"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/misc"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/mpi"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/tools"
-    run "module load user_contrib git"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/compiler"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/libraries"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/misc"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/mpi"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/tools"
+    run "module load git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.7.1
+    keychain=keychain-2.8.2
     ;;
   tt-fey*)
     run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/misc"
@@ -207,7 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
-  run "find draco -type d -exec chmod g+s {} \;"
+  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:
