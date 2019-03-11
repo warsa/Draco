@@ -38,7 +38,7 @@ echo -e "umask: `umask` \n"
 case ${target} in
   darwin-fe* | cn[0-9]*)
     REGDIR=/usr/projects/draco/regress
-    keychain=keychain-2.7.1
+    keychain=keychain-2.8.2
     VENDOR_DIR=/usr/projects/draco/vendors
     # personal copy of ssh-agent.
     export PATH=$HOME/bin:$PATH

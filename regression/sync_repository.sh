@@ -113,7 +113,7 @@ case ${target} in
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.7.1
+    keychain=keychain-2.8.2
     ;;
   sn-fey*)
     run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/compiler"
@@ -207,7 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
-  run "find draco -type d -exec chmod g+s {} \;"
+  run "find $gitroot/${namespace} -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:

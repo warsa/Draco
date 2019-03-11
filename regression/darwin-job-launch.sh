@@ -22,10 +22,9 @@ nargs=${#args[@]}
 scriptname=${0##*/}
 host=`uname -n`
 
-die "darwin-job-launch.sh needs to be upgraded to match other job-launch scripts."
-
 #export MOABHOMEDIR=/opt/MOAB
-export SHOWQ=/bin/squeue
+export SHOWQ=`which squeue`
+export MSUB=`which sbatch`
 
 # Dependencies: wait for these jobs to finish
 dep_jobids=""
@@ -33,11 +32,42 @@ for (( i=0; i < $nargs ; ++i )); do
    dep_jobids="${dep_jobids} ${args[$i]} "
 done
 
+# load some common bash functions
+export rscriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f $rscriptdir/scripts/common.sh ]]; then
+  source $rscriptdir/scripts/common.sh
+else
+  echo " "
+  echo "FATAL ERROR: Unable to locate Draco's bash functions: "
+  echo "   looking for .../regression/scripts/common.sh"
+  echo "   searched rscriptdir = $rscriptdir"
+  exit 1
+fi
+
 # sanity check
-job_launch_sanity_checks()
+job_launch_sanity_checks
+
+#available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
+#                = {darwin}
+#available_account=`sacctmgr -np list assoc user=$LOGNAME format=Account | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
+#                = {all_users asc-priority}
+#available_partition=`sacctmgr -np list assoc user=$LOGNAME format=Partition | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
+#                = { }
+#available_qos=`sacctmgr -np list assoc user=$LOGNAME format=Qos | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
+#                = {debug long normal scaling}
+
+# case $available_queues in
+#   *access*) access_queue="-A access --qos=access" ;;
+#   *dev*)    access_queue="--qos=dev" ;;
+# esac
+
+# case $machine_name_short in
+#   # Must use interactive qos on grizzly because standrad has a 70 node minimum
+#   gr*) access_queue="--qos=interactive";;
+# esac
 
 # Banner
-print_job_launch_banner()
+print_job_launch_banner
 
 # Prerequisits:
 # Wait for all dependencies to be met before creating a new job
@@ -56,10 +86,18 @@ if ! test -d $logdir; then
   chmod g+s $logdir
 fi
 
+# choose partition type (knl, power9, volta, arm, etc)
+case $extra_params_sort_safe in
+  *knl*)       partition_options="-p knl-quad_cache" ;;
+  *arm*)       partition_options="-p arm" ;;
+  *power9*)    partition_options="-p power9-asc -A asc-priority" ;;
+  *gpu-volta*) partition_options="-p volta-x86" ;;
+esac
+
 # Tell ctest to checkout jayenne from a local directory instead of gitlab. Also,
 # update the local repository to include any feature branches that might be
 # requested.
-export gitroot=/usr/projects/draco/regress/git
+# export gitroot=/usr/projects/draco/regress/git
 
 darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 
@@ -73,7 +111,8 @@ darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 echo " "
 echo "Configure, Build, Test:"
 export REGRESSION_PHASE=cbt
-cmd="/usr/bin/sbatch -v -o ${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log -e ${regdir}/logs/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log ${darwin_regress_script}"
+logfile=${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
+cmd="${MSUB} -v -o ${logfile} -J{subproj:0-5}-${featurebranch} -N 1 -t 1:00:00 ${partition_options} ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number
