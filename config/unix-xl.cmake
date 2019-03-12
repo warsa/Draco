@@ -20,6 +20,7 @@ query_openmp_availability()
 if( NOT CXX_FLAGS_INITIALIZED )
    set( CXX_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
 
+   #  -F/projects/opt/ppc64le/ibm/xlc-16.1.1.2/xlC/16.1.1/etc/xlc.cfg.rhel.7.5.gcc.7.3.0.cuda.9.2
    set( CMAKE_C_FLAGS                "-qarch=auto" ) # -qfloat=nomaf -qxlcompatmacros
    # Sequoia
    if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.0 )
@@ -39,7 +40,8 @@ if( NOT CXX_FLAGS_INITIALIZED )
    set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 
    # Use C99 standard.
-   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qlanglvl=stdc99")
+   #set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qlanglvl=stdc99")
+   # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
 endif()
 
