@@ -112,7 +112,7 @@ echo " "
 echo "Configure, Build, Test:"
 export REGRESSION_PHASE=cbt
 logfile=${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
-cmd="${MSUB} -v -o ${logfile} -J{subproj:0-5}-${featurebranch} -N 1 -t 1:00:00 ${partition_options} ${darwin_regress_script}"
+cmd="${MSUB} -v -o ${logfile} -J${subproj:0-5}-${featurebranch} -N 1 -t 1:00:00 ${partition_options} ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number

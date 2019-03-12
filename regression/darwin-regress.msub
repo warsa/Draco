@@ -123,6 +123,7 @@ case $DRACO_ARCH in
     mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
     # ec_mf="ndi"
     # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
+    # eliminates warnings: "there are more than one active ports on host"
     export OMPI_MCA_btl=^openib
     export UCX_NET_DEVICES=mlx5_0:1
     ;;
@@ -143,6 +144,7 @@ case $DRACO_ARCH in
       export PATH=$PATH:/projects/opt/centos7/clang/6.0.0/bin
     fi
     # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
+    # eliminates warnings: "there are more than one active ports on host"
     export OMPI_MCA_btl=^openib
     export UCX_NET_DEVICES=mlx5_0:1
     ;;
@@ -164,6 +166,10 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
     mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-netlib trilinos/12.12.1-${mflavor}-netlib"
     # These aren't built for power architectures?
     # ec_mf="ndi eospac/6.3.0"
+    # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
+    # eliminates warnings: "there are more than one active ports on host"
+    export OMPI_MCA_btl=^openib
+    export UCX_NET_DEVICES=mlx5_0:1
     ;;
 esac
 export dracomodules="$noflavor $compflavor $mpiflavor $ec_mf"

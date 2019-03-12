@@ -1,10 +1,10 @@
 # crontab for darwin-fe
 
 # Update the regression scripts. (8 pm)
-01 20 * * 0-6 /usr/projects/draco/regress/draco/regression/update_regression_scripts.sh
+01 20 * * 0-6 /usr/projects/jayenne/regress/draco/regression/update_regression_scripts.sh
 
 # Keep a local bare copy of the repo available on the ccs-net.  This also triggers CI.
-*/20 * * * * /usr/projects/draco/regress/draco/regression/sync_repository.sh
+*/20 * * * * /usr/projects/jayenne/regress/draco/regression/sync_repository.sh
 
 #------------------------------------------------------------------------------#
 # Regressions:
@@ -26,7 +26,11 @@
 # volta-v100-x86: gcc-7.3.0, openmpi-3.2.0, cuda-9.2
 #------------------------------------------------------------------------------#
 
-01 21 * * 0-6 /usr/projects/draco/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco\" -e gpu-volta
+01 21 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne\" -e gpu-volta
+
+15 21 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco\" -e arm
+
+30 21 * * 0-6 /usr/projects/jayenne/regress/draco/regression/regression-master.sh -r -d Nightly -b Debug -p \"draco jayenne\" -e power9
 
 # |    |    |    |    |   |
 # |    |    |    |    |   +- command

@@ -13,7 +13,7 @@
 
 # Main Options
 export machine_class="darwin"
-export machine_name_short="darinw"
+export machine_name_short="darwin"
 export machine_name_long="Darwin Hetrogeneous Cluster"
 #platform_extra_params="clang coverage fulldiagnostics gcc630 nr perfbench scalar static valgrind vtest"
 platform_extra_params="arm gpu-volta knl fulldiagnostics perfbench power9 vtest"
