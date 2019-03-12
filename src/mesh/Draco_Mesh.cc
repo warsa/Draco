@@ -292,7 +292,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       }
 
       // make face a boundary if no face conditions have been found
-      if(!has_face_cond) {
+      if (!has_face_cond) {
 
         // augment side flags with vacuum b.c.
         side_set_flag.push_back(0);
