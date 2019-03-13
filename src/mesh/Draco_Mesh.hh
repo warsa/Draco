@@ -69,7 +69,7 @@ private:
   const unsigned num_nodes;
 
   // Side set flag (can be used for mapping BCs to sides)
-  const std::vector<unsigned> side_set_flag;
+  std::vector<unsigned> side_set_flag;
 
   // Ghost cell indices local to a different node, subscripted with a local
   // ghost cell index
@@ -86,8 +86,8 @@ private:
   const std::vector<unsigned> m_cell_to_node_linkage;
 
   // Side types and node indices per side
-  const std::vector<unsigned> m_side_node_count;
-  const std::vector<unsigned> m_side_to_node_linkage;
+  std::vector<unsigned> m_side_node_count;
+  std::vector<unsigned> m_side_to_node_linkage;
 
   // Layout of mesh: vector index is cell index, vector element is
   // description of cell's adjacency to other cells in the mesh.
