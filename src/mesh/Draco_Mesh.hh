@@ -39,7 +39,7 @@ namespace rtt_mesh {
  * Possibly temporary features:
  * 1) The cell_type_ vector (argument to the constructor) is currently taken to
  *    be the number of nodes per cell.
- * 2) The layout data structure(s) will proabably be moved to a separate class,
+ * 2) The layout data structure(s) will probably be moved to a separate class,
  *    where accessors might be used on a flattened version.
  */
 //===========================================================================//

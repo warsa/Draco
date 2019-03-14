@@ -142,7 +142,7 @@ std::vector<std::vector<double>> Draco_Mesh::compute_node_coord_vec(
  *
  * \param[in] cell_type number of vertices per cell.
  * \param[in] cell_to_node_linkage serial map of cell index to node indices.
- * \param[in] side_node_count number of verices per side.
+ * \param[in] side_node_count number of vertices per side.
  * \param[in] side_to_node_linkage serial map of side index to node indices.
  * \param[in] ghost_cell_type  number of common vertices per ghost cell.
  * \param[in] ghost_cell_to_node_linkage vertices in common per ghost cell.
@@ -305,7 +305,8 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
         // augment cell-side linkage
         cell_to_side_linkage[cell].push_back(
-            std::make_pair(m_side_node_count.size() - 1, vec_node_vec[l]));
+            std::make_pair(static_cast<unsigned>(m_side_node_count.size() - 1),
+                           vec_node_vec[l]));
       }
     }
 
@@ -326,7 +327,7 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 /*!
  * \brief Build an intermediate node-index map to support layout generation.
  *
- * \param[in] indx_type vector of number of nodes, subscipted by index.
+ * \param[in] indx_type vector of number of nodes, subscripted by index.
  * \param[in] indx_to_node_linkage serial map of index to node indices.
  * \return a map of node index to vector of indexes adjacent to the node.
  */
