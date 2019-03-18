@@ -12,9 +12,9 @@
 #    $regdir     - /scratch/regress
 #    $rscriptdir - /scratch/regress/draco/regression (actually, the location
 #                  where the active regression_master.sh is located)
-#    $subproj    - 'draco', 'jaynne', 'capsaicin', etc.
+#    $subproj    - 'draco', 'jaynne', 'core', etc.
 #    $build_type - 'Debug', 'Release'
-#    $extra_params - '', 'intel13', 'pgi', 'coverage'
+#    $extra_params - '', 'intel13', 'vtest', 'coverage', 'arm'
 
 # command line arguments
 args=( "$@" )
@@ -101,6 +101,12 @@ esac
 
 darwin_regress_script="${rscriptdir}/darwin-regress.msub"
 
+# How long should we reserve the allocation for?
+howlong="-t 1:00:00"
+case $subproj in
+  jayenne | core | trt | npt)  howlong="-t 8:00:00"
+esac
+
 ##---------------------------------------------------------------------------##
 # Proposed: Init, Configure, Build, Test and Submit
 # (1) Configure, build and test from the backend
@@ -112,7 +118,7 @@ echo " "
 echo "Configure, Build, Test:"
 export REGRESSION_PHASE=cbt
 logfile=${logdir}/darwin-${subproj}-${build_type}${epdash}${extra_params}${prdash}${featurebranch}-${REGRESSION_PHASE}.log
-cmd="${MSUB} -v -o ${logfile} -J${subproj:0-5}-${featurebranch} -N 1 -t 1:00:00 ${partition_options} ${darwin_regress_script}"
+cmd="${MSUB} -v -o ${logfile} -J${subproj:0:5}-${featurebranch} -N 1 ${howlong} ${partition_options} ${darwin_regress_script}"
 echo "${cmd}"
 jobid=`eval ${cmd}`
 # trim extra whitespace from number

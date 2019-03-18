@@ -121,7 +121,7 @@ case ${target} in
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/misc"
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/mpi"
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/tools"
-    run "module load git"
+    run "module load user_contrib git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
@@ -207,7 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
-  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
+  run "find $gitroot/${namespace} -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:
