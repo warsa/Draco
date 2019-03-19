@@ -11,6 +11,7 @@
 #ifndef rtt_cdi_CDI_hh
 #define rtt_cdi_CDI_hh
 
+#include "EICoupling.hh"
 #include "EoS.hh"
 #include "GrayOpacity.hh"
 #include "MultigroupOpacity.hh"
@@ -464,6 +465,7 @@ class DLL_PUBLIC_cdi CDI {
   typedef std::shared_ptr<const MultigroupOpacity> SP_MultigroupOpacity;
   typedef std::shared_ptr<const OdfmgOpacity> SP_OdfmgOpacity;
   typedef std::shared_ptr<const EoS> SP_EoS;
+  typedef std::shared_ptr<const EICoupling> SP_EICoupling;
   typedef std::vector<SP_GrayOpacity> SF_GrayOpacity;
   typedef std::vector<SF_GrayOpacity> VF_GrayOpacity;
   typedef std::vector<SP_MultigroupOpacity> SF_MultigroupOpacity;
@@ -530,6 +532,15 @@ class DLL_PUBLIC_cdi CDI {
    */
   SP_EoS spEoS;
 
+  /*!
+   * \brief Smart pointer to the electron-ion coupling object.
+   *
+   * spEICoupling is a smart pointer that links a CDI object to an electron-ion
+   * coupling object (any type of Analytic, etc.).  The pointer is
+   * established in the CDI constructor.
+   */
+  SP_EICoupling spEICoupling;
+
   //! Material ID.
   std_string matID;
 
@@ -571,6 +582,9 @@ public:
   //! Register an EOS (rtt_cdi::Eos) with CDI.
   void setEoS(const SP_EoS &in_spEoS);
 
+  //! Register an EICoupling (rtt_cdi::EICoupling) with CDI.
+  void setEICoupling(const SP_EICoupling &in_spEICoupling);
+
   //! Clear all data objects
   void reset();
 
@@ -581,6 +595,7 @@ public:
   SP_MultigroupOpacity mg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
   SP_OdfmgOpacity odfmg(rtt_cdi::Model m, rtt_cdi::Reaction r) const;
   SP_EoS eos(void) const;
+  SP_EICoupling ei_coupling(void) const;
 
   //! Collapse Multigroup data to single-interval data with Planck weighting.
   static double
@@ -643,6 +658,7 @@ public:
   bool isMultigroupOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isOdfmgOpacitySet(rtt_cdi::Model, rtt_cdi::Reaction) const;
   bool isEoSSet() const;
+  bool isEICouplingSet() const;
 
   //! Copies the vector of the stored frequency group boundary vector
   static std::vector<double> getFrequencyGroupBoundaries();
