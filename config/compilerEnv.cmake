@@ -5,6 +5,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
 include( FeatureSummary )
 
 if( NOT DEFINED PLATFORM_CHECK_OPENMP_DONE OR
