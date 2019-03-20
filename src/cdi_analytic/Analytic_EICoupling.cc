@@ -1,8 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_EICoupling.cc
- * \author Thomas M. Evans
- * \date   Tue Oct  2 16:22:32 2001
+ * \author Mathew Cleveland
+ * \date   March 2019
  * \brief  Analytic_EICoupling member definitions.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */

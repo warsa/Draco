@@ -1,8 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   cdi_analytic/test/tstAnalytic_EICoupling.cc
- * \author Thomas M. Evans
- * \date   Thu Oct  4 11:45:19 2001
+ * \author Mathew Cleveland
+ * \date   March 2019
  * \brief  Analytic_EICoupling test.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
@@ -30,9 +30,7 @@ using std::dynamic_pointer_cast;
 void analytic_ei_coupling_test(rtt_dsxx::UnitTest &ut) {
   typedef Constant_Analytic_EICoupling_Model Constant_Model;
 
-  // make an analytic model (polynomial specific heats)
-  // elec specific heat = a + bT^c
-  // ion specific heat  = d + eT^f
+  // make an analytic model (constant ei_coupling)
   shared_ptr<Constant_Model> model(new Constant_Model(1.1));
 
   if (!model)
@@ -129,7 +127,7 @@ void CDI_test(rtt_dsxx::UnitTest &ut) {
   shared_ptr<Analytic_EICoupling> analytic_ei_coupling(
       new Analytic_EICoupling(model));
 
-  // EoS object
+  // EICoupling object
   shared_ptr<const EICoupling> ei_coupling = analytic_ei_coupling;
   if (typeid(*ei_coupling) != typeid(Analytic_EICoupling))
     ITFAILS;

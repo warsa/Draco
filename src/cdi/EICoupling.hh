@@ -3,7 +3,7 @@
  * \file   cdi/EICoupling.hh
  * \author Mathew Cleveland
  * \date   March 2019
- * \brief  EoS class header file (an abstract class)
+ * \brief  EICoupling class header file (an abstract class)
  * \note   Copyright (C) 2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
@@ -18,7 +18,7 @@ namespace rtt_cdi {
 
 //========================================================================
 /*!
- * \class EoS
+ * \class EICoupling
  *
  * \brief This is a pure virtual class that defines a standard interface for
  *  all derived EICoupling objects.
@@ -65,11 +65,11 @@ public:
    *     opacity value is being requested (keV).
    * \param density The density value for which an opacity 
    *     value is being requested (g/cm^3).
-   * \param w_e is the plasma electron frequency (as defined by Eq. 3.41 in
+   * \param w_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41 in
    *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \param w_i is the average plasma ion frequency (as defined by Eq. 3.61 in
+   * \param w_i is the average plasma ion frequency (1/s) (as defined by Eq. 3.61 in
    *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \return A electron-ion coupling coeffiecent (1/s).
+   * \return A electron-ion coupling coeffiecent (kJ/g/K/s).
    */
   virtual double getElectronIonCoupling(const double eTemperature,
                                         const double iTemperature,
@@ -86,11 +86,11 @@ public:
    *     opacity value is being requested (keV).
    * \param vdensity The density value for which an opacity 
    *     value is being requested (g/cm^3).
-   * \param vw_e is the plasma electron frequency (as defined by Eq. 3.41 in
+   * \param vw_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41 in
    *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \param vw_i is the average plasma ion frequency (as defined by Eq. 3.61 in
+   * \param vw_i is the average plasma ion frequency (1/s) (as defined by Eq. 3.61 in
    *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \return A vector of electron-ion coupling coeffiecent (1/s).
+   * \return A vector of electron-ion coupling coeffiecent (kJ/g/K/s).
 
    */
   virtual std::vector<double>

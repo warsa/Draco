@@ -1,8 +1,8 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
  * \file   cdi_analytic/Analytic_EICoupling.hh
- * \author Thomas M. Evans
- * \date   Tue Oct  2 16:22:32 2001
+ * \author Mathew Cleveland
+ * \date   March 2019
  * \brief  Analytic_EICoupling class definition.
  * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
@@ -67,7 +67,7 @@ public:
   // >>> ACCESSORS
   const_SP_Model get_Analytic_Model() const { return analytic_model; }
 
-  // >>> INTERFACE SPECIFIED BY rtt_cdi::EoS
+  // >>> INTERFACE SPECIFIED BY rtt_cdi::EICoupling
 
   // Get electron ion coupling.
   double getElectronIonCoupling(const double eTemperature,
