@@ -74,11 +74,11 @@ public:
                                 const double iTemperature, const double density,
                                 const double w_e, const double w_i) const;
 
-  sf_double getElectronIonCoupling(const sf_double &eTemperature,
-                                   const sf_double &iTemperature,
-                                   const sf_double &density,
-                                   const sf_double &w_e,
-                                   const sf_double &w_i) const;
+  sf_double getElectronIonCoupling(const sf_double &vetemperature,
+                                   const sf_double &vitemperature,
+                                   const sf_double &vdensity,
+                                   const sf_double &vw_e,
+                                   const sf_double &vw_i) const;
 
   // Pack the Analytic_EICoupling into a character string.
   sf_char pack() const;
