@@ -78,10 +78,8 @@ public:
    * \return An electron-ion coupling coeffient [kJ/g/K/s].
    */
   double getElectronIonCoupling(const double etemperature,
-                                const double itemperature,
-                                const double density,
-                                const double w_e,
-                                const double w_i) const;
+                                const double itemperature, const double density,
+                                const double w_e, const double w_i) const;
 
   /*!
    * \brief EICoupling accessor that returns a vector of electron-ion coupling
@@ -101,11 +99,12 @@ public:
    * \param[in] w_i the ion screening coeffiecent vector [1/s]
    * \return An electron-ion coupling coeffient vector [kJ/g/K/s].
    */
-  std::vector<double> getElectronIonCoupling(const std::vector<double> &etemperature,
-                                const std::vector<double> &itemperature,
-                                const std::vector<double> &density,
-                                const std::vector<double> &w_e,
-                                const std::vector<double> &w_i) const;
+  std::vector<double>
+  getElectronIonCoupling(const std::vector<double> &etemperature,
+                         const std::vector<double> &itemperature,
+                         const std::vector<double> &density,
+                         const std::vector<double> &w_e,
+                         const std::vector<double> &w_i) const;
 
   // Dummy pack function.
   std::vector<char> pack() const { return std::vector<char>(); }

@@ -48,13 +48,13 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   double etemperature = 1.0; // Kelvin
   double itemperature = 2.0; // Kelvin
   double density = 3.0;      // g/cm^3
-  double w_e = 4.0;       
-  double w_i = 5.0;       
-  double ei_coupling_ref = etemperature + 10.0 * itemperature + 100.0 * density 
-      + 1000.0 * w_e + 10000.0 * w_i; 
+  double w_e = 4.0;
+  double w_i = 5.0;
+  double ei_coupling_ref = etemperature + 10.0 * itemperature +
+                           100.0 * density + 1000.0 * w_e + 10000.0 * w_i;
 
-  double ei_coupling = spEICoupling->getElectronIonCoupling(etemperature, itemperature, 
-                                                            density, w_e, w_i);
+  double ei_coupling = spEICoupling->getElectronIonCoupling(
+      etemperature, itemperature, density, w_e, w_i);
 
   if (soft_equiv(ei_coupling, ei_coupling_ref)) {
     ostringstream message;
@@ -91,19 +91,20 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
   std::vector<double> vw_i(3);
   vw_i[0] = 1.0;
   vw_i[1] = 2.0;
-  vw_i[2] = 3.8; 
+  vw_i[2] = 3.8;
 
   // Retrieve electron based heat capacities.
   std::vector<double> vRefEICoupling(vetemperature.size());
   for (size_t i = 0; i < vetemperature.size(); ++i)
-    vRefEICoupling[i] = vetemperature[i] + 10.0*vitemperature[i] +
-        100.0*vdensity[i] + 1000.0*vw_e[i] + 10000.0*vw_i[i];
+    vRefEICoupling[i] = vetemperature[i] + 10.0 * vitemperature[i] +
+                        100.0 * vdensity[i] + 1000.0 * vw_e[i] +
+                        10000.0 * vw_i[i];
 
-  std::vector<double> vEICoupling =
-      spEICoupling->getElectronIonCoupling(vetemperature, vitemperature,
-              vdensity, vw_e, vw_i);
+  std::vector<double> vEICoupling = spEICoupling->getElectronIonCoupling(
+      vetemperature, vitemperature, vdensity, vw_e, vw_i);
 
-  if (soft_equiv(vEICoupling.begin(), vEICoupling.end(), vRefEICoupling.begin(), vRefEICoupling.end())) {
+  if (soft_equiv(vEICoupling.begin(), vEICoupling.end(), vRefEICoupling.begin(),
+                 vRefEICoupling.end())) {
     ostringstream message;
     message << "The getElectronIonCoupling vector request"
             << " returned the expected values.";
