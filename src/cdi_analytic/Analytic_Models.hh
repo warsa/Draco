@@ -622,7 +622,7 @@ public:
  *
  * where the coefficient has the following units:
  *
- * \arg alpha = [s]
+ * \arg alpha = [kJ/g/K/s]
  */
 class Constant_Analytic_EICoupling_Model : public Analytic_EICoupling_Model {
 private:
@@ -630,7 +630,7 @@ private:
   double ei_coupling;
 
 public:
-  //! Constructor, sig has units of cm^2/g.
+  //! Constructor, alpha has units of kJ/g/K/s.
   explicit Constant_Analytic_EICoupling_Model(double alpha)
       : ei_coupling(alpha) {
     Require(ei_coupling >= 0.0);
@@ -639,7 +639,7 @@ public:
   //! Constructor for packed state.
   explicit Constant_Analytic_EICoupling_Model(const sf_char &packed);
 
-  //! Calculate the opacity in units of s.
+  //! Calculate the ei_coupling in units of kJ/g/K/s.
   double calculate_ei_coupling(double /*Te*/, double /*Ti*/, double /*rho*/,
                                double /*w_e*/, double /*w_i*/) const {
     return ei_coupling;
