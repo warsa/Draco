@@ -59,9 +59,9 @@ public:
    * \brief EICoupling accessor that returns a single electron-ion coupling
    *        coefficient.
    *
-   * \param etemperature The electron temperature value for which an
+   * \param eTemperature The electron temperature value for which an
    *     opacity value is being requested (keV).
-   * \param itemperature The electron temperature value for which an
+   * \param iTemperature The electron temperature value for which an
    *     opacity value is being requested (keV).
    * \param density The density value for which an opacity 
    *     value is being requested (g/cm^3).
