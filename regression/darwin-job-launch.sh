@@ -126,10 +126,17 @@ jobid=`echo ${jobid//[^0-9]/}`
 
 # Wait for CBT (Config, build, test) to finish
 sleep 1m
-while test "`$SHOWQ | grep $jobid`" != ""; do
+let elapsed_min=0
+while [[ "`$SHOWQ | grep $jobid`" != "" ]]; do
    $SHOWQ | grep $jobid
-   echo "   ${subproj}: waiting for jobid = $jobid to finish (sleeping 5 minutes)."
+   echo "   ${subproj}: waiting for jobid = $jobid to finish"
+   echo "               we have waited $elapsed_min min. Sleeping another 5 min."
    sleep 5m
+   let "elapsed_min += 5"
+   # if we wait 12 hours, cancel the job.
+   if [[ "${elapsed_min}" == "720" ]]; then
+     scancel $jobid
+   fi
 done
 
 # Submit from the front end

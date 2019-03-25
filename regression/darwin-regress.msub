@@ -126,12 +126,19 @@ case $DRACO_ARCH in
     # eliminates warnings: "there are more than one active ports on host"
     export OMPI_MCA_btl=^openib
     export UCX_NET_DEVICES=mlx5_0:1
+    # The modules on darwin seem to set things incorrect.  Attempt to fix here:
+    export LANG=en_US
+    export TERM=xterm-256color
+    export CC="$CC -mcpu=thunderx2t99"
+    export CXX="$CXX -mcpu=thunderx2t99"
+    export FC="$FC -mcpu=thunderx2t99"
+    # CPP, F77, and F90 already have the '-mcpu' option.
     ;;
 
   x86_64)
     cflavor="gcc-7.3.0"
     mflavor="$cflavor-openmpi-3.1.2"
-    noflavor="emacs git cmake gcc/7.3.0 ack"
+    noflavor="emacs git cmake/3.14.0-$cflavor gcc/7.3.0 ack"
     compflavor="gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor numdiff/5.9.0-$cflavor random123/1.09-$cflavor metis/5.1.0-$cflavor eospac/6.3.1-$cflavor openmpi/3.1.2-gcc_7.3.0"
     mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-$mflavor-netlib trilinos/12.12.1-$mflavor-netlib"
     ec_mf="ndi"
@@ -163,7 +170,7 @@ superlu-dist/5.2.2-$mflavor trilinos/12.12.1-$mflavor"
     mflavor="$cflavor-openmpi-3.1.2"
     noflavor="git cmake gcc/7.3.0"
     compflavor="random123 numdiff gsl/2.5-$cflavor netlib-lapack/3.8.0-$cflavor metis/5.1.0-$cflavor openmpi/p9/3.1.2-gcc_7.3.0"
-    mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-netlib trilinos/12.12.1-${mflavor}-netlib"
+    mpiflavor="parmetis/4.0.3-$mflavor superlu-dist/5.2.2-${mflavor}-netlib trilinos/12.12.1-${mflavor}-netlib cuda/9.2"
     # These aren't built for power architectures?
     # ec_mf="ndi eospac/6.3.0"
     # work around for known openmpi issues: https://rtt.lanl.gov/redmine/issues/1229
