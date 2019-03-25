@@ -299,6 +299,32 @@ macro( setupCudaEnv )
     set( CUDA_DBS_STRING "CUDA" CACHE BOOL
       "If CUDA is available, this variable is 'CUDA'")
 
+      set(OUTPUTFILE ${CMAKE_CURRENT_SOURCE_DIR}/config/cuda_script) # No suffix required
+      set(CUDAFILE ${CMAKE_CURRENT_SOURCE_DIR}/config/query_gpu.cu)
+      execute_process(COMMAND nvcc -lcuda ${CUDAFILE} -o ${OUTPUTFILE})
+      execute_process(COMMAND ${OUTPUTFILE}
+                      RESULT_VARIABLE CUDA_RETURN_CODE
+                  OUTPUT_VARIABLE ARCH)
+
+    if(${CUDA_RETURN_CODE} EQUAL 0)
+      set(CUDA_SUCCESS "TRUE")
+    else()
+      set(CUDA_SUCCESS "FALSE")
+    endif()
+
+  if (${CUDA_SUCCESS})
+    message(STATUS "CUDA Architecture: ${ARCH}")
+    set(CMAKE_CUDA_FLAGS "${ARCH} -G -O0")
+    # ARL: These variables are set by the find_package(CUDA) call, which we
+    # currently do not use
+    #message(STATUS "CUDA Version: ${CUDA_VERSION_STRING}")
+    #message(STATUS "CUDA Path: ${CUDA_TOOLKIT_ROOT_DIR}")
+    #message(STATUS "CUDA Libararies: ${CUDA_LIBRARIES}")
+    #message(STATUS "CUDA Performance Primitives: ${CUDA_npp_LIBRARY}")
+  else()
+    message(WARNING ${ARCH})
+  endif()
+
     # message("
     # CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES = ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
     # CMAKE_CUDA_HOST_COMPILER       = ${CMAKE_CUDA_HOST_COMPILER}

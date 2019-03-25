@@ -1,6 +1,6 @@
 //----------------------------------*-C++-*----------------------------------//
 /*!
- * \file   device/test/gpu_kernel.cu
+ * \file   device/test/basic_kernels.cu
  * \author Kelly Thompson
  * \date
  * \brief  Small kernel code for testing GPU Device framework.
@@ -8,13 +8,24 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-extern "C" {
+namespace rtt_device_test {
+
 __global__ void sum(int *dest, int a, int b) {
   // Assuming a single thread, 1x1x1 block, 1x1 grid
   *dest = a + b;
 }
+
+__global__ void vector_add(double const *A_dev, double const *B_dev,
+                           double *C_dev, int const N) {
+  int i = blockDim.x * blockIdx.x + threadIdx.x;
+  /* if(i%512==0)
+         *   printf("index %d\n",i); */
+  if (i < N)
+    C_dev[i] = A_dev[i] + B_dev[i];
 }
 
+} // namespace rtt_device_test
+
 //---------------------------------------------------------------------------//
-// end of gpu_kernel.cu
+// end of basic_kernels.cu
 //---------------------------------------------------------------------------//
