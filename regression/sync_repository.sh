@@ -113,7 +113,7 @@ case ${target} in
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.8.2
+    keychain=keychain-2.8.5
     ;;
   sn-fey*)
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/compiler"
@@ -121,11 +121,11 @@ case ${target} in
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/misc"
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/mpi"
     run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/tools"
-    run "module load user_contrib git"
+    run "module load git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.8.2
+    keychain=keychain-2.8.5
     ;;
   tt-fey*)
     run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/misc"
@@ -134,7 +134,7 @@ case ${target} in
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.8.2
+    keychain=keychain-2.8.5
     ;;
 esac
 
@@ -144,14 +144,14 @@ fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-if [[ -f $HOME/.ssh/id_rsa ]]; then
-  MYHOSTNAME="`uname -n`"
-  run "$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_rsa"
-  if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
-    run "source $HOME/.keychain/$MYHOSTNAME-sh"
-  else
-    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+if [[ -f $HOME/.ssh/regress_rsa ]]; then
+  run "$VENDOR_DIR/$keychain/keychain --agents ssh regress_rsa"
+  if [[ `$VENDOR_DIR/$keychain/keychain -l 2>&1 | grep -c Error` != 0 ||
+        `$VENDOR_DIR/$keychain/keychain -l 2>&1 | grep -c authentication` != 0 ]]; then
+    run "source ~/.keychain/${target}-sh"
   fi
+  #run "$VENDOR_DIR/$keychain/keychain -l"
+  #run "ssh-add -L"
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -207,7 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
-  run "find $gitroot/${namespace} -type d -exec chmod g+s {} \;"
+  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:
