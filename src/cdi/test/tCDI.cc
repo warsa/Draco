@@ -324,6 +324,9 @@ void test_CDI(rtt_dsxx::UnitTest &ut) {
   if (cdi.isEoSSet())
     ITFAILS;
 
+  if (cdi.isEICouplingSet())
+    ITFAILS;
+
   if (cdi.getMatID() == matName)
     PASSMSG("Good, the material identifier was set and fetched correctly.");
   else
