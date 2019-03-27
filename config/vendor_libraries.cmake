@@ -106,7 +106,7 @@ macro( setupLAPACKLibraries )
 
     # The above might define blas, or it might not. Double check:
     if( NOT TARGET blas )
-      find_package( BLAS )
+      find_package( BLAS QUIET)
       if( BLAS_FOUND )
         add_library( blas STATIC IMPORTED)
         set_target_properties( blas PROPERTIES
@@ -193,7 +193,8 @@ macro( setupLAPACKLibraries )
         set_target_properties( blas PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_${tlib}_LIBRARY};-Wl,--end-group"
+          IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core
+#          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_${tlib}_LIBRARY};-Wl,--end-group"
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
         set_target_properties( lapack PROPERTIES
           IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
