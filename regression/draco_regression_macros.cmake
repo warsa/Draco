@@ -70,6 +70,16 @@ macro( find_num_procs_avail_for_running_tests )
     ProcessorCount(num_test_procs)
   endif()
 
+  # Hijack the normal logic for special cases.  Darwin/ARM has 256 cores/node,
+  # but limited memory/node causes issues. Similar situation for power9
+  if( "$ENV{SLURM_CLUSTER_NAME}" STREQUAL "darwin" )
+    if( "$ENV{SLURM_JOB_PARTITION}" STREQUAL "arm" )
+      set( num_test_procs 32 )
+    elseif( "$ENV{SLURM_JOB_PARTITION}" MATCHES "power9" )
+      set( num_test_procs 20 )
+    endif()
+  endif()
+
   # Limit the number of concurrent tests running by looking at the system load:
   math( EXPR max_system_load "${num_test_procs} + 1" )
 
@@ -218,6 +228,18 @@ win32$ set work_dir=c:/full/path/to/work_dir
          set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
       endif()
    endif()
+
+   # Hijack the normal logic for special cases. Darwin/ARM has 256 cores/node,
+   # but limited memory/node causes issues. Simlar situation for power9
+  if( "$ENV{SLURM_CLUSTER_NAME}" STREQUAL "darwin" )
+    if( "$ENV{SLURM_JOB_PARTITION}" STREQUAL "arm" )
+      set( num_compile_procs 1 )
+      # kt - trying 64 caused weird behavior (like compiler flag is not ascii).
+    elseif( "$ENV{SLURM_JOB_PARTITION}" MATCHES "power9" )
+      set( num_compile_procs 20 )
+    endif()
+    set(CTEST_BUILD_FLAGS "-j ${num_compile_procs}")
+  endif()
 
    # Testing parallelism
    # - Call the macro

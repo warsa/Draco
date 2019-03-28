@@ -272,6 +272,9 @@ function selectscratchdir
     fi
     # if this location is good (must be able to write to this location), return
     # the path.
+    if [[ -d $item/users ]]; then
+      item="${item}/users"
+    fi
     mkdir -p $item/$USER &> /dev/null
     if [[ -w $item/$USER ]]; then
       echo "$item"
