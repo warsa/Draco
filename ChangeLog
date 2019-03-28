@@ -166,6 +166,11 @@ SUM:                           1029          26732          57156         103276
 	                     GCC 6.4.0       OpenMPI-2.1.2
 	  TT/TR              Intel 18.0.2    Cray_MPICH2-7.7.3
 	                     Intel 17.0.4    Cray_MPICH2-7.7.3
+	  Thunder/Astra      NA
+	  Toolbox            NA
+	  Sierra/RZAnsel     NA
+	  Darwin Power9      NA
+	  Darwin ARM         NA
 
 	* Summary of changes:
 	- 378 files changed, added or removed in 58 commits.
@@ -252,7 +257,7 @@ SUM:                           1029          26732          57156         103276
 	- Bug #1025 Add common build options to "Enabled features" list in build summary
 	- Bug #59 cdi_eospac design flaw
 
-	* Statistics
+	* Metrics:
 
 Contributers (updated Release.cc and README.md with this ordering).
 

@@ -8,6 +8,7 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
 set(draco_config_dir ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "")
 
 #------------------------------------------------------------------------------

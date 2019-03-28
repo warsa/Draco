@@ -69,6 +69,7 @@
 
 #------------------------------------------------------------------------------#
 
+include_guard(GLOBAL)
 set( VERBOSE_DEBUG OFF )
 
 function(JOIN VALUES GLUE OUTPUT)
