@@ -15,6 +15,7 @@ macro(dbs_set_sitename)
 
   site_name( SITENAME )
   string( REGEX REPLACE "([A-z0-9]+).*" "\\1" SITENAME ${SITENAME} )
+  set( SITENAME_FAMILY "unknown" )
   if( ${SITENAME} MATCHES "ba")
     set( SITENAME "Badger" )
     set( SITENAME_FAMILY "CTS-1" )

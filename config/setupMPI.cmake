@@ -630,7 +630,7 @@ macro( setupMPILibrariesWindows )
    #     del msmpi.def
    #     copy libmsmpi.a %MSMPI_LIB32%/libmsmpi.a
 
-   if( WIN32 AND EXISTS "${CMAKE_Fortran_COMPILER}" AND
+   if( WIN32 AND DEFINED CMAKE_Fortran_COMPILER AND
        TARGET MPI::MPI_Fortran )
 
      # only do this if we are in a CMakeAddFortranSubdirectory directive
