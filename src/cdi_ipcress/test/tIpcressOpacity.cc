@@ -83,12 +83,12 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
   // Create Opacity object. //
   // ---------------------- //
 
-  // Material identifier.  This data file has two materials: Al and
-  // BeCu.  Al has the id tag "10001".
+  // Material identifier.  This data file has two materials: Al and BeCu.  Al
+  // has the id tag "10001".
   size_t const matid(10001);
 
-  // Try to instantiate the Opacity object. (Rosseland, Gray Total
-  // for material 10001 in the IPCRESS file pointed to by spIF).
+  // Try to instantiate the Opacity object. (Rosseland, Gray Total for material
+  // 10001 in the IPCRESS file pointed to by spIF).
   shared_ptr<GrayOpacity> spOp_Al_rgt;
 
   try {
@@ -99,8 +99,7 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
   } catch (rtt_dsxx::assertion const &excpt) {
     ostringstream message;
     message << "Failed to create shared_ptr to new IpcressOpacity object for "
-            << "Al_BeCu.ipcress data." << endl
-            << "\t" << excpt.what();
+            << "Al_BeCu.ipcress data.\n\t" << excpt.what();
     FAILMSG(message.str());
     FAILMSG("Aborting tests.");
     return;
@@ -248,8 +247,8 @@ void file_check_Al_BeCu(rtt_dsxx::ScalarUnitTest &ut) {
 
 void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   // ----------------------------------------------------------------
-  // The Opacities in this file are computed from the following
-  // analytic formula:
+  // The Opacities in this file are computed from the following analytic
+  // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
   //
@@ -402,15 +401,15 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   // Test the Plank routines using analyticOpacities.ipcress data //
   // ------------------------------------------------------------ //
 
-  // The Opacities in this file are computed from the following
-  // analytic formula:
+  // The Opacities in this file are computed from the following analytic 
+  // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
 
   // spGFAnalytic already points to the correct file so we don't repeat the
   // coding.
 
-  // Dito for spOpacityAnalytic.
+  // Ditto for spOpacityAnalytic.
 
   // ----------------- //
   // Gray Opacity Test //
