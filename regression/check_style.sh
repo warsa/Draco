@@ -133,7 +133,7 @@ if [[ -n ${TRAVIS_BRANCH} ]]; then
 elif [[ -n ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} ]]; then
   target_branch=${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
 fi
-cmd="${gcf} --binary ${cf} -f --diff --extensions hh,cc,cu $target-branch"
+cmd="${gcf} --binary ${cf} -f --diff --extensions hh,cc,cu $target_branch"
 run "${cmd}" &> $patchfile_c
 
 # if the patch file has the string "no modified files to format", the check
