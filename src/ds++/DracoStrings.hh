@@ -24,13 +24,13 @@ namespace rtt_dsxx {
 /*!
  * \brief Convert a string to all lower case
  *
- * \param[in] string_in This string will be converted letter by letter to 
+ * \param[in] string_in This string will be converted letter by letter to
  *               lowercase.
  * \return A string that contains no uppercase letters.
  *
- * There are many complexities not considered here (e.g.: non-ASCI character 
- * sets) and many third party libraries like Boost provide a more complete 
- * solution. 
+ * There are many complexities not considered here (e.g.: non-ASCI character
+ * sets) and many third party libraries like Boost provide a more complete
+ * solution.
  */
 std::string string_tolower(std::string const &string_in);
 
@@ -38,7 +38,7 @@ std::string string_tolower(std::string const &string_in);
 /*!
  * \brief Convert a string to all upper case
  *
- * \param[in] string_in This string will be converted letter by letter to 
+ * \param[in] string_in This string will be converted letter by letter to
  *               uppercase.
  * \return A string that contains no lowercase letters.
  *
@@ -115,9 +115,6 @@ template <typename T> auto parse_number_impl(std::string const &str) -> T;
 // specializations for these types are defined in DracoStrings.cc
 template <> auto parse_number_impl<int32_t>(std::string const &str) -> int32_t;
 template <> auto parse_number_impl<int64_t>(std::string const &str) -> int64_t;
-template <> auto parse_number_impl<long>(std::string const &str) -> long;
-template <>
-auto parse_number_impl<unsigned long>(std::string const &str) -> unsigned long;
 template <>
 auto parse_number_impl<uint32_t>(std::string const &str) -> uint32_t;
 template <>
