@@ -3,7 +3,7 @@
 ## File  : regression/cts1-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -51,6 +51,14 @@ fi
 # sanity checks
 job_launch_sanity_checks
 
+# Extra parameters
+requested_nodes="-N 1"
+for ep in $extra_params_sort_safe; do
+  case $ep in
+    *perfbench*) requested_nodes="-N 4" ;;
+  esac
+done
+
 available_queues=`sacctmgr -np list assoc user=$LOGNAME | sed -e 's/.*|\(.*dev.*\)|.*/\1/' | sed -e 's/|.*//'`
 available_account=`sacctmgr -np list assoc user=$LOGNAME format=Account | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
 available_partition=`sacctmgr -np list assoc user=$LOGNAME format=Partition | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
@@ -87,8 +95,8 @@ if ! [[ -d $logdir ]]; then
   chmod g+s $logdir
 fi
 
-build_partition_options="-N 1 -t 4:00:00"
-partition_options="-N 1 -t 4:00:00"
+# build and test during same allocation.
+build_partition_options="${requested_nodes} -t 4:00:00"
 
 # Configure on the front end
 echo "Configure:"

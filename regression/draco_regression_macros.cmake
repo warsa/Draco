@@ -1,7 +1,7 @@
 #-----------------------------*-cmake-*----------------------------------------#
 # file   draco_regression_macros.cmake
 # brief  Helper macros for setting up a CTest/CDash regression system
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
@@ -68,6 +68,16 @@ macro( find_num_procs_avail_for_running_tests )
     # to machine properties
     include(ProcessorCount)
     ProcessorCount(num_test_procs)
+  endif()
+
+  # Hijack the normal logic for special cases.  Darwin/ARM has 256 cores/node,
+  # but limited memory/node causes issues. Similar situation for power9
+  if( "$ENV{SLURM_CLUSTER_NAME}" STREQUAL "darwin" )
+    if( "$ENV{SLURM_JOB_PARTITION}" STREQUAL "arm" )
+      set( num_test_procs 32 )
+    elseif( "$ENV{SLURM_JOB_PARTITION}" MATCHES "power9" )
+      set( num_test_procs 20 )
+    endif()
   endif()
 
   # Limit the number of concurrent tests running by looking at the system load:
@@ -200,8 +210,8 @@ win32$ set work_dir=c:/full/path/to/work_dir
    #   many cores we can use.
    include(ProcessorCount)
    ProcessorCount(num_compile_procs)
-   if( NOT WIN32 )
-       if(NOT num_compile_procs EQUAL 0)
+   if(NOT "${num_compile_procs}" EQUAL 0)
+      if( NOT WIN32 )
          set(CTEST_BUILD_FLAGS "-j${num_compile_procs} -l${num_compile_procs}")
          if( "${sitename}" STREQUAL "Trinity" OR "${sitename}" STREQUAL "Trinitite")
            # We compile on the front end for this machine. Since we don't know
@@ -212,14 +222,24 @@ win32$ set work_dir=c:/full/path/to/work_dir
            math(EXPR half_num_compile_procs "${num_compile_procs} / 2" )
            set(CTEST_BUILD_FLAGS "-j ${half_num_compile_procs} -l ${num_compile_procs}")
          endif()
-       endif()
-   else()
-     if(NOT num_compile_procs EQUAL 0)
-       # Parallel builds for 'msbuild'
-       # Ref: https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2015
-       set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
-     endif()
+      else()
+         # Parallel builds for 'msbuild'
+         # Ref: https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2015
+         set(CTEST_BUILD_FLAGS "-m:${num_compile_procs}")
+      endif()
    endif()
+
+   # Hijack the normal logic for special cases. Darwin/ARM has 256 cores/node,
+   # but limited memory/node causes issues. Simlar situation for power9
+  if( "$ENV{SLURM_CLUSTER_NAME}" STREQUAL "darwin" )
+    if( "$ENV{SLURM_JOB_PARTITION}" STREQUAL "arm" )
+      set( num_compile_procs 1 )
+      # kt - trying 64 caused weird behavior (like compiler flag is not ascii).
+    elseif( "$ENV{SLURM_JOB_PARTITION}" MATCHES "power9" )
+      set( num_compile_procs 20 )
+    endif()
+    set(CTEST_BUILD_FLAGS "-j ${num_compile_procs}")
+  endif()
 
    # Testing parallelism
    # - Call the macro
@@ -314,7 +334,7 @@ Parsing arguments
   endif()
 
   # refine compiler short name.
-  set(USE_CUDA OFF)
+  set(WITH_CUDA OFF)
   if( "$ENV{CXX}" MATCHES "pgCC" OR "$ENV{CXX}" MATCHES "pgc[+][+]" )
     set( compiler_short_name "pgi" )
   elseif("$ENV{CXX}" MATCHES "clang" )
@@ -375,7 +395,7 @@ Parsing arguments
     endif()
 
     if( $ENV{extra_params_sort_safe} MATCHES "cuda" )
-      set(USE_CUDA ON)
+      set(WITH_CUDA ON)
     endif()
     if( $ENV{extra_params_sort_safe} MATCHES "fulldiagnostics" )
       set( FULLDIAGNOSTICS "DRACO_DIAGNOSTICS:STRING=7")
@@ -794,7 +814,7 @@ endmacro(process_cc_or_da)
 # ------------------------------------------------------------
 # Special default settings for a couple of platforms
 #
-# Sets DRACO_DIR
+# Sets ${dep_pkg}_DIR (e.g.: DRACO_DIR, or CORE_DIR)
 # ------------------------------------------------------------
 macro(set_pkg_work_dir this_pkg dep_pkg)
 
@@ -802,7 +822,7 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # Assume that draco_work_dir is parallel to our current location, but only
   # replace the directory name preceeding the dashboard name.
   file( TO_CMAKE_PATH "$ENV{work_dir}" work_dir )
-  file( TO_CMAKE_PATH "$ENV{DRACO_DIR}" DRACO_DIR )
+  file( TO_CMAKE_PATH "$ENV{${dep_pkg_caps}_DIR}" ${dep_pkg_caps}_DIR )
   string( REGEX REPLACE "${this_pkg}[/\\](Nightly|Experimental|Continuous)"
     "${dep_pkg}/\\1" ${dep_pkg}_work_dir ${work_dir} )
 
@@ -815,33 +835,30 @@ macro(set_pkg_work_dir this_pkg dep_pkg)
   # *-perfbench-*       *-*
   # *-knl-perfbench-*   *-knl-*
 
-  if( "${dep_pkg}" MATCHES "draco" )
-    # not any ${extraparam} since many map to draco builds that have the same
-    # ${extraparam}.  For example: *-newtools-*.
-    foreach( extraparam nr perfbench vtest )
-      string( REGEX REPLACE "[-_]${extraparam}[-_]" "-" ${dep_pkg}_work_dir
-        ${${dep_pkg}_work_dir} )
-    endforeach()
-    if( "${this_pkg}" MATCHES "jayenne" OR "${this_pkg}" MATCHES "capsaicin" OR "${this_pkg}" MATCHES "core")
-      # If this is jayenne, we might be building a pull request. Replace the PR
-      # number in the path with '-develop' before looking for draco.
-      string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
-        "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
-    endif()
-  endif()
+  # not any ${extraparam} since many map to draco builds that have the same
+  # ${extraparam}.  For example: *-newtools-*.
+  foreach( extraparam nr perfbench vtest )
+    string( REGEX REPLACE "[-_]${extraparam}[-_]" "-" ${dep_pkg}_work_dir
+      ${${dep_pkg}_work_dir} )
+  endforeach()
+
+  # If this is jayenne, we might be building a pull request. Replace the PR
+  # number in the path with '-develop' before looking for draco.
+  string( REGEX REPLACE "(Nightly|Experimental|Continuous)_(.*)(-pr[0-9]+)/"
+    "\\1_\\2-develop/" ${dep_pkg}_work_dir ${${dep_pkg}_work_dir} )
 
   find_file( ${dep_pkg}_target_dir
     NAMES README.${dep_pkg} README.md
     HINTS
-      # if DRACO_DIR is defined, use it.
-      ${DRACO_DIR}
+      # if DRACO_DIR or CORE_DIR is defined, use it.
+      ${${dep_pkg_caps}_DIR}
       # Try a path parallel to the work_dir
       ${${dep_pkg}_work_dir}/target
     NO_DEFAULT_PATH
   )
   if( NOT EXISTS ${${dep_pkg}_target_dir} )
-    message( FATAL_ERROR
-      "Could not locate the ${dep_pkg} installation directory.
+    message( FATAL_ERROR "
+      Could not locate the ${dep_pkg} installation directory.
       ${dep_pkg}_target_dir = ${${dep_pkg}_target_dir}
       ${dep_pkg}_work_dir   = ${${dep_pkg}_work_dir}")
   endif()

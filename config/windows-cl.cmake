@@ -3,9 +3,11 @@
 # author Kelly Thompson <kgt@lanl.gov>
 # date   2010 June 5
 # brief  Establish flags for Windows - MSVC
-# note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+# note   Copyright (C) 2016-2019 Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
+
+include_guard(GLOBAL)
 
 # Useful reference information:
 # https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=vs-2017

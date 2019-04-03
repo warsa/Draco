@@ -3,7 +3,7 @@
 ## File  : regression/tt-job-launch.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -57,6 +57,7 @@ available_partition=`sacctmgr -np list assoc user=$LOGNAME format=Partition | se
 available_qos=`sacctmgr -np list assoc user=$LOGNAME format=Qos | sed -e 's/|//' | sed -e 's/,/ /g' | xargs -n 1 | sort -u | xargs`
 # not sure how to detect access to
 # pm="--reservation=PreventMaint"
+pm="--exclude=nid00160"
 case $available_qos in
 #  *access*) access_queue="-A access --qos=access" ;;
   *dev*)    access_queue="--qos=dev ${pm}" ;;

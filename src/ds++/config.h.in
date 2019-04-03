@@ -2,7 +2,7 @@
 /*!
  * \file   config.h
  * \brief  CPP defines necessary for the ds++ package.
- * \note   Copyright (C) 2016-2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2016-2019 Triad National Security, LLC.
  *         All rights reserved. */
 /*---------------------------------------------------------------------------*/
 
@@ -24,7 +24,7 @@
 
 /* Version Inforation */
 #define Draco_BUILD_DATE "@Draco_BUILD_DATE@"
-#define Draco_BUILD_TYPE "@Draco_BUILD_TYPE@"
+#define Draco_BUILD_TYPE @Draco_BUILD_TYPE@
 #cmakedefine Draco_VERSION @Draco_VERSION@
 #cmakedefine Draco_VERSION_FULL @Draco_VERSION_FULL@
 #define Draco_VERSION_MAJOR "@Draco_VERSION_MAJOR@"
@@ -50,6 +50,9 @@
 #cmakedefine MSVC @MSVC@
 #cmakedefine MSVC_IDE @MSVC_IDE@
 #cmakedefine MSVC_VERSION @MSVC_VERSION@
+#cmakedefine MINGW @MINGW@
+#cmakedefine XCODE @XCODE@
+#cmakedefine XCODE_VERSION @XCODE_VERSION@
 #cmakedefine CMAKE_SYSTEM_NAME @CMAKE_SYSTEM_NAME@
 #ifdef CMAKE_SYSTEM_NAME
 #define CMAKE_SYSTEM_NAME_STRING "@CMAKE_SYSTEM_NAME@"
@@ -63,10 +66,17 @@
 #cmakedefine draco_isCatamount
 #cmakedefine draco_isPGI
 #cmakedefine draco_isKNL
+#cmakedefine draco_is64bit
 #cmakedefine DRACO_UNAME @DRACO_UNAME@
-#cmakedefine HAVE_CUDA @HAVE_CUDA@
+#cmakedefine WITH_CUDA @WITH_CUDA@
 #cmakedefine APPLE @APPLE@
 #cmakedefine SITENAME "@SITENAME@"
+#cmakedefine COMPILED_HOSTNAME "@COMPILED_HOSTNAME@"
+#cmakedefine COMPILED_FQDN "@COMPILED_FQDN@"
+#cmakedefine COMPILED_OS_NAME "@COMPILED_OS_NAME@"
+#cmakedefine COMPILED_OS_RELEASE "@COMPILED_OS_RELEASE@"
+#cmakedefine COMPILED_OS_VERSION "@COMPILED_OS_VERSION@"
+#cmakedefine COMPILED_OS_PLATFORM "@COMPILED_OS_PLATFORM@"
 
 #ifdef __GNUC__
 #define DBS_GNUC_VERSION \
@@ -80,6 +90,13 @@
 /* Does this machine support hardware FMA? */
 #cmakedefine HAVE_HARDWARE_FMA @HAVE_HARDWARE_FMA@
 #cmakedefine HAVE_HARDWARE_AVX2 @HAVE_HARDWARE_AVX2@
+#cmakedefine HAVE_HARDWARE_FPU @HAVE_HARDWARE_FPU@
+#cmakedefine HAVE_HARDWARE_MMX @HAVE_HARDWARE_MMX@
+#cmakedefine HAVE_HARDWARE_MMX_PLUS @HAVE_HARDWARE_MMX_PLUS@
+#cmakedefine HAVE_HARDWARE_SSE @HAVE_HARDWARE_SSE@
+#cmakedefine HAVE_HARDWARE_SSE2 @HAVE_HARDWARE_SSE2@
+#cmakedefine HAVE_HARDWARE_SSE_FP @HAVE_HARDWARE_SSE_FP@
+#cmakedefine HAVE_HARDWARE_SSE_MMX @HAVE_HARDWARE_SSE_MMX@
 
 /* Support for C99's restrict keyword */
 #cmakedefine HAVE_RESTRICT

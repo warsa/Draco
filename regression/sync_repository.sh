@@ -3,7 +3,7 @@
 ## File  : regression/sync_repository.sh
 ## Date  : Tuesday, May 31, 2016, 14:48 pm
 ## Author: Kelly Thompson
-## Note  : Copyright (C) 2016-2018, Los Alamos National Security, LLC.
+## Note  : Copyright (C) 2016-2019, Triad National Security, LLC.
 ##         All rights are reserved.
 ##---------------------------------------------------------------------------##
 
@@ -57,7 +57,7 @@ echo -e "umask: `umask`\n"
 #
 # 1. It mirrors git@github.com/lanl/Draco.git,
 #    git@gitlab.lanl.gov/jayenne/jayenne.git and
-#    git@gitlab.lanl.gov/capsaicin/capsaicin to these locations:
+#    git@gitlab.lanl.gov/capsaicin/core to these locations:
 #    - ccscs7:/ccs/codes/radtran/git
 #    - darwin-fe:/usr/projects/draco/regress/git
 #    On ccscs7, this is done to allow Redmine to parse the current repository
@@ -113,28 +113,28 @@ case ${target} in
     regdir=/usr/projects/draco/regress
     gitroot=$regdir/git
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.7.1
+    keychain=keychain-2.8.5
     ;;
   sn-fey*)
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/compiler"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/libraries"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/misc"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/mpi"
-    run "module use --append /usr/projects/hpcsoft/toss3/modulefiles/snow/tools"
-    run "module load user_contrib git"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/compiler"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/libraries"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/misc"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/mpi"
+    run "module use --append /usr/projects/hpcsoft/modulefiles/toss3/snow/tools"
+    run "module load git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.sn
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.7.1
+    keychain=keychain-2.8.5
     ;;
   tt-fey*)
-    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/misc"
-    run "module use /usr/projects/hpcsoft/cle6.0/modulefiles/trinitite/tools"
+    run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/misc"
+    run "module use /usr/projects/hpcsoft/modulefiles/cle6.0/trinitite/tools"
     run "module load user_contrib git"
     regdir=/usr/projects/jayenne/regress
     gitroot=$regdir/git.tt
     VENDOR_DIR=/usr/projects/draco/vendors
-    keychain=keychain-2.8.2
+    keychain=keychain-2.8.5
     ;;
 esac
 
@@ -144,14 +144,14 @@ fi
 
 # Credentials via Keychain (SSH)
 # http://www.cyberciti.biz/faq/ssh-passwordless-login-with-keychain-for-scripts
-if [[ -f $HOME/.ssh/id_rsa ]]; then
-  MYHOSTNAME="`uname -n`"
-  run "$VENDOR_DIR/$keychain/keychain $HOME/.ssh/id_rsa"
-  if [[ -f $HOME/.keychain/$MYHOSTNAME-sh ]]; then
-    run "source $HOME/.keychain/$MYHOSTNAME-sh"
-  else
-    echo "Error: could not find $HOME/.keychain/$MYHOSTNAME-sh"
+if [[ -f $HOME/.ssh/regress_rsa ]]; then
+  run "$VENDOR_DIR/$keychain/keychain --agents ssh regress_rsa"
+  if [[ `$VENDOR_DIR/$keychain/keychain -l 2>&1 | grep -c Error` != 0 ||
+        `$VENDOR_DIR/$keychain/keychain -l 2>&1 | grep -c authentication` != 0 ]]; then
+    run "source ~/.keychain/${target}-sh"
   fi
+  #run "$VENDOR_DIR/$keychain/keychain -l"
+  #run "ssh-add -L"
 fi
 
 # ---------------------------------------------------------------------------- #
@@ -207,6 +207,7 @@ for project in ${github_projects[@]}; do
   fi
   run "chgrp -R draco $gitroot/${namespace}"
   run "chmod -R g+rwX,o=g-w $gitroot/${namespace}"
+  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
 done
 
 # Gitlab.lanl.gov repositories:
@@ -237,6 +238,7 @@ for project in ${gitlab_projects[@]}; do
   fi
   run "chgrp -R ccsrad $gitroot/${namespace}"
   run "chmod -R g+rwX,o-rwX $gitroot/${namespace}"
+  run "find $gitroot/$namespace -type d -exec chmod g+s {} \;"
 
 done
 
@@ -248,7 +250,7 @@ if [[ ${target} == "ccscs7" ]]; then
 
   # Keep a copy of the bare repo for Redmine.  This version doesn't have the
   # PRs since this seems to confuse Redmine.
-  redmine_projects="jayenne capsaicin"
+  redmine_projects="jayenne core trt npt"
   for p in $redmine_projects; do
     echo -e "\n(Redmine) Copy ${p} git repository to the local file system..."
     if [[ -d $gitroot/${p}-redmine.git ]]; then
@@ -257,6 +259,8 @@ if [[ ${target} == "ccscs7" ]]; then
       run "git reset --soft"
       run "cd $gitroot"
       run "chmod -R g+rwX,o-rwX $gitroot/${p}-redmine.git"
+      run "find $gitroot/${p}-redmine.git -type d -exec chmod g+s {} \;"
+
     else
       run "mkdir -p $gitroot"
       run "cd $gitroot"
@@ -266,7 +270,7 @@ if [[ ${target} == "ccscs7" ]]; then
         run "git clone --bare git@gitlab.lanl.gov:${p}/${p}.git ${p}-redmine.git"
       fi
       run "chmod -R g+rwX,o-rwX ${p}-redmine.git"
-      run "chmod g+s ${p}-redmine.git"
+      run "find ${p}-redmine.git -type d -exec chmod g+s {} \;"
     fi
   done
 
@@ -324,14 +328,14 @@ for project in ${git_projects[@]}; do
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/pull/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       ;;
 
-    jayenne | capsaicin)
+    jayenne | core | trt | npt)
       # Extract PR number (if any)
       prs=`cat ${tmpfiles[${project}]} | grep -e 'refs/merge-requests/[0-9]*/\(head\|merge\)' | sed -e 's%.*/\([0-9][0-9]*\)/.*%\1%'`
       ;;
   esac
 
   case $repo in
-    Draco | jayenne | capsaicin )
+    Draco | jayenne | core | trt | npt)
       repo_lc=`echo $repo | tr '[:upper:]' '[:lower:]'`
       # remove any duplicates
       prs=`echo $prs | xargs -n1 | sort -u | xargs`

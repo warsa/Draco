@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #-----------------------------*-python-*----------------------------------------#
-# file   src/cdi_ipcress/python/example_script.py
+# file   src/cdi_ipcress/python/demo_read_data.py
 # author Alex Long <along@lanl.gov>
 # date   Friday, October 28, 2016, 5:44 pm
 # brief  A script that uses the ipcress_reader.py functions to get gray opacity
 #        data for a range of temperatures.
-# note   Copyright (C) 2016, Los Alamos National Security, LLC.
+# note   Copyright (C) 2016, Triad National Security, LLC.
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 import sys

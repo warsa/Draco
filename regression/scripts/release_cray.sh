@@ -26,7 +26,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-7_0_0
+ddir=draco-7_1_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -34,7 +34,7 @@ pdir=$ddir
 target="`uname -n | sed -e s/[.].*//`"
 case $target in
   t[rt]-fe* | t[rt]-login* )
-    environments="intel1802env intel1802env-knl";;
+    environments="intel1802env intel1802env-knl intel1704env intel1704env-knl";;
 esac
 
 # ============================================================================

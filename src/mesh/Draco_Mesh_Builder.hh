@@ -4,7 +4,7 @@
  * \author Ryan Wollaeger <wollaeger@lanl.gov>
  * \date   Friday, Jun 29, 2018, 09:55 am
  * \brief  Draco_Mesh_Builder class header file.
- * \note   Copyright (C) 2018 Los Alamos National Security, LLC.
+ * \note   Copyright (C) 2018-2019 Triad National Security, LLC.
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
@@ -25,7 +25,7 @@ class Draco_Mesh;
  *
  * \brief Draco_Mesh unstructured mesh builder from reader.
  *
- * Reader is a template parameter ("FRT" = "Format Reater Type") to the builder
+ * Reader is a template parameter ("FRT" = "Format Reader Type") to the builder
  * class. Hence all readers that instantiate the template must have a common set
  * of accessors.  In particular the reader must supply some functions in the
  * RTT_Format_Reader class.
