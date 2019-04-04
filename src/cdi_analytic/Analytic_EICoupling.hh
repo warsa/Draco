@@ -21,13 +21,14 @@ namespace rtt_cdi_analytic {
 /*!
  * \class Analytic_EICoupling
  *
- * \brief Derived rtt_cdi::EICoupling class for analytic electron-ion 
- * coupling data.
+ * \brief Derived rtt_cdi::EICoupling class for analytic electron-ion coupling
+ * data.
  *
- * The Analytic_EICoupling class is a derived rtt_cdi::EICoupling class. It provides
- * analytic electron-ion coupling data.  The specific analytic EICoupling model is
- * derived from the rtt_cdi_analytic::Analytic_EICoupling_Model base class.  Several
- * pre-built derived classes are provided in Analytic_Models.hh.
+ * The Analytic_EICoupling class is a derived rtt_cdi::EICoupling class. It
+ * provides analytic electron-ion coupling data.  The specific analytic
+ * EICoupling model is derived from the
+ * rtt_cdi_analytic::Analytic_EICoupling_Model base class.  Several pre-built
+ * derived classes are provided in Analytic_Models.hh.
  *
  * Clients of this class can provide any analytic model class as long as it
  * conforms to the rtt_cdi_analytic::Analytic_EICoupling_Model interface.
@@ -36,16 +37,12 @@ namespace rtt_cdi_analytic {
  *
  * \example cdi_analytic/test/tstAnalytic_EICoupling.cc
  *
- * Example usage of Analytic_EICoupling, Analytic_EICoupling_Model, and their incorporation
- * into rtt_cdi::CDI.
+ * Example usage of Analytic_EICoupling, Analytic_EICoupling_Model, and their
+ * incorporation into rtt_cdi::CDI.
  */
-// revision history:
-// -----------------
-// 0) original
-//
 //===========================================================================//
 
-class DLL_PUBLIC_cdi_analytic Analytic_EICoupling : public rtt_cdi::EICoupling {
+class Analytic_EICoupling : public rtt_cdi::EICoupling {
 public:
   // Useful typedefs.
   typedef std::shared_ptr<Analytic_EICoupling_Model> SP_Analytic_Model;

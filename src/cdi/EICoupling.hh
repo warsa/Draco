@@ -65,10 +65,12 @@ public:
    *     opacity value is being requested (keV).
    * \param density The density value for which an opacity 
    *     value is being requested (g/cm^3).
-   * \param w_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41 in
-   *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \param w_i is the average plasma ion frequency (1/s) (as defined by Eq. 3.61 in
-   *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
+   * \param w_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41
+   *     in Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4,
+   *     2005)
+   * \param w_i is the average plasma ion frequency (1/s) (as defined by Eq.
+   *    3.61 in Brown, Preston, and Singleton, 'Physics Reports', V410, Issue
+   *    4, 2005)
    * \return A electron-ion coupling coeffiecent (kJ/g/K/s).
    */
   virtual double getElectronIonCoupling(const double eTemperature,
@@ -80,16 +82,18 @@ public:
    * \brief EICoupling accessor that returns a vector electron-ion coupling
    * coefficients.
    *
-   * \param vetemperature The electron temperature value for which an
-   *     opacity value is being requested (keV).
-   * \param vitemperature The electron temperature value for which an
-   *     opacity value is being requested (keV).
+   * \param vetemperature The electron temperature value for which an opacity
+   *    value is being requested (keV).
+   * \param vitemperature The ion temperature value for which an opacity value
+   *     is being requested (keV).
    * \param vdensity The density value for which an opacity 
    *     value is being requested (g/cm^3).
-   * \param vw_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41 in
-   *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
-   * \param vw_i is the average plasma ion frequency (1/s) (as defined by Eq. 3.61 in
-   *     Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4, 2005)
+   * \param vw_e is the plasma electron frequency (1/s) (as defined by Eq. 3.41
+   *     in Brown, Preston, and Singleton, 'Physics Reports', V410, Issue 4,
+   *     2005)
+   * \param vw_i is the average plasma ion frequency (1/s) (as defined by Eq.
+   *     3.61 in Brown, Preston, and Singleton, 'Physics Reports', V410, Issue
+   *     4, 2005)
    * \return A vector of electron-ion coupling coeffiecent (kJ/g/K/s).
 
    */

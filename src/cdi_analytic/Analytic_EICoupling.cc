@@ -34,9 +34,10 @@ Analytic_EICoupling::Analytic_EICoupling(SP_Analytic_Model model_in)
 /*!
  * \brief Unpacking constructor.
  *
- * This constructor rebuilds and Analytic_EICoupling from a vector<char> that was
- * created by a call to pack().  It can only rebuild Analytic_Model types
- * that have been registered in the rtt_cdi_analytic::EICoupling_Models enumeration.
+ * This constructor rebuilds and Analytic_EICoupling from a vector<char> that
+ * was created by a call to pack().  It can only rebuild Analytic_Model types
+ * that have been registered in the rtt_cdi_analytic::EICoupling_Models
+ * enumeration.
  */
 Analytic_EICoupling::Analytic_EICoupling(const sf_char &packed)
     : analytic_model() {

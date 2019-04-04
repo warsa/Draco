@@ -68,30 +68,14 @@ void test_EICoupling(rtt_dsxx::UnitTest &ut) {
     FAILMSG(message.str());
   }
 
-  std::vector<double> vetemperature(3);
-  std::vector<double> vitemperature(3);
-  vetemperature[0] = 1.0; // Kelvin
-  vetemperature[1] = 3.0; // Kelvin
-  vetemperature[2] = 5.0; // Kelvin
+  std::vector<double> vetemperature{1.0, 3.0, 5.0}; // Kelvin
+  std::vector<double> vitemperature{2.0, 4.0, 6.0}; // Kelvin
 
-  vitemperature[0] = 2.0; // Kelvin
-  vitemperature[1] = 4.0; // Kelvin
-  vitemperature[2] = 6.0; // Kelvin
+  std::vector<double> vdensity{1.0, 2.0, 3.8}; // g/cm^3
 
-  std::vector<double> vdensity(3);
-  vdensity[0] = 1.0; // g/cm^3
-  vdensity[1] = 2.0; // g/cm^3
-  vdensity[2] = 3.8; // g/mcm^3
+  std::vector<double> vw_e{1.0, 2.0, 3.8};
 
-  std::vector<double> vw_e(3);
-  vw_e[0] = 1.0;
-  vw_e[1] = 2.0;
-  vw_e[2] = 3.8;
-
-  std::vector<double> vw_i(3);
-  vw_i[0] = 1.0;
-  vw_i[1] = 2.0;
-  vw_i[2] = 3.8;
+  std::vector<double> vw_i{1.0, 2.0, 3.8};
 
   // Retrieve electron based heat capacities.
   std::vector<double> vRefEICoupling(vetemperature.size());
