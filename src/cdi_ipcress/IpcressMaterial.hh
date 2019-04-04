@@ -91,7 +91,8 @@ public:
 
   /*!
    * \brief Add a field and it's data to the current material.  This is the
-   *        normal way of populating this storage class.
+   *        normal way of populating this storage class. If a field is already
+   *        registered, then overwrite the values.
    *
    * \param in_fieldName a string from the IPCRESS file that describes the
    *        associated data values (e.g.: tgrid, ramg, etc.)
@@ -108,7 +109,7 @@ public:
 
     // Check if the field name is already registered.
     auto itr = std::find(fieldNames.begin(), fieldNames.end(), in_fieldName);
-    if (itr != fieldNames.end()) {
+    if (fieldNames.size() == 0 || itr == fieldNames.end()) {
 
       // Save the material data field (description and associated values).
       fieldNames.push_back(in_fieldName);
