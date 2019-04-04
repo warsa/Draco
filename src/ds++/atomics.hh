@@ -33,8 +33,7 @@ FpT fetch_add(std::atomic<FpT> &a, FpT arg,
                 "for integral types");
   FpT expected = a.load();
   FpT to_store = expected + arg;
-  while (
-      !a.compare_exchange_weak(expected, to_store, m_o)) {
+  while (!a.compare_exchange_weak(expected, to_store, m_o)) {
     expected = a.load();
     to_store = arg + expected;
   }
@@ -50,15 +49,15 @@ FpT fetch_add(std::atomic<FpT> &a, FpT arg,
  * \remark: By default, uses memory_order_relaxed, meaning (I think) that other
  * atomic operations on 'a' can be moved before or after this one.
  */
-template <class FpT> FpT fetch_sub(std::atomic<FpT> &a, FpT arg,
+template <class FpT>
+FpT fetch_sub(std::atomic<FpT> &a, FpT arg,
               std::memory_order m_o = std::memory_order_relaxed) {
   static_assert(std::is_floating_point<FpT>::value,
                 "Template parameter ought to be floating point, use C++11 std "
                 "for integral types");
   FpT expected = a.load();
   FpT to_store = expected - arg;
-  while (
-      !a.compare_exchange_weak(expected, to_store, m_o)) {
+  while (!a.compare_exchange_weak(expected, to_store, m_o)) {
     expected = a.load();
     to_store = arg - expected;
   }
