@@ -60,7 +60,7 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   double expected = sum * tsum;
 
   // check and report
-  bool const passed = soft_equiv(result, expected);
+  bool const passed = rtt_dsxx::soft_equiv(result, expected);
   if (!passed) {
     printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__,
            __LINE__, tsum, sum, result);
@@ -124,7 +124,7 @@ void test_fetch_add_not_atomic(UnitTest &ut) {
   }
   double expected = sum * tsum;
   // check and report
-  bool const passed = !soft_equiv(result, expected);
+  bool const passed = !rtt_dsxx::soft_equiv(result, expected);
   if (!passed) {
     double diff = (expected - result);
     double rel_diff = 100 * diff / expected;
