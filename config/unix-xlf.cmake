@@ -7,27 +7,37 @@
 #        All rights reserved.
 #------------------------------------------------------------------------------#
 
-# Let anyone who is interested in which FORTRAN compiler we're using
-# switch on this macro.
+# Let anyone who is interested in which FORTRAN compiler we're using switch on
+# this macro.
 set( CMAKE_Fortran_COMPILER_FLAVOR "XL" )
 
 if( NOT Fortran_FLAGS_INITIALIZED )
    set( Fortran_FLAGS_INITIALIZED "yes" CACHE INTERNAL "using draco settings." )
-   set( CMAKE_Fortran_FLAGS                "-qlanglvl=2008std -qinfo=all -qflag=i:w -qarch=auto" )
-   set( CMAKE_Fortran_FLAGS_DEBUG          "-g -O0 -qcheck" ) #-qsmp=noauto
-   set( CMAKE_Fortran_FLAGS_RELEASE        "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
+   set( CMAKE_Fortran_FLAGS
+     "-qlanglvl=2008std -qinfo=all -qflag=i:w -qarch=auto" )
+   # IBM asked us to remove '-qcheck' due to compiler issues.
+   # -qsmp=noauto -qcheck
+   set( CMAKE_Fortran_FLAGS_DEBUG          "-O0 -qcheck" )
+   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO
+     "-O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
+   set( CMAKE_Fortran_FLAGS_RELEASE
+     "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" )
    set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_RELEASE}" )
-   set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-g -O3 -qhot=novector -qsimd=auto -qstrict=nans:operationprecision" )
 endif()
 
 ##---------------------------------------------------------------------------##
 # Ensure cache values always match current selection
 ##---------------------------------------------------------------------------##
-set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"                CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"          CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"        CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"     CACHE STRING "compiler flags" FORCE )
-set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}" CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS                "${CMAKE_Fortran_FLAGS}"
+  CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_DEBUG          "${CMAKE_Fortran_FLAGS_DEBUG}"
+  CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_RELEASE        "${CMAKE_Fortran_FLAGS_RELEASE}"
+  CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_MINSIZEREL     "${CMAKE_Fortran_FLAGS_MINSIZEREL}"
+  CACHE STRING "compiler flags" FORCE )
+set( CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELWITHDEBINFO}"
+  CACHE STRING "compiler flags" FORCE )
 
 #
 # Toggle compiler flags for optional features
