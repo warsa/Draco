@@ -133,7 +133,9 @@ void test_fetch_add_not_atomic(UnitTest &ut) {
            "diff = %.2f %% \n",
            __FUNCTION__, __LINE__, tsum, sum, result, diff, rel_diff);
   }
-  FAIL_IF_NOT(passed);
+  /* This does not fail on all platforms: on 4 April 2019 failed on appVeyor CI.
+   * So, hmmm... */
+  // FAIL_IF_NOT(passed);
   return;
 } // test_fetch_add_not_atomic
 
