@@ -7,9 +7,10 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include "ds++/atomics.hh"
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
+#include "ds++/Soft_Equivalence.hh"
+#include "ds++/atomics.hh"
 #include <functional> // std::function
 #include <thread>
 
@@ -18,12 +19,12 @@ using rtt_dsxx::UnitTest;
 /* Hammer an atomic from each thread. Each iteration, the thread adds
  * (tid * iteration) to the counter.
  */
-void thread_action(std::atomic<double> &d, size_t N, size_t tid){
+void thread_action(std::atomic<double> &d, size_t N, size_t tid) {
   double const did = static_cast<double>(tid);
   double d_i = 1;
-  for(size_t i = 0; i < N; ++i){
+  for (size_t i = 0; i < N; ++i) {
     double addend = did * d_i;
-    rtt_dsxx::fetch_add(d,addend);
+    rtt_dsxx::fetch_add(d, addend);
     d_i += 1.0;
   }
   return;
@@ -31,18 +32,18 @@ void thread_action(std::atomic<double> &d, size_t N, size_t tid){
 
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
 void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
-                             size_t const n_iterations) {
+                           size_t const n_iterations) {
   std::atomic<double> a_d(0.0);
 
   // launch a number of threads
   std::vector<std::thread> threads(n_threads);
   size_t tid(0);
-  for(auto &t: threads){
-    t = std::thread(thread_action, std::ref(a_d), n_iterations,tid);
+  for (auto &t : threads) {
+    t = std::thread(thread_action, std::ref(a_d), n_iterations, tid);
     tid++;
   }
   // join
-  for(auto & t : threads){
+  for (auto &t : threads) {
     t.join();
   }
 
@@ -50,7 +51,7 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   double result = a_d.load();
   double sum = 0.0;
   for (size_t i = 0; i < n_iterations; ++i) {
-    sum += i+1;
+    sum += i + 1;
   }
   double tsum = 0.0;
   for (size_t t = 0; t < n_threads; ++t) {
@@ -59,16 +60,16 @@ void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
   double expected = sum * tsum;
 
   // check and report
-  bool const passed = result == expected;
-  if(!passed){
-    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__, __LINE__,
-           tsum, sum, result);
+  bool const passed = soft_equiv(result, expected);
+  if (!passed) {
+    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f\n", __FUNCTION__,
+           __LINE__, tsum, sum, result);
   }
   FAIL_IF_NOT(passed);
   return;
 } // fetch_add_atomic_core
 
-void test_fetch_add_atomic(UnitTest & ut){
+void test_fetch_add_atomic(UnitTest &ut) {
   size_t const n_threads(19);
   size_t const n_iterations(10001);
   fetch_add_atomic_core(ut, n_threads, n_iterations);
@@ -76,16 +77,16 @@ void test_fetch_add_atomic(UnitTest & ut){
 } // test_fetch_add_atomic
 
 // --------------------- non-atomic version --------------------------
-// This should give the wrong answer nearly every time on any respeecting
+// This should give the wrong answer nearly every time on any respectable
 // thread implementation.
 
 /* Similarly, hammer a POD from each thread. Each iteration, the thread adds
  * (tid * iteration) to the counter.
  */
-void thread_action_pod(double &d, size_t N, size_t tid){
+void thread_action_pod(double &d, size_t N, size_t tid) {
   double const did = static_cast<double>(tid);
   double d_i = 1;
-  for(size_t i = 0; i < N; ++i){
+  for (size_t i = 0; i < N; ++i) {
     double addend = did * d_i;
     d += addend;
     d_i += 1.0;
@@ -102,12 +103,12 @@ void test_fetch_add_not_atomic(UnitTest &ut) {
   // launch a number of threads
   std::vector<std::thread> threads(n_threads);
   size_t tid(0);
-  for(auto &t: threads){
-    t = std::thread(thread_action_pod, std::ref(a_d), n_iterations,tid);
+  for (auto &t : threads) {
+    t = std::thread(thread_action_pod, std::ref(a_d), n_iterations, tid);
     tid++;
   }
   // join
-  for(auto & t : threads){
+  for (auto &t : threads) {
     t.join();
   }
 
@@ -115,7 +116,7 @@ void test_fetch_add_not_atomic(UnitTest &ut) {
   double result = a_d;
   double sum = 0.0;
   for (size_t i = 0; i < n_iterations; ++i) {
-    sum += i+1;
+    sum += i + 1;
   }
   double tsum = 0.0;
   for (size_t t = 0; t < n_threads; ++t) {
@@ -123,18 +124,18 @@ void test_fetch_add_not_atomic(UnitTest &ut) {
   }
   double expected = sum * tsum;
   // check and report
-  bool const passed = expected != result;
-  if(!passed){
+  bool const passed = !soft_equiv(result, expected);
+  if (!passed) {
     double diff = (expected - result);
     double rel_diff = 100 * diff / expected;
-    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f, diff = %.0f, rel. "
+    printf("%s:%i Expected these to differ: tsum = %.0f, isum = %.0f, result = "
+           "%.0f, diff = %.0f, rel. "
            "diff = %.2f %% \n",
            __FUNCTION__, __LINE__, tsum, sum, result, diff, rel_diff);
   }
   FAIL_IF_NOT(passed);
   return;
 } // test_fetch_add_not_atomic
-
 
 using t_func = std::function<void(UnitTest &)>;
 
