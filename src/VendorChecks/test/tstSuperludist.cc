@@ -37,6 +37,7 @@ int dcreate_matrix(SuperMatrix *A, int nrhs, double **rhs, int *ldb, double **x,
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
+
   rtt_c4::ParallelUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     test_superludist(ut);
