@@ -86,6 +86,7 @@ void cartesian_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
           test_cell_map[cell].push_back(cell + 1);
         if (j > 0)
           test_cell_map[cell].push_back(cell - num_xdir);
+        // always false: num_ydir==1, thus j==0 ==> if( 0<0 )...
         //if (j < num_ydir - 1)
         //  test_cell_map[cell].push_back(cell + num_xdir);
       }

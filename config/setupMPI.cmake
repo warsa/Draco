@@ -303,6 +303,23 @@ WARNING: ENV{OMP_NUM_THREADS} is not set in your environment,
 
 endmacro()
 
+##---------------------------------------------------------------------------##
+## Setup Spectrum MPI wrappers (Sierra, Rzansel, Rzmanta, Ray)
+##---------------------------------------------------------------------------##
+macro( setupSpectrumMPI )
+
+  set( MPI_FLAVOR "spectrum" CACHE STRING "Flavor of MPI.")
+
+  # Find cores/cpu, cpu/node, hyperthreading
+  query_topology()
+
+  set( MPIEXEC_OMP_POSTFLAGS ${MPIEXEC_OMP_POSTFLAGS}
+    CACHE STRING "extra mpirun flags (list)." FORCE )
+  mark_as_advanced( MPI_CPUS_PER_NODE MPI_CORES_PER_CPU
+    MPI_PHYSICAL_CORES MPI_MAX_NUMPROCS_PHYSICAL MPI_HYPERTHREADING )
+
+endmacro()
+
 #------------------------------------------------------------------------------#
 # Setup MPI when on Linux
 #------------------------------------------------------------------------------#
@@ -333,27 +350,10 @@ macro( setupMPILibrariesUnix )
           find_program( MPIEXEC_EXECUTABLE srun )
         endif()
         set( MPIEXEC_EXECUTABLE ${MPIEXEC_EXECUTABLE} CACHE STRING
-          "Program to execute MPI prallel programs." FORCE )
+          "Program to execute MPI parallel programs." FORCE )
         set( MPIEXEC_NUMPROC_FLAG "-n" CACHE STRING
           "mpirun flag used to specify the number of processors to use")
       endif()
-
-      # Temporary work around until FindMPI.cmake is fixed: Setting
-      # MPI_<LANG>_COMPILER and MPI_<LANG>_NO_INTERROGATE forces FindMPI to skip
-      # it's bad logic and just rely on the MPI compiler wrapper to do the right
-      # thing. see Bug #467.
-      #
-      # After cmake-3.9.0, this logic probably isn't needed.
-      # foreach( lang C CXX Fortran )
-      #    get_filename_component( CMAKE_${lang}_COMPILER_NOPATH
-      #      "${CMAKE_${lang}_COMPILER}" NAME )
-      #    if( "${CMAKE_${lang}_COMPILER_NOPATH}" MATCHES "^mpi[A-z+]+" )
-      #      get_filename_component( compiler_wo_path "${CMAKE_${lang}_COMPILER}"
-      #        NAME )
-      #      set( MPI_${lang}_COMPILER ${CMAKE_${lang}_COMPILER} )
-      #      set( MPI_${lang}_NO_INTERROGATE ${CMAKE_${lang}_COMPILER} )
-      #    endif()
-      #  endforeach()
 
       # Call the standard CMake FindMPI macro.
       find_package( MPI QUIET )
@@ -420,6 +420,10 @@ macro( setupMPILibrariesUnix )
           "${MPIEXEC_EXECUTABLE}" MATCHES "impi/.*/mic" OR
           "${DBS_MPI_VER}" MATCHES "Intel[(]R[)] MPI Library" )
         setupIntelMPI()
+
+      elseif( "${MPIEXEC_EXECUTABLE}" MATCHES "spectrum-mpi" OR
+          "${MPIEXEC_EXECUTABLE}" MATCHES "jsrun" )
+        setupSpectrumMPI()
 
       elseif( CRAY_PE )
         setupCrayMPI()
@@ -609,9 +613,9 @@ macro( setupMPILibrariesWindows )
    endif()
 
    # Don't link to the C++ MS-MPI library when compiling with MinGW gfortran.
-   # Instead, link to libmsmpi.a that was created via gendef.exe and
-   # dlltool.exe from msmpi.dll.  Ref:
-   # http://www.geuz.org/pipermail/getdp/2012/001520.html, or
+   # Instead, link to libmsmpi.a that was created via gendef.exe and dlltool.exe
+   # from msmpi.dll.  Ref: http://www.geuz.org/pipermail/getdp/2012/001520.html,
+   # or
    # https://github.com/KineticTheory/Linux-HPC-Env/wiki/Setup-Win32-development-environment
 
    # Preparing Microsoft's MPI to work with x86_64-w64-mingw32-gfortran by
@@ -633,12 +637,12 @@ macro( setupMPILibrariesWindows )
    if( WIN32 AND DEFINED CMAKE_Fortran_COMPILER AND
        TARGET MPI::MPI_Fortran )
 
-     # only do this if we are in a CMakeAddFortranSubdirectory directive
-     # when the main Generator is Visual Studio and the Fortran subdirectory
-     # uses gfortran with Makefiles.
+     # only do this if we are in a CMakeAddFortranSubdirectory directive when
+     # the main Generator is Visual Studio and the Fortran subdirectory uses
+     # gfortran with Makefiles.
 
-     # MS-MPI has an architecture specific include directory that
-     # FindMPI.cmake doesn't seem to pickup correctly.  Add it here.
+     # MS-MPI has an architecture specific include directory that FindMPI.cmake
+     # doesn't seem to pickup correctly.  Add it here.
      get_target_property(mpilibdir MPI::MPI_Fortran
        INTERFACE_LINK_LIBRARIES)
      get_target_property(mpiincdir MPI::MPI_Fortran
@@ -654,8 +658,8 @@ macro( setupMPILibrariesWindows )
        endif()
      endforeach()
 
-     # Reset the include directories for MPI::MPI_Fortran to pull in the
-     # extra $arch locations (if any)
+     # Reset the include directories for MPI::MPI_Fortran to pull in the extra
+     # $arch locations (if any)
      set_target_properties(MPI::MPI_Fortran
        PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${mpiincdir}")
 
