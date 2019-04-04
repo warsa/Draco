@@ -22,13 +22,6 @@ if( DEFINED ENV{PAPI_HOME} )
   set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
   set( PAPI_INCLUDE $ENV{PAPI_INCLUDE} CACHE PATH "PAPI headers at this location" )
   set( PAPI_LIBRARY $ENV{PAPI_LIBDIR}/libpapi.so CACHE FILEPATH "PAPI library." )
-
-  # PAPI 4.2 on CT uses a different setup.
-  if( $ENV{PAPI_VERSION} MATCHES "[45].[0-9].[0-9]")
-    set( HAVE_PAPI 1 CACHE BOOL "Is PAPI available on this machine?" )
-    string( REGEX REPLACE ".*[ ][-]I(.*)$" "\\1" PAPI_INCLUDE $ENV{PAPI_INCLUDE_OPTS} )
-    string( REGEX REPLACE ".*[ ][-]L(.*)[ ].*" "\\1" PAPI_LIBDIR $ENV{PAPI_POST_LINK_OPTS} )
-  endif()
 endif()
 
 if( HAVE_PAPI )
@@ -553,7 +546,7 @@ macro(dbsSetupFortran)
     # If CMake doesn't know about a Fortran compiler, $ENV{FC}, then
     # also look for a compiler to use with CMakeAddFortranSubdirectory.
     message( STATUS "Looking for CMakeAddFortranSubdirectory Fortran compiler...")
-	set( CAFS_Fortran_COMPILER "NOTFOUND" )  
+	set( CAFS_Fortran_COMPILER "NOTFOUND" )
 
     # Try to find a Fortran compiler (use MinGW gfortran for MSVC).
     find_program( CAFS_Fortran_COMPILER
