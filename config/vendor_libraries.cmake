@@ -91,9 +91,9 @@ macro( setupLAPACKLibraries )
   endif()
   find_package( lapack CONFIG QUIET )
 
+  set( lapack_url "http://www.netlib.org/lapack" )
   if( lapack_FOUND )
     set( lapack_flavor "netlib")
-    set( lapack_url "http://www.netlib.org/lapack" )
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
@@ -220,8 +220,8 @@ macro( setupLAPACKLibraries )
       find_package( BLAS QUIET )
 
       if( BLAS_FOUND )
-        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
-        set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?")
+        set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
+        set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
         set( lapack_flavor "openblas")
         set( lapack_url "http://www.openblas.net")
         add_library( lapack SHARED IMPORTED)
@@ -669,6 +669,7 @@ macro( SetupVendorLibrariesWindows )
   setupEospac()
   setupPython()
   setupQt()
+  setupCudaEnv()
 
   # Doxygen ------------------------------------------------------------------
   message( STATUS "Looking for Doxygen..." )
@@ -700,7 +701,7 @@ macro( setVendorVersionDefaults )
   #environment variable.
 
   # See if VENDOR_DIR is set.  Try some defaults if it is not set.
-  if( NOT EXISTS "${VENDOR_DIR}" AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
+  if( NOT DEFINED VENDOR_DIR AND IS_DIRECTORY "$ENV{VENDOR_DIR}" )
     set( VENDOR_DIR $ENV{VENDOR_DIR} )
   endif()
   # If needed, try some obvious places.
@@ -728,7 +729,7 @@ macro( setVendorVersionDefaults )
   # 3. Try to find vendor in $VENDOR_DIR
   # 4. Don't set anything and let the user set a value in the cache
   #    after failed 1st configure attempt.
-  if( NOT LAPACK_LIB_DIR AND IS_DIRECTORY $ENV{LAPACK_LIB_DIR} )
+  if( NOT DEFINED LAPACK_LIB_DIR AND IS_DIRECTORY $ENV{LAPACK_LIB_DIR} )
     set( LAPACK_LIB_DIR $ENV{LAPACK_LIB_DIR} )
     set( LAPACK_INC_DIR $ENV{LAPACK_INC_DIR} )
   endif()
@@ -737,7 +738,7 @@ macro( setVendorVersionDefaults )
     set( LAPACK_INC_DIR "${VENDOR_DIR}/lapack-3.4.2/include" )
   endif()
 
-  if( NOT GSL_LIB_DIR )
+  if( NOT DEFINED GSL_LIB_DIR )
     if( IS_DIRECTORY $ENV{GSL_LIB_DIR}  )
       set( GSL_LIB_DIR $ENV{GSL_LIB_DIR} )
       set( GSL_INC_DIR $ENV{GSL_INC_DIR} )
@@ -747,16 +748,16 @@ macro( setVendorVersionDefaults )
     endif()
   endif()
 
-  if( NOT ParMETIS_ROOT_DIR )
+  if( NOT DEFINED ParMETIS_ROOT_DIR )
     if( IS_DIRECTORY $ENV{ParMETIS_ROOT_DIR}  )
       set( ParMETIS_ROOT_DIR $ENV{ParMETIS_ROOT_DIR} )
     endif()
   endif()
 
-  if( NOT RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
+  if( NOT DEFINED RANDOM123_INC_DIR AND IS_DIRECTORY $ENV{RANDOM123_INC_DIR}  )
     set( RANDOM123_INC_DIR $ENV{RANDOM123_INC_DIR} )
   endif()
-  if( NOT RANDOM123_INC_DIR AND
+  if( NOT DEFINED RANDOM123_INC_DIR AND
       IS_DIRECTORY ${VENDOR_DIR}/Random123-1.08/include )
     set( RANDOM123_INC_DIR "${VENDOR_DIR}/Random123-1.08/include" )
   endif()
