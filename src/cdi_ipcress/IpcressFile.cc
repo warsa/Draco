@@ -22,7 +22,7 @@ namespace rtt_cdi_ipcress {
  * 1. Set some defaults (bytes per word, number of fields in the TOC).
  * 2. Try to open the file
  * 3. Load the title keys to verify that this is an ipcress file.
- * 4. Load the TOC. 
+ * 4. Load the TOC.
  *
  * \param ipcressDataFilename Name of ipcress file
  */
@@ -55,8 +55,8 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   size_t byte_offset(0);
   std::vector<std::string> title(2);
   read_strings(byte_offset, title);
-  Insist( title[0] == "nirvana " || title[0] == "ipcress ",
-      "The specified file is not IPCRESS format.");
+  Insist(title[0] == "nirvana " || title[0] == "ipcress ",
+         "The specified file is not IPCRESS format.");
 
   //
   // Read the table records from the ipcress file. See the .hh file for a
@@ -99,7 +99,7 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
   //
   // read a list of materials from the file:
   // - dfo[0] contains the number of materials.
-  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material 
+  // - the memory block {dfo[1] ... dfo[0]+ds[0]} holds a list of material
   //   numbers.
   //
 
@@ -128,9 +128,9 @@ IpcressFile::IpcressFile(const std::string &ipcressDataFilename)
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Indicate if the requested material id is available in the data file.
- * 
+ *
  * \param[in] matid unsigned integer that specifies the material to be queried.
  */
 bool IpcressFile::materialFound(size_t matid) const {
@@ -159,11 +159,11 @@ std::string IpcressFile::locateIpcressFile(std::string const &ipcressFile) {
 }
 
 //---------------------------------------------------------------------------//
-/*! 
+/*!
  * \brief Read 8 character strings from the binary file
- * 
+ *
  * \param[in]  byte_offset offset into the ipcress file where the data exists.
- * \param[out] vdata       return value 
+ * \param[out] vdata       return value
  */
 void IpcressFile::read_strings(size_t const byte_offset,
                                std::vector<std::string> &vdata) const {

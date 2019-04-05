@@ -401,7 +401,7 @@ void file_check_analytic(rtt_dsxx::ScalarUnitTest &ut) {
   // Test the Plank routines using analyticOpacities.ipcress data //
   // ------------------------------------------------------------ //
 
-  // The Opacities in this file are computed from the following analytic 
+  // The Opacities in this file are computed from the following analytic
   // formula:
   //     opacity = rho * T^4,
   // rho is the density and T is the temperature.
