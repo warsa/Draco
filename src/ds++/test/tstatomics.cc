@@ -95,7 +95,7 @@ void thread_action_pod(double &d, size_t N, size_t tid) {
 } // run_in_a_thread_d
 
 // same as above, except does not use an atomic
-void test_fetch_add_not_atomic(UnitTest &/*ut*/) {
+void test_fetch_add_not_atomic(UnitTest & /*ut*/) {
   size_t const n_threads(43);
   size_t const n_iterations(10001);
   double a_d(0.0);
