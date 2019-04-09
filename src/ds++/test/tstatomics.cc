@@ -16,8 +16,11 @@
 
 using rtt_dsxx::UnitTest;
 
+//----------------------------------------------------------------------------//
 /* Hammer an atomic from each thread. Each iteration, the thread adds
- * (tid * iteration) to the counter.
+ * (tid * iteration) to the counter. The atomic ensures that everyone sees
+ * a consistent view of the counter: no thread overwrites the contribution
+ * from any other thread.
  */
 void thread_action(std::atomic<double> &d, size_t N, size_t tid) {
   double const did = static_cast<double>(tid);
@@ -30,6 +33,7 @@ void thread_action(std::atomic<double> &d, size_t N, size_t tid) {
   return;
 } // thread_action
 
+//----------------------------------------------------------------------------//
 /* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
 void fetch_add_atomic_core(UnitTest &ut, size_t const n_threads,
                            size_t const n_iterations) {
@@ -76,12 +80,22 @@ void test_fetch_add_atomic(UnitTest &ut) {
   return;
 } // test_fetch_add_atomic
 
+void test_fetch_add_atomic_1e6(UnitTest &ut) {
+  size_t const n_threads(19);
+  size_t const n_iterations(1000001);
+  fetch_add_atomic_core(ut, n_threads, n_iterations);
+  return;
+} // test_fetch_add_atomic
+
 // --------------------- non-atomic version --------------------------
 // This should give the wrong answer nearly every time on any respectable
 // thread implementation.
 
+//----------------------------------------------------------------------------//
 /* Similarly, hammer a POD from each thread. Each iteration, the thread adds
- * (tid * iteration) to the counter.
+ * (tid * iteration) to the counter. Since the threads are contending, we expect
+ * to have a race condition where two threads read the same value from d and
+ * one of the thread's write (+=) overwrites the other's.
  */
 void thread_action_pod(double &d, size_t N, size_t tid) {
   double const did = static_cast<double>(tid);
@@ -94,6 +108,7 @@ void thread_action_pod(double &d, size_t N, size_t tid) {
   return;
 } // run_in_a_thread_d
 
+//----------------------------------------------------------------------------//
 // same as above, except does not use an atomic
 void test_fetch_add_not_atomic(UnitTest & /*ut*/) {
   size_t const n_threads(43);
@@ -139,6 +154,77 @@ void test_fetch_add_not_atomic(UnitTest & /*ut*/) {
   return;
 } // test_fetch_add_not_atomic
 
+// fetch_sub tests
+
+/* Same as thread_action above, except uses fetch_sub. Total sum is just the
+ * negative of the preceding test.
+ */
+void thread_action_sub(std::atomic<double> &d, size_t N, size_t tid) {
+  double const did = static_cast<double>(tid);
+  double d_i = 1;
+  for (size_t i = 0; i < N; ++i) {
+    double addend = did * d_i;
+    rtt_dsxx::fetch_sub(d, addend);
+    d_i += 1.0;
+  }
+  return;
+} // thread_action
+
+//----------------------------------------------------------------------------//
+/* Test fetch_add using an atomic. Expect to get the correct sum every time.*/
+void fetch_sub_atomic_core(UnitTest &ut, size_t const n_threads,
+                           size_t const n_iterations) {
+  std::atomic<double> a_d(0.0);
+
+  // launch a number of threads
+  std::vector<std::thread> threads(n_threads);
+  size_t tid(0);
+  for (auto &t : threads) {
+    t = std::thread(thread_action_sub, std::ref(a_d), n_iterations, tid);
+    tid++;
+  }
+  // join
+  for (auto &t : threads) {
+    t.join();
+  }
+
+  // Compute expected value the easy way
+  double result = a_d.load();
+  double sum = 0.0;
+  for (size_t i = 0; i < n_iterations; ++i) {
+    sum += i + 1;
+  }
+  double tsum = 0.0;
+  for (size_t t = 0; t < n_threads; ++t) {
+    tsum += t;
+  }
+  double expected = -1.0 * sum * tsum;
+
+  // check and report
+  bool const passed = rtt_dsxx::soft_equiv(result, expected);
+  if (!passed) {
+    printf("%s:%i tsum = %.0f, isum = %.0f, result = %.0f, "
+           "expected = %.0f\n",
+           __FUNCTION__, __LINE__, tsum, sum, result, expected);
+  }
+  FAIL_IF_NOT(passed);
+  return;
+} // fetch_add_atomic_core
+
+void test_fetch_sub_atomic(UnitTest &ut) {
+  size_t const n_threads(19);
+  size_t const n_iterations(10001);
+  fetch_sub_atomic_core(ut, n_threads, n_iterations);
+  return;
+} // test_fetch_add_atomic
+
+void test_fetch_sub_atomic_1e6(UnitTest &ut) {
+  size_t const n_threads(19);
+  size_t const n_iterations(1000001);
+  fetch_sub_atomic_core(ut, n_threads, n_iterations);
+  return;
+} // test_fetch_add_atomic
+
 using t_func = std::function<void(UnitTest &)>;
 
 //----------------------------------------------------------------------------//
@@ -155,6 +241,9 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     run_a_test(ut, test_fetch_add_atomic, "fetch_add ok.");
+    run_a_test(ut, test_fetch_add_atomic_1e6, "fetch_add ok 1e6 iterations.");
+    run_a_test(ut, test_fetch_sub_atomic, "fetch_sub ok.");
+    run_a_test(ut, test_fetch_sub_atomic_1e6, "fetch_sub ok 1e6 iterations.");
     run_a_test(ut, test_fetch_add_not_atomic, "non-atomic as expected.");
   } // try--catches in the epilog:
   UT_EPILOG(ut);

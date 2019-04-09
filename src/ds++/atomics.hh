@@ -61,7 +61,7 @@ FpT fetch_sub(std::atomic<FpT> &a, FpT arg,
   FpT to_store = expected - arg;
   while (!a.compare_exchange_weak(expected, to_store, m_o)) {
     expected = a.load();
-    to_store = arg - expected;
+    to_store = expected - arg;
   }
   return to_store;
 }
