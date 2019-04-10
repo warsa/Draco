@@ -13,6 +13,19 @@
 
 namespace rtt_device_test {
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Calculate the number of source particles for a range of cells
+ *
+ * \param[in] part_per_e energy for this source
+ * \param[in] max_particles_pspc max partices per species
+ * \param[in] cell_start starting cell index
+ * \param[in] cell_end ending cell index
+ * \param[in] e_field energy in a cell
+ * \param[in] src_cell_bias bias in a cell
+ * \param[in,out] n_field destination for particles in a cell
+ * \param[out] return number of particles over this cell range
+ */
 __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
     const double part_per_e, unsigned max_particles_pspc,
     const size_t cell_start, const size_t cell_end, const double *e_field,
@@ -56,6 +69,18 @@ __host__ __device__ unsigned long long sub_conserve_calc_num_src_particles(
   return ntot;
 }
 
+//---------------------------------------------------------------------------//
+/*!
+ * \brief Launch a kernel to calculate the number of source particles
+ *
+ * \param[in] part_per_e energy for this source
+ * \param[in] max_particles_pspc max partices per species
+ * \param[in] cont_size size of all fields
+ * \param[in] e_field energy in a cell
+ * \param[in] src_cell_bias bias in a cell
+ * \param[in,out] n_field destination for particles in a cell
+ * \param[in,out] ntot total particles per thread block
+ */
 __global__ void cuda_conserve_calc_num_src_particles(
     const double part_per_e, unsigned max_particles_pspc, int cont_size,
     const double *e_field, const double *src_cell_bias, int *n_field,

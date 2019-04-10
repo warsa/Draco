@@ -51,11 +51,10 @@ void query_device(rtt_dsxx::ScalarUnitTest &ut) {
   std::map<std::string, unsigned> wordCount =
       rtt_dsxx::get_word_count(out, verbose);
 
-  if (wordCount[string("Device")] == numDev)
-    ut.passes("Found a report for each available device.");
-  else
-    ut.failure("Did not find a report for each available device.");
-
+  FAIL_IF_NOT(wordCount[string("Device")] == numDev);
+  // successful test output
+  if (ut.numFails == 0)
+    PASSMSG("gpu_device_info_test query_device test OK.");
   return;
 }
 
@@ -69,15 +68,8 @@ int main(int argc, char *argv[]) {
   rtt_dsxx::ScalarUnitTest ut(argc, argv, rtt_dsxx::release);
   try {
     query_device(ut);
-  } catch (exception &err) {
-    cout << "ERROR: While testing gpu_device_info, " << err.what() << endl;
-    ut.numFails++;
-  } catch (...) {
-    cout << "ERROR: While testing gpu_device_info, "
-         << "An unknown exception was thrown." << endl;
-    ut.numFails++;
   }
-  return ut.numFails;
+  UT_EPILOG(ut);
 }
 
 //---------------------------------------------------------------------------//
