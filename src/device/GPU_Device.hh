@@ -48,10 +48,7 @@ namespace rtt_device {
  * \endcode
  *
  * \example device/test/gpu_hello_rt_api.cu
- * Test of GPU_Device for CUDA runtime environment.
- *
- * \example device/test/gpu_hello_driver_api.cc
- * Test of GPU_Device for CUDA driver environment.
+ * Test of GPU_Device for with CUDA runtime API.
  */
 //===========================================================================//
 
