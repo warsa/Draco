@@ -73,36 +73,37 @@ endmacro()
 #------------------------------------------------------------------------------
 macro( setupLAPACKLibraries )
 
+  # defaults
+  set( lapack_url "http://www.netlib.org/lapack" )
+  set( LAPACK_FOUND FALSE ) # for robustness, always do this search.
+
   # There are several flavors of LAPACK.
   # 1. look for netlib-lapack
   # 2. look for MKL (Intel)
   # 3. look for OpenBLAS.
 
+  #----------------------------------------------------------------------------#
+  # netlib-lapack (find_package config mode search)
   message( STATUS "Looking for lapack (netlib)...")
-  set( lapack_FOUND FALSE )
 
-  # Use LAPACK_LIB_DIR, if the user set it, to help find LAPACK.
-  # This first try will also look for BLAS/LAPACK at CMAKE_PREFIX_PATH.
-  if( EXISTS ${LAPACK_LIB_DIR}/cmake )
-    file( GLOB lapack_cmake_prefix_path
-      LIST_DIRECTORIES true
-      ${LAPACK_LIB_DIR}/cmake/lapack-* )
-    list( APPEND CMAKE_PREFIX_PATH ${lapack_cmake_prefix_path} )
+  #----------------------------------------------------------------------------#
+  # Package-config mode: look for lapack-config.cmake in $CMAKE_PREFIX_PATH
+  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
+    find_package( lapack CONFIG QUIET )
   endif()
-  find_package( lapack CONFIG QUIET )
 
-  set( lapack_url "http://www.netlib.org/lapack" )
-  if( lapack_FOUND )
+  if( NOT TARGET lapack )
+    message( STATUS "Looking for lapack (netlib)....not found")
+  else()
     set( lapack_flavor "netlib")
     foreach( config NOCONFIG DEBUG RELEASE RELWITHDEBINFO )
       get_target_property(tmp lapack IMPORTED_LOCATION_${config} )
       if( EXISTS ${tmp} )
-        set( lapack_FOUND TRUE )
         set( lapack_loc ${tmp} )
+        break()
       endif()
     endforeach()
     message( STATUS "Looking for lapack (netlib)....found ${lapack_loc}")
-    set( lapack_FOUND ${lapack_FOUND} CACHE BOOL "Did we find LAPACK." FORCE )
 
     # The above might define blas, or it might not. Double check:
     if( NOT TARGET blas )
@@ -123,28 +124,21 @@ macro( setupLAPACKLibraries )
           IMPORTED_LINK_INTERFACE_LIBRARIES blas )
       endif()
     endif()
-
-  else()
-    message( STATUS "Looking for lapack (netlib)....not found")
   endif()
 
-  mark_as_advanced( lapack_DIR lapack_FOUND )
+  #----------------------------------------------------------------------------#
+  # MKL
 
-  # Debug targets:
-  # include(print_target_properties)
-  # print_targets_properties("lapack;blas")
-
-  # Above we tried to find lapack-config.cmake at $LAPACK_LIB_DIR/cmake/lapack.
-  # This is a draco supplied version of lapack.  If that search failed, then try
-  # to find MKL on the local system.
-
-  if( NOT lapack_FOUND )
+  # If the above search failed, then try to find MKL on the local system.
+  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
     if( DEFINED ENV{MKLROOT} )
       message( STATUS "Looking for lapack (MKL)...")
       # CMake uses the 'Intel10_64lp' enum to indicate MKL. For details see the
       # cmake documentation for FindBLAS.
       set( BLA_VENDOR "Intel10_64lp" )
-      find_package( BLAS QUIET )
+      find_package( Threads QUIET )
+      find_package( BLAS QUIET)
+      find_package( LAPACK QUIET)
 
       # If we link statically, we notice that the mkl library dependencies are
       # cyclic and FindBLAS and FindLAPACK will fail.  If this is the case, but
@@ -166,14 +160,16 @@ macro( setupLAPACKLibraries )
 
       # should we link against libmkl_gnu_thread.so or libmkl_intel_thread.so
       if( ${CMAKE_C_COMPILER_ID} MATCHES GNU )
-        set(tlib "mkl_gnu_thread")
+        set(tlib "gnu")
+        set(lplib "gf")
       else()
-        set(tlib "mkl_intel_thread")
+        set(tlib "intel")
+        set(lplib "intel")
       endif()
 
       if( BLAS_FOUND )
+        # set( BLAS_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
-        set( lapack_FOUND TRUE CACHE BOOL "lapack (MKL) found?" FORCE)
         set( lapack_DIR "$ENV{MKLROOT}" CACHE PATH "MKLROOT PATH?" FORCE)
         set( lapack_flavor "mkl")
         set( lapack_url "https://software.intel.com/en-us/intel-mkl")
@@ -182,7 +178,7 @@ macro( setupLAPACKLibraries )
         add_library( blas::mkl_thread  ${MKL_LIBRARY_TYPE} IMPORTED)
         add_library( blas::mkl_core    ${MKL_LIBRARY_TYPE} IMPORTED)
         set_target_properties( blas::mkl_thread PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_${tlib}_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_mkl_${tlib}_thread_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
         set_target_properties( blas::mkl_core PROPERTIES
@@ -191,17 +187,17 @@ macro( setupLAPACKLibraries )
           IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_thread
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20 )
         set_target_properties( blas PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_mkl_${lplib}_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas::mkl_core
-#          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_${tlib}_LIBRARY};-Wl,--end-group"
+#          IMPORTED_LINK_INTERFACE_LIBRARIES "-Wl,--start-group;${BLAS_mkl_core_LIBRARY};${BLAS_mkl_${tlib}_thread_LIBRARY};-Wl,--end-group"
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
         set_target_properties( lapack PROPERTIES
-          IMPORTED_LOCATION                 "${BLAS_mkl_intel_lp64_LIBRARY}"
+          IMPORTED_LOCATION                 "${BLAS_mkl_${lplib}_lp64_LIBRARY}"
           IMPORTED_LINK_INTERFACE_LANGUAGES "C"
           IMPORTED_LINK_INTERFACE_LIBRARIES blas
           IMPORTED_LINK_INTERFACE_MULTIPLICITY 20)
-        message(STATUS "Looking for lapack (MKL)...found ${BLAS_mkl_intel_lp64_LIBRARY}")
+        message(STATUS "Looking for lapack (MKL)...found ${BLAS_mkl_${lplib}_lp64_LIBRARY}")
       else()
         message(STATUS "Looking for lapack (MKL)...NOTFOUND")
       endif()
@@ -209,10 +205,13 @@ macro( setupLAPACKLibraries )
     endif()
   endif()
 
+  #----------------------------------------------------------------------------#
+  # OpenBLAS
+
   # If the above searches for LAPACK failed, then try to find OpenBlas on the
   # local system.
 
-  if( NOT lapack_FOUND )
+  if( NOT TARGET lapack AND NOT "${LAPACK_FOUND}" )
       message( STATUS "Looking for lapack (OpenBLAS)...")
       # CMake uses the 'OpenBLAS' enum to help the FindBLAS.cmake macro. For
       # details see the cmake documentation for FindBLAS.
@@ -221,7 +220,7 @@ macro( setupLAPACKLibraries )
 
       if( BLAS_FOUND )
         set( LAPACK_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
-        set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
+        # set( lapack_FOUND TRUE CACHE BOOL "lapack (OpenBlas) found?" FORCE)
         set( lapack_flavor "openblas")
         set( lapack_url "http://www.openblas.net")
         add_library( lapack SHARED IMPORTED)
@@ -241,12 +240,12 @@ macro( setupLAPACKLibraries )
   # If the above searches for LAPACK failed, then try to find netlib-lapack and
   # netlib-blas on the local system (without the cmake config files).
 
-  if( NOT lapack_FOUND )
-      message( STATUS "Looking for lapack (no cmake config files)...")
+  if( NOT TARGET lapack AND NOT LAPACK_FOUND )
+      MESSAGE( STATUS "Looking for lapack (no cmake config files)...")
       find_package( BLAS QUIET )
 
       if( BLAS_FOUND )
-        find_package( LAPACK QUIET)
+        find_package(LAPACK QUIET)
         set( lapack_FOUND TRUE )
         add_library( lapack SHARED IMPORTED)
         add_library( blas   SHARED IMPORTED)
@@ -267,12 +266,19 @@ macro( setupLAPACKLibraries )
     DESCRIPTION "Basic Linear Algebra Subprograms"
     TYPE OPTIONAL
     PURPOSE "Required for building the lapack_wrap component." )
-  set_package_properties( lapack PROPERTIES
-    URL "${lapack_url}"
-    DESCRIPTION "Linear Algebra PACKage"
-    TYPE OPTIONAL
-    PURPOSE "Required for building the lapack_wrap component." )
-
+  if( "${lapack_flavor}" STREQUAL "netlib")
+    set_package_properties( lapack PROPERTIES
+      URL "${lapack_url}"
+      DESCRIPTION "Linear Algebra PACKage"
+      TYPE OPTIONAL
+      PURPOSE "Required for building the lapack_wrap component." )
+  else()
+    set_package_properties( LAPACK PROPERTIES
+      URL "${lapack_url}"
+      DESCRIPTION "Linear Algebra PACKage"
+      TYPE OPTIONAL
+      PURPOSE "Required for building the lapack_wrap component." )
+  endif()
 endmacro()
 
 #------------------------------------------------------------------------------
