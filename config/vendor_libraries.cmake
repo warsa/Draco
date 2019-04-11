@@ -296,36 +296,29 @@ macro( setupCudaEnv )
 
   add_feature_info( Cuda WITH_CUDA "Build CUDA kernels for GPU compute.")
 
-  if( WITH_CUDA )
+  if( WITH_CUDA AND NOT DEFINED CUDA_DBS_STRING )
     set( CUDA_DBS_STRING "CUDA" CACHE BOOL
       "If CUDA is available, this variable is 'CUDA'")
 
-    # message("
-    # CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES = ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
-    # CMAKE_CUDA_HOST_COMPILER       = ${CMAKE_CUDA_HOST_COMPILER}
-    # CMAKE_GENERATOR_TOOLSET        = ${CMAKE_GENERATOR_TOOLSET}
-    # CMAKE_VS_PLATFORM_TOOLSET_CUDA = ${CMAKE_VS_PLATFORM_TOOLSET_CUDA}
-    # CUDA_EXTENSIONS = ${CUDA_EXTENSIONS}
-    # CUDAHOSTCXX     = ${CUDAHOSTCXX}
-    # CUDAFLAGS       = ${CUDAFLAGS}
-    # CUDACXX         = ${CUDACXX}
-    # CUDA_STANDARD   = ${CUDA_STANDARD}
-    # CUDA_SEPARABLE_COMPILATION  = ${CUDA_SEPARABLE_COMPILATION}
-    # CUDA_RESOLVE_DEVICE_SYMBOLS = ${CUDA_RESOLVE_DEVICE_SYMBOLS}
-    # CUDA_PTX_COMPILATION        = ${CUDA_PTX_COMPILATION}
-    # ")
+    set(OUTPUTFILE ${CMAKE_CURRENT_SOURCE_DIR}/config/cuda_script) # No suffix required
+    set(CUDAFILE ${CMAKE_CURRENT_SOURCE_DIR}/config/query_gpu.cu)
+    execute_process(COMMAND nvcc -lcuda ${CUDAFILE} -o ${OUTPUTFILE})
+    execute_process(COMMAND ${OUTPUTFILE}
+                    RESULT_VARIABLE CUDA_RETURN_CODE OUTPUT_VARIABLE ARCH)
 
-    # $ENV{CUDACXX}
-    # $ENV{CUDAFLAGS}
-    # $ENV{CUDAHOSTCXX}
-
-    # target properties
-    # - CUDA_EXTENSIONS
-    # - CUDA_PTX_COMPILATION
-    # - CUDA_RESOLVE_DEVICE_SYMBOLS
-    # - CUDA_SEPARABLE_COMPILATION
-    # - CUDA_STANDARD
-    # - CUDA_STANDARD_REQUIRED
+    if (${CUDA_RETURN_CODE EQUAL 0})
+      message(STATUS "CUDA Architecture: ${ARCH}")
+      set(CMAKE_CUDA_FLAGS "${ARCH} -g -G" CACHE STRING
+      set(CMAKE_CUDA_FLAGS_DEBUG "-O0" CACHE STRING
+        "CUDA debug flags" FORCE)
+        "CUDA debug flags" FORCE)
+      set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O2 --generate-line-info" CACHE STRING
+        "CUDA release with debug information flags" FORCE)
+      set(CMAKE_CUDA_FLAGS_RELEASE "-O2" CACHE STRING
+        "CUDA release flags" FORCE)
+    else()
+      message(WARNING ${ARCH})
+    endif()
   endif()
 
 endmacro()
