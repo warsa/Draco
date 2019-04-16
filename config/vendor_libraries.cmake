@@ -306,16 +306,17 @@ macro( setupCudaEnv )
     execute_process(COMMAND ${OUTPUTFILE}
                     RESULT_VARIABLE CUDA_RETURN_CODE OUTPUT_VARIABLE ARCH)
 
-    if (${CUDA_RETURN_CODE EQUAL 0})
+    if (${CUDA_RETURN_CODE} EQUAL 0)
       message(STATUS "CUDA Architecture: ${ARCH}")
-      set(CMAKE_CUDA_FLAGS "${ARCH} -g -G" CACHE STRING
-      set(CMAKE_CUDA_FLAGS_DEBUG "-O0" CACHE STRING
-        "CUDA debug flags" FORCE)
-        "CUDA debug flags" FORCE)
-      set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O2 --generate-line-info" CACHE STRING
-        "CUDA release with debug information flags" FORCE)
-      set(CMAKE_CUDA_FLAGS_RELEASE "-O2" CACHE STRING
-        "CUDA release flags" FORCE)
+      # CMAKE currently only allows up to C++14 as the NVCC language level
+      set(CMAKE_CUDA_STANDARD "14")
+      set(CMAKE_CUDA_FLAGS "${ARCH} -g -G" CACHE STRING "Standard CUDA flags"
+        FORCE)
+      set(CMAKE_CUDA_FLAGS_DEBUG "-O0" CACHE STRING "CUDA debug flags" FORCE)
+      set(CMAKE_CUDA_FLAGS_RELWITHDEBINFO "-O2 --generate-line-info" CACHE
+        STRING "CUDA release with debug information flags" FORCE)
+      set(CMAKE_CUDA_FLAGS_RELEASE "-O2" CACHE STRING "CUDA release flags"
+        FORCE)
     else()
       message(WARNING ${ARCH})
     endif()
