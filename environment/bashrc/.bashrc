@@ -36,7 +36,7 @@ case ${-} in
     shopt -s cdspell      # autocorrect spelling errors on cd command line.
     shopt -s histappend   # append to the history file, don't overwrite it
     # shopt -s direxpand  # Doesn't work on toss22 machines. Move this command to
-                          # .bashrc_toss3 and .bashrc_tt
+                          # .bashrc_toss3 and .bashrc_cray
 
     # don't put duplicate lines or lines starting with space in the history. See
     # bash(1) for more options
@@ -280,9 +280,9 @@ if [[ ${DRACO_BASHRC_DONE:-no} == no ]] && [[ ${INTERACTIVE} == true ]]; then
     red-wtrw* | rfta* | redcap* )
       source ${DRACO_ENV_DIR}/bashrc/.bashrc_rfta ;;
 
-    # trinitite (tt-fey) | trinity (tr-fe)
-    tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
-      source ${DRACO_ENV_DIR}/bashrc/.bashrc_tt ;;
+    # capulin, thunder, trinitite (tt-fey) | trinity (tr-fe)
+    cp-login* | th-login* |tt-fey* | tt-login* | tr-fe* | tr-login* | nid* )
+      source ${DRACO_ENV_DIR}/bashrc/.bashrc_cray ;;
 
     # LLNL ATS-2
     rzmanta* | rzansel* | sierra* )
