@@ -76,8 +76,8 @@ set( WITH_CUDA "@WITH_CUDA@" )
 
 
 # Python
-set( PYTHONINTERP_FOUND "@PYTHONINTERP_FOUND@" )
-set( PYTHON_EXECUTABLE "@PYTHON_EXECUTABLE@" )
+set( Python_Interpreter_FOUND "@Python_Interpreter_FOUND@" )
+set( Python_EXECUTABLE "@Python_EXECUTABLE@" )
 
 ## ---------------------------------------------------------------------------
 ## Set useful general variables
