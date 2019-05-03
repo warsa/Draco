@@ -130,11 +130,6 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
 #endif
 }
 
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Walloc-size-larger-than=0"
-#endif
-
 //---------------------------------------------------------------------------//
 void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   size_t const num_fails_start(ut.numFails);
@@ -175,17 +170,15 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   return;
 }
 
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
-
 //----------------------------------------------------------------------------------------//
 // Some compilers are clever enough to figure out that if you pass
 // std::numeric_limits<size_t>::max() to the new operator, you will always
 // blow away member, and so they will refuse to compile the code. We have
 // to use a bit of indirection to get such compilers to swallow the huge
 // allocation meant to deliberately blow away memory.
-size_t get_really_big_size_t() { return numeric_limits<size_t>::max(); }
+size_t get_really_big_size_t() {
+  return numeric_limits<std::ptrdiff_t>::max() / sizeof(size_t);
+}
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
