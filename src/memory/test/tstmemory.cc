@@ -130,6 +130,11 @@ void tst_memory(rtt_dsxx::UnitTest &ut) {
 #endif
 }
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Walloc-size-larger-than=0"
+#endif
+
 //---------------------------------------------------------------------------//
 void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
   size_t const num_fails_start(ut.numFails);
@@ -169,6 +174,10 @@ void tst_bad_alloc(rtt_dsxx::UnitTest &ut) {
 
   return;
 }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 //----------------------------------------------------------------------------------------//
 // Some compilers are clever enough to figure out that if you pass
