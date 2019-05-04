@@ -109,6 +109,7 @@ export DRACO_ARCH=`/usr/projects/draco/vendors/bin/target_arch`
 # Use modules found in the draco directory
 run "module use --append ${VENDOR_DIR}/user_contrib"
 run "module use --append ${VENDOR_DIR}-ec/Modules/$DRACO_ARCH"
+run "module purge"
 run "module load user_contrib"
 
 # Clear any default loaded modules as these are invalid when staring a new shell.
