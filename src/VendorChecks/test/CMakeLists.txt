@@ -25,7 +25,7 @@ if( TARGET ParMETIS::parmetis AND ${DRACO_C4} STREQUAL "MPI" )
       DEPS    "Lib_c4;ParMETIS::parmetis"
       PE_LIST "3" )
 
-   if ( TARGET SuperLU_DIST::superludist AND TARGET lapack )
+   if ( TARGET SuperLU_DIST::superludist AND TARGET lapack AND NOT WIN32)
 
      add_parallel_tests(
        SOURCES "tstSuperludist.cc"
