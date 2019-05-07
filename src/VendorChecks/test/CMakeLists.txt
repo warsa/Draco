@@ -31,6 +31,8 @@ if( TARGET ParMETIS::parmetis AND ${DRACO_C4} STREQUAL "MPI" )
        SOURCES "tstSuperludist.cc"
        DEPS    "Lib_c4;SuperLU_DIST::superludist;ParMETIS::parmetis;lapack"
        PE_LIST "4" )
+     target_include_directories( Ut_VendorsChecks_tstSuperludist_exe
+       PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}> )
 
    endif()
 
