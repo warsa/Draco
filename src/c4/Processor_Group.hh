@@ -47,7 +47,7 @@ public:
   //! Get the number of processors in the group.
   unsigned size() const { return size_; }
 
-  bool check_class_invariants() const { return (size()>0); }
+  bool check_class_invariants() const { return (size() > 0); }
 
   // SERVICES
 
@@ -90,7 +90,6 @@ private:
   MPI_Group group_;
   MPI_Comm comm_;
 #endif // C4_MPI
-
 };
 
 } // end namespace rtt_c4

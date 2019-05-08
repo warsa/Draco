@@ -72,21 +72,14 @@ Processor_Group::~Processor_Group() {
 
 #else // not C4_MPI
 
-Processor_Group::Processor_Group(unsigned const /*stride*/)
-    : size_(1)
-{
-  std::cout << " in scalar Processor_Group ctor " << std::endl;
-
+Processor_Group::Processor_Group(unsigned const /*stride*/) : size_(1) {
   Check(rtt_c4::nodes() == 1);
   Check(rtt_c4::node() == 0);
 
   Ensure(check_class_invariants());
 }
 
-Processor_Group::~Processor_Group() 
-{
-  Ensure(check_class_invariants());
-}
+Processor_Group::~Processor_Group() { Ensure(check_class_invariants()); }
 
 #endif //C4_MPI
 

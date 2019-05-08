@@ -117,7 +117,6 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 }
 
 #endif // C4_MPI
-
 } // end namespace rtt_c4
 
 #endif // c4_Processor_Group_i_hh
