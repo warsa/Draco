@@ -83,8 +83,7 @@ void Processor_Group::assemble_vector(T const *local, T *global,
 
 //---------------------------------------------------------------------------//
 template <typename RandomAccessContainer>
-void Processor_Group::sum(RandomAccessContainer &/*x*/) 
-{
+void Processor_Group::sum(RandomAccessContainer & /*x*/) {
   // noop
 }
 
@@ -98,8 +97,7 @@ void Processor_Group::sum(RandomAccessContainer &/*x*/)
  */
 template <typename T>
 void Processor_Group::assemble_vector(std::vector<T> const &local,
-                                      std::vector<T> &global) const 
-{
+                                      std::vector<T> &global) const {
   global = local;
 }
 
@@ -114,9 +112,8 @@ void Processor_Group::assemble_vector(std::vector<T> const &local,
  */
 template <typename T>
 void Processor_Group::assemble_vector(T const *local, T *global,
-                                      unsigned const N) const 
-{
-  std::copy(local,local+N,global);
+                                      unsigned const N) const {
+  std::copy(local, local + N, global);
 }
 
 #endif // C4_MPI
