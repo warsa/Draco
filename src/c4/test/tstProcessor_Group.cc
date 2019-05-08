@@ -31,10 +31,9 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
 #else
   // Test construction
   Processor_Group comm(1);
-  std::cout << "HERE" << std::endl;
 #endif // C4_MPI
 
-  std::string pm= "Processor_Group constructed on pid " + to_string(pid) + ".";
+  std::string pm = "Processor_Group constructed on pid " + to_string(pid) + ".";
   PASSMSG(pm);
 
   // Test sum
@@ -95,13 +94,12 @@ void tstProcessor_Group(rtt_dsxx::UnitTest &ut) {
   }
 
   return;
-
 }
 
 //---------------------------------------------------------------------------//
 int main(int argc, char *argv[]) {
 
-ParallelUnitTest ut(argc, argv, release);
+  ParallelUnitTest ut(argc, argv, release);
   try {
     tstProcessor_Group(ut);
   }
