@@ -69,7 +69,7 @@ public:
    */
   template <typename T>
   void assemble_vector(T const *local_vector, T *global_vector,
-                       unsigned count) const;
+                       unsigned const N) const;
 
 private:
   // NESTED CLASSES AND TYPEDEFS
