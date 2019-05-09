@@ -43,7 +43,7 @@ CDI::CDI(const std_string &id)
                           SF_MultigroupOpacity(constants::num_Reactions)),
       odfmgOpacities(constants::num_Models,
                      SF_OdfmgOpacity(constants::num_Reactions)),
-      spEoS(SP_EoS()), matID(id) {
+      spEoS(SP_EoS()), spEICoupling(SP_EICoupling()), matID(id) {
   Ensure(grayOpacities.size() == constants::num_Models);
   Ensure(multigroupOpacities.size() == constants::num_Models);
   Ensure(odfmgOpacities.size() == constants::num_Models);
@@ -1053,6 +1053,16 @@ void CDI::setEoS(const SP_EoS &in_spEoS) {
 }
 
 //---------------------------------------------------------------------------//
+
+void CDI::setEICoupling(const SP_EICoupling &in_spEICoupling) {
+  Require(in_spEICoupling);
+  Insist(!spEICoupling, "Tried to overwrite a set EICoupling object.!");
+  // set the smart pointer
+  spEICoupling = in_spEICoupling;
+  Ensure(spEICoupling);
+}
+
+//---------------------------------------------------------------------------//
 // GET FUNCTIONS
 //---------------------------------------------------------------------------//
 
@@ -1137,6 +1147,22 @@ CDI::SP_EoS CDI::eos() const {
 }
 
 //---------------------------------------------------------------------------//
+/*!
+ * \brief This fuction returns the EICoupling object.
+ *
+ * This provides the CDI with the full functionality of the interface defined in
+ * EICoupling.hh.  For example, the host code could make the following call:
+ *
+ * \code
+ * double ei_coupling = spCDI1->ei_coupling()->getElectronIonCoupling( ... );
+ * \endcode
+ */
+CDI::SP_EICoupling CDI::ei_coupling() const {
+  Insist(spEICoupling, "Undefined EICoupling!");
+  return spEICoupling;
+}
+
+//---------------------------------------------------------------------------//
 // RESET THE CDI OBJECT
 //---------------------------------------------------------------------------//
 
@@ -1190,6 +1216,10 @@ void CDI::reset() {
   // reset the EoS shared_ptr
   spEoS = SP_EoS();
   Check(!spEoS);
+
+  // reset the EoS shared_ptr
+  spEICoupling = SP_EICoupling();
+  Check(!spEICoupling);
 }
 
 //---------------------------------------------------------------------------//
@@ -1221,6 +1251,11 @@ bool CDI::isOdfmgOpacitySet(rtt_cdi::Model m, rtt_cdi::Reaction r) const {
  * \brief Query to see if an eos is set.
  */
 bool CDI::isEoSSet() const { return static_cast<bool>(spEoS); }
+
+/*!
+ * \brief Query to see if an eos is set.
+ */
+bool CDI::isEICouplingSet() const { return static_cast<bool>(spEICoupling); }
 
 } // end namespace rtt_cdi
 

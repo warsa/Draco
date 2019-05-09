@@ -44,7 +44,7 @@ set( _USE_MATH_DEFINES 1 )
 # CMakeLists.txt.
 
 set( MD_or_MT_debug "${MD_or_MT}d" )
-if( "${DEBUG_RUNTIME_EXT}" STREQUAL "d" )
+if( DEFINED DEBUG_RUNTIME_EXT AND "${DEBUG_RUNTIME_EXT}" STREQUAL "d" )
   set( MD_or_MT_debug "${MD_or_MT}${DEBUG_RUNTIME_EXT} /RTC1" )
 endif()
 
