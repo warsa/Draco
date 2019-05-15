@@ -115,8 +115,8 @@ static double constexpr EV2K = electronChargeSI / boltzmannSI;
  * \f]
  */
 static double constexpr stefanBoltzmannSI =
-    2.0 * std::pow(PI, 5) * std::pow(boltzmannSI, 4) /
-    (15.0 * std::pow(planckSI, 3) * std::pow(cLightSI, 2));
+    2.0 * PI * PI * PI * PI * PI * boltzmannSI * boltzmannSI * boltzmannSI *
+    boltzmannSI / (15.0 * planckSI * planckSI * planckSI * cLightSI * cLightSI);
 
 //! [F] Faraday constant == Na * e
 static double constexpr faradayConstantSI = AVOGADRO * electronChargeSI;
@@ -126,12 +126,12 @@ static double constexpr permeabilityOfVacuumSI = 4.0 * PI * 1.0e-7; // Henry/m
 
 //! [epsi0] PERMITTIVITY OF FREE SPACE (F/M)
 static double constexpr permittivityOfFreeSpaceSI =
-    1.0 / permeabilityOfVacuumSI / cLightSI / cLightSI; // Coloumb^2/J/m
+    1.0 / permeabilityOfVacuumSI / cLightSI / cLightSI; // Coulomb^2/J/m
 
 //! [re] Classical electron radius (M)
 static double constexpr classicalElectronRadiusSI =
-    std::pow(electronChargeSI, 2) / (4 * PI * permittivityOfFreeSpaceSI *
-                                     electronMassSI * std::pow(cLightSI, 2));
+    electronChargeSI * electronChargeSI /
+    (4 * PI * permittivityOfFreeSpaceSI * electronMassSI * cLightSI * cLightSI);
 
 } // end namespace rtt_units
 
