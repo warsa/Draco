@@ -25,7 +25,7 @@ namespace rtt_units {
 //============================================================================//
 
 template <typename F>           // T is one of { Ltype, Mtype, etc. }
-class DLL_PUBLIC_units FundUnit // Length, Mass, time, etc...
+class FundUnit                  // Length, Mass, time, etc...
 {
 public:
   //! default constructor
