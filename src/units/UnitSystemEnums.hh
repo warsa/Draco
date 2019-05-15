@@ -63,7 +63,7 @@ int constexpr num_ttype = 6;
 double constexpr t_cf[] = {0.0, 1.0, 1.0e3, 1.0e6, 1.0e8, 1.0e9};
 char constexpr t_labels[] = "NA,s,ms,us,sh,ns";
 char constexpr t_long_labels[] =
-  "no time unit specified,second,milisecond,microsecond,shake,nanosecond";
+    "no time unit specified,second,milisecond,microsecond,shake,nanosecond";
 
 //========================================//
 // ENUMERATED TEMPERATURE TYPES

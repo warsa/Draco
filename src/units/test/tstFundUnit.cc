@@ -8,11 +8,11 @@
  *         All rights reserved. */
 //---------------------------------------------------------------------------//
 
-#include <sstream>
 #include "ds++/Release.hh"
 #include "ds++/ScalarUnitTest.hh"
 #include "ds++/Soft_Equivalence.hh"
 #include "units/FundUnit.hh"
+#include <sstream>
 
 //---------------------------------------------------------------------------//
 // TESTS
