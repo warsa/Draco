@@ -60,7 +60,7 @@ function( setMPIflavorVer )
     foreach( line ${TEMP} )
 
       # extract the version...
-      if( ${line} MATCHES "Version" )
+      if( ${line} MATCHES "Version" OR ${line} MATCHES "OpenRTE")
         set(DBS_MPI_VER "${line}")
         if( "${DBS_MPI_VER}" MATCHES "[0-9]+[.][0-9]+[.][0-9]+" )
           string( REGEX REPLACE ".*([0-9]+)[.]([0-9]+)[.]([0-9]+).*" "\\1"
@@ -78,6 +78,9 @@ function( setMPIflavorVer )
             DBS_MPI_VER_MINOR ${DBS_MPI_VER} )
           set( MPI_VERSION "${DBS_MPI_VER_MAJOR}.${DBS_MPI_VER_MINOR}" )
         endif()
+      else()
+        message(FATAL_ERROR "DBS did not find the MPI version string (is this "
+          "an older openmpi?)")
       endif()
 
       # if needed, make a 2nd pass at identifying the MPI flavor
