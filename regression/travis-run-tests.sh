@@ -52,6 +52,8 @@ else
 
   # extract the TPL list from the Dockerfile
   export DRACO_TPL="`grep \"ENV DRACO_TPL\" regression/Dockerfile | sed -e 's/.*=//' | sed -e 's/\"//g'`"
+  echo "DRACO_TPL={DRACO_TPL}"
+  run "spack find -Lf"
 
   # Environment setup for the build...
   spack load ${DRACO_TPL}
