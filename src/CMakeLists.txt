@@ -163,10 +163,12 @@ if( "${DRACO_C4}" STREQUAL "MPI" )
 endif()
 message("Library Type: ${DRACO_LIBRARY_TYPE}
 ")
+
 if( CRAY_PE AND ENV{CRAYPE_VERSION} )
-  message("Cray system detected: CC -craype-verbose -V:
+  message("Cray system detected: CC -craype-verbose -V|--version:
 ")
-  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" )
+  if( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel" OR
+      ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
     set( ver_opt "--version")
   else( ${CMAKE_CXX_COMPILER_ID} STREQUAL "Cray" )
     set( ver_opt "-V")
