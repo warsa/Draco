@@ -127,6 +127,10 @@ function dracoenv ()
   for m in $dracomodules; do
     module load $m
   done
+  if [[ `echo $LOADEDMODULES | grep -c hugepages` != 0 ]]; then
+    modname=`echo $LOADEDMODULES | sed -e 's/.*craype-hugepages/craype-hugepages/' | sed -e 's/[:].*//'`
+    module unload $modname
+  fi
   export CXX=CC
   export CC=cc
   export FC=ftn
