@@ -11,7 +11,7 @@
 #include "Draco_Mesh.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
-#include <iostream>
+// #include <iostream>
 #include <numeric>
 #include <set>
 
@@ -474,6 +474,25 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
             std::make_pair(nodes_to_ghost[node_vec], node_vec));
 
         has_face_cond = true;
+      }
+
+      // make face a boundary if no face conditions have been found
+      if (!has_face_cond) {
+
+        // augment side flags with vacuum b.c.
+        side_set_flag.push_back(0);
+
+        // augment side-node count
+        m_side_node_count.push_back(face_type[cf_counter]);
+        Check(m_side_node_count.size() == side_set_flag.size());
+
+        // augment side-node linkage
+        m_side_to_node_linkage.insert(m_side_to_node_linkage.begin(),
+                                      node_vec.begin(), node_vec.end());
+
+        // augment cell-side linkage
+        cell_to_side_linkage[cell].push_back(std::make_pair(
+            static_cast<unsigned>(m_side_node_count.size() - 1), node_vec));
       }
 
       // increment iterator and counter
