@@ -14,8 +14,8 @@
 #include "ds++/config.h"
 #include "mesh_element/Geometry.hh"
 #include <map>
-#include <vector>
 #include <set>
+#include <vector>
 
 namespace rtt_mesh {
 
