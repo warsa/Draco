@@ -334,9 +334,6 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   Check(node_offset == cell_to_node_linkage.size());
 
-  // STEP 5: instantiate the full layout
-  // \todo: finish Draco_Layout class
-
   Ensure(cell_to_cell_linkage.size() <= num_cells);
   Ensure(cell_to_side_linkage.size() <= num_cells);
 }

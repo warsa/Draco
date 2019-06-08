@@ -42,6 +42,7 @@ public:
 
   // >>> ACCESSORS
 
+  bool get_use_face_types() const { return false; }
   unsigned get_numdim() const { return rtt_reader->get_dims_ndim(); }
   size_t get_numcells() const { return rtt_reader->get_dims_ncells(); }
   size_t get_numnodes() const { return rtt_reader->get_dims_nnodes(); }
@@ -50,6 +51,11 @@ public:
   }
   std::vector<unsigned> get_cellnodes(size_t cell) const {
     return rtt_reader->get_cells_nodes(cell);
+  }
+  std::vector<unsigned> get_cellfacenodes(size_t /*cell*/,
+                                          size_t /*face*/) const {
+    Insist(false, "cell-face nodes not implemented with RTT reader.");
+    return std::vector<unsigned>();
   }
   size_t get_numsides() const { return rtt_reader->get_dims_nsides(); }
   unsigned get_sideflag(size_t side) const {
