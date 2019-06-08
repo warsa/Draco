@@ -15,6 +15,7 @@
 #include "mesh_element/Geometry.hh"
 #include <map>
 #include <vector>
+#include <set>
 
 namespace rtt_mesh {
 
@@ -180,7 +181,7 @@ private:
       const std::vector<unsigned> &indx_to_node_linkage) const;
 
   //! Calculate a map of node vectors to indices (sides, ghost cells)
-  std::map<std::vector<unsigned>, unsigned> compute_node_vec_indx_map(
+  std::map<std::set<unsigned>, unsigned> compute_node_vec_indx_map(
       const std::vector<unsigned> &indx_type,
       const std::vector<unsigned> &indx_to_node_linkage) const;
 };

@@ -13,7 +13,6 @@
 #include <algorithm>
 // #include <iostream>
 #include <numeric>
-#include <set>
 
 namespace rtt_mesh {
 
@@ -411,10 +410,10 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
 
   // (3) create maps of nodes to boundary faces (sides) and parallel faces
 
-  std::map<std::vector<unsigned>, unsigned> nodes_to_side =
+  std::map<std::set<unsigned>, unsigned> nodes_to_side =
       compute_node_vec_indx_map(side_node_count, side_to_node_linkage);
 
-  std::map<std::vector<unsigned>, unsigned> nodes_to_ghost =
+  std::map<std::set<unsigned>, unsigned> nodes_to_ghost =
       compute_node_vec_indx_map(ghost_cell_type, ghost_cell_to_node_linkage);
 
   // (4) create cell-to-cell, cell-to-side, cell-to-ghost-cell linkage
@@ -429,9 +428,11 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       // initialize this face to not having a condition
       bool has_face_cond = false;
 
+      // get the node set for this cell and face
+      const std::set<unsigned> &node_set = cface_to_nodes[cf_counter];
+
       // get the cells associated with this cell face from the nodes
-      const std::vector<unsigned> &cells =
-          nodes_to_cells[cface_to_nodes[cf_counter]];
+      const std::vector<unsigned> &cells = nodes_to_cells[node_set];
 
       Check(cells.size() >= 1);
       Check(cells.size() <= 2);
@@ -457,21 +458,21 @@ void Draco_Mesh::compute_cell_to_cell_linkage(
       }
 
       // check if a boundary/side exists for this node set
-      if (nodes_to_side.find(node_vec) != nodes_to_side.end()) {
+      if (nodes_to_side.find(node_set) != nodes_to_side.end()) {
 
         // populate cell-boundary face layout
         cell_to_side_linkage[cell].push_back(
-            std::make_pair(nodes_to_side[node_vec], node_vec));
+            std::make_pair(nodes_to_side[node_set], node_vec));
 
         has_face_cond = true;
       }
 
       // check if a parallel face exists for this node set
-      if (nodes_to_ghost.find(node_vec) != nodes_to_ghost.end()) {
+      if (nodes_to_ghost.find(node_set) != nodes_to_ghost.end()) {
 
         // populate cell-parallel face layout
         cell_to_ghost_cell_linkage[cell].push_back(
-            std::make_pair(nodes_to_ghost[node_vec], node_vec));
+            std::make_pair(nodes_to_ghost[node_set], node_vec));
 
         has_face_cond = true;
       }
@@ -552,12 +553,12 @@ std::map<unsigned, std::vector<unsigned>> Draco_Mesh::compute_node_indx_map(
  * \param[in] indx_to_node_linkage serial map of index to node indices.
  * \return a map of node index to vector of indexes adjacent to the node.
  */
-std::map<std::vector<unsigned>, unsigned> Draco_Mesh::compute_node_vec_indx_map(
+std::map<std::set<unsigned>, unsigned> Draco_Mesh::compute_node_vec_indx_map(
     const std::vector<unsigned> &indx_type,
     const std::vector<unsigned> &indx_to_node_linkage) const {
 
   // map to return
-  std::map<std::vector<unsigned>, unsigned> nodes_to_indx_map;
+  std::map<std::set<unsigned>, unsigned> nodes_to_indx_map;
 
   // generate map
   const size_t num_indxs = indx_type.size();
@@ -566,8 +567,7 @@ std::map<std::vector<unsigned>, unsigned> Draco_Mesh::compute_node_vec_indx_map(
   for (unsigned indx = 0; indx < num_indxs; ++indx) {
 
     // extract the node vector
-    const std::vector<unsigned> node_vec(i2n_first,
-                                         i2n_first + indx_type[indx]);
+    const std::set<unsigned> node_vec(i2n_first, i2n_first + indx_type[indx]);
 
     // set the node vector as the key and index as the value
     nodes_to_indx_map[node_vec] = indx;
