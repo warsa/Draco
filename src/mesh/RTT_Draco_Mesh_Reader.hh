@@ -34,11 +34,11 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh explicit RTT_Draco_Mesh_Reader(const std::string filename_);
+  explicit RTT_Draco_Mesh_Reader(const std::string filename_);
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh void read_mesh();
+  void read_mesh();
 
   // >>> ACCESSORS
 

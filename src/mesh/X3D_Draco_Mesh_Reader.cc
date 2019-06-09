@@ -26,6 +26,8 @@ namespace rtt_mesh {
  * \param[in] bdy_filenames_ names of files with lists of side node indexes
  * \param[in] bdy_flags_ unsigned int indicating B.C. per side file
  *           (bdy_filenames_)
+ * \param[in] use_face_types_ provide dimension-independent connectivity data
+ *            to Draco_Mesh_Builder.
  */
 X3D_Draco_Mesh_Reader::X3D_Draco_Mesh_Reader(
     const std::string &filename_,

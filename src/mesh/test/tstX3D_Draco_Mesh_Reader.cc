@@ -169,37 +169,26 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
   std::shared_ptr<Draco_Mesh> mesh = mesh_builder.build_mesh(geometry);
 
   // check that the scalar data is correct
-  if (mesh->get_dimension() != ref_mesh->get_dimension())
-    ITFAILS;
-  if (mesh->get_geometry() != ref_mesh->get_geometry())
-    ITFAILS;
-  if (mesh->get_num_cells() != ref_mesh->get_num_cells())
-    ITFAILS;
-  if (mesh->get_num_nodes() != ref_mesh->get_num_nodes())
-    ITFAILS;
+  FAIL_IF(mesh->get_dimension() != ref_mesh->get_dimension());
+  FAIL_IF(mesh->get_geometry() != ref_mesh->get_geometry());
+  FAIL_IF(mesh->get_num_cells() != ref_mesh->get_num_cells());
+  FAIL_IF(mesh->get_num_nodes() != ref_mesh->get_num_nodes());
 
   // check that layout is correct (empty for one cell, no side or ghost data)
-  if ((mesh->get_cc_linkage()).size() > 0)
-    ITFAILS;
-  if ((mesh->get_cs_linkage()).size() != 1)
-    ITFAILS;
-  if ((mesh->get_cg_linkage()).size() > 0)
-    ITFAILS;
+  FAIL_IF((mesh->get_cc_linkage()).size() > 0);
+  FAIL_IF((mesh->get_cs_linkage()).size() != 1);
+  FAIL_IF((mesh->get_cg_linkage()).size() > 0);
 
   // check side flag indices (should be different)
-  if (mesh->get_side_set_flag() == ref_mesh->get_side_set_flag())
-    ITFAILS;
+  FAIL_IF(mesh->get_side_set_flag() == ref_mesh->get_side_set_flag());
 
   // check ghost cell data (should be empty defaults)
-  if (mesh->get_ghost_cell_numbers() != ref_mesh->get_ghost_cell_numbers())
-    ITFAILS;
-  if (mesh->get_ghost_cell_ranks() != ref_mesh->get_ghost_cell_ranks())
-    ITFAILS;
+  FAIL_IF(mesh->get_ghost_cell_numbers() != ref_mesh->get_ghost_cell_numbers());
+  FAIL_IF(mesh->get_ghost_cell_ranks() != ref_mesh->get_ghost_cell_ranks());
 
   // check that the vector of coordinates match the reference mesh
-  if (!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(),
-                            ref_mesh->get_node_coord_vec()))
-    ITFAILS;
+  FAIL_IF(!rtt_dsxx::soft_equiv(mesh->get_node_coord_vec(),
+                                ref_mesh->get_node_coord_vec()));
 
   // check that each cell has the correct sides
   {
@@ -216,10 +205,9 @@ void build_x3d_mesh_2d(rtt_c4::ParallelUnitTest &ut) {
 
       // check that sn_linkage is a permutation of the original side-node
       // linkage
-      if (!std::is_permutation(test_sn_first,
-                               test_sn_first + side_node_count[side], sn_first,
-                               sn_first + side_node_count[side]))
-        ITFAILS;
+      FAIL_IF(!std::is_permutation(test_sn_first,
+                                   test_sn_first + side_node_count[side],
+                                   sn_first, sn_first + side_node_count[side]));
 
       // update the iterators
       sn_first += side_node_count[side];

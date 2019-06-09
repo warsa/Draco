@@ -89,7 +89,6 @@ private:
 
 public:
   //! Constructor
-  DLL_PUBLIC_mesh
   X3D_Draco_Mesh_Reader(const std::string &filename_,
                         const std::vector<std::string> &bdy_filenames_ = {},
                         const std::vector<unsigned> &bdy_flags_ = {},
@@ -97,7 +96,7 @@ public:
 
   // >>> SERVICES
 
-  DLL_PUBLIC_mesh void read_mesh();
+  void read_mesh();
 
   // >>> ACCESSORS
 
