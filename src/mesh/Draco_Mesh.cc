@@ -11,7 +11,6 @@
 #include "Draco_Mesh.hh"
 #include "ds++/Assert.hh"
 #include <algorithm>
-// #include <iostream>
 #include <numeric>
 
 namespace rtt_mesh {

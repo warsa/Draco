@@ -163,6 +163,12 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
     }
   }
 
+  // assume parallel face data is empty
+  const std::vector<unsigned> ghost_cell_type;
+  const std::vector<unsigned> ghost_cell_to_node_linkage;
+  const std::vector<int> ghost_cell_number;
+  const std::vector<int> ghost_cell_rank;
+
   Remember(auto cn_minmax = std::minmax_element(cell_to_node_linkage.begin(),
                                                 cell_to_node_linkage.end()));
   Remember(auto sn_minmax = std::minmax_element(side_to_node_linkage.begin(),
@@ -178,7 +184,8 @@ Draco_Mesh_Builder<FRT>::build_mesh(rtt_mesh_element::Geometry geometry) {
   std::shared_ptr<Draco_Mesh> mesh(new Draco_Mesh(
       dimension, geometry, cell_type, cell_to_node_linkage, side_set_flag,
       side_node_count, side_to_node_linkage, coordinates, global_node_number,
-      {}, {}, {}, {}, face_type));
+      ghost_cell_type, ghost_cell_to_node_linkage, ghost_cell_number,
+      ghost_cell_rank, face_type));
 
   return mesh;
 }

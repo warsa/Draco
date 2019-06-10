@@ -249,7 +249,7 @@ X3D_Draco_Mesh_Reader::get_cellfacenodes(size_t cell, size_t face) const {
   Check(cell + 1 < INT_MAX);
   const std::vector<int> &cell_data =
       x3d_cellface_map.at(static_cast<int>(cell + 1));
-  const size_t num_faces = cell_data[0];
+  Remember(const size_t num_faces = cell_data[0]);
   Check(face < num_faces);
 
   // get the face index, which will by key for face-to-node map
