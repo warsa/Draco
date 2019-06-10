@@ -82,7 +82,7 @@ if [[ ${SLURM_JOB_PARTITION} == "knl" ]]; then
   module swap craype-haswell craype-mic-knl
 fi
 
-dracomodules="git cmake numdiff gsl metis eospac random123 parmetis \
+dracomodules="git cmake/3.14.0 numdiff gsl metis eospac random123 parmetis \
 superlu-dist trilinos"
 
 if [[ ${CRAY_CPU_TARGET} =~ haswell ]] || [[ ${CRAY_CPU_TARGET} =~ knl ]]; then
