@@ -20,6 +20,14 @@ using rtt_dsxx::UnitTest;
 using env_store_value = std::pair<bool, std::string>;
 using env_store_t = std::map<std::string, env_store_value>;
 
+#ifdef MSVC
+#define draco_unsetenv(k) _putenv_s(k, "")
+#define draco_setenv(k, v) _putenv_s(k, v)
+#else
+#define draco_unsetenv(k) unsetenv(k)
+#define draco_setenv(k, v) setenv(k, v, 1)
+#endif
+
 //----------------------------------------------------------------------------//
 /* Helper function: Record SLURM keys and values, if any, then remove them from
  * environment. Return recorded values so they can be restored later. */
@@ -39,10 +47,10 @@ env_store_t clean_env() {
       std::stringstream storestr;
       storestr << ival;
       store.insert({k, {true, storestr.str()}});
-      int unset_ok = unsetenv(k.c_str());
+      int unset_ok = draco_unsetenv(k.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset env var %s! errno = %d\n", __FUNCTION__,
-               __LINE__, k.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
+               __FUNCTION__, __LINE__, k.c_str(), errno);
         // throw something?
       }
     } else {
@@ -63,18 +71,18 @@ void restore_env(env_store_t const &store) {
     bool const &was_defined{val.first};
     if (was_defined) {
       std::string const &val_str{val.second};
-      int overwrite{1}; // yes, overwrite existing values
-      int set_ok = setenv(key.c_str(), val_str.c_str(), overwrite);
+      int set_ok = draco_setenv(key.c_str(), val_str.c_str());
       if (0 != set_ok) {
-        printf("%s:%i Failed to set env var %s to %s, errno = %d\n",
-               __FUNCTION__, __LINE__, key.c_str(), val_str.c_str(), errno);
+        printf(
+            "%s:%i Failed to set environment variable %s to %s, errno = %d\n",
+            __FUNCTION__, __LINE__, key.c_str(), val_str.c_str(), errno);
         // throw something
       }
     } else {
-      int unset_ok = unsetenv(key.c_str());
+      int unset_ok = draco_unsetenv(key.c_str());
       if (0 != unset_ok) {
-        printf("%s:%i Failed to unset env var %s! errno = %d\n", __FUNCTION__,
-               __LINE__, key.c_str(), errno);
+        printf("%s:%i Failed to unset environment variable %s! errno = %d\n",
+               __FUNCTION__, __LINE__, key.c_str(), errno);
         // throw something?
       }
     }
