@@ -26,7 +26,7 @@
 
 # Draco install directory name (/usr/projects/draco/draco-NN_NN_NN)
 export package=draco
-ddir=draco-7_1_0
+ddir=draco-7_2_0
 pdir=$ddir
 
 # environment (use draco modules)
@@ -54,7 +54,7 @@ echo "source ${draco_script_dir}/common.sh"
 source ${draco_script_dir}/common.sh
 
 # CMake options that will be included in the configuration step
-export CONFIG_BASE="-DDraco_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
+export CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
 
 # sets umask 0002
 # sets $install_group, $install_permissions, $build_permissions
