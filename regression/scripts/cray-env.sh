@@ -35,7 +35,7 @@ case $ddir in
       run "module unload cray-hugepages2M"
       run "module load intel/18.0.2"
       run "module load cmake/3.14.0 numdiff git"
-      run "module load gsl random123 eospac/6.4.0 ndi"
+      run "module load gsl random123 eospac/6.4.0 ndi python/3.6-anaconda-5.0.1"
       run "module load trilinos/12.10.1 metis parmetis/4.0.3 superlu-dist"
       run "module use --append ${VENDOR_DIR}-ec/modulefiles"
       run "module load csk"
