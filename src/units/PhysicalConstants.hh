@@ -139,6 +139,8 @@ public:
   //! see protonMass()
   constexpr double mp() const { return protonMass(); }
 
+  double unit_convert_boltzmann(UnitSystem const &u) const;
+
 private:
   // Base physical constants in SI units:
 
@@ -190,8 +192,6 @@ private:
 
   //! [mp] PROTON REST MASS (KG)
   double const d_protonMass;
-
-  double unit_convert_boltzmann(UnitSystem const &u) const;
 
 }; // end class PhysicalConstants
 
