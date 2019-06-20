@@ -43,7 +43,8 @@ environments="gcc731env"
 
 export script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export draco_script_dir=`readlink -f $script_dir`
-source $draco_script_dir/common.sh
+echo "source $draco_script_dir/common.sh"
+source ${draco_script_dir}/common.sh
 
 # CMake options that will be included in the configuration step
 CONFIG_BASE="-DDRACO_VERSION_PATCH=`echo $ddir | sed -e 's/.*_//'`"
@@ -96,13 +97,7 @@ LOGGING_OFF="-DDRACO_DIAGNOSTICS=0 -DDRACO_TIMING=0"
 # Define the meanings of the various code versions:
 
 VERSIONS=( "debug" "opt" "rwdi" )
-OPTIONS=(\
-    "$OPTIMIZE_OFF $LOGGING_OFF" \
-    "$OPTIMIZE_ON $LOGGING_OFF" \
-    "$OPTIMIZE_RWDI $LOGGING_OFF" \
-)
-#VERSIONS=( "debug")
-#OPTIONS=( "$OPTIMIZE_OFF $LOGGING_OFF" )
+OPTIONS=( "${OPTIMIZE_OFF} ${LOGGING_OFF}" "${OPTIMIZE_ON} ${LOGGING_OFF}" "${OPTIMIZE_RWDI} ${LOGGING_OFF}" )
 
 ##---------------------------------------------------------------------------##
 ## Environment review
@@ -130,7 +125,8 @@ fi
 ## Execute the build, test and install
 ##---------------------------------------------------------------------------##
 
-source $draco_script_dir/ats2-env.sh
+echo "source ${draco_script_dir}/ats2-env.sh"
+source ${draco_script_dir}/ats2-env.sh
 
 jobids=""
 for env in $environments; do
