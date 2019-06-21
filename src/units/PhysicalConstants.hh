@@ -12,8 +12,8 @@
 #define __units_PhysicalConstants_hh__
 
 #include "MathConstants.hh"
-#include "UnitSystem.hh"
 #include "PhysicalConstantsSI.hh"
+#include "UnitSystem.hh"
 
 //! \namespace rtt_units Namespace for units and physical constants
 namespace rtt_units {
@@ -49,25 +49,25 @@ namespace rtt_units {
 class PhysicalConstants {
 public:
   // Constructors.
-  //----------------------------------------------------------------------------// 
+  //----------------------------------------------------------------------------//
   /*!                                                                              
    * \brief Default constructor provides physical constants with SI units (kg,        
    *        m, seconds, degree K, amp, radian, mole).                              
    * \return A PhysicalConstants object.                                           
-   */                                                                              
-  constexpr PhysicalConstants()                                           
-      : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),       
-        d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI),              
-        d_cLight(cLightSI), d_stefanBoltzmann(stefanBoltzmannSI),                  
-        d_gravitationalConstant(gravitationalConstantSI),                          
-        d_accelerationFromGravity(accelerationFromGravitySI),                      
-        d_faradayConstant(faradayConstantSI),                                      
-        d_permeabilityOfVacuum(permeabilityOfVacuumSI),                            
-        d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),                      
-        d_classicalElectronRadius(classicalElectronRadiusSI),                      
-        d_electronMass(electronMassSI), d_protonMass(protonMassSI) {               
-    // empty                                                                       
-  } 
+   */
+  constexpr PhysicalConstants()
+      : d_avogadro(AVOGADRO), d_planck(planckSI), d_gasConstant(gasConstantSI),
+        d_boltzmann(boltzmannSI), d_electronCharge(electronChargeSI),
+        d_cLight(cLightSI), d_stefanBoltzmann(stefanBoltzmannSI),
+        d_gravitationalConstant(gravitationalConstantSI),
+        d_accelerationFromGravity(accelerationFromGravitySI),
+        d_faradayConstant(faradayConstantSI),
+        d_permeabilityOfVacuum(permeabilityOfVacuumSI),
+        d_permittivityOfFreeSpace(permittivityOfFreeSpaceSI),
+        d_classicalElectronRadius(classicalElectronRadiusSI),
+        d_electronMass(electronMassSI), d_protonMass(protonMassSI) {
+    // empty
+  }
   explicit PhysicalConstants(UnitSystem const &u);
 
   //! \todo Make electronCharge and Avaragodo adjustable based on units.
