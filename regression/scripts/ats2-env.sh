@@ -13,7 +13,7 @@ case $ddir in
       run "module purge"
       module use /usr/gapps/jayenne/vendors-ec/spack.20190616/share/spack/lmod/linux-rhel7-ppc64le/Core
       run "module load cuda python/3.7.2 gcc/7.3.1 spectrum-mpi/2019.04.19"
-      run "module load cmake/3.14.4 git gsl numdiff random123 metis netlib-lapack"
+      run "module load cmake/3.14.5 git gsl numdiff random123 metis netlib-lapack"
       run "module load parmetis superlu-dist trilinos csk/0.4.2"
       run "module load eospac/6.4.0"
       # ndi
